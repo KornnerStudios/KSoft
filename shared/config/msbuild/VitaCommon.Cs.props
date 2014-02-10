@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <IntDir>$(VitaObjDir)$(AssemblyName)\</IntDir>
+    <BaseIntermediateOutputPath>$(IntDir)</BaseIntermediateOutputPath>
+	<IntermediateOutputPath>$(IntDir)</IntermediateOutputPath>
+
+	<FileAlignment>512</FileAlignment>
+	<TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
+    <OutDir>$(VitaBinPath)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'true' ">
+    <OutDir>$(VitaSolutionFamilyBinPath)</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(OutDir)</OutputPath>
+	<!--<DocumentationFile Condition=" '$(Configuration)' == 'Release' ">$(VitaRootDir)_lib\$(Configuration)\$(Platform)\$(AssemblyName)\$(AssemblyName).XML</DocumentationFile>-->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
+
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration.Contains(Debug))' ">
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+	<DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
+	<DebugSymbols>true</DebugSymbols>
+
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration.Contains(Release))' ">
+    <Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+
+    <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VitaPlatformType)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+	<DefineConstants>_WIN32;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VitaPlatformType)' == 'x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+	<DefineConstants>_WIN64;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <!-- VS searches property group conditions to build the "Configuration" list. So I just define the common ones here -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+  </PropertyGroup>
+
+  <ItemGroup>
+	<Compile Include="$(VitaRootDir)KSoft\shared\source\KSoftAssemblyInfo.cs">
+      <Link>Properties\KSoftAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+</Project>

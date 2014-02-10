@@ -1,0 +1,184 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+using StringBuilder = System.Text.StringBuilder;
+
+namespace KSoft
+{
+	partial class Numbers
+	{
+<# foreach(var num_type in NumbersT4.ParseableIntegersWordAligned) { #>
+<#	var prim_keyword = num_type.Keyword;
+	bool is_signed = num_type.IsSigned;
+#>
+		#region <#= num_type.Code #>
+		static void ToStringBuilder(StringBuilder sb, <#= prim_keyword #> value, int radix, int startIndex, string digits)
+		{
+<#		if (is_signed) {
+#>
+			// Sign support only exist for decimal and lower bases
+			if(radix <= kBase10 && value < 0)
+			{
+				sb.Append('-');
+				++startIndex;
+				value = -value; // change the value to positive
+			}
+
+<#		} #>
+			var radix_in_word = (<#= prim_keyword #>)radix;
+			do {
+				int digit_index = (int)(value % radix_in_word);
+				sb.Insert(startIndex, digits[digit_index]);
+				value /= radix_in_word;
+			} while (value > 0);
+		}
+		// List<> has a(n in-place) Reverse method. StringBuilder doesn't. That's why.
+		// We use additional memory (List<>.ToArrray allocates a new array) but have less computational complexity
+		static void ToStringBuilder(List<char> sb, <#= prim_keyword #> value, int radix, string digits)
+		{
+			int start_index = sb.Count;
+
+<#		if (is_signed) {
+#>
+			bool signed = false;
+			// Sign support only exist for decimal and lower bases
+			if(radix <= kBase10 && value < 0)
+			{
+				signed = true;
+				value = -value; // change the value to positive
+			}
+
+<#		} #>
+			var radix_in_word = (<#= prim_keyword #>)radix;
+			do {
+				int digit_index = (int)(value % radix_in_word);
+				sb.Add(digits[digit_index]);
+				value /= radix_in_word;
+			} while (value > 0);
+
+<#		if (is_signed) {
+#>
+			if(signed)
+				sb.Add('-');
+
+<#		} #>
+			sb.Reverse(start_index, sb.Count-start_index);
+		}
+		static string ToStringImpl(<#= prim_keyword #> value, int radix, string digits)
+		{
+<#		if (NumbersT4.ToStringShouldUseListOfChar) {
+#>
+			var sb = new List<char>();
+			ToStringBuilder(sb, value, radix, digits);
+
+			return new string(sb.ToArray());
+<#		} else { #>
+			var sb = new StringBuilder();
+			ToStringBuilder(sb, value, radix, 0, digits);
+
+			return sb.ToString();
+<#		} #>
+		}
+		public static string ToString(<#= prim_keyword #> value, int radix = kBase10, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(radix >= 2 && radix <= digits.Length);
+
+			return ToStringImpl(value, radix, digits);
+		}
+		public static string ToString(<#= prim_keyword #> value, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+
+			return ToStringImpl(value, (int)radix, digits);
+		}
+		public static StringBuilder ToStringBuilder(StringBuilder sb, <#= prim_keyword #> value, NumeralBase radix = NumeralBase.Decimal, int startIndex = -1, string digits = kBase64Digits)
+		{
+			Contract.Requires(sb != null);
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+			Contract.Requires(startIndex.IsNoneOrPositive());
+			if(startIndex.IsNone())
+				startIndex = sb.Length;
+
+			ToStringBuilder(sb, value, (int)radix, startIndex, digits);
+			return sb;
+		}
+		public static List<char> ToStringBuilder(List<char> sb, <#= prim_keyword #> value, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
+		{
+			Contract.Requires(sb != null);
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+
+			ToStringBuilder(sb, value, (int)radix, digits);
+			return sb;
+		}
+		#endregion
+<# } #>
+
+<# foreach(var num_type in NumbersT4.ParseableIntegersSmall) { #>
+<#	var prim_keyword = num_type.Keyword;
+#>
+		#region <#= num_type.Code #>
+		public static string ToString(<#= prim_keyword #> value, int radix = kBase10, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(radix >= 2 && radix <= digits.Length);
+
+			return ToStringImpl(value, radix, digits);
+		}
+		public static string ToString(<#= prim_keyword #> value, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+
+			return ToStringImpl(value, (int)radix, digits);
+		}
+		#endregion
+<# } #>
+
+<# foreach(var num_type in NumbersT4.ParseableIntegersWordAligned) { #>
+<#	var prim_keyword = num_type.Keyword;
+#>
+		#region ToStringList <#= num_type.Code #>
+		public static string ToStringList(StringListDesc desc, IEnumerable<<#= prim_keyword #>> values, 
+			Predicate<IEnumerable<<#= prim_keyword #>>> writeTerminator = null)
+		{
+			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			var chars = new List<char>();
+
+			bool needs_separator = false;
+			int radix = (int)desc.Radix;
+			if (values != null)
+			{
+				foreach (var value in values)
+				{
+					if (needs_separator)
+					{
+						chars.Add(desc.Separator);
+					}
+					else needs_separator = true;
+
+					ToStringBuilder(chars, value, radix, desc.Digits);
+				}
+
+				if (writeTerminator != null && writeTerminator(values))
+					chars.Add(desc.Terminator);
+			}
+
+			return new string(chars.ToArray());
+		}
+		#endregion
+<# } #>
+	};
+}

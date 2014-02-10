@@ -1,0 +1,37 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+#>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> RotateLeft(<#= prim_keyword #> x, int shift)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < k<#= const_keyword #>BitCount);
+
+			return (<#= prim_keyword #>)( (x << shift) | (x >> (k<#= const_keyword #>BitCount - shift)) );
+		}
+		[Contracts.Pure]
+		public static <#= prim_keyword #> RotateRight(<#= prim_keyword #> x, int shift)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < k<#= const_keyword #>BitCount);
+
+			return (<#= prim_keyword #>)( (x >> shift) | (x << (k<#= const_keyword #>BitCount - shift)) );
+		}
+
+<# } #>
+	};
+}

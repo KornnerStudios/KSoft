@@ -1,0 +1,236 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
+
+namespace KSoft.IO
+{
+	partial class BitStream
+	{
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+#>
+		/// <summary>Serialize an <see cref="System.<#= prim_typename #>"/> to/from the stream</summary>
+		/// <param name="value">value to serialize</param>
+		/// <param name="bitCount">Number of bits to use</param>
+<#		if (is_signed) { #>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+<#		} #>
+		/// <returns>Returns this instance</returns>
+		public BitStream Stream(ref <#= prim_keyword #> value, int bitCount = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
+		{
+			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
+
+<#		if (is_signed) { #>
+				 if (IsReading) value = Read<#= prim_typename #>(bitCount, signExtend);
+<#		} else { #>
+				 if (IsReading) value = Read<#= prim_typename #>(bitCount);
+<#		} #>
+			else if (IsWriting) Write(value, bitCount);
+
+			return this;
+		}
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BitStreambleNonIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+#>
+		/// <summary>Serialize an <see cref="System.<#= prim_typename #>"/> to/from the stream</summary>
+		/// <param name="value">value to serialize</param>
+		/// <returns>Returns this instance</returns>
+		public BitStream Stream(ref <#= prim_keyword #> value)
+		{
+				 if (IsReading) value = Read<#= prim_typename #>();
+			else if (IsWriting) Write(value);
+
+			return this;
+		}
+<# } #>
+
+
+		#region StreamFixedArray
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+#>
+		public BitStream StreamFixedArray(<#= prim_keyword #>[] array, 
+			int elementBitSize = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(elementBitSize <= Bits.k<#= prim_typename #>BitCount);
+
+<#		if (is_signed) { #>
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+<#		} else { #>
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+<#		} #>
+
+			return this;
+		}
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BitStreambleNonIntegerTypes) { #>
+<#
+#>
+		public BitStream StreamFixedArray(<#= bittable_type.Keyword #>[] array)
+		{
+			Contract.Requires(array != null);
+
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x]);
+
+			return this;
+		}
+<# } #>
+		#endregion
+
+
+		#region StreamArray
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+#>
+		public BitStream StreamArray(ref <#= prim_keyword #>[] array, 
+			int lengthBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
+		{
+			Contract.Requires(IsReading || array != null);
+			Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.k<#= prim_typename #>BitCount);
+
+			int count = IsReading ? 0 : array.Length;
+			Stream(ref count, lengthBitSize);
+
+			if (IsReading)
+				array = new <#= prim_keyword #>[count];
+
+<#		if (is_signed) { #>
+			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+<#		} else { #>
+			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+<#		} #>
+
+			return this;
+		}
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BitStreambleNonIntegerTypes) { #>
+<#
+#>
+		public BitStream StreamArray(ref <#= bittable_type.Keyword #>[] array, 
+			int lengthBitSize)
+		{
+			Contract.Requires(IsReading || array != null);
+			Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);
+
+			int count = IsReading ? 0 : array.Length;
+			Stream(ref count, lengthBitSize);
+
+			if (IsReading)
+				array = new <#= bittable_type.Keyword #>[count];
+
+			for (int x = 0; x < count; x++) Stream(ref array[x]);
+
+			return this;
+		}
+<# } #>
+		#endregion
+
+
+		#region StreamList
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+#>
+		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list, 
+			int countBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(countBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.k<#= prim_typename #>BitCount);
+
+			int count = list.Count;
+			Stream(ref count, countBitSize);
+
+			if (IsReading)
+			{
+				for (int x = 0; x < count; x++)
+				{
+<#		if (is_signed) { #>
+					var value = Read<#= prim_typename #>(elementBitSize, signExtend);
+<#		} else { #>
+					var value = Read<#= prim_typename #>(elementBitSize);
+<#		} #>
+					list.Add(value);
+				}
+			}
+			else if (IsWriting)
+			{
+				foreach (var value in list)
+					Write(value, elementBitSize);
+			}
+
+			return this;
+		}
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BitStreambleNonIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+#>
+		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list, 
+			int countBitSize)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(countBitSize <= Bits.kInt32BitCount);
+
+			int count = list.Count;
+			Stream(ref count, countBitSize);
+
+			if (IsReading)
+			{
+				for (int x = 0; x < count; x++)
+				{
+					var value = Read<#= prim_typename #>();
+					list.Add(value);
+				}
+			}
+			else if (IsWriting)
+			{
+				foreach (var value in list)
+					Write(value);
+			}
+
+			return this;
+		}
+<# } #>
+		#endregion
+	};
+}

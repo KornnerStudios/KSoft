@@ -1,0 +1,192 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+		#region BitmaskLookUpTable
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#
+#>
+		/// <summary>Generate an <#= bittable_type.SizeOfInBits #>-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static void BitmaskLookUpTableGenerate(int wordBitSize, out <#= bittable_type.Keyword #>[] lut)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= k<#= bittable_type.Code #>BitCount);
+			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+
+			if (wordBitSize == k<#= bittable_type.Code #>BitCount && kBitmaskLookup<#= bittable_type.SizeOfInBits #> != null)
+				lut = kBitmaskLookup<#= bittable_type.SizeOfInBits #>;
+			else
+			{
+				lut = new <#= bittable_type.Keyword #>[BitmaskLookUpTableGetLength(wordBitSize)];
+				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+					lut[x] = (<#= bittable_type.Keyword #>)(<#= bittable_type.Keyword #>.MaxValue >> shift);
+			}
+		}
+
+<# } #>
+		#endregion
+
+		#region ArrayCopy
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	if(bittable_type.IsByte) continue;
+#>
+		#region <#= bittable_type.Code #>
+		public static void ArrayCopy(byte[] src, int srcOffset, <#= bittable_type.Keyword #>[] dst, int dstOffset, int count)
+		{
+			Contract.Requires<ArgumentNullException>(src != null);
+			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
+			Contract.Requires<ArgumentNullException>(dst != null);
+			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+
+			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(
+				src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)));
+
+			var memcpy = new MemoryCopier<<#= bittable_type.Keyword #>, byte>(dummy: false);
+			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
+		}
+		public static void ArrayCopy(<#= bittable_type.Keyword #>[] src, int srcOffset, byte[] dst, int dstOffset, int count)
+		{
+			Contract.Requires<ArgumentNullException>(src != null);
+			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
+			Contract.Requires<ArgumentNullException>(dst != null);
+			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+
+			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(
+				src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)));
+
+			var memcpy = new MemoryCopier<byte, <#= bittable_type.Keyword #>>(dummy: false);
+			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
+		}
+		#endregion
+
+<# } #>
+		#endregion
+
+		#region BitReverse (by-ref)
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#
+#>
+		/// <summary>Get the bit-reversed equivalent of an unsigned integer</summary>
+		/// <param name="x">Integer to bit-reverse</param>
+		public static void BitReverse(ref <#= bittable_type.Keyword #> x)
+		{
+			x = BitReverse(x);
+		}
+
+<# } #>
+		#endregion
+
+		#region GetMaxEnumBits
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#
+#>
+		/// <summary>Calculate how many bits are needed to represent the provided value</summary>
+		/// <param name="maxValue">An enumeration's <b>kMax</b> value</param>
+		/// <returns>Number of bits needed to represent (<paramref name="maxValue"/> - 1)</returns>
+		/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. This is why 1 is subtracted from <paramref name="maxValue"/>.</remarks>
+		[Contracts.Pure]
+		public static int GetMaxEnumBits(<#= bittable_type.Keyword #> maxValue)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 1, kGetMaxEnumBits_MaxValueOutOfRangeMessage);
+			Contract.Ensures(Contract.Result<int>() > 0);
+
+			return Bits.IndexOfHighestBitSet(maxValue - 1) + 1;
+		}
+		/// <summary>Calculate how many bits are needed to represent the provided value</summary>
+		/// <param name="maxValue">An enumeration's <b>kMax</b> value</param>
+		/// <returns>Number of bits needed to represent (<paramref name="maxValue"/> - 1)</returns>
+		/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. This is why 1 is subtracted from <paramref name="maxValue"/>.</remarks>
+		[Contracts.Pure]
+		public static int GetMaxEnumBits(<#= bittable_type.SignedKeyword #> maxValue)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 1, kGetMaxEnumBits_MaxValueOutOfRangeMessage);
+			Contract.Ensures(Contract.Result<int>() > 0);
+
+			return Bits.IndexOfHighestBitSet((<#= bittable_type.Keyword #>)maxValue - 1) + 1;
+		}
+
+<# } #>
+		#endregion
+
+		#region GetBitmask
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#
+#>
+		/// <summary>Calculate the masking value for an enumeration</summary>
+		/// <param name="maxValue">An enumeration's <b>kMax</b> value</param>
+		/// <returns>The smallest bit mask value for (<paramref name="maxValue"/> - 1)</returns>
+		/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. This is why 1 is subtracted from <paramref name="maxValue"/>.</remarks>
+		[Contracts.Pure]
+		public static <#= bittable_type.Keyword #> GetBitmaskEnum(<#= bittable_type.Keyword #> maxValue)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 1, kGetBitmaskEnum_MaxValueOutOfRangeMessage);
+			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() > 0);
+
+			int bit_count = GetMaxEnumBits(maxValue);
+
+			return BitCountToMask<#= bittable_type.SizeOfInBits #>(bit_count);
+		}
+		/// <summary>Calculate the masking value for a series of flags</summary>
+		/// <param name="maxValue">A bit enumeration's <b>kMax</b> value. IE, the 'highest bit' plus one</param>
+		/// <returns>The smallest bit mask value for (<paramref name="maxValue"/> - 1)</returns>
+		/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. This is why 1 is subtracted from <paramref name="maxValue"/>.</remarks>
+		[Contracts.Pure]
+		public static <#= bittable_type.Keyword #> GetBitmaskFlags(<#= bittable_type.Keyword #> maxValue)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 0, kGetBitmaskFlag_MaxValueOutOfRangeMessage);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue <= k<#= bittable_type.Code #>BitCount);
+			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() > 0);
+
+			return BitCountToMask<#= bittable_type.SizeOfInBits #>((int)--maxValue);
+		}
+
+<# } #>
+		#endregion
+
+		#region SignExtend
+		// http://graphics.stanford.edu/~seander/bithacks.html#VariableSignExtend
+
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#
+#>
+		[Contracts.Pure]
+		public static <#= bittable_type.SignedKeyword #> SignExtend(<#= bittable_type.SignedKeyword #> value, int bitCount)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount > 0 && bitCount <= k<#= bittable_type.Code #>BitCount);
+			const <#= bittable_type.Keyword #> k_one = 1;
+
+			var bit_mask = (<#= bittable_type.SignedKeyword #>)BitCountToMask<#= bittable_type.SizeOfInBits #>(bitCount);
+			var ext_mask = (<#= bittable_type.SignedKeyword #>)(k_one << (bitCount - 1));
+
+			// clear the bits outside of our bit count range
+			value &= bit_mask;
+
+			// if the clear operation above isn't needed, we could do the following instead:
+			// (value << ext_mask) >> ext_mask
+			return (value ^ ext_mask) - ext_mask;
+		}
+		[Contracts.Pure]
+		public static <#= bittable_type.SignedKeyword #> SignExtendWithoutClear(<#= bittable_type.SignedKeyword #> value, int bitCount)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount > 0 && bitCount <= k<#= bittable_type.Code #>BitCount);
+
+			int ext_shift = k<#= bittable_type.Code #>BitCount - bitCount;
+
+			return (value << ext_shift) >> ext_shift;
+		}
+
+<# } #>
+		#endregion
+	};
+}

@@ -1,0 +1,48 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+#>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> BitSwap(<#= prim_keyword #> value, int startBitIndex = k<#= const_keyword #>BitCount-1)
+		{
+			Contract.Requires(startBitIndex > 0, kBitSwap_StartBitIndexNotGreaterThanZero);
+			Contract.Requires(startBitIndex < k<#= const_keyword #>BitCount);
+
+			if (value != 0 && value != <#= prim_keyword #>.MaxValue)
+			{
+<#		if (bittable_type.SizeOfInBits == 64) { #>
+				ulong bits = 0;
+				const ulong k_one = 1UL;
+<#		} else { #>
+				uint bits = 0;
+				const uint k_one = 1U;
+<#		} #>
+
+				int bits_shift = 0;
+				int value_shift = startBitIndex;
+				for (var value_mask = k_one << startBitIndex;
+					value_shift >= 0;
+					value_mask >>= 1, value_shift--, bits_shift++)
+					bits |= ((value & value_mask) >> value_shift) << bits_shift;
+
+				value = (<#= prim_keyword #>)bits;
+			}
+			return value;
+		}
+
+<# } #>
+	};
+}

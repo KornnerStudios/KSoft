@@ -1,0 +1,198 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+		#region Bit Vector length calculations
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+#>
+		/// <summary>Calculates how many <see cref="System.<#= const_keyword #>"/>s are needed to hold a bit vector of a certain length</summary>
+		/// <param name="bitsCount">Number of bits to be hosted in the vector</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int VectorLengthIn<#= bittable_type.GetVectorsSuffix() #>(int bitsCount)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+
+			return (bitsCount + (k<#= const_keyword #>BitCount-1)) >> k<#= const_keyword #>BitShift;
+		}
+
+<# } #>
+		#endregion
+
+		#region Bit Vector element bitmask (kVectorWordFormat dependent)
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+	var vector_suffix= bittable_type.GetVectorsSuffix();
+#>
+		/// <summary>Get the mask for a specific bit in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="bitIndex">Bit index to get the mask for</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>LE(int bitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			const <#= prim_keyword #> k_one = 1;
+
+			return (<#= prim_keyword #>)(k_one << (bitIndex % k<#= const_keyword #>BitCount));
+		}
+		/// <summary>Get the mask for a specific bit in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="bitIndex">Bit index to get the mask for</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>BE(int bitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			const <#= prim_keyword #> k_one = 1;
+			const <#= prim_keyword #> k_most_significant_bit = k_one << (k<#= const_keyword #>BitCount - 1);
+
+			return (<#= prim_keyword #>)(k_most_significant_bit >> (bitIndex % k<#= const_keyword #>BitCount));
+		}
+		/// <summary>Get the mask for a specific bit in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="bitIndex">Bit index to get the mask for</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>(int bitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementBitMaskIn<#= vector_suffix #>BE(bitIndex) :
+					VectorElementBitMaskIn<#= vector_suffix #>LE(bitIndex);
+		}
+		public static void GetVectorElementBitMaskInT(out VectorElementBitMask<<#= prim_keyword #>> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementBitMaskIn<#= vector_suffix #>BE;
+			else
+				proc = VectorElementBitMaskIn<#= vector_suffix #>LE;
+		}
+
+<# } #>
+		#endregion
+
+		#region Bit Vector element from byte[]
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+#>
+		[Contracts.Pure]
+		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref <#= prim_keyword #> element)
+		{
+			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(index >= 0);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(index+sizeof(<#= prim_keyword #>) <= buffer.Length);
+
+<#		if (const_keyword != "Byte") { #>
+			element = BitConverter.ToUInt<#= bittable_type.SizeOfInBits.ToString() #>(buffer, index);
+<#		} else { #>
+			element = buffer[index];
+<#		} #>
+		}
+		public static void GetVectorElementFromBufferInT(out VectorElementFromBuffer<<#= prim_keyword #>> proc)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			proc = VectorElementFromBufferInT;
+		}
+
+<# } #>
+		#endregion
+
+		#region Bit Vector bitIndex to vector_index (kVectorWordFormat dependent)
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+	var vector_suffix= bittable_type.GetVectorsSuffix();
+#>
+		[Contracts.Pure]
+		static int VectorIndexIn<#= vector_suffix #>LE(int bitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+
+			return bitIndex << k<#= const_keyword #>BitShift;
+		}
+		[Contracts.Pure]
+		static int VectorIndexIn<#= vector_suffix #>BE(int bitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			
+			return bitIndex >> k<#= const_keyword #>BitShift;
+		}
+		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.<#= const_keyword #>"/>s</summary>
+		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns>The index of a <see cref="System.<#= const_keyword #>"/> which holds the bit in question</returns>
+		[Contracts.Pure]
+		public static int VectorIndexIn<#= vector_suffix #>(int bitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorIndexIn<#= vector_suffix #>BE(bitIndex) :
+					VectorIndexIn<#= vector_suffix #>LE(bitIndex);
+		}
+
+<# } #>
+		#endregion
+
+		#region Bit Vector cursor to bitIndex
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var const_keyword= bittable_type.GetConstantKeyword();
+	var vector_suffix= bittable_type.GetVectorsSuffix();
+#>
+		/// <summary>Calculates the bit position of a vector cursor based on <see cref="System.<#= const_keyword #>"/> elements</summary>
+		/// <param name="index">Element index of the cursor</param>
+		/// <param name="bitOffset">Element bit offset of the current</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int VectorBitIndexIn<#= vector_suffix #>(int index, int bitOffset)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+
+			return (index << k<#= const_keyword #>BitShift) + bitOffset;
+		}
+
+<# } #>
+		#endregion
+
+		#region Bit Vector cursor from bitIndex
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var const_keyword= bittable_type.GetConstantKeyword();
+	var vector_suffix= bittable_type.GetVectorsSuffix();
+#>
+		/// <summary>Calculates the vector cursor based on a bit index in a <see cref="System.<#= const_keyword #>"/> vector</summary>
+		/// <param name="bitIndex">Index to translate into a cursor</param>
+		/// <param name="index">Element index of the cursor</param>
+		/// <param name="bitOffset">Element bit offset of the current</param>
+		[Contracts.Pure]
+		public static void VectorBitCursorIn<#= vector_suffix #>(int bitIndex, out int index, out int bitOffset)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+
+			index = VectorIndexIn<#= vector_suffix #>(bitIndex);
+			bitOffset = bitIndex & k<#= const_keyword #>BitMod;
+		}
+
+<# } #>
+		#endregion
+	};
+}

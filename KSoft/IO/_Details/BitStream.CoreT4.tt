@@ -1,0 +1,95 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
+
+namespace KSoft.IO
+{
+	partial class BitStream
+	{
+<# foreach (var word_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#
+#>
+		#region Read\Write <#= word_type.Keyword #> Impl
+		internal void ReadWord(out <#= word_type.Keyword #> word, int bitCount)
+		{
+			Contract.Requires(bitCount <= kWordBitCount);
+
+			int bits_remaining = CacheBitsRemaining;
+
+			// if the requested bits are contained entirely in the cache...
+			if (bitCount <= bits_remaining)
+			{
+				word = (<#= word_type.Keyword #>)ExtractWordFromCache(bitCount);
+				mCacheBitIndex += bitCount;
+
+				// If we consumed the rest of the cache after that last extraction
+				if (mCacheBitIndex == kWordBitCount && !IsEndOfStream)
+					FillCache();
+			}
+			else // else the cache only has a portion of the bits (or needs to be re-filled)
+			{
+				int word_bits_remaining = bitCount;
+
+				// will always be negative, so abs it
+				int msb_shift = -(bits_remaining - word_bits_remaining);
+				// get the word bits (MSB) that are left in the cache
+				word = (<#= word_type.Keyword #>)ExtractWordFromCache(bits_remaining);
+				word_bits_remaining -= bits_remaining;
+				// adjust the bits to the MSB
+				word <<= msb_shift;
+
+				FillCache(); // fill the cache with the next round of bits
+
+				// get the 'rest' of the bits that weren't initially in our cache
+				TWord more_bits = ExtractWordFromCache(word_bits_remaining);
+
+				word |= (<#= word_type.Keyword #>)more_bits;
+				mCacheBitIndex = word_bits_remaining;
+			}
+		}
+		internal void WriteWord(<#= word_type.Keyword #> word, int bitCount)
+		{
+			Contract.Requires(bitCount <= kWordBitCount);
+
+			int bits_remaining = CacheBitsRemaining;
+
+			// if the bits to write can be held entirely in the cache...
+			if (bitCount <= bits_remaining)
+			{
+				PutWordInCache((TWord)word, bitCount);
+				mCacheBitIndex += bitCount;
+
+				if (mCacheBitIndex == kWordBitCount)
+					FlushCache();
+			}
+			else // else we have to split the cache writes between a flush
+			{
+				int word_bits_remaining = bitCount;
+
+				// will always be negative, so abs it
+				int msb_shift = -(bits_remaining - word_bits_remaining);
+				// write the upper (MSB) word bits to the remaining cache bits
+				PutWordInCache((TWord)(word >> msb_shift), bits_remaining);
+				word_bits_remaining -= bits_remaining;
+
+				// Flush determines the amount of bytes to write based on the current
+				// bit index. This causes it to write all the bytes of the TWord
+				mCacheBitIndex += bits_remaining;
+				FlushCache(); // flush the MSB results and reset the cache
+
+				PutWordInCache((TWord)word, word_bits_remaining);
+				mCacheBitIndex = word_bits_remaining;
+			}
+		}
+		#endregion
+
+<# } #>
+	};
+}

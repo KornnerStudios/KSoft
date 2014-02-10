@@ -1,0 +1,100 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.Bitwise
+{
+	partial class Flags
+	{
+		#region Add
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+#>
+		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to add to <paramref name="lhs"/></param>
+		/// <returns><paramref name="lhs"/> != <paramref name="rhs"/></returns>
+		public static <#= prim_keyword #> Add(<#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			return lhs |= rhs;
+		}
+		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector reference</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to add to <paramref name="lhs"/></param>
+		public static void Add(ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			lhs |= rhs;
+		}
+
+<# } #>
+		#endregion
+
+		#region Remove
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+#>
+		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to remove from <paramref name="lhs"/></param>
+		/// <returns><paramref name="lhs"/> AND-EQUALS <paramref name="rhs"/></returns>
+		public static <#= prim_keyword #> Remove(<#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			return lhs &= ~rhs;
+		}
+		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to remove from <paramref name="lhs"/></param>
+		public static void Remove(ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			lhs &= ~rhs;
+		}
+
+<# } #>
+		#endregion
+
+		#region Modify
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+#>
+		#region <#= bittable_type.SizeOfInBits.ToString() #>-bit
+		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>
+		/// <param name="addOrRemove">True to add <paramref name="rhs"/>, false to remove</param>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to modify on <paramref name="lhs"/></param>
+		/// <returns>
+		/// If <paramref name="addOrRemove"/> is True:
+		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
+		/// 
+		/// Else:
+		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
+		/// </returns>
+		public static <#= prim_keyword #> Modify(bool addOrRemove, <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			return (addOrRemove == true ?
+				lhs |= rhs : 
+				lhs &= (<#= prim_keyword #>)~rhs);
+		}
+		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>
+		/// <param name="addOrRemove">True to add <paramref name="rhs"/>, false to remove</param>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to modify on <paramref name="lhs"/></param>
+		/// <returns><paramref name="addOrRemove"/></returns>
+		public static bool Modify(bool addOrRemove, ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			if (addOrRemove == true)
+				lhs |= rhs;
+			else
+				lhs &= (<#= prim_keyword #>)~rhs;
+
+			return addOrRemove;
+		}
+		#endregion
+<# } #>
+		#endregion
+	};
+}

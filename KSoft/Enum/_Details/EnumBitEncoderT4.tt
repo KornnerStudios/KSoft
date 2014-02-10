@@ -1,0 +1,350 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using System.Reflection;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#
+#>
+	/// <summary>Utility class for encoding Enumerations into an integer's bits.</summary>
+	/// <typeparam name="TEnum"></typeparam>
+	/// <remarks>
+	/// Regular Enumerations should have a member called <b>kMax</b>. This value
+	/// must be the highest value and shouldn't actually be used.
+	/// If <b>kMax</b> doesn't exist, the highest value found, plus 1, is used as 
+	/// the assumed <b>kMax</b>
+	/// 
+	/// <see cref="FlagsAttribute"/> Enumerations should have a member called 
+	/// <b>kAll</b>. This value must be equal to all the usable bits in the type. 
+	/// If you want to leave a certain bit or bits out of the encoder, don't include 
+	/// them in <b>kAll</b>'s value.
+	/// If <b>kAll</b> doesn't exist, ALL members are OR'd together to create the 
+	/// assumed <b>kAll</b> value.
+	/// </remarks>
+	[System.Diagnostics.DebuggerDisplay("MaxValue = {MaxValueTrait}, Bitmask = {BitmaskTrait}, BitCount = {BitCountTrait}")]
+	public sealed partial class EnumBitEncoder<#= bittable_type.SizeOfInBits #><TEnum> : EnumBitEncoderBase, IEnumBitEncoder<<#= bittable_type.OperationWord #>>
+		where TEnum : struct
+	{
+		/// <remarks>Only made public for some Contracts in <see cref="Collections.EnumBitSet"/></remarks>
+		public static readonly bool kHasNone;
+		/// <summary>
+		/// The <see cref="kEnumMaxMemberName"/>\<see cref="kFlagsMaxMemberName"/> 
+		/// value or the member value whom this class assumed would be the max
+		/// </summary>
+		static readonly <#= bittable_type.Keyword #> kMaxValue;
+		/// <summary>Masking value that can be used to single out this enumeration's value(s)</summary>
+		public static readonly <#= bittable_type.Keyword #> kBitmask;
+		/// <summary>How many bits the enumeration consumes</summary>
+		public static readonly int kBitCount;
+
+		#region Static Initialize
+		static void ProcessMembers(Type t, out <#= bittable_type.Keyword #> maxValue, out bool hasNone)
+		{
+			maxValue = <#= bittable_type.Keyword #>.MaxValue;
+			hasNone = false;
+			var mvalues = Reflection.EnumUtil<TEnum>.Values;
+			var mnames = Reflection.EnumUtil<TEnum>.Names;
+
+			#region is_type_signed
+			Func<bool> func_is_type_signed = delegate()
+			{
+				switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
+				{
+					case TypeCode.SByte:
+					case TypeCode.Int16:
+					case TypeCode.Int32:
+<#		if (bittable_type.SizeOfInBits >= 64) { #>
+					case TypeCode.Int64:
+<#		} #>
+						return true;
+					default: return false;
+				}
+			};
+			bool is_type_signed = func_is_type_signed();
+			#endregion
+
+			<#= bittable_type.Keyword #> greatest = 0, temp;
+			for (int x = 0; x < mvalues.Length; x++)
+			{
+				bool mvalue_is_none = false;
+
+				// Validate members when the underlying type is signed
+				if (!Reflection.EnumUtil<TEnum>.IsFlags && is_type_signed)
+				{
+					<#= bittable_type.SignedKeyword #> int_value = Convert.ToInt<#= bittable_type.SizeOfInBits #>(mvalues.GetValue(x));
+
+					if (int_value < TypeExtensions.kNoneInt<#= bittable_type.SizeOfInBits #>)
+						throw new ArgumentOutOfRangeException("TEnum",
+							string.Format("{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+					else if (int_value.IsNone())
+						hasNone = mvalue_is_none = true;
+				}
+
+				ProcessMembers_DebugCheckMemberName(t, Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]);
+
+				if (mvalue_is_none) // don't perform greatest value checking on NONE values
+					continue;
+
+				temp = Convert.ToUInt<#= bittable_type.SizeOfInBits #>(mvalues.GetValue(x));
+				// Base max_value off the predetermined member name first
+				if (IsMaxMemberName(Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]))
+				{
+					maxValue = greatest = temp;
+					// we don't stop processing even after we hit the 'max' member
+					// just to be safe that we're sanity checking all members, and in the event
+					// the 'none' member is defined after the 'max' member
+					//break;
+				}
+				// Record the greatest value thus far in case the above doesn't exist
+				else
+				{
+					if (!Reflection.EnumUtil<TEnum>.IsFlags)
+						greatest = System.Math.Max(greatest, temp);
+					else
+						greatest |= temp; // just add all the flag values together
+				}
+			}
+
+			// If the Enum doesn't have a member named k*MaxMemberName, use the assumed max value
+			if (maxValue == <#= bittable_type.Keyword #>.MaxValue && greatest != <#= bittable_type.Keyword #>.MaxValue) // just in case k*MaxMemberName actually equaled uint.MaxValue
+			{
+				maxValue = greatest;
+
+				// NOTE: we add +1 because the [Bits.GetBitmaskEnum<#= bittable_type.SizeOfInBits #>] method assumes the parameter 
+				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we 
+				// fake it
+				if (!Reflection.EnumUtil<TEnum>.IsFlags)
+					maxValue += 1;
+			}
+		}
+
+		static EnumBitEncoder<#= bittable_type.SizeOfInBits #>()
+		{
+			Type t = typeof(TEnum);
+			InitializeBase(t);
+
+			ProcessMembers(t, out kMaxValue, out kHasNone);
+			if (Reflection.EnumUtil<TEnum>.IsFlags)
+				kBitmask = kMaxValue;
+			else
+				kBitmask = Bits.GetBitmaskEnum(kHasNone ? kMaxValue+1 : kMaxValue);
+			kBitCount = Bits.BitCount(kBitmask);
+		}
+		#endregion
+
+		#region IEnumBitEncoder<TUInt>
+		public bool IsFlags { get { return Reflection.EnumUtil<TEnum>.IsFlags; } }
+		public bool HasNone { get { return kHasNone; } }
+		public <#= bittable_type.Keyword #> MaxValueTrait { get { return kMaxValue; } }
+		/// <see cref="kBitmask"/>
+		public <#= bittable_type.Keyword #> BitmaskTrait { get { return kBitmask; } }
+		/// <see cref="kBitCount"/>
+		public override int BitCountTrait { get { return kBitCount; } }
+		#endregion
+
+		#region DefaultBitIndex
+		readonly int mDefaultBitIndex;
+		/// <summary>The bit index assumed when one isn't provided</summary>
+		public int DefaultBitIndex { get { return mDefaultBitIndex; } }
+		#endregion
+
+		public EnumBitEncoder<#= bittable_type.SizeOfInBits #>() : this(0) {}
+		public EnumBitEncoder<#= bittable_type.SizeOfInBits #>(int defaultBitIndex)
+		{
+			Contract.Requires(defaultBitIndex >= 0);
+
+			mDefaultBitIndex = defaultBitIndex;
+		}
+
+		#region Encode
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		/// <remarks>Uses <see cref="DefaultBitIndex"/> as the bit index to start encoding at</remarks>
+		[Contracts.Pure]
+		public <#= bittable_type.Keyword #> BitEncode(TEnum value, <#= bittable_type.Keyword #> bits)
+		{
+			return BitEncode(value, bits, mDefaultBitIndex);
+		}
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		[Contracts.Pure]
+		public <#= bittable_type.Keyword #> BitEncode(TEnum value, <#= bittable_type.Keyword #> bits, int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+
+			<#= bittable_type.Keyword #> v = Reflection.EnumValue<TEnum>.ToUInt<#= bittable_type.SizeOfInBits #>(value);
+			if (kHasNone)
+				v++;
+
+			Contract.Assert(v <= kMaxValue);
+			return Reflection.EnumUtil<TEnum>.IsFlags ?
+				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
+				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+		}
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
+		/// <remarks>
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and 
+		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
+		/// </remarks>
+		[Contracts.Pure]
+		public void BitEncode(TEnum value, ref <#= bittable_type.Keyword #> bits, ref int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+			Contract.Requires((bitIndex+kBitCount) < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+
+			<#= bittable_type.Keyword #> v = Reflection.EnumValue<TEnum>.ToUInt<#= bittable_type.SizeOfInBits #>(value);
+			if (kHasNone)
+				v++;
+
+			Contract.Assert(v <= kMaxValue);
+			bits = Reflection.EnumUtil<TEnum>.IsFlags ?
+				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
+				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+
+			bitIndex += kBitCount;
+		}
+		#endregion
+
+		#region Decode
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from<</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		/// <remarks>Uses <see cref="DefaultBitIndex"/> as the bit index to start decoding at</remarks>
+		[Contracts.Pure]
+		public TEnum BitDecode(<#= bittable_type.Keyword #> bits)
+		{
+			return BitDecode(bits, mDefaultBitIndex);
+		}
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start decoding at</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public TEnum BitDecode(<#= bittable_type.Keyword #> bits, int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+
+			<#= bittable_type.Keyword #> v = Bits.BitDecode(bits, bitIndex, kBitmask);
+			if (kHasNone)
+				v--;
+
+			Contract.Assert(v <= kMaxValue || (kHasNone && v == <#= bittable_type.Keyword #>.MaxValue));
+			return Reflection.EnumValue<TEnum>.FromUInt<#= bittable_type.SizeOfInBits #>(v);
+		}
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start decoding at</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		/// <remarks>
+		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
+		/// </remarks>
+		[Contracts.Pure]
+		public TEnum BitDecode(<#= bittable_type.Keyword #> bits, ref int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+			Contract.Requires((bitIndex+kBitCount) < Bits.kInt<#= bittable_type.SizeOfInBits #>BitCount);
+
+			<#= bittable_type.Keyword #> v = Bits.BitDecode(bits, bitIndex, kBitmask);
+			if (kHasNone)
+				v--;
+
+			bitIndex += kBitCount;
+
+			Contract.Assert(v <= kMaxValue || (kHasNone && v == <#= bittable_type.Keyword #>.MaxValue));
+			return Reflection.EnumValue<TEnum>.FromUInt<#= bittable_type.SizeOfInBits #>(v);
+		}
+		#endregion
+
+		#region Endian Streaming
+		/// <summary>Read a <typeparamref name="TEnum"/> value from a stream</summary>
+		/// <param name="s">Stream to read from</param>
+		/// <param name="value">Enum value read from the stream</param>
+		/// <remarks>
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// decide how big of a numeric type to read from the stream.
+		/// </remarks>
+		public static void Read(IO.EndianReader s, out TEnum value)
+		{
+			Contract.Requires(s != null);
+
+			<#= bittable_type.Keyword #> stream_value;
+			switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
+			{
+				case TypeCode.Byte:
+				case TypeCode.SByte: stream_value = s.ReadByte();
+					break;
+				case TypeCode.Int16:
+				case TypeCode.UInt16: stream_value = s.ReadUInt16();
+					break;
+				case TypeCode.Int32:
+				case TypeCode.UInt32: stream_value = s.ReadUInt32();
+					break;
+<#		if (bittable_type.SizeOfInBits >= 64) { #>
+				case TypeCode.Int64:
+				case TypeCode.UInt64: stream_value = s.ReadUInt64();
+					break;
+<#		} #>
+
+				default:
+					throw new Debug.UnreachableException();
+			}
+
+			value = Reflection.EnumValue<TEnum>.FromUInt64(stream_value);
+		}
+		/// <summary>Write a <typeparamref name="TEnum"/> value to a stream</summary>
+		/// <param name="s">Stream to write to</param>
+		/// <param name="value">Value to write to the stream</param>
+		/// <remarks>
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// decide how big of a numeric type to write to the stream.
+		/// </remarks>
+		public static void Write(IO.EndianWriter s, TEnum value)
+		{
+			Contract.Requires(s != null);
+
+			<#= bittable_type.Keyword #> stream_value = Reflection.EnumValue<TEnum>.ToUInt<#= bittable_type.SizeOfInBits #>(value);
+			switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
+			{
+				case TypeCode.Byte:
+				case TypeCode.SByte: s.Write((byte)stream_value);
+					break;
+				case TypeCode.Int16:
+				case TypeCode.UInt16: s.Write((ushort)stream_value);
+					break;
+				case TypeCode.Int32:
+				case TypeCode.UInt32: s.Write((uint)stream_value);
+					break;
+<#		if (bittable_type.SizeOfInBits >= 64) { #>
+				case TypeCode.Int64:
+				case TypeCode.UInt64: s.Write(stream_value);
+					break;
+<#		} #>
+
+				default:
+					throw new Debug.UnreachableException();
+			}
+		}
+		#endregion
+	};
+
+<# } #>
+}

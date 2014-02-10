@@ -1,0 +1,63 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.IO
+{
+	partial class EndianReader
+	{
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#	if(num_type.IsByte) continue;
+#>
+		/// <summary>Reads a <#= num_type.SimpleDesc #></summary>
+		/// <returns></returns>
+		/// <seealso cref="System.IO.BinaryReader.Read<#= num_type.Code #>()"/>
+		public override <#= num_type.Keyword #> Read<#= num_type.Code #>()
+		{
+			var value = base.Read<#= num_type.Code #>();
+			return !mRequiresByteSwap 
+				? value 
+				: Bitwise.ByteSwap.Swap<#= num_type.Code #>(value);
+		}
+
+<# } #>
+	};
+
+	partial class EndianWriter
+	{
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#	if(num_type.IsByte) continue;
+#>
+		/// <summary>Writes a <#= num_type.SimpleDesc #></summary>
+		/// <param name="value"></param>
+		/// <seealso cref="System.IO.BinaryWriter.Write(<#= num_type.Keyword #>)"/>
+		public override void Write(<#= num_type.Keyword #> value)
+		{
+			base.Write(!mRequiresByteSwap 
+				? value 
+				: Bitwise.ByteSwap.Swap<#= num_type.Code #>(value));
+		}
+
+<# } #>
+	};
+
+	partial class EndianStream
+	{
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#
+#>
+		public EndianStream Stream(ref <#= num_type.Keyword #> value)
+		{
+				 if (IsReading) value = Reader.Read<#= num_type.Code #>();
+			else if (IsWriting) Writer.Write(value);
+
+			return this;
+		}
+
+<# } #>
+	};
+}

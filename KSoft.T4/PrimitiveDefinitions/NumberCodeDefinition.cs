@@ -1,0 +1,139 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace KSoft.T4
+{
+	public class NumberCodeDefinition : PrimitiveCodeDefinition
+	{
+		public string OperationWord { get; private set; }
+
+		public NumberCodeDefinition(TypeCode typeCode)
+			: base(TypeCodeToKeyword(typeCode), typeCode)
+		{
+			OperationWord = TypeCodeToOperationWord(typeCode) ?? Keyword;
+
+			string desc_prefix = "";
+			string desc_id;
+			string desc_postfix;
+			if(IsInteger)
+			{
+				desc_prefix = IsSigned
+					?   "signed"
+					: "unsigned";
+
+				desc_id = SizeOfInBits + "-bit";
+
+				desc_postfix = "integer";
+			}
+			else
+			{
+				desc_id = Code.ToString().ToLower() + "-precision";
+
+				desc_postfix = "number";
+			}
+
+			SetupDescription(string.Format("{0} {1} {2}",
+				desc_prefix, desc_id, desc_postfix).Trim());
+		}
+
+		public override bool IsInteger { get {
+			return Code >= TypeCode.SByte && Code <= TypeCode.UInt64;
+		} }
+		public bool IsByte { get {
+			return Keyword.EndsWith("byte");
+		} }
+		public bool IsSigned { get {
+			return IsInteger && Keyword[0] == 'i' || Keyword[0] == 's';
+		} }
+		public bool IsUnsigned { get {
+			return IsInteger && !IsSigned;
+		} }
+
+		public override int SizeOfInBytes { get {
+			switch(Code)
+			{
+				case TypeCode.Byte:
+				case TypeCode.SByte:
+					return sizeof(byte);
+
+				case TypeCode.UInt16:
+				case TypeCode.Int16:
+					return sizeof(ushort);
+
+				case TypeCode.UInt32:
+				case TypeCode.Int32:
+				case TypeCode.Single:
+					return sizeof(uint);
+
+				case TypeCode.UInt64:
+				case TypeCode.Int64:
+				case TypeCode.Double:
+					return sizeof(ulong);
+
+				default:
+					throw new InvalidOperationException(Code.ToString());
+			}
+		} }
+
+		public TypeCode SignedCode { get {
+			switch(Code)
+			{
+				case TypeCode.Byte:
+					return TypeCode.SByte;
+
+				case TypeCode.UInt16:
+					return TypeCode.Int16;
+
+				case TypeCode.UInt32:
+					return TypeCode.Int32;
+
+				case TypeCode.UInt64:
+					return TypeCode.Int64;
+
+				default:
+					return Code;
+			}
+		} }
+		public string SignedKeyword { get {
+			return TypeCodeToKeyword(SignedCode);
+		} }
+
+		static string TypeCodeToOperationWord(TypeCode typeCode)
+		{
+			switch(typeCode)
+			{
+				case TypeCode.Byte:		return "uint";
+				case TypeCode.SByte:	return  "int";
+
+				case TypeCode.UInt16:	return "uint";
+				case TypeCode.Int16:	return  "int";
+
+				default:
+					return null;
+			}
+		}
+		internal static string TypeCodeToKeyword(TypeCode typeCode)
+		{
+			switch(typeCode)
+			{
+				case TypeCode.Byte:		return  "byte";
+				case TypeCode.SByte:	return "sbyte";
+
+				case TypeCode.UInt16:	return "ushort";
+				case TypeCode.Int16:	return  "short";
+
+				case TypeCode.UInt32:	return "uint";
+				case TypeCode.Int32:	return  "int";
+
+				case TypeCode.UInt64:	return "ulong";
+				case TypeCode.Int64:	return  "long";
+
+				case TypeCode.Single:	return "float";
+				case TypeCode.Double:	return "double";
+
+				default:
+					throw new ArgumentException(typeCode.ToString());
+			}
+		}
+	};
+}

@@ -1,0 +1,246 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Numbers
+	{
+<# foreach(var num_type in NumbersT4.ParseableIntegersWordAligned) { #>
+<#	var prim_keyword = num_type.Keyword;
+	bool is_signed = num_type.IsSigned;
+#>
+		#region <#= num_type.Code #>
+		static bool TryParseImpl(string s, ref <#= prim_keyword #> result, int radix, int startIndex, int length, string digits)
+		{
+			int pos = startIndex;
+			bool success = true;
+
+<#		if (NumbersT4.ParseShouldAllowLeadingWhite) { #>
+			// Skip any starting whitespace, avoids s.Trim() allocations
+			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
+<#		} #>
+
+<#		if (NumbersT4.ParseShouldUseUppercaseCheck) { #>
+			bool use_upper_case_variant = object.ReferenceEquals(digits, kBase64Digits) && radix <= kBase36;
+<#		} #>
+
+<#		if (is_signed) { #>
+			bool negate = false;
+			// Sign support only exist for decimal and lower bases
+			if (radix <= kBase10 && pos < length)
+			{
+				char sign = s[pos];
+
+				negate = sign == '-';
+				// Skip the sign character
+				if (negate || sign == '+') ++pos;
+			}
+<#		} #>
+
+			for(var radix_in_word = (<#= prim_keyword #>)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
+			{
+				char digit = s[pos];
+
+<#		if (NumbersT4.ParseShouldUseUppercaseCheck) { #>
+				if(use_upper_case_variant) digit = char.ToUpper(digit);
+<#		} #>
+
+				int x = digits.IndexOf(digit);
+				if (x >= 0 && x < radix)
+				{
+					result *= radix_in_word;
+					result += (<#= prim_keyword #>)x;
+				}
+				else // Character wasn't found in the look-up table, it is invalid
+					success = false;
+			}
+
+<#		if (is_signed) { #>
+			// Negate the result if anything was processed 
+			if (negate)
+				result = -result;
+<#		} #>
+
+			return success;
+		}
+		public static bool TryParse(string s, out <#= prim_keyword #> result, int radix = kBase10, int startIndex = 0, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(radix >= 2 && radix <= digits.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			result = 0;
+
+			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+		}
+		public static bool TryParse(string s, out <#= prim_keyword #> result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			result = 0;
+
+			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+		}
+		public static bool TryParseRange(string s, out <#= prim_keyword #> result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			result = 0;
+
+			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+		}
+		#endregion
+<# } #>
+
+<# foreach(var num_type in NumbersT4.ParseableIntegersSmall) { #>
+<#	var prim_keyword = num_type.Keyword;
+#>
+		#region <#= num_type.Code #>
+		static bool TryParseImpl(string s, ref <#= prim_keyword #> result, int radix, int startIndex, int length, string digits)
+		{
+			<#= num_type.OperationWord #> word = 0;
+			bool success = false;
+			if (TryParseImpl(s, ref word, radix, startIndex, length, digits) &&
+					word >= <#= prim_keyword #>.MinValue && word <= <#= prim_keyword #>.MaxValue)
+			{
+				result = (<#= prim_keyword #>)word;
+				success = true;
+			}
+
+			return success;
+		}
+		public static bool TryParse(string s, out <#= prim_keyword #> result, int radix = kBase10, int startIndex = 0, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(radix >= 2 && radix <= digits.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			result = 0;
+
+			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+		}
+		public static bool TryParse(string s, out <#= prim_keyword #> result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			result = 0;
+
+			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+		}
+		public static bool TryParseRange(string s, out <#= prim_keyword #> result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(digits));
+			Contract.Requires(IsValidLookupTable(radix, digits));
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			result = 0;
+
+			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+		}
+		#endregion
+<# } #>
+
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#	if (!num_type.IsInteger) continue;
+	var prim_keyword = num_type.Keyword;
+#>
+		#region ParseString <#= num_type.Code #>
+		static bool ParseStringImpl(string s, ref <#= prim_keyword #> value, bool noThrow, int radix, int startIndex)
+		{
+			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+
+			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+				result = ParseErrorType.InvalidStartIndex;
+
+			if (result == ParseErrorType.None)
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+
+			if (noThrow)
+				return result == ParseErrorType.None;
+
+			return HandleParseError(result, s, startIndex);
+		}
+		public static bool ParseString(string s, ref <#= prim_keyword #> result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		{
+			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
+
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+		}
+		#endregion
+<# } #>
+
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#	if (!num_type.IsInteger) continue;
+	var prim_keyword = num_type.Keyword;
+#>
+		#region TryParse list <#= num_type.Code #>
+		static readonly Lazy<<#= prim_keyword #>?[]> kTryParseList<#= num_type.Code #>EmptyResult = 
+			new Lazy<<#= prim_keyword #>?[]>(() => new <#= prim_keyword #>?[0]);
+
+		static <#= prim_keyword #>? TryParseListTask<#= num_type.Code #>(object state)
+		{
+			var args = (Tuple<StringListDesc, string, int, int>)state;
+			var desc = args.Item1;
+			<#= prim_keyword #> result = 0;
+			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
+			return success ? result : (<#= prim_keyword #>?)null;
+		}
+		public static IEnumerable<<#= prim_keyword #>?> TryParse<#= num_type.Code #>(StringListDesc desc, string values)
+		{
+			if(values == null)
+				return kTryParseList<#= num_type.Code #>EmptyResult.Value;
+
+			var tasks_list = new List<Task<<#= prim_keyword #>?>>();
+
+			char c;
+			bool found_terminator = false;
+			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			{
+				// Skip any starting whitespace
+				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+
+				while (x+length < values.Length)
+				{
+					c = values[x+length];
+					found_terminator = c == desc.Terminator;
+					if (c == desc.Separator || found_terminator)
+						break;
+
+					++length;
+				}
+
+				if (length > 0)
+					tasks_list.Add(Task<<#= prim_keyword #>?>.Factory.StartNew(TryParseListTask<#= num_type.Code #>,
+						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						);
+			}
+
+<# // TODO: should we add support for throwing an exception or such when a terminator isn't encountered? #>
+
+			if(tasks_list.Count == 0)
+				return kTryParseList<#= num_type.Code #>EmptyResult.Value;
+
+			var tasks = tasks_list.ToArray();
+			tasks_list = null;
+			Task.WaitAll(tasks);
+
+			var results =	from task in tasks
+							select task.Result;
+
+			return results;
+		}
+		#endregion
+<# } #>
+	};
+}

@@ -1,0 +1,45 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
+
+namespace KSoft.IO
+{
+	partial class BitStream
+	{
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+#>
+		/// <summary>Read an <see cref="System.<#= prim_typename #>"/> to the stream</summary>
+		/// <param name="value">value to write to the stream</param>
+		/// <param name="bitCount">Number of bits to write</param>
+		public void Write(<#= prim_keyword #> value, int bitCount = Bits.k<#= prim_typename #>BitCount)
+		{
+			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
+
+<#		if (BitwiseT4.BitStreamCacheWord.SizeOfInBits == 32 && bittable_type.SizeOfInBits == 64) {
+#>
+			uint msb_word = (uint)(value >> Bits.kInt32BitCount);
+			uint lsb_word = (uint)value;
+			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
+			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
+
+			if(msb_bit_count > 0)
+				WriteWord(msb_word, msb_bit_count);
+			WriteWord(lsb_word, lsb_bit_count);
+<#		} else {
+#>
+			TWord word = (TWord)value;
+			WriteWord(word, bitCount);
+<#		} #>
+		}
+<# } #>
+	};
+}

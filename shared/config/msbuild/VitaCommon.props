@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--<Import Project="$(SolutionDir)LocalSolution.props" />-->
+
+  <PropertyGroup>
+<!--    <VitaRootDir Condition=" '$(VitaRootDir)' == '' ">$(SolutionDir)..\</VitaRootDir> -->
+
+	<!-- Ensure user defined paths have a trailing slash, so they can be concatenated -->
+	<VitaRootDir Condition=" !HasTrailingSlash('$(VitaRootDir)') ">$(VitaRootDir)\</VitaRootDir>
+
+	<VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">Unknown</VitaSolutionFamily>
+  </PropertyGroup>
+
+  <Import           Project="$(VitaRootDir)user\config\msbuild\VitaUserConfig.props" 
+          Condition="Exists('$(VitaRootDir)user\config\msbuild\VitaUserConfig.props')" />
+  <Import           Project="VitaCommonConfig.props" />
+  <Import           Project="VitaUserConfigDefaults.props" />
+
+  <!-- Define the current Vita project's source language -->
+  <Choose>
+    <When Condition=" '$(Language)' == 'C++' ">
+	  <PropertyGroup>
+	    <VitaSourceLanguage>VC++</VitaSourceLanguage>
+	  </PropertyGroup>
+    </When>
+	<Otherwise>
+	  <PropertyGroup>
+	    <VitaSourceLanguage Condition=" '$(VitaSourceLanguage)' == '' ">.NET</VitaSourceLanguage>
+	  </PropertyGroup>
+	</Otherwise>
+  </Choose>
+
+  <!-- Define the current Vita project's kind (DLL, EXE, LIB, etc) -->
+  <Choose>
+    <When Condition=" '$(ConfigurationType)' == 'DynamicLibrary' "> <!-- '$(OutputType)' == 'Library' -->
+	  <PropertyGroup>
+	    <VitaCurrentProjectKind>DynamicLibrary</VitaCurrentProjectKind>
+	  </PropertyGroup>
+    </When>
+	<When Condition=" '$(ConfigurationType)' == 'Application' "> <!-- '$(OutputType.Contains(Exe))' -->
+	  <PropertyGroup>
+	    <VitaCurrentProjectKind>Application</VitaCurrentProjectKind>
+	  </PropertyGroup>
+    </When>
+	<When Condition=" '$(ConfigurationType)' == 'StaticLibrary' ">
+	  <PropertyGroup>
+	    <VitaCurrentProjectKind>StaticLibrary</VitaCurrentProjectKind>
+	  </PropertyGroup>
+    </When>
+	<Otherwise>
+	  <PropertyGroup>
+		<VitaCurrentProjectKind Condition=" '$(VitaCurrentProjectKind)' == '' ">Application</VitaCurrentProjectKind>
+	  </PropertyGroup>
+	</Otherwise>
+  </Choose>
+
+  <PropertyGroup>
+    <!-- Should the project use the per-solution directories instead of per-project for output files? -->
+	<VitaUseSolutionFamilyDirs Condition=" '$(VitaUseSolutionFamilyDirs)' == '' ">false</VitaUseSolutionFamilyDirs>
+
+	<!-- Per-project .obj (and the like) output directory -->
+	<VitaObjDir >$(VitaRootDir)_obj\</VitaObjDir>
+	<VitaObjPath>$(VitaObjDir)$(ProjectName)\$(Configuration)\$(Platform)\</VitaObjPath>
+
+	<!-- Per-project binary output directory -->
+	<VitaBinDir
+	  >$(VitaRootDir)_bin\</VitaBinDir>
+	<!-- root directory of per-project and solution folders for the current configuration -->
+	<VitaBinRootPath
+	  >$(VitaBinDir)$(Configuration)\$(Platform)\</VitaBinRootPath>
+	<VitaBinPath
+	  >$(VitaBinRootPath)$(ProjectName)\</VitaBinPath>
+	<!-- We use the assembly name instead of the project for .NET modules -->
+	<VitaBinPath Condition=" '$(VitaSourceLanguage)' == '.NET' "
+	  >$(VitaBinRootPath)$(AssemblyName)\</VitaBinPath>
+	<!-- Per-solution binary output directory -->
+	<VitaSolutionFamilyBinPath
+	  >$(VitaBinRootPath)$(VitaSolutionFamily)\</VitaSolutionFamilyBinPath>
+
+	<!-- Per-project library output directory -->
+	<VitaLibDir 
+	  >$(VitaRootDir)_lib\</VitaLibDir>
+	<VitaLibPath 
+	  >$(VitaLibDir)$(Configuration)\$(Platform)\$(ProjectName)\</VitaLibPath>
+  </PropertyGroup>
+
+  <Import Condition=" '$(VitaSourceLanguage)' == 'VC++' "
+                    Project="VitaCommon.Cpp.props" />
+  <Import Condition=" '$(VitaSourceLanguage)' == '.NET' "
+                    Project="VitaCommon.Cs.props" />
+</Project>

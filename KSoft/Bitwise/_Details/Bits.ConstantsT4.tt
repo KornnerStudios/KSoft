@@ -1,0 +1,75 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+		#region kBitCount
+<# foreach (var prim_type in PrimitiveDefinitions.Primitives) { #>
+<#	if(prim_type.Code == TypeCode.Boolean) continue; // bool is special case, we treat it as a single bit
+#>
+		/// <summary>Number of bits in a <see cref="System.<#= prim_type.Code #>"/></summary>
+		public const int k<#= prim_type.Code #>BitCount = sizeof(<#= prim_type.Keyword #>) * 8;
+
+<# } #>
+		#endregion
+
+		#region kBitShift
+<# foreach (var num_type in PrimitiveDefinitions.Numbers) { #>
+		/// <summary>Bit shift value for getting the bit count of a an <see cref="System.<#= num_type.Code #>"/> element</summary>
+		public const int k<#= num_type.Code #>BitShift =	<#= (int)Math.Log(num_type.SizeOfInBits, 2) #>;
+
+<# } #>
+		#endregion
+
+		#region kBitMod
+<# foreach (var num_type in PrimitiveDefinitions.Numbers) { #>
+<#	if(!num_type.IsInteger) continue;
+#>
+		/// <summary>Bitwise AND value for emulating modulus operations on <see cref="System.<#= num_type.Code #>"/> elements</summary>
+		public const int k<#= num_type.Code #>BitMod = <#= num_type.SizeOfInBits-1 #>;
+
+<# } #>
+		#endregion
+
+		#region kBitmaskLookup
+<# foreach (var num_type in BitwiseT4.BittableTypes_Unsigned) { #>
+		/// <summary>Bit count to bit-mask look up table for <#= num_type.SizeOfInBits #>-bit words</summary>
+		public static readonly <#= num_type.Keyword #>[] kBitmaskLookup<#= num_type.SizeOfInBits #>;
+
+<# } #>
+		#endregion
+
+		public static bool GetBitConstants(Type integerType, 
+			out int byteCount, out int bitCount, out int bitShift, out int bitMod)
+		{
+			Contract.Requires/*<ArgumentNullException>*/(integerType != null);
+
+			byteCount = bitCount = bitShift = bitMod = TypeExtensions.kNoneInt32;
+
+			switch(Type.GetTypeCode(integerType))
+			{
+<# foreach (var num_type in BitwiseT4.BittableTypes_Unsigned) { #>
+				case TypeCode.<#= num_type.Code #>:
+				case TypeCode.<#= num_type.SignedCode #>:
+					byteCount = sizeof(<#= num_type.Keyword #>);
+					bitCount = k<#= num_type.Code #>BitCount;
+					bitShift = k<#= num_type.Code #>BitShift;
+					bitMod = k<#= num_type.Code #>BitMod;
+					break;
+
+<# } #>
+				default: return false;
+			}
+
+			return true;
+		}
+	};
+}

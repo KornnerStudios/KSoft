@@ -1,0 +1,77 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
+
+namespace KSoft.IO
+{
+	partial class BitStream
+	{
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+#>
+		/// <summary>Read an <see cref="System.<#= prim_typename #>"/> from the stream</summary>
+		/// <param name="bitCount">Number of bits to read</param>
+<#		if (is_signed) { #>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+<#		} #>
+		/// <returns></returns>
+		public <#= prim_keyword #> Read<#= prim_typename #>(int bitCount = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
+		{
+			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
+
+<#		if (BitwiseT4.BitStreamCacheWord.SizeOfInBits == 32 && bittable_type.SizeOfInBits == 64) {
+#>
+			uint msb_word = 0, lsb_word;
+			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
+			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
+
+			if(msb_bit_count > 0)
+				ReadWord(out msb_word, msb_bit_count);
+			ReadWord(out lsb_word, lsb_bit_count);
+
+			ulong word = (ulong)msb_word << lsb_bit_count;
+			word |= (ulong)lsb_word;
+<#		} else {
+#>
+			TWord word;
+			ReadWord(out word, bitCount);
+<#		} #>
+<#		if (is_signed) {
+#>
+			if(signExtend && bitCount != Bits.k<#= prim_typename #>BitCount)
+				return (<#= prim_keyword #>)Bits.SignExtend( (<#= prim_keyword #>)word, bitCount );
+<#		} #>
+
+			return (<#= prim_keyword #>)word;
+		}
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var prim_typename = bittable_type.Code;
+#>
+		/// <summary>Read an <see cref="System.<#= prim_typename #>"/> from the stream</summary>
+		/// <param name="value">value read from the stream</param>
+		/// <param name="bitCount">Number of bits to read</param>
+		public void Read(out <#= prim_keyword #> value, int bitCount = Bits.k<#= prim_typename #>BitCount)
+		{
+			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
+
+			value = Read<#= prim_typename #>(bitCount);
+		}
+<# } #>
+	};
+}

@@ -1,0 +1,85 @@
+﻿using System;
+using System.Reflection;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class EnumBitEncoder32<TEnum>
+	{
+		// Only added this really to ease the coding of HandleBitEncoder
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
+		/// <remarks>
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and 
+		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
+		/// </remarks>
+		[Contracts.Pure]
+		public void BitEncode(TEnum value, ref ulong bits, ref int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt64BitCount);
+			Contract.Requires((bitIndex+kBitCount) < Bits.kInt64BitCount);
+
+			ulong v = Reflection.EnumValue<TEnum>.ToUInt32(value);
+			if (kHasNone)
+				v++;
+
+			Contract.Assert(v <= kMaxValue);
+			bits = Reflection.EnumUtil<TEnum>.IsFlags ?
+				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
+				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+
+			bitIndex += kBitCount;
+		}
+
+		// Only added this really to ease the coding of HandleBitEncoder
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="bitIndex">Index in <paramref name="bits"/> to start decoding at</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		/// <remarks>
+		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
+		/// </remarks>
+		[Contracts.Pure]
+		public TEnum BitDecode(ulong bits, ref int bitIndex)
+		{
+			Contract.Requires(bitIndex >= 0);
+			Contract.Requires(bitIndex < Bits.kInt64BitCount);
+			Contract.Requires((bitIndex+kBitCount) < Bits.kInt64BitCount);
+
+			ulong v = Bits.BitDecode(bits, bitIndex, kBitmask);
+			if (kHasNone)
+				v--;
+
+			bitIndex += kBitCount;
+
+			Contract.Assert(v <= kMaxValue || (kHasNone && v == ulong.MaxValue));
+			return Reflection.EnumValue<TEnum>.FromUInt64(v);
+		}
+	};
+
+	public sealed class EnumBitEncoder<TEnum>
+		where TEnum : struct
+	{
+		static readonly EnumBitEncoder32<TEnum> x32;
+		static readonly EnumBitEncoder64<TEnum> x64;
+
+		public bool IsFlags { get { return x64.IsFlags; } }
+		public bool HasNone { get { return x64.HasNone; } }
+		/// <see cref="kBitmask"/>
+		public ulong MaxValueTrait { get { return x64.MaxValueTrait; } }
+		/// <see cref="kBitmask"/>
+		public ulong BitmaskTrait { get { return x64.BitmaskTrait; } }
+		/// <see cref="kBitCount"/>
+		public int BitCountTrait { get { return x64.BitCountTrait; } }
+
+		static EnumBitEncoder()
+		{
+			x32 = new EnumBitEncoder32<TEnum>();
+			x64 = new EnumBitEncoder64<TEnum>();
+		}
+	};
+}

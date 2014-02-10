@@ -1,0 +1,128 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.Bitwise
+{
+	partial class ByteSwap
+	{
+<# foreach (var bittable_type in BitwiseT4.ByteSwapableIntegers) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+	var byte_access_gen = new BitwiseT4.IntegerByteAccessCodeGenerator(
+		bittable_type, "b", "buffer", "offset");
+#>
+		#region <#= bittable_type.Code #>
+		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> and returns the result</summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> SwapU<#= const_keyword #>(
+			<#= prim_keyword #> value)
+		{
+			return
+				<#= BitwiseT4.GenerateByteSwap(bittable_type.Code, "value") #>;
+		}
+		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> by reference</summary>
+		/// <param name="value"></param>
+		[Contracts.Pure]
+		public static void Swap(
+			ref <#= prim_keyword #> value)
+		{
+			<#= BitwiseT4.GenerateByteSwap(bittable_type.Code, "value", "value") #>;
+		}
+		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> at a position in a bye array</summary>
+		/// <param name="buffer">source array</param>
+		/// <param name="offset">offset at which to perform the byte swap</param>
+		[Contracts.Pure]
+		public static void SwapU<#= const_keyword #>(byte[] buffer, int offset)
+		{
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Requires<ArgumentOutOfRangeException>(
+				offset >= 0 && offset < buffer.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(
+				offset+sizeof(<#= prim_keyword #>) <= buffer.Length);
+
+			<#= byte_access_gen.GenerateByteDeclarations() #>
+			<#= byte_access_gen.GenerateBytesFromBuffer() #>
+
+			<#= byte_access_gen.GenerateWriteBytesToBuffer() #>
+		}
+		/// <summary>Replaces <#= bittable_type.SizeOfInBytes #> bytes in an array with a integer value</summary>
+		/// <param name="buffer">byte buffer</param>
+		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
+		/// <param name="value">value to replace the buffer's current bytes with</param>
+		/// <remarks>
+		/// <paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment.
+		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
+		/// when written to the buffer
+		/// </remarks>
+		[Contracts.Pure]
+		public static void ReplaceBytes(byte[] buffer, int offset,
+			<#= prim_keyword #> value)
+		{
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Requires<ArgumentOutOfRangeException>(
+				offset >= 0 && offset < buffer.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(
+				offset+sizeof(<#= prim_keyword #>) <= buffer.Length);
+
+			<#= byte_access_gen.GenerateByteDeclarations() #>
+			if(BitConverter.IsLittleEndian) {
+				<#= byte_access_gen.GenerateBytesFromValue("value") #>
+			} else {
+				<#= byte_access_gen.GenerateBytesFromValue("value", littleEndian: false) #>
+			}
+
+			<#= byte_access_gen.GenerateWriteBytesToBuffer(useSwapFormat: false) #>
+		}
+		#endregion
+
+		#region <#= bittable_type.SignedCode #>
+		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> and returns the result</summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static <#= bittable_type.SignedKeyword #> Swap<#= const_keyword #>(
+			<#= bittable_type.SignedKeyword #> value)
+		{
+			return (<#= bittable_type.SignedKeyword #>)
+				<#= BitwiseT4.GenerateByteSwap(bittable_type.SignedCode, "value") #>;
+		}
+		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
+		/// <param name="value"></param>
+		[Contracts.Pure]
+		public static void Swap(
+			ref <#= bittable_type.SignedKeyword #> value)
+		{
+			<#= BitwiseT4.GenerateByteSwap(bittable_type.SignedCode, "value", "value") #>;
+		}
+		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> at a position in a bye array</summary>
+		/// <param name="buffer">source array</param>
+		/// <param name="offset">offset at which to perform the byte swap</param>
+		[Contracts.Pure]
+		public static void Swap<#= const_keyword #>(byte[] buffer, int offset)
+		{
+			SwapU<#= const_keyword #>(buffer, offset);
+		}
+		/// <summary>Replaces <#= bittable_type.SizeOfInBytes #> bytes in an array with a integer value</summary>
+		/// <param name="buffer">byte buffer</param>
+		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
+		/// <param name="value">value to replace the buffer's current bytes with</param>
+		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
+		[Contracts.Pure]
+		public static void ReplaceBytes(byte[] buffer, int offset,
+			<#= bittable_type.SignedKeyword #> value)
+		{
+			ReplaceBytes(buffer, offset, (<#= prim_keyword #>)value);
+		}
+		#endregion
+
+<# } #>
+	};
+}
