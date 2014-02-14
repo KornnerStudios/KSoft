@@ -133,24 +133,6 @@ namespace KSoft.Text
 		#endregion
 
 		#region ByteStringToArray (string to byte[])
-		// TODO: Replace calls to this with calls to CharsToByte
-		static int HexCharToByte(char hex)
-		{
-			if (char.IsDigit(hex))
-				return hex - '0';
-			int hex_digit = hex - (char.IsLower(hex) ? 'a' : 'A');
-
-			return (10 + hex_digit);
-		}
-		// TODO: Replace calls to this with calls to CharsToByte
-		static byte ByteStringToByte(char[] data, int start_index)
-		{
-			int result;
-			result =  HexCharToByte(data[start_index+0]) << 4;
-			result |= HexCharToByte(data[start_index+1]);
-
-			return (byte)result;
-		}
 		/// <summary>Converts a string containing hex values into a byte array</summary>
 		/// <param name="data">String of hex digits to convert</param>
 		/// <param name="startIndex">Character index in <paramref name="data"/> to start the conversion at</param>
@@ -171,7 +153,7 @@ namespace KSoft.Text
 			byte[] ret = new byte[count / 2];
 			char[] chars = data.ToCharArray();
 			for (int x = startIndex, index = 0; x < (startIndex+count); x+=2, index++)
-				ret[index] = ByteStringToByte(chars, x);
+				ret[index] = (byte)CharsToByte(NumeralBase.Hex, chars, x);
 			return ret;
 		}
 		/// <summary>Converts a string containing hex values into a byte array</summary>

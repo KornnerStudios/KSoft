@@ -50,7 +50,7 @@ namespace KSoft.IO
 				: Bitwise.ByteSwap.SwapInt32(value);
 		}
 
-		/// <summary>Reads a uint64-precision number</summary>
+		/// <summary>Reads a unsigned 64-bit integer</summary>
 		/// <returns></returns>
 		/// <seealso cref="System.IO.BinaryReader.ReadUInt64()"/>
 		public override ulong ReadUInt64()
@@ -61,7 +61,7 @@ namespace KSoft.IO
 				: Bitwise.ByteSwap.SwapUInt64(value);
 		}
 
-		/// <summary>Reads a unsigned 64-bit integer</summary>
+		/// <summary>Reads a signed 64-bit integer</summary>
 		/// <returns></returns>
 		/// <seealso cref="System.IO.BinaryReader.ReadInt64()"/>
 		public override long ReadInt64()
@@ -138,7 +138,7 @@ namespace KSoft.IO
 				: Bitwise.ByteSwap.SwapInt32(value));
 		}
 
-		/// <summary>Writes a uint64-precision number</summary>
+		/// <summary>Writes a unsigned 64-bit integer</summary>
 		/// <param name="value"></param>
 		/// <seealso cref="System.IO.BinaryWriter.Write(ulong)"/>
 		public override void Write(ulong value)
@@ -148,7 +148,7 @@ namespace KSoft.IO
 				: Bitwise.ByteSwap.SwapUInt64(value));
 		}
 
-		/// <summary>Writes a unsigned 64-bit integer</summary>
+		/// <summary>Writes a signed 64-bit integer</summary>
 		/// <param name="value"></param>
 		/// <seealso cref="System.IO.BinaryWriter.Write(long)"/>
 		public override void Write(long value)

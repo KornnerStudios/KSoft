@@ -107,6 +107,11 @@
     </Compile>
     <Compile Include="Enum\_Details\EnumFlags.V1.cs" />
     <Compile Include="Enum\_Details\EnumFlags.V2.cs" />
+    <Compile Include="Enum\_Details\EnumValueT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EnumValueT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="IO\BitStream\BitStream.cs" />
     <Compile Include="IO\BitStream\BitStream.Serialize.cs" />
     <Compile Include="IO\BitStream\IBitStreamSerializable.cs" />
@@ -271,6 +276,10 @@
     <None Include="Enum\_Details\EnumBitEncoderT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EnumBitEncoderT4.cs</LastGenOutput>
+    </None>
+    <None Include="Enum\_Details\EnumValueT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EnumValueT4.cs</LastGenOutput>
     </None>
     <None Include="IO\_Details\BitStream.CacheT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

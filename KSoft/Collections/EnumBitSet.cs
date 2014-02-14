@@ -8,10 +8,10 @@ namespace KSoft.Collections
 	public class EnumBitSet<TEnum> : //ICloneable,
 		ICollection<TEnum>, System.Collections.ICollection,
 		IComparable<EnumBitSet<TEnum>>, IEquatable<EnumBitSet<TEnum>>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
-		static readonly Func<int, TEnum> FromInt32 = Reflection.EnumUtil<TEnum>.GenerateFromMethod<int>();
-		static readonly Func<TEnum, int> ToInt32 = Reflection.EnumUtil<TEnum>.GenerateToMethod<int>();
+		static readonly Func<int, TEnum> FromInt32 = Reflection.EnumValue<TEnum>.FromInt32;
+		static readonly Func<TEnum, int> ToInt32 = Reflection.EnumValue<TEnum>.ToInt32;
 
 		static readonly int kBitSetLength = EnumBitEncoder32<TEnum>.kBitCount;
 

@@ -42,7 +42,7 @@ namespace KSoft.Bitwise
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="encoder">Encoder for <typeparamref name="TEnum"/> objects</param>
 		public void Encode32<TEnum>(TEnum value, EnumBitEncoder32<TEnum> encoder)
-			where TEnum : struct
+			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires<System.ArgumentNullException>(encoder != null);
 
@@ -53,7 +53,7 @@ namespace KSoft.Bitwise
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="encoder">Encoder for <typeparamref name="TEnum"/> objects</param>
 		public void Encode64<TEnum>(TEnum value, EnumBitEncoder64<TEnum> encoder)
-			where TEnum : struct
+			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires<System.ArgumentNullException>(encoder != null);
 
@@ -110,7 +110,7 @@ namespace KSoft.Bitwise
 		/// <param name="value">Enumeration value decoded from this handle</param>
 		/// <param name="decoder">Encoder for <typeparamref name="TEnum"/> objects</param>
 		public void Decode32<TEnum>(out TEnum value, EnumBitEncoder32<TEnum> decoder)
-			where TEnum : struct
+			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires<System.ArgumentNullException>(decoder != null);
 
@@ -121,7 +121,7 @@ namespace KSoft.Bitwise
 		/// <param name="value">Enumeration value decoded from this handle</param>
 		/// <param name="decoder">Encoder for <typeparamref name="TEnum"/> objects</param>
 		public void Decode64<TEnum>(out TEnum value, EnumBitEncoder64<TEnum> decoder)
-			where TEnum : struct
+			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires<System.ArgumentNullException>(decoder != null);
 

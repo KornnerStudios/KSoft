@@ -10,7 +10,7 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	[Contracts.ContractClass(typeof(IEnumBitStreamerContract<>))]
 	public interface IEnumBitStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		/// <summary>Stream a <typeparamref name="TEnum"/> value from a <see cref="IO.BitStream"/></summary>
 		/// <param name="s">Source stream</param>
@@ -38,7 +38,7 @@ namespace KSoft.IO
 
 	[Contracts.ContractClassFor(typeof(IEnumBitStreamer<>))]
 	abstract class IEnumBitStreamerContract<TEnum> : IEnumBitStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		public TEnum Read(IO.BitStream s, int bitCount)
 		{

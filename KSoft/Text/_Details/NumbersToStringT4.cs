@@ -234,6 +234,14 @@ namespace KSoft
 		#region Int64
 		static void ToStringBuilder(StringBuilder sb, long value, int radix, int startIndex, string digits)
 		{
+			// Sign support only exist for decimal and lower bases
+			if(radix <= kBase10 && value < 0)
+			{
+				sb.Append('-');
+				++startIndex;
+				value = -value; // change the value to positive
+			}
+
 			var radix_in_word = (long)radix;
 			do {
 				int digit_index = (int)(value % radix_in_word);
@@ -247,12 +255,23 @@ namespace KSoft
 		{
 			int start_index = sb.Count;
 
+			bool signed = false;
+			// Sign support only exist for decimal and lower bases
+			if(radix <= kBase10 && value < 0)
+			{
+				signed = true;
+				value = -value; // change the value to positive
+			}
+
 			var radix_in_word = (long)radix;
 			do {
 				int digit_index = (int)(value % radix_in_word);
 				sb.Add(digits[digit_index]);
 				value /= radix_in_word;
 			} while (value > 0);
+
+			if(signed)
+				sb.Add('-');
 
 			sb.Reverse(start_index, sb.Count-start_index);
 		}

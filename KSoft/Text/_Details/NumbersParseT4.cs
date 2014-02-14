@@ -206,6 +206,16 @@ namespace KSoft
 			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
 
 
+			bool negate = false;
+			// Sign support only exist for decimal and lower bases
+			if (radix <= kBase10 && pos < length)
+			{
+				char sign = s[pos];
+
+				negate = sign == '-';
+				// Skip the sign character
+				if (negate || sign == '+') ++pos;
+			}
 
 			for(var radix_in_word = (long)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
@@ -222,6 +232,9 @@ namespace KSoft
 					success = false;
 			}
 
+			// Negate the result if anything was processed 
+			if (negate)
+				result = -result;
 
 			return success;
 		}
@@ -451,6 +464,29 @@ namespace KSoft
 			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
 		}
 		#endregion
+		#region ParseString SByte
+		static bool ParseStringImpl(string s, ref sbyte value, bool noThrow, int radix, int startIndex)
+		{
+			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+
+			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+				result = ParseErrorType.InvalidStartIndex;
+
+			if (result == ParseErrorType.None)
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+
+			if (noThrow)
+				return result == ParseErrorType.None;
+
+			return HandleParseError(result, s, startIndex);
+		}
+		public static bool ParseString(string s, ref sbyte result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		{
+			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
+
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+		}
+		#endregion
 		#region ParseString UInt16
 		static bool ParseStringImpl(string s, ref ushort value, bool noThrow, int radix, int startIndex)
 		{
@@ -543,6 +579,29 @@ namespace KSoft
 			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
 		}
 		#endregion
+		#region ParseString UInt64
+		static bool ParseStringImpl(string s, ref ulong value, bool noThrow, int radix, int startIndex)
+		{
+			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+
+			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+				result = ParseErrorType.InvalidStartIndex;
+
+			if (result == ParseErrorType.None)
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+
+			if (noThrow)
+				return result == ParseErrorType.None;
+
+			return HandleParseError(result, s, startIndex);
+		}
+		public static bool ParseString(string s, ref ulong result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		{
+			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
+
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+		}
+		#endregion
 		#region ParseString Int64
 		static bool ParseStringImpl(string s, ref long value, bool noThrow, int radix, int startIndex)
 		{
@@ -612,6 +671,62 @@ namespace KSoft
 
 			if(tasks_list.Count == 0)
 				return kTryParseListByteEmptyResult.Value;
+
+			var tasks = tasks_list.ToArray();
+			tasks_list = null;
+			Task.WaitAll(tasks);
+
+			var results =	from task in tasks
+							select task.Result;
+
+			return results;
+		}
+		#endregion
+		#region TryParse list SByte
+		static readonly Lazy<sbyte?[]> kTryParseListSByteEmptyResult = 
+			new Lazy<sbyte?[]>(() => new sbyte?[0]);
+
+		static sbyte? TryParseListTaskSByte(object state)
+		{
+			var args = (Tuple<StringListDesc, string, int, int>)state;
+			var desc = args.Item1;
+			sbyte result = 0;
+			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
+			return success ? result : (sbyte?)null;
+		}
+		public static IEnumerable<sbyte?> TryParseSByte(StringListDesc desc, string values)
+		{
+			if(values == null)
+				return kTryParseListSByteEmptyResult.Value;
+
+			var tasks_list = new List<Task<sbyte?>>();
+
+			char c;
+			bool found_terminator = false;
+			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			{
+				// Skip any starting whitespace
+				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+
+				while (x+length < values.Length)
+				{
+					c = values[x+length];
+					found_terminator = c == desc.Terminator;
+					if (c == desc.Separator || found_terminator)
+						break;
+
+					++length;
+				}
+
+				if (length > 0)
+					tasks_list.Add(Task<sbyte?>.Factory.StartNew(TryParseListTaskSByte,
+						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						);
+			}
+
+
+			if(tasks_list.Count == 0)
+				return kTryParseListSByteEmptyResult.Value;
 
 			var tasks = tasks_list.ToArray();
 			tasks_list = null;
@@ -836,6 +951,62 @@ namespace KSoft
 
 			if(tasks_list.Count == 0)
 				return kTryParseListInt32EmptyResult.Value;
+
+			var tasks = tasks_list.ToArray();
+			tasks_list = null;
+			Task.WaitAll(tasks);
+
+			var results =	from task in tasks
+							select task.Result;
+
+			return results;
+		}
+		#endregion
+		#region TryParse list UInt64
+		static readonly Lazy<ulong?[]> kTryParseListUInt64EmptyResult = 
+			new Lazy<ulong?[]>(() => new ulong?[0]);
+
+		static ulong? TryParseListTaskUInt64(object state)
+		{
+			var args = (Tuple<StringListDesc, string, int, int>)state;
+			var desc = args.Item1;
+			ulong result = 0;
+			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
+			return success ? result : (ulong?)null;
+		}
+		public static IEnumerable<ulong?> TryParseUInt64(StringListDesc desc, string values)
+		{
+			if(values == null)
+				return kTryParseListUInt64EmptyResult.Value;
+
+			var tasks_list = new List<Task<ulong?>>();
+
+			char c;
+			bool found_terminator = false;
+			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			{
+				// Skip any starting whitespace
+				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+
+				while (x+length < values.Length)
+				{
+					c = values[x+length];
+					found_terminator = c == desc.Terminator;
+					if (c == desc.Separator || found_terminator)
+						break;
+
+					++length;
+				}
+
+				if (length > 0)
+					tasks_list.Add(Task<ulong?>.Factory.StartNew(TryParseListTaskUInt64,
+						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						);
+			}
+
+
+			if(tasks_list.Count == 0)
+				return kTryParseListUInt64EmptyResult.Value;
 
 			var tasks = tasks_list.ToArray();
 			tasks_list = null;

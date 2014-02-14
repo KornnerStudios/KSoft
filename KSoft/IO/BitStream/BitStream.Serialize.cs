@@ -7,6 +7,16 @@ namespace KSoft.IO
 {
 	partial class BitStream
 	{
+		public BitStream Stream<TEnum>(ref TEnum value, int bitCount, IEnumBitStreamer<TEnum> implementation)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			Contract.Requires(implementation != null);
+
+			implementation.Stream(this, ref value, bitCount);
+
+			return this;
+		}
+
 		#region Stream Values
 		public BitStream StreamValue<T>(ref T value)
 			where T : struct, IO.IBitStreamSerializable

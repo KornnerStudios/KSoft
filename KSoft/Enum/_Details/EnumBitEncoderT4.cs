@@ -22,7 +22,7 @@ namespace KSoft
 	/// </remarks>
 	[System.Diagnostics.DebuggerDisplay("MaxValue = {MaxValueTrait}, Bitmask = {BitmaskTrait}, BitCount = {BitCountTrait}")]
 	public sealed partial class EnumBitEncoder32<TEnum> : EnumBitEncoderBase, IEnumBitEncoder<uint>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		/// <remarks>Only made public for some Contracts in <see cref="Collections.EnumBitSet"/></remarks>
 		public static readonly bool kHasNone;
@@ -342,7 +342,7 @@ namespace KSoft
 	/// </remarks>
 	[System.Diagnostics.DebuggerDisplay("MaxValue = {MaxValueTrait}, Bitmask = {BitmaskTrait}, BitCount = {BitCountTrait}")]
 	public sealed partial class EnumBitEncoder64<TEnum> : EnumBitEncoderBase, IEnumBitEncoder<ulong>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		/// <remarks>Only made public for some Contracts in <see cref="Collections.EnumBitSet"/></remarks>
 		public static readonly bool kHasNone;

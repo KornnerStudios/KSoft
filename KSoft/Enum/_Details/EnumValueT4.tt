@@ -1,0 +1,23 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+
+namespace KSoft.Reflection
+{
+	/// <summary>Utility for converting to and from a given Enum and integer types, without boxing operations but without the safeguards of reflection</summary>
+	/// <typeparam name="TEnum"></typeparam>
+	/// <remarks>'From' methods can be unforgiving. Make sure you know what you're doing</remarks>
+	public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>
+		where TEnum : struct, IComparable, IFormattable, IConvertible
+	{
+<# foreach (var int_type in PrimitiveDefinitions.Numbers) { #>
+<#	if(!int_type.IsInteger) continue;
+#>
+		public static readonly Func<TEnum, <#= int_type.Keyword #>> To<#= int_type.Code #> =   GenerateToMethod  <<#= int_type.Keyword #>>();
+		public static readonly Func<<#= int_type.Keyword #>, TEnum> From<#= int_type.Code #> = GenerateFromMethod<<#= int_type.Keyword #>>();
+
+<# } #>
+	};
+}

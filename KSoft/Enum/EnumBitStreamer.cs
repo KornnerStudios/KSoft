@@ -13,7 +13,7 @@ namespace KSoft.IO
 	/// <typeparam name="TStreamType">Integer-type to stream the enum value as</typeparam>
 	/// <typeparam name="TOptions">TBD</typeparam>
 	public class EnumBitStreamer<TEnum, TStreamType, TOptions> : EnumBitStreamerBase, IEnumBitStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 		where TStreamType : struct
 		where TOptions : EnumBitStreamerOptions, new()
 	{
@@ -320,7 +320,7 @@ namespace KSoft.IO
 	/// <typeparam name="TStreamType">Integer-type to stream the enum value as</typeparam>
 	/// <remarks>Uses the default options in <see cref="EnumBitStreamerOptions"/></remarks>
 	public class EnumBitStreamer<TEnum, TStreamType> : EnumBitStreamer<TEnum, TStreamType, EnumBitStreamerOptions>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 		where TStreamType : struct
 	{
 	};
@@ -329,12 +329,12 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <remarks>Implicitly uses the Enum's underlying type for the stream type</remarks>
 	public sealed class EnumBitStreamer<TEnum> : EnumBitStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 	};
 
 	public sealed class EnumBitStreamerWithOptions<TEnum, TOptions> : EnumBitStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType, TOptions>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 		where TOptions : EnumBitStreamerOptions, new()
 	{
 	};

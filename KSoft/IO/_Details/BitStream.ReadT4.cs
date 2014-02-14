@@ -34,6 +34,23 @@ namespace KSoft.IO
 
 			return (byte)word;
 		}
+		/// <summary>Read an <see cref="System.SByte"/> from the stream</summary>
+		/// <param name="bitCount">Number of bits to read</param>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		/// <returns></returns>
+		public sbyte ReadSByte(int bitCount = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kSByteBitCount);
+
+			TWord word;
+			ReadWord(out word, bitCount);
+			if(signExtend && bitCount != Bits.kSByteBitCount)
+				return (sbyte)Bits.SignExtend( (sbyte)word, bitCount );
+
+			return (sbyte)word;
+		}
 		/// <summary>Read an <see cref="System.UInt16"/> from the stream</summary>
 		/// <param name="bitCount">Number of bits to read</param>
 		/// <returns></returns>
@@ -94,10 +111,33 @@ namespace KSoft.IO
 
 			return (int)word;
 		}
-		/// <summary>Read an <see cref="System.Int64"/> from the stream</summary>
+		/// <summary>Read an <see cref="System.UInt64"/> from the stream</summary>
 		/// <param name="bitCount">Number of bits to read</param>
 		/// <returns></returns>
+		public ulong ReadUInt64(int bitCount = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kUInt64BitCount);
+
+			uint msb_word = 0, lsb_word;
+			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
+			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
+
+			if(msb_bit_count > 0)
+				ReadWord(out msb_word, msb_bit_count);
+			ReadWord(out lsb_word, lsb_bit_count);
+
+			ulong word = (ulong)msb_word << lsb_bit_count;
+			word |= (ulong)lsb_word;
+
+			return (ulong)word;
+		}
+		/// <summary>Read an <see cref="System.Int64"/> from the stream</summary>
+		/// <param name="bitCount">Number of bits to read</param>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		/// <returns></returns>
 		public long ReadInt64(int bitCount = Bits.kInt64BitCount
+			, bool signExtend = false
 			)
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
@@ -112,6 +152,8 @@ namespace KSoft.IO
 
 			ulong word = (ulong)msb_word << lsb_bit_count;
 			word |= (ulong)lsb_word;
+			if(signExtend && bitCount != Bits.kInt64BitCount)
+				return (long)Bits.SignExtend( (long)word, bitCount );
 
 			return (long)word;
 		}
@@ -119,7 +161,8 @@ namespace KSoft.IO
 		/// <summary>Read an <see cref="System.Char"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out char value, int bitCount = Bits.kCharBitCount)
+		public void Read(out char value, int bitCount = Bits.kCharBitCount
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kCharBitCount);
 
@@ -128,16 +171,30 @@ namespace KSoft.IO
 		/// <summary>Read an <see cref="System.Byte"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out byte value, int bitCount = Bits.kByteBitCount)
+		public void Read(out byte value, int bitCount = Bits.kByteBitCount
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
 			value = ReadByte(bitCount);
 		}
+		/// <summary>Read an <see cref="System.SByte"/> from the stream</summary>
+		/// <param name="value">value read from the stream</param>
+		/// <param name="bitCount">Number of bits to read</param>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		public void Read(out sbyte value, int bitCount = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kSByteBitCount);
+
+			value = ReadSByte(bitCount, signExtend);
+		}
 		/// <summary>Read an <see cref="System.UInt16"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out ushort value, int bitCount = Bits.kUInt16BitCount)
+		public void Read(out ushort value, int bitCount = Bits.kUInt16BitCount
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kUInt16BitCount);
 
@@ -146,16 +203,20 @@ namespace KSoft.IO
 		/// <summary>Read an <see cref="System.Int16"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out short value, int bitCount = Bits.kInt16BitCount)
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		public void Read(out short value, int bitCount = Bits.kInt16BitCount
+			, bool signExtend = false
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kInt16BitCount);
 
-			value = ReadInt16(bitCount);
+			value = ReadInt16(bitCount, signExtend);
 		}
 		/// <summary>Read an <see cref="System.UInt32"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out uint value, int bitCount = Bits.kUInt32BitCount)
+		public void Read(out uint value, int bitCount = Bits.kUInt32BitCount
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kUInt32BitCount);
 
@@ -164,20 +225,36 @@ namespace KSoft.IO
 		/// <summary>Read an <see cref="System.Int32"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out int value, int bitCount = Bits.kInt32BitCount)
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		public void Read(out int value, int bitCount = Bits.kInt32BitCount
+			, bool signExtend = false
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kInt32BitCount);
 
-			value = ReadInt32(bitCount);
+			value = ReadInt32(bitCount, signExtend);
+		}
+		/// <summary>Read an <see cref="System.UInt64"/> from the stream</summary>
+		/// <param name="value">value read from the stream</param>
+		/// <param name="bitCount">Number of bits to read</param>
+		public void Read(out ulong value, int bitCount = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kUInt64BitCount);
+
+			value = ReadUInt64(bitCount);
 		}
 		/// <summary>Read an <see cref="System.Int64"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out long value, int bitCount = Bits.kInt64BitCount)
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		public void Read(out long value, int bitCount = Bits.kInt64BitCount
+			, bool signExtend = false
+			)
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
 
-			value = ReadInt64(bitCount);
+			value = ReadInt64(bitCount, signExtend);
 		}
 	};
 }

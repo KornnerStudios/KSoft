@@ -120,6 +120,16 @@ namespace KSoft.IO
 				: false;
 		} }
 
+		internal void SeekToStart()
+		{
+			Contract.Requires<InvalidOperationException>(CanSeek);
+
+			FlushCache();
+			mCacheBitsStreamedCount = 0;
+
+			BaseStream.Seek(mStartPosition, SeekOrigin.Begin);
+		}
+
 		/// <summary>Constuct a new bitsream using an underlying <see cref="Stream"/> object</summary>
 		/// <param name="baseStream">Underlying stream to read/write bits to</param>
 		/// <param name="permissions">Access permissions for <paramref name="baseStream"/></param>
@@ -273,16 +283,6 @@ namespace KSoft.IO
 			return this;
 		}
 		#endregion
-
-		public BitStream Stream<TEnum>(ref TEnum value, int bitCount, IEnumBitStreamer<TEnum> implementation)
-			where TEnum : struct
-		{
-			Contract.Requires(implementation != null);
-
-			implementation.Stream(this, ref value, bitCount);
-
-			return this;
-		}
 
 		#region String
 		// Verify that we have enough information to correctly stream a string

@@ -37,6 +37,22 @@ namespace KSoft.IO
 
 			return this;
 		}
+		/// <summary>Serialize an <see cref="System.SByte"/> to/from the stream</summary>
+		/// <param name="value">value to serialize</param>
+		/// <param name="bitCount">Number of bits to use</param>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		/// <returns>Returns this instance</returns>
+		public BitStream Stream(ref sbyte value, int bitCount = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kSByteBitCount);
+
+				 if (IsReading) value = ReadSByte(bitCount, signExtend);
+			else if (IsWriting) Write(value, bitCount);
+
+			return this;
+		}
 		/// <summary>Serialize an <see cref="System.UInt16"/> to/from the stream</summary>
 		/// <param name="value">value to serialize</param>
 		/// <param name="bitCount">Number of bits to use</param>
@@ -97,16 +113,32 @@ namespace KSoft.IO
 
 			return this;
 		}
-		/// <summary>Serialize an <see cref="System.Int64"/> to/from the stream</summary>
+		/// <summary>Serialize an <see cref="System.UInt64"/> to/from the stream</summary>
 		/// <param name="value">value to serialize</param>
 		/// <param name="bitCount">Number of bits to use</param>
 		/// <returns>Returns this instance</returns>
+		public BitStream Stream(ref ulong value, int bitCount = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(bitCount <= Bits.kUInt64BitCount);
+
+				 if (IsReading) value = ReadUInt64(bitCount);
+			else if (IsWriting) Write(value, bitCount);
+
+			return this;
+		}
+		/// <summary>Serialize an <see cref="System.Int64"/> to/from the stream</summary>
+		/// <param name="value">value to serialize</param>
+		/// <param name="bitCount">Number of bits to use</param>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+		/// <returns>Returns this instance</returns>
 		public BitStream Stream(ref long value, int bitCount = Bits.kInt64BitCount
+			, bool signExtend = false
 			)
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
 
-				 if (IsReading) value = ReadInt64(bitCount);
+				 if (IsReading) value = ReadInt64(bitCount, signExtend);
 			else if (IsWriting) Write(value, bitCount);
 
 			return this;
@@ -167,6 +199,18 @@ namespace KSoft.IO
 
 			return this;
 		}
+		public BitStream StreamFixedArray(sbyte[] array, 
+			int elementBitSize = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(elementBitSize <= Bits.kSByteBitCount);
+
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+
+			return this;
+		}
 		public BitStream StreamFixedArray(ushort[] array, 
 			int elementBitSize = Bits.kUInt16BitCount
 			)
@@ -213,14 +257,26 @@ namespace KSoft.IO
 
 			return this;
 		}
+		public BitStream StreamFixedArray(ulong[] array, 
+			int elementBitSize = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(elementBitSize <= Bits.kUInt64BitCount);
+
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+
+			return this;
+		}
 		public BitStream StreamFixedArray(long[] array, 
 			int elementBitSize = Bits.kInt64BitCount
+			, bool signExtend = false
 			)
 		{
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kInt64BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
 
 			return this;
 		}
@@ -286,6 +342,25 @@ namespace KSoft.IO
 				array = new byte[count];
 
 			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+
+			return this;
+		}
+		public BitStream StreamArray(ref sbyte[] array, 
+			int lengthBitSize, int elementBitSize = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(IsReading || array != null);
+			Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.kSByteBitCount);
+
+			int count = IsReading ? 0 : array.Length;
+			Stream(ref count, lengthBitSize);
+
+			if (IsReading)
+				array = new sbyte[count];
+
+			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
 
 			return this;
 		}
@@ -363,8 +438,27 @@ namespace KSoft.IO
 
 			return this;
 		}
+		public BitStream StreamArray(ref ulong[] array, 
+			int lengthBitSize, int elementBitSize = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(IsReading || array != null);
+			Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.kUInt64BitCount);
+
+			int count = IsReading ? 0 : array.Length;
+			Stream(ref count, lengthBitSize);
+
+			if (IsReading)
+				array = new ulong[count];
+
+			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+
+			return this;
+		}
 		public BitStream StreamArray(ref long[] array, 
 			int lengthBitSize, int elementBitSize = Bits.kInt64BitCount
+			, bool signExtend = false
 			)
 		{
 			Contract.Requires(IsReading || array != null);
@@ -377,7 +471,7 @@ namespace KSoft.IO
 			if (IsReading)
 				array = new long[count];
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
 
 			return this;
 		}
@@ -477,6 +571,34 @@ namespace KSoft.IO
 				for (int x = 0; x < count; x++)
 				{
 					var value = ReadByte(elementBitSize);
+					list.Add(value);
+				}
+			}
+			else if (IsWriting)
+			{
+				foreach (var value in list)
+					Write(value, elementBitSize);
+			}
+
+			return this;
+		}
+		public BitStream StreamElements(ICollection< sbyte > list, 
+			int countBitSize, int elementBitSize = Bits.kSByteBitCount
+			, bool signExtend = false
+			)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(countBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.kSByteBitCount);
+
+			int count = list.Count;
+			Stream(ref count, countBitSize);
+
+			if (IsReading)
+			{
+				for (int x = 0; x < count; x++)
+				{
+					var value = ReadSByte(elementBitSize, signExtend);
 					list.Add(value);
 				}
 			}
@@ -598,8 +720,36 @@ namespace KSoft.IO
 
 			return this;
 		}
+		public BitStream StreamElements(ICollection< ulong > list, 
+			int countBitSize, int elementBitSize = Bits.kUInt64BitCount
+			)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(countBitSize <= Bits.kInt32BitCount);
+			Contract.Requires(elementBitSize <= Bits.kUInt64BitCount);
+
+			int count = list.Count;
+			Stream(ref count, countBitSize);
+
+			if (IsReading)
+			{
+				for (int x = 0; x < count; x++)
+				{
+					var value = ReadUInt64(elementBitSize);
+					list.Add(value);
+				}
+			}
+			else if (IsWriting)
+			{
+				foreach (var value in list)
+					Write(value, elementBitSize);
+			}
+
+			return this;
+		}
 		public BitStream StreamElements(ICollection< long > list, 
 			int countBitSize, int elementBitSize = Bits.kInt64BitCount
+			, bool signExtend = false
 			)
 		{
 			Contract.Requires(list != null);
@@ -613,7 +763,7 @@ namespace KSoft.IO
 			{
 				for (int x = 0; x < count; x++)
 				{
-					var value = ReadInt64(elementBitSize);
+					var value = ReadInt64(elementBitSize, signExtend);
 					list.Add(value);
 				}
 			}

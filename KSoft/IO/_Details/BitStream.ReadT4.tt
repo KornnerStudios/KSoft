@@ -62,15 +62,23 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
 		/// <summary>Read an <see cref="System.<#= prim_typename #>"/> from the stream</summary>
 		/// <param name="value">value read from the stream</param>
 		/// <param name="bitCount">Number of bits to read</param>
-		public void Read(out <#= prim_keyword #> value, int bitCount = Bits.k<#= prim_typename #>BitCount)
+<#		if (is_signed) { #>
+		/// <param name="signExtend">If true, the result will have the MSB extended</param>
+<#		} #>
+		public void Read(out <#= prim_keyword #> value, int bitCount = Bits.k<#= prim_typename #>BitCount
+<#		if (is_signed) { #>
+			, bool signExtend = false
+<#		} #>
+			)
 		{
 			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
 
-			value = Read<#= prim_typename #>(bitCount);
+			value = Read<#= prim_typename #>(bitCount<#= is_signed ? ", signExtend" : "" #>);
 		}
 <# } #>
 	};

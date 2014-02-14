@@ -62,7 +62,7 @@ namespace KSoft
 	};
 
 	public sealed class EnumBitEncoder<TEnum>
-		where TEnum : struct
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		static readonly EnumBitEncoder32<TEnum> x32;
 		static readonly EnumBitEncoder64<TEnum> x64;

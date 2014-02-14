@@ -10,8 +10,8 @@ namespace KSoft
 {
 	using EnumUtils = Reflection.EnumUtils;
 
-	public sealed partial class EnumFlags<TEnum> : Reflection.EnumUtilBase<TEnum>
-		where TEnum : struct
+	internal sealed partial class EnumFlags<TEnum> : Reflection.EnumUtilBase<TEnum>
+		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		#region Signatures
 		delegate TEnum ModifyDelegate(TEnum value, TEnum flags);
@@ -77,5 +77,47 @@ namespace KSoft
 
 		public static bool Test(TEnum value, TEnum flags)		{ return	V1.kTestFlags(value, flags); }
 		#endregion
+	};
+
+	public static class EnumFlags
+	{
+		public static TEnum Add<TEnum>(TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			return EnumFlags<TEnum>.Add(value, flags);
+		}
+		public static void Add<TEnum>(ref TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			EnumFlags<TEnum>.Add(ref value, flags);
+		}
+
+		public static TEnum Remove<TEnum>(TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			return EnumFlags<TEnum>.Remove(value, flags);
+		}
+		public static void Remove<TEnum>(ref TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			EnumFlags<TEnum>.Remove(ref value, flags);
+		}
+
+		public static TEnum Modify<TEnum>(bool addOrRemove, TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			return EnumFlags<TEnum>.Modify(addOrRemove, value, flags);
+		}
+		public static void Modify<TEnum>(bool addOrRemove, ref TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			EnumFlags<TEnum>.Modify(addOrRemove, ref value, flags);
+		}
+
+		public static bool Test<TEnum>(TEnum value, TEnum flags)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			return EnumFlags<TEnum>.Test(value, flags);
+		}
 	};
 }

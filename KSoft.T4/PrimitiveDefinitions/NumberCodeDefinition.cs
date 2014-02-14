@@ -43,7 +43,7 @@ namespace KSoft.T4
 			return Keyword.EndsWith("byte");
 		} }
 		public bool IsSigned { get {
-			return IsInteger && Keyword[0] == 'i' || Keyword[0] == 's';
+			return IsInteger && Keyword[0] != 'u' && Keyword[0] != 'b';
 		} }
 		public bool IsUnsigned { get {
 			return IsInteger && !IsSigned;

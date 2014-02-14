@@ -33,8 +33,28 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="..\shared\source\BkBitStream.cs">
+      <Link>IO\BkBitStream.cs</Link>
+    </Compile>
+    <Compile Include="Bitwise\BitsTest.cs" />
+    <Compile Include="Bitwise\Single24Test.cs" />
+    <Compile Include="Collections\BitSetTest.cs" />
+    <Compile Include="Collections\ValueTypeComparersTest.cs" />
+    <Compile Include="Enum\EnumBinaryStreamerTest.cs" />
+    <Compile Include="Enum\EnumBitEncoderTest.cs" />
+    <Compile Include="Enum\EnumBitStreamerTest.cs" />
+    <Compile Include="Enum\EnumFlagsTest.cs" />
+    <Compile Include="Enum\EnumValueTest.cs" />
+    <Compile Include="IO\BitStreamTest.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Reflection\UtilitiesTest.cs" />
+    <Compile Include="Security\Cryptography\JenkinsHashTest.cs" />
+    <Compile Include="Text\RadixEncodingTest.cs" />
+    <Compile Include="Text\StringStorageEncodingTest.cs" />
+    <Compile Include="Text\Utilities.BytesTest.cs" />
+    <Compile Include="Text\UtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\UtilitiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
@@ -51,14 +71,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Bitwise\" />
-    <Folder Include="Collections\" />
-    <Folder Include="Enum\" />
-    <Folder Include="IO\" />
     <Folder Include="Math\" />
-    <Folder Include="Security\" />
-    <Folder Include="Text\" />
-    <Folder Include="Util\" />
+    <Folder Include="Memory\" />
     <Folder Include="Values\" />
   </ItemGroup>
   <Choose>
