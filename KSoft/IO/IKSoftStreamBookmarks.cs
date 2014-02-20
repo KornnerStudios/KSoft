@@ -33,6 +33,34 @@ namespace KSoft.IO
 		}
 	};
 
+	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.UserData"/></summary>
+	public struct IKSoftStreamUserDataBookmark : IDisposable
+	{
+		IKSoftStream mStream;
+		object mOldUserData;
+
+		/// <summary>Saves the stream's UserData so a new one can be specified, but is then later restored to the previous UserData, via <see cref="Dispose()"/></summary>
+		/// <param name="stream">The underlying stream for this bookmark</param>
+		/// <param name="newUserData"></param>
+		public IKSoftStreamUserDataBookmark(IKSoftStream stream, object newUserData)
+		{
+			Contract.Requires(stream != null);
+
+			mOldUserData = (mStream = stream).Owner;
+			mStream.UserData = newUserData;
+		}
+
+		/// <summary>Returns the UserData of the underlying stream to the previous UserData</summary>
+		public void Dispose()
+		{
+			if (mStream != null)
+			{
+				mStream.UserData = mOldUserData;
+				mStream = null;
+			}
+		}
+	};
+
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStreamModeable.StreamMode"/></summary>
 	public struct IKSoftStreamModeBookmark : IDisposable
 	{

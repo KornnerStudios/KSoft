@@ -10,7 +10,7 @@ namespace KSoft.Reflection
 	/// <typeparam name="TEnum"></typeparam>
 	/// <remarks>'From' methods can be unforgiving. Make sure you know what you're doing</remarks>
 	public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : <#= UtilT4.EnumConstraintsCode() #>
 	{
 <# foreach (var int_type in PrimitiveDefinitions.Numbers) { #>
 <#	if(!int_type.IsInteger) continue;

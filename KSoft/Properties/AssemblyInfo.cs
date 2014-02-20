@@ -30,4 +30,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.*")]
 
+[assembly: InternalsVisibleTo("KSoft.IO.TagElementStreams")]
 [assembly: InternalsVisibleTo("Test.KSoft.BCL")]

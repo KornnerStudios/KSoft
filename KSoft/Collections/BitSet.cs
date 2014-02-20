@@ -580,47 +580,5 @@ namespace KSoft.Collections
 			if (s.IsReading)
 				RecalculateCardinality();
 		}
-#if false
-		public delegate int SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext>(
-			IO.TagElementStream<TDoc, TCursor, string> s, BitSet bitset, int bitIndex, TContext ctxt)
-			where TDoc : class
-			where TCursor : class;
-
-		public void Serialize<TDoc, TCursor, TContext>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string elementName,
-			TContext ctxt, SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext> streamElement,
-			int highestBitIndex = -1)
-			where TDoc : class
-			where TCursor : class
-		{
-			Contract.Requires(s != null);
-			Contract.Requires(streamElement != null);
-			Contract.Requires(highestBitIndex.IsNoneOrPositive());
-			Contract.Requires(highestBitIndex < Length);
-
-			if (highestBitIndex.IsNone()) highestBitIndex = Length - 1;
-
-			if (s.IsReading)
-			{
-				int bit_index = 0;
-				foreach(var node in s.ElementsByName(elementName))
-					using(s.EnterCursorBookmark(node))
-					{
-						bit_index = streamElement(s, this, -1, ctxt);
-						this[bit_index] = true;
-					}
-			}
-			else if (s.IsWriting)
-			{
-				foreach (int bit_index in SetBitIndices)
-				{
-					if (bit_index > highestBitIndex) break;
-
-					using (s.EnterCursorBookmark(elementName))
-						streamElement(s, this, bit_index, ctxt);
-				}
-			}
-		}
-#endif
 	};
 }

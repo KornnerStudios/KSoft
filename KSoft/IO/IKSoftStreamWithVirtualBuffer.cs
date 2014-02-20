@@ -16,22 +16,6 @@ namespace KSoft.IO
 		long VirtualBufferStart { get; set; }
 		/// <summary>How many bytes compose the virtual buffer</summary>
 		long VirtualBufferLength { get; set; }
-
-		/// <summary>Begin the concept of a virtual buffer</summary>
-		/// <param name="bufferLength">Virtual buffer's byte length</param>
-		/// <returns></returns>
-		IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(long bufferLength);
-		/// <summary>Begin the concept of a virtual buffer</summary>
-		/// <returns></returns>
-		IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer();
-		/// <summary>Temporarily bookmark this stream's VirtualBuffer properties</summary>
-		/// <returns></returns>
-		IKSoftStreamWithVirtualBufferBookmark EnterVirtualBufferBookmark();
-		/// <summary>
-		/// Temporarily bookmark this stream's VirtualBuffer properties and begin the concept of a virtual buffer
-		/// </summary>
-		/// <returns></returns>
-		IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(long bufferLength);
 	};
 
 	[Contracts.ContractClassFor(typeof(IKSoftStreamWithVirtualBuffer))]
@@ -62,23 +46,6 @@ namespace KSoft.IO
 
 				throw new NotImplementedException();
 			}
-		}
-
-		public IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(long bufferLength)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
-
-			throw new NotImplementedException();
-		}
-
-		public abstract IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer();
-		public abstract IKSoftStreamWithVirtualBufferBookmark EnterVirtualBufferBookmark();
-
-		public IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(long bufferLength)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
-
-			throw new NotImplementedException();
 		}
 	};
 }

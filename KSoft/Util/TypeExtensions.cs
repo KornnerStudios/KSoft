@@ -118,33 +118,66 @@ namespace KSoft
 		#endregion
 
 		#region IO
-		public static void Read(this IO.EndianReader s, out bool value)		{ value = s.ReadBoolean(); }
-		public static void Write(this bool value, IO.EndianWriter s)		{ s.Write(value); }
+		public static /*IDisposable*/IO.IKSoftStreamOwnerBookmark EnterOwnerBookmark(this IO.IKSoftStream stream, 
+			object newOwner = null)
+		{
+			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner);
+		}
+		public static /*IDisposable*/IO.IKSoftStreamUserDataBookmark EnterUserDataBookmark(this IO.IKSoftStream stream,
+			object newUserData = null)
+		{
+			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData);
+		}
+		/// <summary>Temporarily enter a new data streaming state</summary>
+		/// <param name="newMode"></param>
+		/// <returns></returns>
+		public static IO.IKSoftStreamModeBookmark EnterStreamModeBookmark(IO.IKSoftStreamModeable stream,
+			System.IO.FileAccess newMode)
+		{
+			Contract.Requires(stream.StreamMode != 0, "Current mode is unset!");
+			Contract.Requires(newMode != 0, "New mode is unset!");
 
-		public static void Read(this IO.EndianReader s, out sbyte value)	{ value = s.ReadSByte(); }
-		public static void Write(this sbyte value, IO.EndianWriter s)		{ s.Write(value); }
-		public static void Read(this IO.EndianReader s, out byte value)		{ value = s.ReadByte(); }
-		public static void Write(this byte value, IO.EndianWriter s)		{ s.Write(value); }
+			return new IO.IKSoftStreamModeBookmark(stream, newMode);
+		}
 
-		public static void Read(this IO.EndianReader s, out short value)	{ value = s.ReadInt16(); }
-		public static void Write(this short value, IO.EndianWriter s)		{ s.Write(value); }
-		public static void Read(this IO.EndianReader s, out ushort value)	{ value = s.ReadUInt16(); }
-		public static void Write(this ushort value, IO.EndianWriter s)		{ s.Write(value); }
+		#region IKSoftStreamWithVirtualBuffer
+		/// <summary>Begin the concept of a virtual buffer</summary>
+		/// <param name="bufferLength">Virtual buffer's byte length</param>
+		/// <returns></returns>
+		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream,
+			long bufferLength)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
 
-		public static void Read(this IO.EndianReader s, out int value)		{ value = s.ReadInt32(); }
-		public static void Write(this int value, IO.EndianWriter s)			{ s.Write(value); }
-		public static void Read(this IO.EndianReader s, out uint value)		{ value = s.ReadUInt32(); }
-		public static void Write(this uint value, IO.EndianWriter s)		{ s.Write(value); }
+			stream.VirtualBufferStart = stream.BaseStream.Position;
+			stream.VirtualBufferLength = bufferLength;
 
-		public static void Read(this IO.EndianReader s, out long value)		{ value = s.ReadInt64(); }
-		public static void Write(this long value, IO.EndianWriter s)		{ s.Write(value); }
-		public static void Read(this IO.EndianReader s, out ulong value)	{ value = s.ReadUInt64(); }
-		public static void Write(this ulong value, IO.EndianWriter s)		{ s.Write(value); }
+			return new IO.IKSoftStreamWithVirtualBufferCleanup(stream);
+		}
+		/// <summary>Begin the concept of a virtual buffer</summary>
+		/// <returns></returns>
+		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream)
+		{
+			return new IO.IKSoftStreamWithVirtualBufferCleanup(stream);
+		}
+		/// <summary>Temporarily bookmark this stream's VirtualBuffer properties</summary>
+		/// <returns></returns>
+		public static IO.IKSoftStreamWithVirtualBufferBookmark EnterVirtualBufferBookmark(this IO.IKSoftStreamWithVirtualBuffer stream)
+		{
+			return new IO.IKSoftStreamWithVirtualBufferBookmark(stream);
+		}
+		/// <summary>
+		/// Temporarily bookmark this stream's VirtualBuffer properties and begin the concept of a virtual buffer
+		/// </summary>
+		/// <returns></returns>
+		public static IO.IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(this IO.IKSoftStreamWithVirtualBuffer stream,
+			long bufferLength)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
 
-		public static void Read(this IO.EndianReader s, out float value)	{ value = s.ReadSingle(); }
-		public static void Write(this float value, IO.EndianWriter s)		{ s.Write(value); }
-		public static void Read(this IO.EndianReader s, out double value)	{ value = s.ReadDouble(); }
-		public static void Write(this double value, IO.EndianWriter s)		{ s.Write(value); }
+			return new IO.IKSoftStreamWithVirtualBufferAndBookmark(stream, bufferLength);
+		}
+		#endregion
 
 		public static int Read(this byte[] value, IO.EndianReader s)						{ return s.Read(value, 0, value.Length); }
 		public static void Write(this byte[] value, IO.EndianWriter s)						{ s.Write(value, 0, value.Length); }

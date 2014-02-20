@@ -11,13 +11,7 @@ namespace KSoft.IO
 		/// <summary>Owner of this stream</summary>
 		public object Owner { get; set; }
 
-		/// <summary></summary>
-		/// <param name="newOwner"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null)
-		{
-			return new IKSoftStreamOwnerBookmark(this, newOwner);
-		}
+		public object UserData { get; set; }
 
 		/// <summary>Do we own the base stream?</summary>
 		/// <remarks>If we don't own the stream, when this object is disposed, the <see cref="BaseStream"/> won't be closed\disposed</remarks>
@@ -159,13 +153,7 @@ namespace KSoft.IO
 		/// <summary>Owner of this stream</summary>
 		public object Owner { get; set; }
 
-		/// <summary></summary>
-		/// <param name="newOwner"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null)
-		{
-			return new IKSoftStreamOwnerBookmark(this, newOwner);
-		}
+		public object UserData { get; set; }
 
 		/// <summary>Do we own the base stream?</summary>
 		/// <remarks>If we don't own the stream, when this object is disposed, the <see cref="BaseStream"/> won't be closed\disposed</remarks>
@@ -301,4 +289,47 @@ namespace KSoft.IO
 		#endregion
 	};
 
+}
+
+namespace KSoft
+{
+	partial class TypeExtensions
+	{
+		public static void Read(this IO.EndianReader s, out bool value)		{ value = s.ReadBoolean(); }
+		public static void Write(this bool value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out char value)		{ value = s.ReadChar(); }
+		public static void Write(this char value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out byte value)		{ value = s.ReadByte(); }
+		public static void Write(this byte value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out sbyte value)		{ value = s.ReadSByte(); }
+		public static void Write(this sbyte value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out ushort value)		{ value = s.ReadUInt16(); }
+		public static void Write(this ushort value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out short value)		{ value = s.ReadInt16(); }
+		public static void Write(this short value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out uint value)		{ value = s.ReadUInt32(); }
+		public static void Write(this uint value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out int value)		{ value = s.ReadInt32(); }
+		public static void Write(this int value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out ulong value)		{ value = s.ReadUInt64(); }
+		public static void Write(this ulong value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out long value)		{ value = s.ReadInt64(); }
+		public static void Write(this long value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out float value)		{ value = s.ReadSingle(); }
+		public static void Write(this float value, IO.EndianWriter s)		{ s.Write(value); }
+
+		public static void Read(this IO.EndianReader s, out double value)		{ value = s.ReadDouble(); }
+		public static void Write(this double value, IO.EndianWriter s)		{ s.Write(value); }
+
+	};
 }

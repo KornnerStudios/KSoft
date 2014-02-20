@@ -1,0 +1,330 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.IO
+{
+	partial class TagElementStream<TDoc, TCursor, TName>
+	{
+		#region ReadElement impl
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the InnerText of element <paramref name="name"/> into <paramref name="value"/></summary>
+		/// <param name="n">Node element to read</param>
+		/// <param name="value">value to receive the data</param>
+		protected abstract void ReadElement(TCursor n, ref <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the InnerText of element <paramref name="name"/>
+		/// using numerical base of <paramref name="base"/> into 
+		/// <paramref name="value"/>
+		/// </summary>
+		/// <param name="n">Node element to read</param>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		protected abstract void ReadElement(TCursor n, ref <#= type.Keyword #> value, NumeralBase fromBase);
+<# } #>
+		#endregion
+
+
+		#region ReadCursor
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the Value of <see cref="Cursor"/> into <paramref name="value"/></summary>
+		/// <param name="value">value to receive the data</param>
+		public void ReadCursor(ref <#= type.Keyword #> value)
+		{
+			ReadElement(Cursor, ref value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the Value of <see cref="Cursor"/>
+		/// using numerical base of <paramref name="base"/> into <paramref name="value"/>
+		/// </summary>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		public void ReadCursor(ref <#= type.Keyword #> value, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			ReadElement(Cursor, ref value, fromBase);
+		}
+<# } #>
+		#endregion
+
+
+		#region ReadElement
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the InnerText of element <paramref name="name"/> into <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">value to receive the data</param>
+		public void ReadElement(TName name, ref <#= type.Keyword #> value)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			ReadElement(GetElement(name), ref value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the InnerText of element <paramref name="name"/>
+		/// using numerical base of <paramref name="base"/> into 
+		/// <paramref name="value"/>
+		/// </summary>
+		/// <param name="name">Element name</param>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		public void ReadElement(TName name, ref  <#= type.Keyword #> value, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			ReadElement(GetElement(name), ref value, fromBase);
+		}
+<# } #>
+		#endregion
+
+
+		#region ReadAttribute
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">value to receive the data</param>
+		public abstract void ReadAttribute(TName name, ref <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the attribute data of <paramref name="name"/>
+		/// using numerical base of <paramref name="base"/> into 
+		/// <paramref name="value"/>
+		/// </summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		public abstract void ReadAttribute(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase = NumeralBase.Decimal);
+<# } #>
+		#endregion
+
+
+		#region ReadElementOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the InnerText of element <paramref name="name"/> into <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">value to receive the data</param>
+		/// <remarks>If inner text is just an empty string, the stream ignores its existence</remarks>
+		/// <returns>true if the value exists</returns>
+		public abstract bool ReadElementOpt(TName name, ref <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the InnerText of element <paramref name="name"/>
+		/// using numerical base of <paramref name="base"/> into 
+		/// <paramref name="value"/>
+		/// </summary>
+		/// <param name="name">Element name</param>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		/// <remarks>If inner text is just an empty string, the stream ignores its existence</remarks>
+		/// <returns>true if the value exists</returns>
+		public abstract bool ReadElementOpt(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase = NumeralBase.Decimal);
+<# } #>
+		#endregion
+
+
+		#region ReadAttributeOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">value to receive the data</param>
+		/// <returns>true if the value exists</returns>
+		public abstract bool ReadAttributeOpt(TName name, ref <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>
+		/// Stream out the attribute data of <paramref name="name"/>
+		/// using numerical base of <paramref name="base"/> into 
+		/// <paramref name="value"/>
+		/// </summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="fromBase">numerical base to use</param>
+		/// <param name="value">value to receive the data</param>
+		/// <returns>true if the value exists</returns>
+		public abstract bool ReadAttributeOpt(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase = NumeralBase.Decimal);
+<# } #>
+		#endregion
+
+
+		#region ReadElements
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		void ReadElements(IEnumerable<TCursor> elements, ICollection< <#= type.Keyword #> > coll)
+		{
+			foreach (var node in elements)
+				using (EnterCursorBookmark(node))
+				{
+					var value = default(<#= type.Keyword #>);
+					ReadCursor(ref value);
+
+					coll.Add(value);
+				}
+		}
+		public void ReadElements(ICollection< <#= type.Keyword #> > coll)
+		{
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			ReadElements(this.Elements, coll);
+		}
+		public void ReadElements(TName name, ICollection< <#= type.Keyword #> > coll)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			ReadElements(this.ElementsByName(name), coll);
+		}
+
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		void ReadElements(IEnumerable<TCursor> elements, ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			foreach (var node in elements)
+				using (EnterCursorBookmark(node))
+				{
+					<#= type.Keyword #> value = 0;
+					ReadCursor(ref value, fromBase);
+
+					coll.Add(value);
+				}
+		}
+		public void ReadElements(ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			ReadElements(this.Elements, coll, fromBase);
+		}
+		public void ReadElements(TName name, ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			ReadElements(this.ElementsByName(name), coll, fromBase);
+		}
+
+<# } #>
+		#endregion
+
+
+		#region ReadFixedArray
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		int ReadFixedArray(IEnumerable<TCursor> elements, <#= type.Keyword #>[] array)
+		{
+			int count = 0;
+			foreach (var node in elements)
+			{
+				using (EnterCursorBookmark(node))
+					ReadCursor(ref array[count++]);
+
+				if(count == array.Length)
+					break;
+			}
+
+			return count;
+		}
+		public int ReadFixedArray(<#= type.Keyword #>[] array)
+		{
+			Contract.Requires<ArgumentNullException>(array != null);
+
+			return ReadFixedArray(this.Elements, array);
+		}
+		public int ReadFixedArray(TName name, <#= type.Keyword #>[] array)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(array != null);
+
+			return ReadFixedArray(this.ElementsByName(name), array);
+		}
+
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		int ReadFixedArray(IEnumerable<TCursor> elements, <#= type.Keyword #>[] array, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			int count = 0;
+			foreach (var node in elements)
+			{
+				using (EnterCursorBookmark(node))
+					ReadCursor(ref array[count++], fromBase);
+
+				if(count == array.Length)
+					break;
+			}
+
+			return count;
+		}
+		public int ReadFixedArray(<#= type.Keyword #>[] array, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			Contract.Requires<ArgumentNullException>(array != null);
+
+			return ReadFixedArray(this.Elements, array, fromBase);
+		}
+		public int ReadFixedArray(TName name, <#= type.Keyword #>[] array, NumeralBase fromBase = NumeralBase.Decimal)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(array != null);
+
+			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
+		}
+
+<# } #>
+		#endregion
+	};
+
+
+	partial class TagElementStreamContract<TDoc, TCursor, TName>
+	{
+		#region ReadAttribute
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public override void ReadAttribute(TName name, ref <#= type.Keyword #> value)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public override void ReadAttribute(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+		#endregion
+
+
+		#region ReadElementOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public override bool ReadElementOpt(TName name, ref <#= type.Keyword #> value)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public override bool ReadElementOpt(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+		#endregion
+
+
+		#region ReadAttributeOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public override bool ReadAttributeOpt(TName name, ref <#= type.Keyword #> value)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public override bool ReadAttributeOpt(TName name, ref <#= type.Keyword #> value, NumeralBase fromBase)
+		{ Contract.Requires(ValidateNameArg(name)); throw new NotImplementedException(); }
+<# } #>
+		#endregion
+	};
+};

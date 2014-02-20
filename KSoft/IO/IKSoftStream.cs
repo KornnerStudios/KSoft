@@ -12,7 +12,7 @@ namespace KSoft.IO
 		/// <summary>Owner of this stream</summary>
 		object Owner { get; set; }
 
-		IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null);
+		object UserData { get; set; }
 
 		string StreamName { get; }
 	};

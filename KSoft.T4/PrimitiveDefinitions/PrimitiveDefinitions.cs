@@ -23,6 +23,15 @@ namespace KSoft.T4
 			} }
 		};
 
+		class StringCodeDefinition : PrimitiveCodeDefinition
+		{
+			internal StringCodeDefinition() : base("string", TypeCode.String) { }
+
+			public override int SizeOfInBytes { get {
+				return -1;
+			} }
+		};
+
 		internal static readonly NumberCodeDefinition kByte = new NumberCodeDefinition(TypeCode.Byte);
 		internal static readonly NumberCodeDefinition kSByte = new NumberCodeDefinition(TypeCode.SByte);
 
@@ -41,6 +50,8 @@ namespace KSoft.T4
 		internal static readonly PrimitiveCodeDefinition kBool = new BooleanCodeDefinition();
 
 		internal static readonly PrimitiveCodeDefinition kChar = new CharCodeDefinition();
+
+		internal static readonly PrimitiveCodeDefinition kString = new StringCodeDefinition();
 
 		public static IEnumerable<NumberCodeDefinition> Numbers { get {
 			yield return kByte;

@@ -23,19 +23,20 @@ namespace KSoft.IO
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="newOwner"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null)
+		public object UserData
 		{
-			return new IKSoftStreamOwnerBookmark(this, newOwner);
+			get { return Reader != null ? Reader.UserData : Writer.UserData; }
+			set {
+				if (Reader != null) Reader.UserData = value;
+				if (Writer != null) Writer.UserData = value;
+			}
 		}
 
 		/// <summary>Name of the underlying stream this object is interfacing with</summary>
 		/// <remarks>So if this endian stream is interfacing with a file, this will be it's name</remarks>
 		public string StreamName { get {
 				 if (IsReading) return Reader.StreamName;
-			else if (IsWriting)return Writer.StreamName;
+			else if (IsWriting) return Writer.StreamName;
 			else throw new Debug.UnreachableException(StreamMode.ToString());
 		} }
 		#endregion
@@ -152,50 +153,19 @@ namespace KSoft.IO
 		public FileAccess StreamMode { get; set; }
 		public bool IsReading { get { return StreamMode == FileAccess.Read; } }
 		public bool IsWriting { get { return StreamMode == FileAccess.Write; } }
-
-		/// <summary></summary>
-		/// <param name="newMode"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamModeBookmark EnterStreamModeBookmark(FileAccess newMode)
-		{
-			return new IKSoftStreamModeBookmark(this, newMode);
-		}
 		#endregion
 
 		#region IKSoftStreamWithVirtualBuffer Members
 		public long VirtualBufferStart { get; set; }
 		public long VirtualBufferLength { get; set; }
-
-		public IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(long bufferLength)
-		{
-			VirtualBufferStart = BaseStream.Position;
-			VirtualBufferLength = bufferLength;
-
-			return new IKSoftStreamWithVirtualBufferCleanup(this);
-		}
-		public IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer()
-		{
-			return new IKSoftStreamWithVirtualBufferCleanup(this);
-		}
-
-		public IKSoftStreamWithVirtualBufferBookmark EnterVirtualBufferBookmark()
-		{
-			return new IKSoftStreamWithVirtualBufferBookmark(this);
-		}
-
-		public IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(long bufferLength)
-		{
-			return new IKSoftStreamWithVirtualBufferAndBookmark(this, bufferLength);
-		}
 		#endregion
 
 		#region IKSoftEndianStream
 		/// <summary>The assumed byte order of the stream</summary>
 		/// <remarks>Use <see cref="ChangeByteOrder"/> to properly change this property</remarks>
-		public Shell.EndianFormat ByteOrder
-		{
-			get { return Reader != null ? Reader.ByteOrder : Writer.ByteOrder; }
-		}
+		public Shell.EndianFormat ByteOrder { get {
+			return Reader != null ? Reader.ByteOrder : Writer.ByteOrder;
+		} }
 
 		/// <summary>Change the order in which bytes are ordered to/from the stream</summary>
 		/// <param name="newOrder">The new byte order to switch to</param>
@@ -230,7 +200,10 @@ namespace KSoft.IO
 
 		/// <summary>Convenience method for C# "using" statements. Temporarily inverts the current byte order which is used for read/writes.</summary>
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
-		public IDisposable BeginEndianSwitch()								{ return new EndianFormatSwitchBlock(this); }
+		public IDisposable BeginEndianSwitch()
+		{
+			return new EndianFormatSwitchBlock(this);
+		}
 		/// <summary>Convenience method for C# "using" statements. Temporarily inverts the current byte order which is used for read/writes.</summary>
 		/// <param name="switchTo">Byte order to switch to</param>
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
@@ -241,7 +214,8 @@ namespace KSoft.IO
 		/// </remarks>
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)
 		{
-			if (switchTo == this.ByteOrder) return Util.NullDisposable;
+			if (switchTo == this.ByteOrder)
+				return Util.NullDisposable;
 
 			return new EndianFormatSwitchBlock(this);
 		}

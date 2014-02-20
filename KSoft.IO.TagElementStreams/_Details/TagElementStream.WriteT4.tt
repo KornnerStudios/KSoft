@@ -1,0 +1,337 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.IO
+{
+	partial class TagElementStream<TDoc, TCursor, TName>
+	{
+		#region WriteElement impl
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary></summary>
+		/// <param name="n">Node element to write</param>
+		/// <param name="value">Data to set the element's <see cref="TCursor.InnerText"/> to</param>
+		protected abstract void WriteElement(TCursor n, <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary></summary>
+		/// <param name="n">Node element to write</param>
+		/// <param name="value">Data to set the element's <see cref="TCursor.InnerText"/> to</param>
+		/// <param name="toBase"></param>
+		protected abstract void WriteElement(TCursor n, <#= type.Keyword #> value, NumeralBase toBase);
+<# } #>
+		#endregion
+
+
+		#region WriteCursor
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Set <see cref="Cursor"/>'s value to <paramref name="value"/></summary>
+		/// <param name="value">Data to set the <see cref="Cursor"/> to</param>
+		public void WriteCursor(<#= type.Keyword #> value)
+		{
+<# if(type.Code==TypeCode.String) { #>
+			Contract.Requires<ArgumentNullException>(value != null);
+<# } #>
+			WriteElement(Cursor, value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Set <see cref="Cursor"/>'s value to <paramref name="value"/></summary>
+		/// <param name="value">Data to set the <see cref="Cursor"/> to</param>
+		/// <param name="toBase">Numerical base to use</param>
+		public void WriteCursor(<#= type.Keyword #> value, NumeralBase toBase=kDefaultRadix)
+		{
+			WriteElement(Cursor, value, toBase);
+		}
+<# } #>
+		#endregion
+
+
+		#region WriteElement
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		public void WriteElement(TName name, <#= type.Keyword #> value)
+		{
+			Contract.Requires(ValidateNameArg(name));
+<# if(type.Code==TypeCode.String) { #>
+			Contract.Requires<ArgumentNullException>(value != null);
+<# } #>
+
+			WriteElement(WriteElementAppend(name), value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		public void WriteElement(TName name, <#= type.Keyword #> value, NumeralBase toBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			WriteElement(WriteElementAppend(name), value, toBase);
+		}
+<# } #>
+		#endregion
+
+
+		#region WriteAttribute
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="value">Data to set the attribute text to</param>
+		public abstract void WriteAttribute(TName name, <#= type.Keyword #> value);
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <param name="value">Data to set the attribute text to</param>
+		public abstract void WriteAttribute(TName name, <#= type.Keyword #> value, NumeralBase toBase=kDefaultRadix);
+<# } #>
+		#endregion
+
+
+		#region WriteElementOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteElementOptOnTrue(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+
+			bool result = IgnoreWritePredicates || predicate(value);
+
+			if (result)
+				WriteElement(name, value);
+
+			return result;
+		}
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteElementOptOnFalse(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+<# if(type.Code==TypeCode.String) { #>
+			if (predicate != string.IsNullOrEmpty && value == null)
+				throw new ArgumentNullException("value");
+<# } #>
+
+			bool result = IgnoreWritePredicates || !predicate(value);
+
+			if (result)
+				WriteElement(name, value);
+
+			return result;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteElementOptOnTrue(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate, NumeralBase toBase=NumeralBase.Decimal)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+
+			bool result = IgnoreWritePredicates || predicate(value);
+
+			if (result)
+				WriteElement(name, value, toBase);
+
+			return result;
+		}
+		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
+		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <remarks>Does not change <see cref="Cursor"/></remarks>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteElementOptOnFalse(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate, NumeralBase toBase=NumeralBase.Decimal)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+
+			bool result = IgnoreWritePredicates || !predicate(value);
+
+			if (result)
+				WriteElement(name, value, toBase);
+
+			return result;
+		}
+<# } #>
+		#endregion
+
+
+		#region WriteAttributeOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="value">Data to set the attribute text to</param>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteAttributeOptOnTrue(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+
+			bool result = IgnoreWritePredicates || predicate(value);
+
+			if (result)
+				WriteAttribute(name, value);
+
+			return result;
+		}
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="value">Data to set the attribute text to</param>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteAttributeOptOnFalse(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+<# if(type.Code==TypeCode.String) { #>
+			if (predicate != string.IsNullOrEmpty && value == null)
+				throw new ArgumentNullException("value");
+<# } #>
+
+			bool result = IgnoreWritePredicates || !predicate(value);
+
+			if (result)
+				WriteAttribute(name, value);
+
+			return result;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="value">Data to set the attribute text to</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteAttributeOptOnTrue(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate, NumeralBase toBase=NumeralBase.Decimal)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+
+			bool result = IgnoreWritePredicates || predicate(value);
+
+			if (result)
+				WriteAttribute(name, value, toBase);
+
+			return result;
+		}
+		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
+		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="value">Data to set the attribute text to</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
+		/// <param name="toBase">Numerical base to use</param>
+		/// <returns>True if <paramref name="value"/> was written</returns>
+		public bool WriteAttributeOptOnFalse(TName name, <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate, NumeralBase toBase=NumeralBase.Decimal)
+		{
+			Contract.Requires(predicate != null);
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+
+			bool result = IgnoreWritePredicates || !predicate(value);
+
+			if (result)
+				WriteAttribute(name, value, toBase);
+
+			return result;
+		}
+<# } #>
+		#endregion
+
+
+		#region WriteElements
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public void WriteElements(TName elementName, ICollection< <#= type.Keyword #> > coll)
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			foreach (var value in coll)
+				WriteElement(elementName, value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public void WriteElements(TName elementName, ICollection< <#= type.Keyword #> > coll, NumeralBase toBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+			foreach (var value in coll)
+				WriteElement(elementName, value, toBase);
+		}
+<# } #>
+		#endregion
+	};
+
+
+	partial class TagElementStreamContract<TDoc, TCursor, TName>
+	{
+		#region WriteAttribute
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public override void WriteAttribute(TName name, <#= type.Keyword #> value)
+		{
+			Contract.Requires(ValidateNameArg(name));
+<# if(type.Code==TypeCode.String) { #>
+			Contract.Requires<ArgumentNullException>(value != null);
+<# } #>
+			Contract.Requires(Cursor != null, kCursorNullMsg);
+
+			throw new NotImplementedException();
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public override void WriteAttribute(TName name, <#= type.Keyword #> value, NumeralBase toBase)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(Cursor != null, kCursorNullMsg);
+
+			throw new NotImplementedException();
+		}
+<# } #>
+		#endregion
+	};
+};

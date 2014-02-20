@@ -24,4 +24,9 @@ For C#, you have to add it:
     </T4ParameterValues>
   </ItemGroup>
 
+  <!-- http://www.olegsych.com/2010/04/understanding-t4-msbuild-integration/#ConfiguringProject -->
+  <PropertyGroup>
+    <TransformOnBuild>true</TransformOnBuild>
+  </PropertyGroup>
+
 </Project>

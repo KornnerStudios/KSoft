@@ -1,0 +1,300 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+using Exprs = System.Linq.Expressions;
+
+namespace KSoft.IO
+{
+	partial class TagElementStream<TDoc, TCursor, TName>
+	{
+		#region Stream Cursor
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream the Value of <see cref="Cursor"/> to or from <paramref name="value"/></summary>
+		/// <param name="value">Source or destination value</param>
+		/// <seealso cref="ReadCursor(string, ref <#= type.Keyword #>)"/>
+		/// <seealso cref="WriteCursor(string, <#= type.Keyword #>)"/>
+		public void StreamCursor(ref <#= type.Keyword #> value)
+		{
+				 if (IsReading) ReadCursor(ref value);
+			else if (IsWriting) WriteCursor(value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Stream the Value of <see cref="Cursor"/> to or from <paramref name="value"/></summary>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="numBase">numerical base to use</param>
+		/// <seealso cref="ReadCursor(string, ref <#= type.Keyword #>, NumeralBase)"/>
+		/// <seealso cref="WriteCursor(string, <#= type.Keyword #>, NumeralBase)"/>
+		public void StreamCursor(ref <#= type.Keyword #> value, NumeralBase numBase=kDefaultRadix)
+		{
+				 if (IsReading) ReadCursor(ref value, numBase);
+			else if (IsWriting) WriteCursor(value, numBase);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Cursor, type, false);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Cursor, type, false);
+} #>
+		#endregion
+
+
+		#region Stream Element
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream the Value of element <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <seealso cref="ReadElement(string, ref <#= type.Keyword #>)"/>
+		/// <seealso cref="WriteElement(string, <#= type.Keyword #>)"/>
+		public void StreamElement(TName name, ref <#= type.Keyword #> value)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+				 if (IsReading) ReadElement(name, ref value);
+			else if (IsWriting) WriteElement(name, value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Stream the Value of element <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="numBase">numerical base to use</param>
+		/// <seealso cref="ReadElement(string, ref <#= type.Keyword #>, NumeralBase)"/>
+		/// <seealso cref="WriteElement(string, <#= type.Keyword #>, NumeralBase)"/>
+		public void StreamElement(TName name, ref <#= type.Keyword #> value, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+				 if (IsReading) ReadElement(name, ref value, numBase);
+			else if (IsWriting) WriteElement(name, value, numBase);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Element, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Element, type);
+} #>
+		#endregion
+
+
+		#region StreamElementOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream the Value of element <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <seealso cref="ReadElementOpt(TName, ref <#= type.Keyword #>)"/>
+		/// <seealso cref="WriteElementOptOnTrue(TName, <#= type.Keyword #>, Predicate{<#= type.Keyword #>})"/>
+		public bool StreamElementOpt(TName name, ref <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate = null)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True< <#= type.Keyword #> >;
+
+			bool executed = false;
+				 if (IsReading) executed = ReadElementOpt(name, ref value);
+			else if (IsWriting) executed = WriteElementOptOnTrue(name, value, predicate);
+			return executed;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Stream the Value of element <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="numBase">numerical base to use</param>
+		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <seealso cref="ReadElementOpt(TName, ref <#= type.Keyword #>, NumeralBase)"/>
+		/// <seealso cref="WriteElementOptOnTrue(TName, <#= type.Keyword #>, Predicate{<#= type.Keyword #>}, NumeralBase)"/>
+		public bool StreamElementOpt(TName name, ref <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate = null, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True< <#= type.Keyword #> >;
+
+			bool executed = false;
+				 if (IsReading) executed = ReadElementOpt(name, ref value, numBase);
+			else if (IsWriting) executed = WriteElementOptOnTrue(name, value, predicate, numBase);
+			return executed;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.ElementOpt, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.ElementOpt, type);
+} #>
+		#endregion
+
+
+		#region Stream Attribute
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream the Value of attribute <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <seealso cref="ReadAttribute(TName, ref <#= type.Keyword #>)"/>
+		/// <seealso cref="WriteAttribute(TName, <#= type.Keyword #>)"/>
+		public void StreamAttribute(TName name, ref <#= type.Keyword #> value)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+				 if (IsReading) ReadAttribute(name, ref value);
+			else if (IsWriting) WriteAttribute(name, value);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Stream the Value of attribute <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="numBase">numerical base to use</param>
+		/// <seealso cref="ReadAttribute(TName, ref <#= type.Keyword #>, NumeralBase)"/>
+		/// <seealso cref="WriteAttribute(TName, <#= type.Keyword #>, NumeralBase)"/>
+		public void StreamAttribute(TName name, ref <#= type.Keyword #> value, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+				 if (IsReading) ReadAttribute(name, ref value, numBase);
+			else if (IsWriting) WriteAttribute(name, value, numBase);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Attribute, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Attribute, type);
+} #>
+		#endregion
+
+
+		#region StreamAttributeOpt
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		/// <summary>Stream the Value of attribute <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <seealso cref="ReadAttributeOpt(TName, ref <#= type.Keyword #>)"/>
+		/// <seealso cref="WriteAttributeOptOnTrue(TName, <#= type.Keyword #>, Predicate{<#= type.Keyword #>})"/>
+		public bool StreamAttributeOpt(TName name, ref <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate = null)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True< <#= type.Keyword #> >;
+
+			bool executed = false;
+				 if (IsReading) executed = ReadAttributeOpt(name, ref value);
+			else if (IsWriting) executed = WriteAttributeOptOnTrue(name, value, predicate);
+			return executed;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		/// <summary>Stream the Value of attribute <paramref name="name"/> to or from <paramref name="value"/></summary>
+		/// <param name="name">Attribute name</param>
+		/// <param name="value">Source or destination value</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <param name="numBase">numerical base to use</param>
+		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <seealso cref="ReadAttributeOpt(string, ref <#= type.Keyword #>, NumeralBase)"/>
+		/// <seealso cref="WriteAttributeOptOnTrue(string, <#= type.Keyword #>, Predicate{<#= type.Keyword #>}, NumeralBase)"/>
+		public bool StreamAttributeOpt(TName name, ref <#= type.Keyword #> value, Predicate<<#= type.Keyword #>> predicate = null, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True< <#= type.Keyword #> >;
+
+			bool executed = false;
+				 if (IsReading) executed = ReadAttributeOpt(name, ref value, numBase);
+			else if (IsWriting) executed = WriteAttributeOptOnTrue(name, value, predicate, numBase);
+			return executed;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.AttributeOpt, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.AttributeOpt, type);
+} #>
+		#endregion
+
+
+		#region Stream Elements
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public void StreamElements(TName name, ICollection< <#= type.Keyword #> > coll)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+				 if (IsReading) ReadElements(name, coll);
+			else if (IsWriting) WriteElements(name, coll);
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public void StreamElements(TName name, ICollection< <#= type.Keyword #> > coll, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(coll != null);
+
+				 if (IsReading) ReadElements(name, coll, numBase);
+			else if (IsWriting) WriteElements(name, coll, numBase);
+		}
+<# } #>
+		#endregion
+
+
+		#region Stream Fixed Array
+<# foreach (var type in TagElementStreamsT4.SerializableTypesMisc) { #>
+		public int StreamFixedArray(TName name, <#= type.Keyword #>[] array)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(array != null);
+
+				 if (IsReading) return ReadFixedArray(name, array);
+			else if (IsWriting) WriteElements(name, array);
+
+			return array.Length;
+		}
+<# } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
+		public int StreamFixedArray(TName name, <#= type.Keyword #>[] array, NumeralBase numBase=kDefaultRadix)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(array != null);
+
+				 if (IsReading) return ReadFixedArray(name, array, numBase);
+			else if (IsWriting) WriteElements(name, array, numBase);
+
+			return array.Length;
+		}
+<# } #>
+		#endregion
+	};
+}

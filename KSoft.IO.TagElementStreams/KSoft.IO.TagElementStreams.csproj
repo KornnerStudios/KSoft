@@ -25,14 +25,41 @@
     <Compile Include="TagElementStream.Serialize.cs" />
     <Compile Include="TagElementStream.Write.cs" />
     <Compile Include="TagElementStreamBookmark.cs" />
+    <Compile Include="TypeExtensions.cs" />
+    <Compile Include="Xml\XmlElementStream.cs" />
+    <Compile Include="Xml\XmlElementStream.Read.cs" />
+    <Compile Include="Xml\XmlElementStream.Write.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Read.cs" />
+    <Compile Include="_Details\TagElementTextStream.ReadT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TagElementTextStream.ReadT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="_DetailsText\TagElementTextStream.Write.cs" />
+    <Compile Include="_Details\TagElementTextStream.WriteT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TagElementTextStream.WriteT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="_Details\TagElementStream.ReadT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TagElementStream.ReadT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="_Details\TagElementStream.SerializeT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TagElementStream.SerializeT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="_Details\TagElementStream.WriteT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TagElementStream.WriteT4.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Json\" />
-    <Folder Include="Xml\" />
-    <Folder Include="_Details\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KSoft\KSoft.csproj">
@@ -40,7 +67,33 @@
       <Name>KSoft</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="_Details\TagElementTextStream.ReadT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TagElementTextStream.ReadT4.cs</LastGenOutput>
+    </None>
+    <None Include="_Details\TagElementTextStream.WriteT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TagElementTextStream.WriteT4.cs</LastGenOutput>
+    </None>
+    <None Include="_Details\TagElementStream.ReadT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TagElementStream.ReadT4.cs</LastGenOutput>
+    </None>
+    <None Include="_Details\TagElementStream.SerializeT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TagElementStream.SerializeT4.cs</LastGenOutput>
+    </None>
+    <None Include="_Details\TagElementStream.WriteT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TagElementStream.WriteT4.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v12.0\TextTemplating\\Microsoft.TextTemplating.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

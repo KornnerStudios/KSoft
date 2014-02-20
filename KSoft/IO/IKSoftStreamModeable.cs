@@ -15,11 +15,6 @@ namespace KSoft.IO
 		/// <summary>Current data streaming state</summary>
 		/// <remarks>Read or Write, not both</remarks>
 		FileAccess StreamMode { get; set; }
-
-		/// <summary>Temporarily enter a new data streaming state</summary>
-		/// <param name="newMode"></param>
-		/// <returns></returns>
-		IKSoftStreamModeBookmark EnterStreamModeBookmark(FileAccess newMode);
 	};
 
 	[Contracts.ContractClassFor(typeof(IKSoftStreamModeable))]
@@ -41,14 +36,6 @@ namespace KSoft.IO
 
 				throw new NotImplementedException();
 			}
-		}
-
-		public IKSoftStreamModeBookmark EnterStreamModeBookmark(FileAccess newMode)
-		{
-			Contract.Requires(StreamMode != 0, "Current mode is unset!");
-			Contract.Requires(newMode != 0, "New mode is unset!");
-
-			throw new NotImplementedException();
 		}
 	};
 }

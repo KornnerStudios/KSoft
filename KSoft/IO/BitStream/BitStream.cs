@@ -41,10 +41,7 @@ namespace KSoft.IO
 		/// <summary>Owner of this stream</summary>
 		public object Owner { get; set; }
 
-		public /*IDisposable*/IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null)
-		{
-			return new IKSoftStreamOwnerBookmark(this, newOwner);
-		}
+		public object UserData { get; set; }
 
 		/// <summary>Name for this bitstream, or an empty string</summary>
 		public string StreamName			{ get; private set; }
@@ -74,14 +71,6 @@ namespace KSoft.IO
 		} }
 		public bool IsReading { get { return mStreamMode == FileAccess.Read; } }
 		public bool IsWriting { get { return mStreamMode == FileAccess.Write; } }
-
-		/// <summary>Temporarily enter a new data streaming state</summary>
-		/// <param name="newMode"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamModeBookmark EnterStreamModeBookmark(FileAccess newMode)
-		{
-			return new IKSoftStreamModeBookmark(this, newMode);
-		}
 		#endregion
 
 		/// <summary>Access operations to throw exceptions on when they result in overflows</summary>

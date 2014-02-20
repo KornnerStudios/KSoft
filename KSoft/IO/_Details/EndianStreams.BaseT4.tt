@@ -18,13 +18,7 @@ namespace KSoft.IO
 		/// <summary>Owner of this stream</summary>
 		public object Owner { get; set; }
 
-		/// <summary></summary>
-		/// <param name="newOwner"></param>
-		/// <returns></returns>
-		public /*IDisposable*/IKSoftStreamOwnerBookmark EnterOwnerBookmark(object newOwner = null)
-		{
-			return new IKSoftStreamOwnerBookmark(this, newOwner);
-		}
+		public object UserData { get; set; }
 
 		/// <summary>Do we own the base stream?</summary>
 		/// <remarks>If we don't own the stream, when this object is disposed, the <see cref="BaseStream"/> won't be closed\disposed</remarks>
@@ -161,4 +155,16 @@ namespace KSoft.IO
 	};
 
 <# } #>
+}
+
+namespace KSoft
+{
+	partial class TypeExtensions
+	{
+<# foreach(var type in PrimitiveDefinitions.Primitives) { #>
+		public static void Read(this IO.EndianReader s, out <#= type.Keyword #> value)		{ value = s.Read<#= type.Code #>(); }
+		public static void Write(this <#= type.Keyword #> value, IO.EndianWriter s)		{ s.Write(value); }
+
+<# } #>
+	};
 }

@@ -15,15 +15,19 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.VisualStudio.TextTemplating.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitwiseT4.cs" />
     <Compile Include="IO\EndianStreamsT4.cs" />
+    <Compile Include="IO\TagElementStreamsT4.cs" />
     <Compile Include="PrimitiveDefinitions\NumberCodeDefinition.cs" />
     <Compile Include="PrimitiveDefinitions\PrimitiveCodeDefinition.cs" />
     <Compile Include="PrimitiveDefinitions\PrimitiveDefinitions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextTransformationCodeBlockBookmark.cs" />
     <Compile Include="Text\NumbersT4.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
