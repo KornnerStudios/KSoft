@@ -16,12 +16,11 @@ namespace KSoft
 	{
 <# foreach(var num_type in NumbersT4.ParseableIntegersWordAligned) { #>
 <#	var prim_keyword = num_type.Keyword;
-	bool is_signed = num_type.IsSigned;
 #>
 		#region <#= num_type.Code #>
 		static void ToStringBuilder(StringBuilder sb, <#= prim_keyword #> value, int radix, int startIndex, string digits)
 		{
-<#		if (is_signed) {
+<#		if (num_type.IsSigned) {
 #>
 			// Sign support only exist for decimal and lower bases
 			if(radix <= kBase10 && value < 0)
@@ -45,7 +44,7 @@ namespace KSoft
 		{
 			int start_index = sb.Count;
 
-<#		if (is_signed) {
+<#		if (num_type.IsSigned) {
 #>
 			bool signed = false;
 			// Sign support only exist for decimal and lower bases
@@ -63,7 +62,7 @@ namespace KSoft
 				value /= radix_in_word;
 			} while (value > 0);
 
-<#		if (is_signed) {
+<#		if (num_type.IsSigned) {
 #>
 			if(signed)
 				sb.Add('-');
@@ -164,10 +163,9 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
-					{
 						chars.Add(desc.Separator);
-					}
-					else needs_separator = true;
+					else
+						needs_separator = true;
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}

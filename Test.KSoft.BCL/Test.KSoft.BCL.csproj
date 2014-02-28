@@ -49,6 +49,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Reflection\UtilitiesTest.cs" />
     <Compile Include="Security\Cryptography\JenkinsHashTest.cs" />
+    <Compile Include="Text\NumbersTest.cs" />
     <Compile Include="Text\RadixEncodingTest.cs" />
     <Compile Include="Text\StringStorageEncodingTest.cs" />
     <Compile Include="Text\Utilities.BytesTest.cs" />

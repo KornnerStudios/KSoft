@@ -13,14 +13,16 @@ namespace KSoft
 		static bool TryParseImpl(string s, ref uint result, int radix, int startIndex, int length, string digits)
 		{
 			int pos = startIndex;
+			int end = startIndex+length;
 			bool success = true;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
+			while(pos < end && char.IsWhiteSpace(s[pos]))
+				++pos;
 
 
 
-			for(var radix_in_word = (uint)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (uint)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -45,7 +47,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out uint result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -54,7 +57,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out uint result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -64,31 +68,35 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region Int32
 		static bool TryParseImpl(string s, ref int result, int radix, int startIndex, int length, string digits)
 		{
 			int pos = startIndex;
+			int end = startIndex+length;
 			bool success = true;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
+			while(pos < end && char.IsWhiteSpace(s[pos]))
+				++pos;
 
 
 			bool negate = false;
 			// Sign support only exist for decimal and lower bases
-			if (radix <= kBase10 && pos < length)
+			if (radix <= kBase10 && pos < end)
 			{
 				char sign = s[pos];
 
 				negate = sign == '-';
 				// Skip the sign character
-				if (negate || sign == '+') ++pos;
+				if (negate || sign == '+')
+					++pos;
 			}
 
-			for(var radix_in_word = (int)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (int)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -116,7 +124,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out int result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -125,7 +134,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out int result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -135,21 +145,24 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region UInt64
 		static bool TryParseImpl(string s, ref ulong result, int radix, int startIndex, int length, string digits)
 		{
 			int pos = startIndex;
+			int end = startIndex+length;
 			bool success = true;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
+			while(pos < end && char.IsWhiteSpace(s[pos]))
+				++pos;
 
 
 
-			for(var radix_in_word = (ulong)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (ulong)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -174,7 +187,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out ulong result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -183,7 +197,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out ulong result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -193,31 +208,35 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region Int64
 		static bool TryParseImpl(string s, ref long result, int radix, int startIndex, int length, string digits)
 		{
 			int pos = startIndex;
+			int end = startIndex+length;
 			bool success = true;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < length && char.IsWhiteSpace(s[pos])) ++pos;
+			while(pos < end && char.IsWhiteSpace(s[pos]))
+				++pos;
 
 
 			bool negate = false;
 			// Sign support only exist for decimal and lower bases
-			if (radix <= kBase10 && pos < length)
+			if (radix <= kBase10 && pos < end)
 			{
 				char sign = s[pos];
 
 				negate = sign == '-';
 				// Skip the sign character
-				if (negate || sign == '+') ++pos;
+				if (negate || sign == '+')
+					++pos;
 			}
 
-			for(var radix_in_word = (long)radix; success && pos < length && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (long)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -245,7 +264,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out long result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -254,7 +274,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out long result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -264,7 +285,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 
@@ -274,7 +296,7 @@ namespace KSoft
 			uint word = 0;
 			bool success = false;
 			if (TryParseImpl(s, ref word, radix, startIndex, length, digits) &&
-					word >= byte.MinValue && word <= byte.MaxValue)
+				word >= byte.MinValue && word <= byte.MaxValue)
 			{
 				result = (byte)word;
 				success = true;
@@ -289,7 +311,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out byte result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -298,7 +321,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out byte result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -308,7 +332,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region SByte
@@ -317,7 +342,7 @@ namespace KSoft
 			int word = 0;
 			bool success = false;
 			if (TryParseImpl(s, ref word, radix, startIndex, length, digits) &&
-					word >= sbyte.MinValue && word <= sbyte.MaxValue)
+				word >= sbyte.MinValue && word <= sbyte.MaxValue)
 			{
 				result = (sbyte)word;
 				success = true;
@@ -332,7 +357,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out sbyte result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -341,7 +367,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out sbyte result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -351,7 +378,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region UInt16
@@ -360,7 +388,7 @@ namespace KSoft
 			uint word = 0;
 			bool success = false;
 			if (TryParseImpl(s, ref word, radix, startIndex, length, digits) &&
-					word >= ushort.MinValue && word <= ushort.MaxValue)
+				word >= ushort.MinValue && word <= ushort.MaxValue)
 			{
 				result = (ushort)word;
 				success = true;
@@ -375,7 +403,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out ushort result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -384,7 +413,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out ushort result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -394,7 +424,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 		#region Int16
@@ -403,7 +434,7 @@ namespace KSoft
 			int word = 0;
 			bool success = false;
 			if (TryParseImpl(s, ref word, radix, startIndex, length, digits) &&
-					word >= short.MinValue && word <= short.MaxValue)
+				word >= short.MinValue && word <= short.MaxValue)
 			{
 				result = (short)word;
 				success = true;
@@ -418,7 +449,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out short result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
 		{
@@ -427,7 +459,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
+			return  s != null && startIndex < s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out short result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
 		{
@@ -437,20 +470,25 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
+			return s != null && startIndex+length <= s.Length && 
+				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
 
 		#region ParseString Byte
 		static bool ParseStringImpl(string s, ref byte value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -467,13 +505,17 @@ namespace KSoft
 		#region ParseString SByte
 		static bool ParseStringImpl(string s, ref sbyte value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -490,13 +532,17 @@ namespace KSoft
 		#region ParseString UInt16
 		static bool ParseStringImpl(string s, ref ushort value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -513,13 +559,17 @@ namespace KSoft
 		#region ParseString Int16
 		static bool ParseStringImpl(string s, ref short value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -536,13 +586,17 @@ namespace KSoft
 		#region ParseString UInt32
 		static bool ParseStringImpl(string s, ref uint value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -559,13 +613,17 @@ namespace KSoft
 		#region ParseString Int32
 		static bool ParseStringImpl(string s, ref int value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -582,13 +640,17 @@ namespace KSoft
 		#region ParseString UInt64
 		static bool ParseStringImpl(string s, ref ulong value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -605,13 +667,17 @@ namespace KSoft
 		#region ParseString Int64
 		static bool ParseStringImpl(string s, ref long value, bool noThrow, int radix, int startIndex)
 		{
-			var result = string.IsNullOrEmpty(s) ? ParseErrorType.NoInput : ParseErrorType.None;
+			var result = string.IsNullOrEmpty(s) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) ? ParseErrorType.None : ParseErrorType.InvalidValue;
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
+					? ParseErrorType.None 
+					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
 				return result == ParseErrorType.None;
@@ -647,25 +713,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<byte?>.Factory.StartNew(TryParseListTaskByte,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -703,25 +775,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<sbyte?>.Factory.StartNew(TryParseListTaskSByte,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -759,25 +837,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<ushort?>.Factory.StartNew(TryParseListTaskUInt16,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -815,25 +899,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<short?>.Factory.StartNew(TryParseListTaskInt16,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -871,25 +961,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<uint?>.Factory.StartNew(TryParseListTaskUInt32,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -927,25 +1023,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<int?>.Factory.StartNew(TryParseListTaskInt32,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -983,25 +1085,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<ulong?>.Factory.StartNew(TryParseListTaskUInt64,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 
@@ -1039,25 +1147,31 @@ namespace KSoft
 
 			char c;
 			bool found_terminator = false;
-			for (int x = 0, length = 0; !found_terminator && x < values.Length; length = 0)
+			for (int start = 0; !found_terminator && start < values.Length; )
 			{
 				// Skip any starting whitespace
-				while (x < length && char.IsWhiteSpace(values[x])) ++x;
+				while (start < values.Length && char.IsWhiteSpace(values[start]))
+					++start;
 
-				while (x+length < values.Length)
+				int end = start;
+				int length = 0;
+				while (end < values.Length)
 				{
-					c = values[x+length];
+					c = values[end];
 					found_terminator = c == desc.Terminator;
 					if (c == desc.Separator || found_terminator)
 						break;
 
+					++end;
 					++length;
 				}
 
 				if (length > 0)
 					tasks_list.Add(Task<long?>.Factory.StartNew(TryParseListTaskInt64,
-						new Tuple<StringListDesc, string, int, int>(desc, values, x, length))
+						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
 						);
+
+				start = end + 1;
 			}
 
 

@@ -32,15 +32,17 @@ namespace KSoft
 		#region Method generators
 		static ExprParam GenerateParamValue(bool byRef)
 		{
-			return Expr.Parameter(byRef ? kEnumTypeByRef : kEnumType, "value");		// [ref] TEnum value
+			return Expr.Parameter(byRef
+				? kEnumTypeByRef
+				: kEnumType, "value");							// [ref] TEnum value
 		}
 		static ExprParam GenerateParamFlags()
 		{
-			return Expr.Parameter(kEnumType, "flags");								// TEnum flags
+			return Expr.Parameter(kEnumType, "flags");			// TEnum flags
 		}
 		static ExprParam GenerateParamAddOrRemove()
 		{
-			return Expr.Parameter(typeof(bool), "addOrRemove");						// bool addOrRemove
+			return Expr.Parameter(typeof(bool), "addOrRemove");	// bool addOrRemove
 		}
 
 		// Note: Both AndAssign and OrAssign were added in .NET 4 (their sans Assign counterparts are 3.5)
@@ -81,6 +83,7 @@ namespace KSoft
 
 	public static class EnumFlags
 	{
+		#region Add
 		public static TEnum Add<TEnum>(TEnum value, TEnum flags)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -91,7 +94,9 @@ namespace KSoft
 		{
 			EnumFlags<TEnum>.Add(ref value, flags);
 		}
+		#endregion
 
+		#region Remove
 		public static TEnum Remove<TEnum>(TEnum value, TEnum flags)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -102,7 +107,9 @@ namespace KSoft
 		{
 			EnumFlags<TEnum>.Remove(ref value, flags);
 		}
+		#endregion
 
+		#region Modify
 		public static TEnum Modify<TEnum>(bool addOrRemove, TEnum value, TEnum flags)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -113,6 +120,7 @@ namespace KSoft
 		{
 			EnumFlags<TEnum>.Modify(addOrRemove, ref value, flags);
 		}
+		#endregion
 
 		public static bool Test<TEnum>(TEnum value, TEnum flags)
 			where TEnum : struct, IComparable, IFormattable, IConvertible

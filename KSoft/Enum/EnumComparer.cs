@@ -86,7 +86,8 @@ namespace KSoft
 			var yParam =			Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "y");
 			var equalExpression =	Expression.Equal(xParam, yParam);
 
-			return Expression.Lambda<Func<TEnum, TEnum, bool>>(equalExpression, xParam, yParam).Compile();
+			var lambda = Expression.Lambda<Func<TEnum, TEnum, bool>>(equalExpression, xParam, yParam);
+			return lambda.Compile();
 		}
 
 		/// <summary>Generates a GetHashCode method similar to this:
@@ -107,7 +108,8 @@ namespace KSoft
 			var getHashCodeMethod =		underlying_type.GetMethod("GetHashCode");
 			var getHashCodeExpression = Expression.Call(convertExpression, getHashCodeMethod);
 
-			return Expression.Lambda<Func<TEnum, int>>(getHashCodeExpression, objParam).Compile();
+			var lambda = Expression.Lambda<Func<TEnum, int>>(getHashCodeExpression, objParam);
+			return lambda.Compile();
 		}
 	};
 }

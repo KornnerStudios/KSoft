@@ -45,7 +45,8 @@ namespace KSoft.Reflection
 				case TypeCode.Int64:	case TypeCode.UInt64:
 					return true;
 
-				default: return false;
+				default:
+					return false;
 			}
 		}
 
@@ -58,7 +59,8 @@ namespace KSoft.Reflection
 		{
 			Contract.Requires<ArgumentNullException>(kEnumType != null);
 
-			if (kUnderlyingType == null) kUnderlyingType = kEnumType.GetEnumUnderlyingType();
+			if (kUnderlyingType == null)
+				kUnderlyingType = kEnumType.GetEnumUnderlyingType();
 
 			if (!TypeIsSupported(Type.GetTypeCode(kUnderlyingType)))
 			{
@@ -79,7 +81,8 @@ namespace KSoft.Reflection
 		{
 			Contract.Requires<ArgumentNullException>(theType != null);
 
-			if (theType.IsEnum) return;
+			if (theType.IsEnum)
+				return;
 
 			var message = string.Format("The type parameter {0} is not an Enum. Enum Utils supports Enums only.",
 							  theType);
@@ -92,7 +95,8 @@ namespace KSoft.Reflection
 
 			AssertTypeIsEnum(theType);
 
-			if (theType.GetCustomAttribute<FlagsAttribute>() != null) return;
+			if (theType.GetCustomAttribute<FlagsAttribute>() != null)
+				return;
 
 			var message = string.Format("The Enum type parameter {0} is not annotated as being a Flags Enum (via FlagsAttribute).",
 							  theType);
@@ -138,7 +142,8 @@ namespace KSoft.Reflection
 				case TypeCode.Int16:
 					return (int)((short)hc);
 
-				default: return hc;
+				default:
+					return hc;
 			}
 		}
 

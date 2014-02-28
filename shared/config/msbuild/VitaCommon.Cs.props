@@ -64,6 +64,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCpu</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -73,6 +74,8 @@
     <PlatformTarget>x64</PlatformTarget>
 	<DefineConstants>_WIN64;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
+  <!-- Itanium -->
+  <!-- ARM -->
 
   <!-- VS searches property group conditions to build the "Configuration" list. So I just define the common ones here -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">

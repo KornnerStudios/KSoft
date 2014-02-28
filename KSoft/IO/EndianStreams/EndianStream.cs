@@ -170,7 +170,7 @@ namespace KSoft.IO
 		/// <summary>Change the order in which bytes are ordered to/from the stream</summary>
 		/// <param name="newOrder">The new byte order to switch to</param>
 		/// <remarks>If <paramref name="newOrder"/> is the same as <see cref="ByteOrder"/> nothing will happen</remarks>
-		void ChangeByteOrder(Shell.EndianFormat newOrder)
+		public void ChangeByteOrder(Shell.EndianFormat newOrder)
 		{
 			if (Reader != null) Reader.ChangeByteOrder(newOrder);
 			if (Writer != null) Writer.ChangeByteOrder(newOrder);

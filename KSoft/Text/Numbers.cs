@@ -8,6 +8,9 @@ namespace KSoft
 	// Getting matching results with radix <= 63:
 	// http://www.pgregg.com/projects/php/base_conversion/base_conversion.php
 
+	// http://bitplane.net/2010/08/java-float-fast-parser/
+	// http://tinodidriksen.com/2011/05/28/cpp-convert-string-to-double-speed/
+
 	public static partial class Numbers
 	{
 		enum ParseErrorType
@@ -54,7 +57,9 @@ namespace KSoft
 		{
 			public const char kDefaultSeparator = ',';
 			public const char kDefaultTerminator = ';';
-			public static readonly StringListDesc kDefault = new StringListDesc(kDefaultSeparator);
+			public static StringListDesc Default { get { 
+				return new StringListDesc(kDefaultSeparator);
+			} }
 
 			public string Digits;
 			public NumbersRadix Radix;

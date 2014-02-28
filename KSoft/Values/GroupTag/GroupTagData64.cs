@@ -30,7 +30,10 @@ namespace KSoft.Values
 		public static readonly IEqualityComparer<GroupTagData> kEqualityComparer = Null;
 
 		[Contracts.ContractInvariantMethod]
-		void ObjectInvariant()	{ Contract.Invariant(mTag.Length == 8); }
+		void ObjectInvariant()
+		{
+			Contract.Invariant(mTag.Length == 8);
+		}
 
 
 		#region ID
@@ -144,7 +147,9 @@ namespace KSoft.Values
 			return GroupTagData64.Test(mTag, other);
 		}
 		/// <summary>Is this <see cref="GroupTagData64"/> equal to the "null" equivalent value?</summary>
-		public override bool IsNull	{ get { return object.ReferenceEquals(this, Null); } }
+		public override bool IsNull	{ get {
+			return object.ReferenceEquals(this, Null);
+		} }
 
 		#region IEquatable & IEqualityComparer Members
 		/// <summary>Compares this to another <see cref="GroupTagData64"/> object testing their <see cref="ID"/> fields for equality</summary>

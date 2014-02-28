@@ -400,10 +400,9 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
-					{
 						chars.Add(desc.Separator);
-					}
-					else needs_separator = true;
+					else
+						needs_separator = true;
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
@@ -431,10 +430,9 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
-					{
 						chars.Add(desc.Separator);
-					}
-					else needs_separator = true;
+					else
+						needs_separator = true;
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
@@ -462,10 +460,9 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
-					{
 						chars.Add(desc.Separator);
-					}
-					else needs_separator = true;
+					else
+						needs_separator = true;
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
@@ -493,10 +490,9 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
-					{
 						chars.Add(desc.Separator);
-					}
-					else needs_separator = true;
+					else
+						needs_separator = true;
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
