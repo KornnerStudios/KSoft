@@ -1,0 +1,23 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.Text
+{
+	partial class Util
+	{
+<# new TextT4.CharToByteLookupTable36CodeGenerator(this).Generate(); #>
+
+<# new TextT4.CharToByteLookupTable62CodeGenerator(this).Generate(); #>
+
+<# new TextT4.CharIsDigitLookupTable62CodeGenerator(this).Generate(); #>
+
+<# new TextT4.CharToByteLookupTable16CodeGenerator(this).Generate(); #>
+
+<# new TextT4.CharIsDigitLookupTable16CodeGenerator(this).Generate(); #>
+	};
+}

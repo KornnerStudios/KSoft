@@ -8,12 +8,17 @@ namespace KSoft.Security.Cryptography
 	{
 		public class Definition
 		{
-			public uint Polynomial { get; private set; }
-			public uint[] CrcTable { get; private set; }
-			public uint InitialValue { get; private set; }
-			public uint XorOut { get; private set; }
+			readonly uint mPolynomial;
+			readonly uint[] mCrcTable;
+			readonly uint mInitialValue;
+			readonly uint mXorOut;
 
-			uint[] BuildCrcTable()
+			public uint Polynomial { get { return mPolynomial; } }
+			public uint[] CrcTable { get { return mCrcTable; } }
+			public uint InitialValue { get { return mInitialValue; } }
+			public uint XorOut { get { return mXorOut; } }
+
+			static uint[] BuildCrcTable(uint polynomial)
 			{
 				uint[] crc_table = new uint[kCrcTableSize];
 
@@ -23,7 +28,7 @@ namespace KSoft.Security.Cryptography
 					for (uint j = 0; j < 8; j++)
 					{
 						if ((crc & 1) == 1)
-							crc = (crc >> 1) ^ Polynomial;
+							crc = (crc >> 1) ^ polynomial;
 						else
 							crc >>= 1;
 					}
@@ -37,11 +42,13 @@ namespace KSoft.Security.Cryptography
 			{
 				Contract.Requires(crcTable.IsNullOrEmpty() || crcTable.Length == kCrcTableSize);
 
-				Polynomial = polynomial;
-				InitialValue = initialValue;
-				XorOut = xorOut;
+				mPolynomial = polynomial;
+				mInitialValue = initialValue;
+				mXorOut = xorOut;
 
-				CrcTable = crcTable.IsNullOrEmpty() ? BuildCrcTable() : crcTable;
+				mCrcTable = crcTable.IsNullOrEmpty() 
+					? BuildCrcTable(Polynomial) 
+					: crcTable;
 			}
 
 			internal uint HashCore(uint crc, byte[] array, int startIndex, int count)

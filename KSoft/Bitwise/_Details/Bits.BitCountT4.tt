@@ -1,0 +1,41 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class Bits
+	{
+		// look at this http://www.df.lth.se/~john_e/gems/gem002d.html
+
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var code_gen = new BitwiseT4.BitCountCodeGenerator(
+		this, bittable_type);
+	
+	code_gen.Generate();
+#>
+
+<# } #>
+
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+#>
+		/// <summary>Calculate the bit-mask needed for a number of bits</summary>
+		/// <param name="bitCount">Number of bits needed for the mask</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> BitCountToMask<#= bittable_type.SizeOfInBits #>(int bitCount)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount >= 0 && bitCount <= k<#= bittable_type.Code #>BitCount);
+
+			return <#= prim_keyword #>.MaxValue >> (k<#= bittable_type.Code #>BitCount-bitCount);
+		}
+
+<# } #>
+	};
+}

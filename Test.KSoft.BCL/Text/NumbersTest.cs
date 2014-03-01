@@ -6,10 +6,10 @@ namespace KSoft.Text.Test
 	[TestClass]
 	public partial class NumbersTest : BaseTestClass
 	{
-		const string kInt32ListString = "516,517,519,520,521,522,523,1258";
+		const string kInt32ListString = "-516,517,519,520,521,522,523,-1258";
 		static readonly string kInt32ListStringWithSpaces = kInt32ListString.Replace(",", ", ");
 		static readonly int[] kInt32List = {
-			516,517,519,520,521,522,523,1258,
+			-516,517,519,520,521,522,523,-1258,
 		};
 
 		#region StringListDesc related

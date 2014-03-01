@@ -30,6 +30,16 @@
     <Compile Include="Bitwise\Int24.cs" />
     <Compile Include="Bitwise\RealNumberUnions.cs" />
     <Compile Include="Bitwise\Single24.cs" />
+    <Compile Include="Bitwise\_Details\Bits.BitCountT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Bits.BitCountT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Bitwise\_Details\Bits.BitReverseT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Bits.BitReverseT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Bitwise\_Details\Bits.BitSwapT4.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -203,6 +213,11 @@
     <Compile Include="Text\TextLineInfo.cs" />
     <Compile Include="Text\Utilities.Bytes.cs" />
     <Compile Include="Text\Utilities.cs" />
+    <Compile Include="Text\_Details\CharLookupTablesT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CharLookupTablesT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Text\_Details\NumbersParseT4.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -242,6 +257,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Bitwise\_Details\Bits.BitCountT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Bits.BitCountT4.cs</LastGenOutput>
+    </None>
+    <None Include="Bitwise\_Details\Bits.BitReverseT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Bits.BitReverseT4.cs</LastGenOutput>
+    </None>
     <None Include="Bitwise\_Details\Bits.BitSwapT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Bits.BitSwapT4.cs</LastGenOutput>
@@ -317,6 +340,10 @@
     <None Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EndianStreams.VirtualAddressTranslationT4.cs</LastGenOutput>
+    </None>
+    <None Include="Text\_Details\CharLookupTablesT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CharLookupTablesT4.cs</LastGenOutput>
     </None>
     <None Include="Text\_Details\NumbersParseT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
