@@ -6,6 +6,213 @@ namespace KSoft.Bitwise
 {
 	partial class Flags
 	{
+		#region Test
+		#region 8-bit
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(byte value, byte flag)
+		{
+			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(sbyte value, sbyte flag)
+		{
+			return (value & flag) == flag;
+		}
+
+		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flags">Values to test for</param>
+		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool Test(byte value, params byte[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			bool ret = false;
+			foreach (var i in flags)
+				ret = ret & Test(value, i);
+			return ret;
+		}
+
+		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value"></param>
+		/// <param name="flags"></param>
+		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool TestAny(byte value, params byte[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			foreach (var i in flags)
+				if (Test(value, i))
+					return true;
+
+			return false;
+		}
+		#endregion
+		#region 16-bit
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(ushort value, ushort flag)
+		{
+			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(short value, short flag)
+		{
+			return (value & flag) == flag;
+		}
+
+		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flags">Values to test for</param>
+		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool Test(ushort value, params ushort[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			bool ret = false;
+			foreach (var i in flags)
+				ret = ret & Test(value, i);
+			return ret;
+		}
+
+		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value"></param>
+		/// <param name="flags"></param>
+		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool TestAny(ushort value, params ushort[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			foreach (var i in flags)
+				if (Test(value, i))
+					return true;
+
+			return false;
+		}
+		#endregion
+		#region 32-bit
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(uint value, uint flag)
+		{
+			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(int value, int flag)
+		{
+			return (value & flag) == flag;
+		}
+
+		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flags">Values to test for</param>
+		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool Test(uint value, params uint[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			bool ret = false;
+			foreach (var i in flags)
+				ret = ret & Test(value, i);
+			return ret;
+		}
+
+		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value"></param>
+		/// <param name="flags"></param>
+		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool TestAny(uint value, params uint[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			foreach (var i in flags)
+				if (Test(value, i))
+					return true;
+
+			return false;
+		}
+		#endregion
+		#region 64-bit
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(ulong value, ulong flag)
+		{
+			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) == <paramref name="flag"/></returns>
+		[Contracts.Pure]
+		public static bool Test(long value, long flag)
+		{
+			return (value & flag) == flag;
+		}
+
+		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flags">Values to test for</param>
+		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool Test(ulong value, params ulong[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			bool ret = false;
+			foreach (var i in flags)
+				ret = ret & Test(value, i);
+			return ret;
+		}
+
+		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
+		/// <param name="value"></param>
+		/// <param name="flags"></param>
+		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static bool TestAny(ulong value, params ulong[] flags)
+		{
+			Contract.Requires(flags != null);
+
+			foreach (var i in flags)
+				if (Test(value, i))
+					return true;
+
+			return false;
+		}
+		#endregion
+		#endregion
+
 		#region Add
 		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>

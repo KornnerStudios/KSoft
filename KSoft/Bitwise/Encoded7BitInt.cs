@@ -47,7 +47,7 @@ namespace KSoft.Bitwise
 			Contract.Requires(buffer.Length > 1);
 			Contract.Requires(startIndex > 0);
 			Contract.Requires(maxCount > 0);
-			endingIndex = -1;
+			endingIndex = TypeExtensions.kNoneInt32;
 
 			int size = 0; // size (bytes) of the encoded int
 			int count = 0;
@@ -58,10 +58,10 @@ namespace KSoft.Bitwise
 				// Check for a corrupted stream.  Access a max of 5 bytes.
 				// In a future version, add a DataFormatException.
 				if (shift == 5 * 7)  // 5 bytes max per Int32, shift += 7
-					return -1;
+					return TypeExtensions.kNoneInt32;
 				// Either a corrupted stream or the buffer is incomplete
 				if (size >= maxCount)
-					return -1;
+					return TypeExtensions.kNoneInt32;
 
 				b = buffer[startIndex + size++];
 				count |= (b & 0x7F) << shift;
@@ -71,7 +71,7 @@ namespace KSoft.Bitwise
 			// either buffer is incomplete or 
 			// this isn't even data with a 7-bit integer.
 			if ((size + count) > maxCount)
-				return -1;
+				return TypeExtensions.kNoneInt32;
 
 			endingIndex = startIndex + size;
 

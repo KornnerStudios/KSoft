@@ -81,5 +81,15 @@ namespace KSoft.Reflection.Test
 			name = Reflection.Util.PropertyNameFromExpr((TestPropertyNameFromExprClass v) => v.Property);
 			Assert.AreEqual("Property", name);
 		}
+
+
+		[TestMethod]
+		public void Reflection_GenerateLiteralMemberGetterTest()
+		{
+			// internal const int DefaultBufferSize
+			var kDefaultBufferSize = Util.GenerateStaticFieldGetter<System.IO.StreamReader, int>("DefaultBufferSize");
+
+			Assert.AreEqual(1024, kDefaultBufferSize());
+		}
 	};
 }

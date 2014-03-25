@@ -7,106 +7,6 @@ namespace KSoft.Bitwise
 	/// <summary>Static class for manipulating integer bit-vectors</summary>
 	public static partial class Flags
 	{
-		#region Test
-		#region 16-bit
-		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flag">Value to test for</param>
-		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
-		[Contracts.Pure]
-		public static bool Test(short value, short flag) { return (value & flag) == flag; }
-
-		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flag">Value to test for</param>
-		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
-		[Contracts.Pure]
-		public static bool Test(ushort value, ushort flag) { return (value & flag) == flag; }
-		#endregion
-
-		#region 32-bit
-		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flag">Value to test for</param>
-		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
-		[Contracts.Pure]
-		public static bool Test(int value, int flag) { return (value & flag) == flag; }
-
-		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flag">Value to test for</param>
-		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
-		[Contracts.Pure]
-		public static bool Test(uint value, uint flag) { return (value & flag) == flag; }
-
-		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flags">Values to test for</param>
-		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static bool Test(uint value, params uint[] flags)
-		{
-			Contract.Requires(flags != null);
-
-			bool ret = false;
-			foreach (uint i in flags)
-				ret = ret & Test(value, i);
-			return ret;
-		}
-
-		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
-		/// <param name="value"></param>
-		/// <param name="flags"></param>
-		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static bool TestAny(uint value, params uint[] flags)
-		{
-			Contract.Requires(flags != null);
-
-			foreach (uint i in flags)
-				if (Test(value, i)) return true;
-
-			return false;
-		}
-		#endregion
-
-		/// <summary>Returns true if <paramref name="flag"/> is active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flag">Value to test for</param>
-		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
-		[Contracts.Pure]
-		public static bool Test(ulong value, ulong flag) { return (value & flag) == flag; }
-
-		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
-		/// <param name="value">Value to test in</param>
-		/// <param name="flags">Values to test for</param>
-		/// <returns>Returns true if ALL the flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static bool Test(ulong value, params ulong[] flags)
-		{
-			Contract.Requires(flags != null);
-
-			bool ret = false;
-			foreach (ulong i in flags)
-				ret = ret & Test(value, i);
-			return ret;
-		}
-
-		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
-		/// <param name="value"></param>
-		/// <param name="flags"></param>
-		/// <returns>Returns true if any (one, some, or all) flag values in <paramref name="flags"/> are set in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static bool TestAny(ulong value, params ulong[] flags)
-		{
-			Contract.Requires(flags != null);
-
-			foreach (ulong i in flags)
-				if (Test(value, i)) return true;
-
-			return false;
-		}
-		#endregion
 	};
 
 	/// <summary>Encases a 32-bit bit-vector into a reference object, with bit-manipulator methods</summary>
@@ -130,7 +30,8 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires(values != null);
 
-			foreach (uint f in values) Add(f);
+			foreach (uint f in values)
+				Add(f);
 		}
 
 		/// <summary>Implicitly case an unsigned integer into a <see cref="Flags32"/> representation</summary>
@@ -170,7 +71,13 @@ namespace KSoft.Bitwise
 		/// <param name="cond">condition to use to determine when to set flags</param>
 		/// <param name="flags">flags to add</param>
 		/// <returns><paramref name="cond"/>'s value</returns>
-		public bool Add(bool cond, uint flags)		{ if (cond) Add(flags); return cond; }
+		public bool Add(bool cond, uint flags)
+		{
+			if (cond)
+				Add(flags);
+			
+			return cond;
+		}
 		#endregion
 
 		#region Remove
@@ -182,7 +89,13 @@ namespace KSoft.Bitwise
 		/// <param name="cond">condition to use to determine when to remove flags</param>
 		/// <param name="flags">flags to remove</param>
 		/// <returns><paramref name="cond"/>'s value</returns>
-		public bool Remove(bool cond, uint flags)	{ if (cond) Remove(flags); return cond; }
+		public bool Remove(bool cond, uint flags)
+		{
+			if (cond)
+				Remove(flags);
+			
+			return cond;
+		}
 		#endregion
 
 

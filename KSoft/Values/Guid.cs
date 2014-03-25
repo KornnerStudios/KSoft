@@ -44,7 +44,6 @@ namespace KSoft.Values
 
 	/// <remarks>Caveat emptor: has a static ctor</remarks>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
-	//[Interop.]
 	[Interop.ComVisible(true)]
 	[Serializable]
 	public struct KGuid : IO.IEndianStreamable,
@@ -57,11 +56,9 @@ namespace KSoft.Values
 
 		const int kVersionBitCount = 4;
 		const int kVersionBitShift = Bits.kInt16BitCount - kVersionBitCount;
-//		static readonly int kVersionBitMask = (int)Bits.BitCountToMask32(kVersionBitCount);
 
 		const int kVariantBitCount = 3;
 		const int kVariantBitShift = Bits.kByteBitCount - kVariantBitCount;
-//		static readonly int kVariantBitMask = (int)Bits.BitCountToMask32(kVariantBitCount);
 		#endregion
 
 		#region Guid Accessors
@@ -76,12 +73,16 @@ namespace KSoft.Values
 
 		static KGuid()
 		{
-			kGetData1 = Reflection.Util.GenerateMemberGetter<Guid, int>				("_a");
-			kSetData1 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, int>	("_a");
-			kGetData2 = Reflection.Util.GenerateMemberGetter<Guid, short>			("_b");
-			kSetData2 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	("_b");
-			kGetData3 = Reflection.Util.GenerateMemberGetter<Guid, short>			("_c");
-			kSetData3 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	("_c");
+			const string	kData1Name = "_a", 
+							kData2Name = "_b",
+							kData3Name = "_c";
+
+			kGetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
+			kSetData1 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, int>		(kData1Name);
+			kGetData2 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData2Name);
+			kSetData2 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, short>	(kData2Name);
+			kGetData3 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData3Name);
+			kSetData3 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, short>	(kData3Name);
 
 			string[] kData4Names = { "_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k", };
 			kGetData4 = new Func<Guid, byte>[kData4Names.Length];
@@ -89,7 +90,7 @@ namespace KSoft.Values
 
 			for (int x = 0; x < kData4Names.Length; x++)
 			{
-				kGetData4[x] = Reflection.Util.GenerateMemberGetter<Guid, byte>(kData4Names[x]);
+				kGetData4[x] = Reflection.Util.GenerateMemberGetter			<Guid, byte>(kData4Names[x]);
 				kSetData4[x] = Reflection.Util.GenerateValueTypeMemberSetter<Guid, byte>(kData4Names[x]);
 			}
 		}
@@ -135,9 +136,6 @@ namespace KSoft.Values
 		} }
 		public long LeastSignificantBits { get {
 			long result = Data4;
-
-			//for (int x = 0; x < kGetData4.Length; x++, result <<= Bits.kByteBitCount)
-			//	result |= kGetData4[x](mData);
 
 			return result;
 		} }

@@ -13,13 +13,13 @@ namespace KSoft.Bitwise
 
 			int mCodesIndex;
 
-			public Swapper(int k_sizeof, params short[] k_codes)
+			public Swapper(int sizeOf, params short[] codes)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(k_sizeof > 0);
-				Contract.Requires<ArgumentNullException>(k_codes != null);
+				Contract.Requires<ArgumentOutOfRangeException>(sizeOf > 0);
+				Contract.Requires<ArgumentNullException>(codes != null);
 
-				kCodes = k_codes;
-				kSizeOf = k_sizeof;
+				kCodes = codes;
+				kSizeOf = sizeOf;
 
 				mCodesIndex = 0;
 			}

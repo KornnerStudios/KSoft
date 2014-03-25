@@ -9,14 +9,18 @@ namespace KSoft.T4
 	};
 	struct TextTransformationCodeBlockBookmark : IDisposable
 	{
-		Microsoft.VisualStudio.TextTemplating.TextTransformation mFile;
-		TextTransformationCodeBlockType mType;
+		internal const string kIndent = "\t";
+
+		readonly Microsoft.VisualStudio.TextTemplating.TextTransformation mFile;
+		readonly TextTransformationCodeBlockType mType;
+		readonly int mIndentCount;
 
 		public TextTransformationCodeBlockBookmark(Microsoft.VisualStudio.TextTemplating.TextTransformation file,
-			TextTransformationCodeBlockType type)
+			TextTransformationCodeBlockType type, int indentCount = 1)
 		{
 			mFile = file;
 			mType = type;
+			mIndentCount = indentCount;
 		}
 
 		internal void Enter()
@@ -24,12 +28,14 @@ namespace KSoft.T4
 			if (mType == TextTransformationCodeBlockType.Brackets)
 				mFile.WriteLine("{");
 
-			mFile.PushIndent("\t");
+			for (int x = 0; x < mIndentCount; x++)
+				mFile.PushIndent(kIndent);
 		}
 
 		public void Dispose()
 		{
-			mFile.PopIndent();
+			for (int x = 0; x < mIndentCount; x++)
+				mFile.PopIndent();
 
 			if (mType == TextTransformationCodeBlockType.Brackets)
 				mFile.WriteLine("}");

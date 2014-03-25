@@ -17,11 +17,32 @@ namespace KSoft.T4
 			return sb.ToString();
 		}
 
+		public static NumberCodeDefinition TryGetSignedDefinition(this NumberCodeDefinition def)
+		{
+			switch (def.Code)
+			{
+				case TypeCode.Byte:
+					return PrimitiveDefinitions.kSByte;
+
+				case TypeCode.UInt16:
+					return PrimitiveDefinitions.kInt16;
+
+				case TypeCode.UInt32:
+					return PrimitiveDefinitions.kInt32;
+
+				case TypeCode.UInt64:
+					return PrimitiveDefinitions.kInt64;
+
+				default:
+					return null;
+			}
+		}
+
 		internal static TextTransformationCodeBlockBookmark EnterCodeBlock(
 			this TextTemplating.TextTransformation ttFile,
-			TextTransformationCodeBlockType type = TextTransformationCodeBlockType.NoBrackets)
+			TextTransformationCodeBlockType type = TextTransformationCodeBlockType.NoBrackets, int indentCount = 1)
 		{
-			var bookmark = new TextTransformationCodeBlockBookmark(ttFile, type);
+			var bookmark = new TextTransformationCodeBlockBookmark(ttFile, type, indentCount);
 			bookmark.Enter();
 
 			return bookmark;
@@ -84,5 +105,12 @@ namespace KSoft.T4
 		{
 			return condition ? string.Format(trueStringFormat, args) : string.Empty;
 		}
+
+		class NullDisposableImpl : IDisposable
+		{
+			public void Dispose() { }
+		};
+		/// <summary>Object which can be disposed of without limit and is thread safe</summary>
+		public static readonly IDisposable NullDisposable = new NullDisposableImpl();
 	};
 }

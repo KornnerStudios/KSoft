@@ -28,6 +28,7 @@ namespace KSoft.Reflection
 		/// {
 		///     return @this.memberName;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Func<T, R> GenerateMemberGetter<T, R>(string memberName)
 		{
@@ -51,6 +52,7 @@ namespace KSoft.Reflection
 		/// {
 		///     return T.memberName;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Func<R> GenerateStaticPropertyGetter<T, R>(string memberName)
 		{
@@ -73,6 +75,7 @@ namespace KSoft.Reflection
 		/// {
 		///     return T.memberName;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Func<R> GenerateStaticFieldGetter<T, R>(string memberName)
 		{
@@ -96,6 +99,7 @@ namespace KSoft.Reflection
 		/// {
 		///     return ((type)@this).memberName;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Func<object, R> GenerateMemberGetter<R>(Type type, string memberName)
 		{
@@ -135,6 +139,7 @@ namespace KSoft.Reflection
 		/// {
 		///     @this.memberName = value;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static ValueTypeMemberSetterDelegate<T, V> GenerateValueTypeMemberSetter<T, V>(string memberName)
 			where T : struct
@@ -167,6 +172,7 @@ namespace KSoft.Reflection
 		/// {
 		///     @this.memberName = value;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static ReferenceTypeMemberSetterDelegate<T, V> GenerateReferenceTypeMemberSetter<T, V>(string memberName)
 			where T : class
@@ -194,6 +200,7 @@ namespace KSoft.Reflection
 		/// {
 		///     ((type)@this).memberName = value;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static ReferenceTypeMemberSetterDelegate<object, V> GenerateReferenceTypeMemberSetter<V>(Type type, string memberName)
 		{
@@ -224,6 +231,7 @@ namespace KSoft.Reflection
 		/// {
 		///     T.memberName = value;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Action<V> GenerateStaticPropertySetter<T, V>(string memberName)
 			where T : class
@@ -249,6 +257,7 @@ namespace KSoft.Reflection
 		/// {
 		///     T.memberName = value;
 		/// }
+		/// </code>
 		/// </remarks>
 		public static Action<V> GenerateStaticFieldSetter<T, V>(string memberName)
 			where T : class

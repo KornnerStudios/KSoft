@@ -40,18 +40,18 @@ namespace KSoft.Bitwise
 			readonly short[] kBsCodes;
 			public short[] ByteSwapCodes		{ get { return kBsCodes; } }
 			readonly int kSizeOf;
-			public int SizeOf { get { return kSizeOf; } }
+			public int SizeOf					{ get { return kSizeOf; } }
 
-			public BsDefinition(string name, int size_of, params short[] bs_codes)
+			public BsDefinition(string name, int sizeOf, params short[] bsCodes)
 			{
 				Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(name));
-				Contract.Requires<ArgumentOutOfRangeException>(size_of > 0);
-				Contract.Requires<ArgumentNullException>(bs_codes != null);
-				Contract.Requires<ArgumentException>(bs_codes.Length >= kMinumumNumberOfDefinitionBsCodes);
+				Contract.Requires<ArgumentOutOfRangeException>(sizeOf > 0);
+				Contract.Requires<ArgumentNullException>(bsCodes != null);
+				Contract.Requires<ArgumentException>(bsCodes.Length >= kMinumumNumberOfDefinitionBsCodes);
 
 				kName = name;
-				kSizeOf = size_of;
-				kBsCodes = bs_codes;
+				kSizeOf = sizeOf;
+				kBsCodes = bsCodes;
 			}
 		};
 

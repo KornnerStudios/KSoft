@@ -65,17 +65,17 @@ namespace KSoft
 			return true;
 		}
 		[Contracts.Pure]
-		public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
+		public static bool EqualsArray<T>(this T[] lhs, T[] rhs, int lhsOffset = 0)
 			where T : IEquatable<T>
 		{
 			Contract.Requires(lhs != null && rhs != null);
 
 			if (lhs == rhs)
 				return true;
-			else if (rhs.Length < lhs.Length)
+			else if (rhs.Length < (lhs.Length-lhsOffset))
 				return false;
 
-			for (int x = 0; x < lhs.Length; x++)
+			for (int x = lhsOffset; x < (lhs.Length-lhsOffset); x++)
 				if (!rhs[x].Equals(lhs[x]))
 					return false;
 

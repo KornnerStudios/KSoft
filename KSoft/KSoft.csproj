@@ -251,6 +251,7 @@
     <Compile Include="Xml\XmlAttributeWithLocation.cs" />
     <Compile Include="Xml\XmlDocumentWithLocation.cs" />
     <Compile Include="Xml\XmlElementWithLocation.cs" />
+    <Compile Include="Xml\XmlReaderStreamOffsetCalculator.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

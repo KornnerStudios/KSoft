@@ -37,6 +37,7 @@
       <Link>IO\BkBitStream.cs</Link>
     </Compile>
     <Compile Include="Bitwise\BitsTest.cs" />
+    <Compile Include="Bitwise\ByteSwapTest.cs" />
     <Compile Include="Bitwise\Single24Test.cs" />
     <Compile Include="Collections\BitSetTest.cs" />
     <Compile Include="Collections\ValueTypeComparersTest.cs" />
@@ -75,6 +76,11 @@
     <Folder Include="Math\" />
     <Folder Include="Memory\" />
     <Folder Include="Values\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Bitwise\OrderedTests_ByteSwap.orderedtest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -13,7 +13,7 @@ namespace KSoft.Xml
 
 		internal Text.TextLineInfo CurrentLineInfo { get {
 			if (mLoadReader != null && mLoadReader.HasLineInfo())
-				new Text.TextLineInfo(mLoadReader.LineNumber, mLoadReader.LinePosition);
+				return new Text.TextLineInfo(mLoadReader.LineNumber, mLoadReader.LinePosition);
 
 			return Text.TextLineInfo.Empty;
 		} }

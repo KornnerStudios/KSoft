@@ -89,15 +89,18 @@ namespace KSoft.T4.Bitwise
 		{
 			static readonly string kByteKeyword = NumberCodeDefinition.TypeCodeToKeyword(TypeCode.Byte);
 
+			TextTemplating.TextTransformation mFile;
 			NumberCodeDefinition mDef;
 			string mByteName;
 
 			string mBufferName;
 			string mOffsetName; // NOTE: offset variable must be mutable!
 
-			public IntegerByteAccessCodeGenerator(NumberCodeDefinition def,
+			public IntegerByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
+				NumberCodeDefinition def,
 				string byteName, string bufferName, string offsetName = null)
 			{
+				mFile = ttFile;
 				mDef = def;
 				mByteName = byteName;
 
@@ -105,74 +108,94 @@ namespace KSoft.T4.Bitwise
 				mOffsetName = offsetName;
 			}
 
-			public string GenerateByteDeclarations()
+			void GenerateByteDeclarationsCode()
 			{
-				var sb = new System.Text.StringBuilder();
-
-				sb.AppendFormat("{0} ", kByteKeyword);
+				mFile.Write("{0} ", kByteKeyword);
 				for (int x = 0; x < mDef.SizeOfInBytes; x++)
 				{
-					sb.AppendFormat("{0}{1}", mByteName, x);
+					mFile.Write("{0}{1}", mByteName, x);
 
-					if (x < (mDef.SizeOfInBytes-1))
-						sb.Append(", ");
+					if (x < (mDef.SizeOfInBytes - 1))
+						mFile.Write(", ");
 				}
-				sb.Append(';');
-
-				return sb.ToString();
+				mFile.WriteLine(";");
 			}
-			public string GenerateBytesFromBuffer()
+			public void GenerateByteDeclarations()
+			{
+				// indent to method code body's indention level
+				using (mFile.EnterCodeBlock(indentCount: 3))
+				{
+					GenerateByteDeclarationsCode();
+				}
+			}
+
+			void GenerateBytesFromBufferCode()
 			{
 				Debug.Assert(mOffsetName != null, "generator not setup for read/write from/to a buffer");
 
-				var sb = new System.Text.StringBuilder();
-
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, sb.Append("; "))
+				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
-					sb.AppendFormat("{0}{1} = ", mByteName, x);
-					sb.AppendFormat("{0}[{1}++]", mBufferName, mOffsetName);
+					mFile.Write("{0}{1} = ", mByteName, x);
+					mFile.Write("{0}[{1}++]", mBufferName, mOffsetName);
 				}
-
-				return sb.ToString();
 			}
-			public string GenerateBytesFromValue(string valueName, bool littleEndian = true)
+			public void GenerateBytesFromBuffer(bool indentPlusOne = false)
 			{
-				var sb = new System.Text.StringBuilder();
+				// indent to method code body's indention level
+				using (mFile.EnterCodeBlock(indentCount: 3))
+				{
+					GenerateBytesFromBufferCode();
+				}
+			}
 
-				int bit_offset = littleEndian
+			void GenerateBytesFromValueCode(string valueName, bool littleEndian)
+			{
+				int bit_offset = !littleEndian
 					? mDef.SizeOfInBits
 					: 0 - kBitsPerByte;
-				int bit_adjustment = littleEndian
+				int bit_adjustment = !littleEndian
 					? -kBitsPerByte
 					: +kBitsPerByte;
 
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, sb.Append("; "))
+				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
-					sb.AppendFormat("{0}{1} = ", mByteName, x);
-					sb.AppendFormat("({0})({1} >> {2,2})", kByteKeyword, valueName, bit_offset += bit_adjustment);
+					mFile.Write("{0}{1} = ", mByteName, x);
+					mFile.Write("({0})({1} >> {2,2})", kByteKeyword, valueName, bit_offset += bit_adjustment);
 				}
-
-				return sb.ToString();
 			}
-			public string GenerateWriteBytesToBuffer(bool useSwapFormat = true)
+			public void GenerateBytesFromValue(string valueName, bool littleEndian = true)
+			{
+				// indent to method code body's indention level, plus one (assumed we are in a if-statement)
+				using (mFile.EnterCodeBlock(indentCount: 3+1))
+				{
+					GenerateBytesFromValueCode(valueName, littleEndian);
+				}
+			}
+
+			void GenerateWriteBytesToBufferCode(bool useSwapFormat)
 			{
 				const string k_swap_format =		"{0}[--{1}] = ";
 				const string k_replacement_format =	"{0}[{1}++] = ";
 
 				Debug.Assert(mOffsetName != null);
 
-				var sb = new System.Text.StringBuilder();
 				string format = useSwapFormat
 					? k_swap_format
 					: k_replacement_format;
 
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, sb.Append("; "))
+				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
-					sb.AppendFormat(format, mBufferName, mOffsetName);
-					sb.AppendFormat("{0}{1}", mByteName, x);
+					mFile.Write(format, mBufferName, mOffsetName);
+					mFile.Write("{0}{1}", mByteName, x);
 				}
-
-				return sb.ToString();
+			}
+			public void GenerateWriteBytesToBuffer(bool useSwapFormat = true)
+			{
+				// indent to method code body's indention level
+				using (mFile.EnterCodeBlock(indentCount: 3))
+				{
+					GenerateWriteBytesToBufferCode(useSwapFormat);
+				}
 			}
 		};
 
