@@ -186,6 +186,11 @@
       <DependentUpon>EndianStreams.VirtualAddressTranslationT4.tt</DependentUpon>
     </Compile>
     <Compile Include="Math\IntegerMath.cs" />
+    <Compile Include="Math\_Details\IntegerMathT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IntegerMathT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Memory\Strings\Enums.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.Enumerator.cs" />
@@ -341,6 +346,10 @@
     <None Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EndianStreams.VirtualAddressTranslationT4.cs</LastGenOutput>
+    </None>
+    <None Include="Math\_Details\IntegerMathT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IntegerMathT4.cs</LastGenOutput>
     </None>
     <None Include="Text\_Details\CharLookupTablesT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

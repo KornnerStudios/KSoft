@@ -98,6 +98,36 @@ namespace KSoft.T4
 			return TypeCodeToKeyword(SignedCode);
 		} }
 
+		public string LiteralSuffix { get {
+			switch(Code)
+			{
+				case TypeCode.UInt32:
+					return "U";
+
+				case TypeCode.Int64:
+					return "L";
+
+				case TypeCode.UInt64:
+					return "UL";
+
+				case TypeCode.Single:
+					return "f";
+
+				default:
+					return "";
+			}
+		} }
+
+		/// <summary>Do the bit operators of this integer type cause the value to be implicitly upgraded to a larger int type?</summary>
+		public bool BitOperatorsImplicitlyUpCast { get {
+			return IsInteger && SizeOfInBits < 32;
+		} }
+
+		/// <summary>Shift amount to get or set the byte with the MSB</summary>
+		public int MostSignificantByteBitShift { get {
+			return SizeOfInBits - Bitwise.BitwiseT4.kBitsPerByte;
+		} }
+
 		static string TypeCodeToOperationWord(TypeCode typeCode)
 		{
 			switch(typeCode)

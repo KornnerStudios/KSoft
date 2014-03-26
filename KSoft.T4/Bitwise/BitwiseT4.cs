@@ -7,7 +7,7 @@ namespace KSoft.T4.Bitwise
 {
 	public static partial class BitwiseT4
 	{
-		const int kBitsPerByte = sizeof(byte) * 8;
+		public const int kBitsPerByte = sizeof(byte) * 8;
 
 		// Get the keyword used to define general constants for integer types (bit count, etc)
 		public static string GetConstantKeyword(this NumberCodeDefinition def)
@@ -82,6 +82,11 @@ namespace KSoft.T4.Bitwise
 			foreach (var num_type in PrimitiveDefinitions.Numbers)
 				if (num_type.IsInteger)
 					yield return num_type;
+		} }
+
+		public static IEnumerable<NumberCodeDefinition> BittableTypesInt32 { get {
+			yield return PrimitiveDefinitions.kUInt32;
+			yield return PrimitiveDefinitions.kInt32;
 		} }
 		#endregion
 

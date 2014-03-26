@@ -1,0 +1,136 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft
+{
+	partial class IntegerMath
+	{
+		#region Align
+<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32) { #>
+		/// <summary>Takes <paramref name="value"/> and returns what it would be if it were aligned to <paramref name="align_size"/> bytes</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns><paramref name="value"/> aligned to the next <paramref name="alignmentBit"/> boundary, if it isn't already</returns>
+		[Contracts.Pure]
+		public static <#= bittable_type.Keyword #> Align(int alignmentBit, <#= bittable_type.Keyword #> value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+<#		if(bittable_type.IsSigned) { #>
+			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() >= 0);
+<#		} #>
+			<#= bittable_type.Keyword #> align_size = 1<#= bittable_type.LiteralSuffix #> << alignmentBit;
+
+			return (value + (align_size-1)) & ~(align_size-1);
+		}
+
+<# } #>
+		#endregion
+
+		#region PaddingRequired
+<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32) { #>
+		/// <summary>Calculate the number of padding bytes, if any, needed to align a value</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns>Bytes needed to align <paramref name="value"/> to the next <paramref name="alignmentBit"/> boundary, or zero if it is already aligned</returns>
+		[Contracts.Pure]
+		public static int PaddingRequired(int alignmentBit, <#= bittable_type.Keyword #> value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+<#		if(bittable_type.IsSigned) { #>
+			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() >= 0);
+<#		} #>
+
+			return (int)(Align(alignmentBit, value) - value);
+		}
+
+<# } #>
+		#endregion
+
+		#region FloorLog2 - Unsigned Integer
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#
+#>
+		/// <summary>Get the largest power of 2 that is less than or equal to the input (positive) number</summary>
+		/// <param name="n">Positive number's log2 to deduce</param>
+		/// <returns>
+		/// The floor form of log2(<paramref name="n"/>).
+		/// 
+		/// Or -1 if <paramref name="n"/> is 0.
+		/// </returns>
+		[Contracts.Pure]
+		public static int FloorLog2(<#= bittable_type.Keyword #> n)
+		{
+			if (n == 0)			return -1;
+			int pos = 0;
+<#		for(int x = bittable_type.SizeOfInBits >> 1; x > 1; x >>= 1) { #>
+			if (n >= 1 << <#= x #>)	{ n >>= <#= x #>;	pos += <#= x #>; }
+<#		} #>
+			if (n >= 1 << 1)	pos += 1;
+
+			return pos;
+		}
+
+<# } #>
+		#endregion
+
+		#region IsSigned
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#
+#>
+		/// <summary>Tests to see if the given value's sign-bit is on</summary>
+		/// <param name="value">Value to test</param>
+		/// <returns>True if the sign-bit is set</returns>
+		[Contracts.Pure]
+		public static bool IsSigned(<#= bittable_type.Keyword #> value)
+		{
+			return ((value >> <#= FixedWidthMostSignificantByteBitShift(bittable_type) #>) & 0x80) != 0;
+		}
+
+<# } #>
+		#endregion
+
+		#region SetSignBit
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#
+#>
+		/// <summary>Set the sign-bit in the value given</summary>
+		/// <param name="value">Value to return with its sign-bit set</param>
+		/// <returns><paramref name="value"/> with its sign-bit set</returns>
+		[Contracts.Pure]
+		public static <#= bittable_type.Keyword #> SetSignBit(<#= bittable_type.Keyword #> value)
+		{
+<#		if (bittable_type.BitOperatorsImplicitlyUpCast) { #>
+				return (<#= bittable_type.Keyword #>) (
+<#		} else { #>
+				return 
+<#		} #>
+					value | (<#= FixedWidthMostSignificantByteBitMask(bittable_type) #> << <#= FixedWidthMostSignificantByteBitShift(bittable_type) #>)
+<#		if (bittable_type.BitOperatorsImplicitlyUpCast) { #>
+				);
+<#		} else { #>
+				;
+<#		} #>
+		}
+
+<# } #>
+		#endregion
+	};
+}
+<#+
+static string FixedWidthMostSignificantByteBitShift(NumberCodeDefinition def)
+{
+	return string.Format("{0,2}", def.MostSignificantByteBitShift);
+}
+static string FixedWidthMostSignificantByteBitMask(NumberCodeDefinition def)
+{
+	return string.Format("0x{0:X}{1,-2}", 0x80, def.LiteralSuffix);
+}
+#>
