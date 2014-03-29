@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace KSoft.T4
 {
+	/// <summary>Type definition for a code numeric (integer or real) primitive</summary>
 	public class NumberCodeDefinition : PrimitiveCodeDefinition
 	{
+		/// <summary>Integer type keyword to use for in code for performing number operations</summary>
 		public string OperationWord { get; private set; }
 
 		public NumberCodeDefinition(TypeCode typeCode)
@@ -40,7 +42,7 @@ namespace KSoft.T4
 			return Code >= TypeCode.SByte && Code <= TypeCode.UInt64;
 		} }
 		public bool IsByte { get {
-			return Keyword.EndsWith("byte");
+			return Code == TypeCode.SByte || Code == TypeCode.Byte;
 		} }
 		public bool IsSigned { get {
 			return IsInteger && Keyword[0] != 'u' && Keyword[0] != 'b';
@@ -98,6 +100,7 @@ namespace KSoft.T4
 			return TypeCodeToKeyword(SignedCode);
 		} }
 
+		/// <summary>Suffix to use on literal values of this number type</summary>
 		public string LiteralSuffix { get {
 			switch(Code)
 			{
@@ -116,6 +119,13 @@ namespace KSoft.T4
 				default:
 					return "";
 			}
+		} }
+
+		/// <summary>ToString format string to get the integer's value in a non-truncated hexadecimal value</summary>
+		public string ToStringHexFormat { get {
+			return IsInteger 
+				? "X" + (SizeOfInBytes * 2)
+				: "";
 		} }
 
 		/// <summary>Do the bit operators of this integer type cause the value to be implicitly upgraded to a larger int type?</summary>

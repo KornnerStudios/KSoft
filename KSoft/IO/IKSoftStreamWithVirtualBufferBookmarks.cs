@@ -9,7 +9,7 @@ namespace KSoft.IO
 	public struct IKSoftStreamWithVirtualBufferCleanup : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer mStream;
-		long mBufferEnd;
+		readonly long mBufferEnd;
 
 		public IKSoftStreamWithVirtualBufferCleanup(IKSoftStreamWithVirtualBuffer stream)
 		{
@@ -40,7 +40,7 @@ namespace KSoft.IO
 	public struct IKSoftStreamWithVirtualBufferBookmark : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer mStream;
-		long mOldStart, mOldLength;
+		readonly long mOldStart, mOldLength;
 
 		public IKSoftStreamWithVirtualBufferBookmark(IKSoftStreamWithVirtualBuffer stream)
 		{

@@ -46,7 +46,7 @@ namespace KSoft
 			x = ((x & 0xCCCCCCCC) >>  2) | ((x & 0x33333333) <<  2); // swap consecutive pairs
 			x = ((x & 0xF0F0F0F0) >>  4) | ((x & 0x0F0F0F0F) <<  4); // swap nibbles
 			x = ((x & 0xFF00FF00) >>  8) | ((x & 0x00FF00FF) <<  8); // swap bytes
-			x = ((x & 0xFFFF0000) >> 16) | ((x & 0x0000FFFF) << 16); // swap halfs
+			x = ((x & 0xFFFF0000) >> 16) | ((x & 0x0000FFFF) << 16); // swap halves
 
 			return x;
 		}
@@ -62,7 +62,7 @@ namespace KSoft
 			x = ((x & 0xCCCCCCCCCCCCCCCC) >>  2) | ((x & 0x3333333333333333) <<  2); // swap consecutive pairs
 			x = ((x & 0xF0F0F0F0F0F0F0F0) >>  4) | ((x & 0x0F0F0F0F0F0F0F0F) <<  4); // swap nibbles
 			x = ((x & 0xFF00FF00FF00FF00) >>  8) | ((x & 0x00FF00FF00FF00FF) <<  8); // swap bytes
-			x = ((x & 0xFFFF0000FFFF0000) >> 16) | ((x & 0x0000FFFF0000FFFF) << 16); // swap halfs
+			x = ((x & 0xFFFF0000FFFF0000) >> 16) | ((x & 0x0000FFFF0000FFFF) << 16); // swap halves
 			x = ((x & 0xFFFFFFFF00000000) >> 32) | ((x & 0x00000000FFFFFFFF) << 32); // swap words
 
 			return x;

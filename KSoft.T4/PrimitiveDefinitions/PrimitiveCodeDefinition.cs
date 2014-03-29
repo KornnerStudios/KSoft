@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace KSoft.T4
 {
+	/// <summary>Type definition for a code primitive</summary>
 	public class PrimitiveCodeDefinition
 	{
 		public string Keyword { get; private set; }

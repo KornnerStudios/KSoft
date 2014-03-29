@@ -9,7 +9,7 @@ namespace KSoft.IO
 	public struct IKSoftStreamOwnerBookmark : IDisposable
 	{
 		IKSoftStream mStream;
-		object mOldOwner;
+		readonly object mOldOwner;
 
 		/// <summary>Saves the stream's owner so a new one can be specified, but is then later restored to the previous owner, via <see cref="Dispose()"/></summary>
 		/// <param name="stream">The underlying stream for this bookmark</param>
@@ -37,7 +37,7 @@ namespace KSoft.IO
 	public struct IKSoftStreamUserDataBookmark : IDisposable
 	{
 		IKSoftStream mStream;
-		object mOldUserData;
+		readonly object mOldUserData;
 
 		/// <summary>Saves the stream's UserData so a new one can be specified, but is then later restored to the previous UserData, via <see cref="Dispose()"/></summary>
 		/// <param name="stream">The underlying stream for this bookmark</param>

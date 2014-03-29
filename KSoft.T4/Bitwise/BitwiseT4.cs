@@ -144,7 +144,7 @@ namespace KSoft.T4.Bitwise
 					mFile.Write("{0}[{1}++]", mBufferName, mOffsetName);
 				}
 			}
-			public void GenerateBytesFromBuffer(bool indentPlusOne = false)
+			public void GenerateBytesFromBuffer()
 			{
 				// indent to method code body's indention level
 				using (mFile.EnterCodeBlock(indentCount: 3))

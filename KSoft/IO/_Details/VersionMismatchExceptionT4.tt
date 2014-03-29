@@ -1,0 +1,55 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System.IO;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.IO
+{
+	partial class VersionMismatchException
+	{
+<# foreach (var word_type in BitwiseT4.BittableTypesInt32) { #>
+		#region <#= word_type.Code #> ctors
+		public VersionMismatchException(string dataDescription, <#= word_type.Keyword #> found)
+			: base(string.Format("Invalid '{0}' version '{1}'!", dataDescription, found))
+		{
+			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+		}
+		public VersionMismatchException(string dataDescription, <#= word_type.Keyword #> expected, <#= word_type.Keyword #> found)
+			: base(string.Format(kDescFormat, dataDescription, expected, found, VersionCompareDesc(expected, found)))
+		{
+			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+		}
+		#endregion
+<# } #>
+
+		#region Stream ctors
+<# foreach (var word_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	string hex_format = "\"" + word_type.ToStringHexFormat + "\"";
+#>
+		public VersionMismatchException(Stream s, <#= word_type.Keyword #> expected, <#= word_type.Keyword #> found) :
+			this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expected, found), expected.ToString(<#= hex_format #>), found.ToString(<#= hex_format #>))
+		{
+			Contract.Requires(s != null);
+		}
+
+<# } #>
+		#endregion
+
+		#region EndianReader util
+<# foreach (var word_type in BitwiseT4.BittableTypes_Unsigned) { #>
+		public static void Assert(IO.EndianReader s, <#= word_type.Keyword #> expected)
+		{
+			Contract.Requires(s != null);
+
+			var version = s.Read<#= word_type.Code #>();
+			if (version != expected) throw new VersionMismatchException(s.BaseStream,
+				expected, version);
+		}
+
+<# } #>
+		#endregion
+	};
+}

@@ -32,6 +32,7 @@ namespace KSoft.T4
 			} }
 		};
 
+		#region Individual definitions
 		internal static readonly NumberCodeDefinition kByte = new NumberCodeDefinition(TypeCode.Byte);
 		internal static readonly NumberCodeDefinition kSByte = new NumberCodeDefinition(TypeCode.SByte);
 
@@ -52,7 +53,9 @@ namespace KSoft.T4
 		internal static readonly PrimitiveCodeDefinition kChar = new CharCodeDefinition();
 
 		internal static readonly PrimitiveCodeDefinition kString = new StringCodeDefinition();
+		#endregion
 
+		/// <summary>All primitive type definitions that are numeric</summary>
 		public static IEnumerable<NumberCodeDefinition> Numbers { get {
 			yield return kByte;
 			yield return kSByte;
@@ -70,6 +73,7 @@ namespace KSoft.T4
 			yield return kDouble;
 		} }
 
+		/// <summary>All primitive type definitions (sans String)</summary>
 		public static IEnumerable<PrimitiveCodeDefinition> Primitives { get {
 			yield return kBool;
 

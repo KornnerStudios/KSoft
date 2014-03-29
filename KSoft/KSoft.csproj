@@ -185,6 +185,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EndianStreams.VirtualAddressTranslationT4.tt</DependentUpon>
     </Compile>
+    <Compile Include="IO\_Details\SignatureMismatchExceptionT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SignatureMismatchExceptionT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IO\_Details\VersionMismatchExceptionT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VersionMismatchExceptionT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Math\IntegerMath.cs" />
     <Compile Include="Math\_Details\IntegerMathT4.cs">
       <AutoGen>True</AutoGen>
@@ -346,6 +356,14 @@
     <None Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EndianStreams.VirtualAddressTranslationT4.cs</LastGenOutput>
+    </None>
+    <None Include="IO\_Details\SignatureMismatchExceptionT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SignatureMismatchExceptionT4.cs</LastGenOutput>
+    </None>
+    <None Include="IO\_Details\VersionMismatchExceptionT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VersionMismatchExceptionT4.cs</LastGenOutput>
     </None>
     <None Include="Math\_Details\IntegerMathT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

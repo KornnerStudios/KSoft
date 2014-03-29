@@ -89,14 +89,22 @@ namespace KSoft.T4.Bitwise
 
 			void GenerateCode(bool signed)
 			{
-				bool cast = mDef.SizeOfInBytes < sizeof(uint);
-				string hex_format = "X" + (mDef.SizeOfInBytes * 2);
+				// amount to increase 'shift' after each step
+				const int k_step_shift_inc = kBitsPerByte * 2;
+
+				// do we need to cast the result?
+				bool cast = mDef.BitOperatorsImplicitlyUpCast;
+				string hex_format = mDef.ToStringHexFormat;
 
 				GeneratePrologue(cast, signed);
 
+				// GenerateStep's 'shift' is negative when the operation is a RHS (>>), and positive for LHS (<<)
 				int shift = (0-mDef.SizeOfInBits) + kBitsPerByte;
+				// our byte mask for each step
 				ulong mask = byte.MaxValue;
-				for(int x = mDef.SizeOfInBytes-1; x >= 0; x--, shift += (kBitsPerByte*2), mask <<= kBitsPerByte)
+				// While 'shift' is negative, we're generating steps to swap the MSB bytes to the LSBs half.
+				// Once 'shift' becomes positive, we're generating steps to swap the LSB bytes to the MSBs half.
+				for(int x = mDef.SizeOfInBytes-1; x >= 0; x--, shift += k_step_shift_inc, mask <<= kBitsPerByte)
 				{
 					GenerateStep(signed, shift, mask.ToString(hex_format), x == 0);
 					mFile.WriteLine("");
