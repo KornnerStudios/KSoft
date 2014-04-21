@@ -11,19 +11,16 @@ namespace KSoft.Text
 	public static partial class Util
 	{
 		/// <summary>
-		/// Looks for "1", "on", or "true" in <paramref name="str"/> for a true boolean.
+		/// Looks for "1", "true", or "on" in <paramref name="str"/> for a true boolean.
 		/// Anything else is a false boolean
 		/// </summary>
 		/// <param name="str"></param>
 		/// <returns></returns>
 		public static bool ParseBooleanLazy(string str)
 		{
-			// NOTE: This implementation differs from BlamLib's.
-			// It tested for false stuff: str == "0" || str == "off" || str == "false"
-
 			if (str == "1" || 
-				string.Compare(str, "on", true)==0 || 
-				string.Compare(str, "true", true)==0 )
+				string.Compare(str, "true", true)==0 ||
+				string.Compare(str, "on", true)==0 )
 				return true;
 
 			return false;
