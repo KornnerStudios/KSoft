@@ -58,37 +58,32 @@ namespace KSoft
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
 		/// <returns>Index of an element (T) which holds the bit in question</returns>
 		public delegate int VectorIndexInT(int bitIndex);
-		#region Bit Vector bitIndex to vector_index (kVectorWordFormat dependent)
+		#region Bit Vector bitIndex to vector_index
 		[Contracts.Pure]
-		public static VectorIndexInT GetVectorIndexInT<T>(Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static VectorIndexInT GetVectorIndexInT<T>()
 			where T : struct
 		{
 			Contract.Ensures(Contract.Result<VectorIndexInT>() != null);
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
-			bool use_big_endian = byteOrder == Shell.EndianFormat.Big;
 
 			switch(c)
 			{
 				case TypeCode.SByte:
 				case TypeCode.Byte:
-					if (use_big_endian)	return VectorIndexInBytesBE;
-					else				return VectorIndexInBytesLE;
+					return VectorIndexInBytes;
 
 				case TypeCode.Int16:
 				case TypeCode.UInt16:
-					if (use_big_endian)	return VectorIndexInInt16BE;
-					else				return VectorIndexInInt16LE;
+					return VectorIndexInInt16;
 
 				case TypeCode.Int32:
 				case TypeCode.UInt32:
-					if (use_big_endian)	return VectorIndexInInt32BE;
-					else				return VectorIndexInInt32LE;
+					return VectorIndexInInt32;
 
 				case TypeCode.Int64:
 				case TypeCode.UInt64:
-					if (use_big_endian)	return VectorIndexInInt64BE;
-					else				return VectorIndexInInt64LE;
+					return VectorIndexInInt64;
 
 				default: throw new ArgumentException(c.ToString(), "T");
 			}

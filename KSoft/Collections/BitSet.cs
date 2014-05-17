@@ -9,7 +9,11 @@ using TWord = System.UInt32;
 namespace KSoft.Collections
 {
 	// http://docs.oracle.com/javase/1.4.2/docs/api/java/util/BitSet.html
-	// http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/util/BitSet.java
+	
+	// NOTE: there are multiple places in this implementation where it ignores specially handling alignment-only bits.
+	// Eg, if a BitSet has 33 bits in it, it would be aligned to 64 bits. If you then called SetAll(true) on it, it 
+	// would end up setting 64 bits to true. If you then set the Length to be 64, those previously alignment-only bits
+	// would then retain their true state.
 
 	[System.Diagnostics.DebuggerDisplay("Length = {Length}, Cardinality = {Cardinality}")]
 	[Serializable, System.Runtime.InteropServices.ComVisible(true)]
@@ -26,8 +30,11 @@ namespace KSoft.Collections
 
 		static readonly Bits.VectorLengthInT kVectorLengthInT;
 		static readonly Bits.VectorElementBitMask<TWord> kVectorElementBitMask;
+		static readonly Bits.VectorElementBitMask<TWord> kVectorElementSectionBitMask;
 		static readonly Bits.VectorIndexInT kVectorIndexInT;
 		static readonly Bits.VectorBitCursorInT kVectorBitCursorInT;
+
+		static readonly Func<TWord, int> kCountZerosForNextBit;
 
 		static BitSet()
 		{
@@ -39,8 +46,17 @@ namespace KSoft.Collections
 
 			kVectorLengthInT = Bits.GetVectorLengthInT<TWord>();
 			Bits.GetVectorElementBitMaskInT(out kVectorElementBitMask);
+			Bits.GetVectorElementSectionBitMaskInT(out kVectorElementSectionBitMask);
 			kVectorIndexInT = Bits.GetVectorIndexInT<TWord>();
 			kVectorBitCursorInT = Bits.GetVectorBitCursorInT<TWord>();
+
+#pragma warning disable 0429 // Unreachable expression code detected
+			// Big:    Bits go from MSB->LSB, so we want to count the 'left most' zeros
+			// Little: Bits go from LSB->MSB, so we want to count the 'right most' zeros
+			kCountZerosForNextBit = Bits.kVectorWordFormat == Shell.EndianFormat.Big
+				? (Func<TWord,int>)Bits.LeadingZerosCount   // Big Endian
+				: (Func<TWord,int>)Bits.TrailingZerosCount; // Little Endian
+#pragma warning restore 0162
 		}
 		#endregion
 
@@ -49,6 +65,14 @@ namespace KSoft.Collections
 		int mLength;
 		int mVersion;
 		#endregion
+
+		/// <summary>Size of a single implementation word, in bytes, used in the internal array to represent this bit set</summary>
+		public int UnderlyingWordSize { get { return sizeof(TWord); } }
+		/// <summary>Number of implementation words <b>used</b> in the internal array to represent this bit set</summary>
+		/// <remarks>
+		/// This differs from <see cref="LengthInWords"/> as the internal array can be larger than needed due to downsizing
+		/// without calling <see cref="TrimExcess"/>
+		/// </remarks>
 		public int UnderlyingWordCount { get { return mArray.Length; } }
 
 		/// <summary>Can <see cref="Length"/> be adjusted?</summary>
@@ -57,9 +81,8 @@ namespace KSoft.Collections
 		/// <remarks>
 		/// IE, the index of the highest addressable bit plus one
 		/// 
-		/// Note: when downsizing, the underlying storage's size stays the same, but the old
-		/// bits will be zeroed and unaddressable. Call <see cref="TrimExcess"/> to optimize
-		/// the underlying storage to the minimal size
+		/// Note: when downsizing, the underlying storage's size stays the same, but the old bits will be zeroed and
+		/// unaddressable. Call <see cref="TrimExcess"/> to optimize the underlying storage to the minimal size
 		/// </remarks>
 		public int Length {
 			get { return mLength; }
@@ -88,13 +111,22 @@ namespace KSoft.Collections
 					// clear old, now unused, bits in the caboose word
 					if (bit_offset != 0)
 					{
-						var retained_bits_mask = kVectorElementBitMask(value-1);
-						// create a mask for all bits below the new length in this word
-						retained_bits_mask -= 1;
+						TWord retained_bits_mask;
 #pragma warning disable 0162 // comparing const values, could have 'unreachable' code
-						// when bitvectors are written MSB->LSB, we have to invert the mask (which begins at the LSB)
 						if (Bits.kVectorWordFormat == Shell.EndianFormat.Big)
+						{
+							retained_bits_mask = kVectorElementBitMask(value-1);
+							// create a mask for all bits below the new length in this word
+							retained_bits_mask -= 1;
+							// when bitvectors are written MSB->LSB, we have to invert the mask (which begins at the LSB)
 							retained_bits_mask = ~retained_bits_mask;
+						}
+						else
+						{
+							retained_bits_mask = kVectorElementBitMask(value);
+							// create a mask for all bits below the new length in this word
+							retained_bits_mask -= 1;
+						}
 #pragma warning restore 0162
 						// keep the still-used bits in the vector, while masking out the old ones
 						mArray[index] &= retained_bits_mask;
@@ -119,6 +151,11 @@ namespace KSoft.Collections
 				mVersion++;
 			}
 		}
+		/// <summary>Number of implementation words <b>needed</b> to represent this bit set</summary>
+		/// <remarks>
+		/// This differs from <see cref="UnderlyingWordCount"/> as it only considers the absolute least amounts of words needed
+		/// and ignores any extra space that may have been accumulated from length downsizing without a call to <see cref="TrimExcess"/>
+		/// </remarks>
 		public int LengthInWords { get { return kVectorLengthInT(mLength); } }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality { get; private set; }
@@ -221,6 +258,8 @@ namespace KSoft.Collections
 		public object Clone()	{ return new BitSet(this); }
 		#endregion
 
+		/// <summary>Update <see cref="Cardinality"/> for an individual word in the underlying array</summary>
+		/// <param name="wordIndex"></param>
 		void RecalculateCardinalityRound(int wordIndex)
 		{
 			Cardinality += Bits.BitCount(mArray[wordIndex]);
@@ -246,15 +285,22 @@ namespace KSoft.Collections
 			}
 		}
 
+		bool GetInternal(int bitIndex, out int wordIndex, out TWord bitmask)
+		{
+			wordIndex = kVectorIndexInT(bitIndex);
+			bitmask = kVectorElementBitMask(bitIndex);
+
+			return (mArray[wordIndex] & bitmask) != 0;
+		}
 		/// <summary>Get the value of a specific bit, without performing and bounds checking on the bit index</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
 		bool GetInternal(int bitIndex)
 		{
-			int index = kVectorIndexInT(bitIndex);
-			var bitmask = kVectorElementBitMask(bitIndex);
+			int index;
+			TWord bitmask;
 
-			return (mArray[index] & bitmask) != 0;
+			return GetInternal(bitIndex, out index, out bitmask);
 		}
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
@@ -266,31 +312,32 @@ namespace KSoft.Collections
 			return GetInternal(bitIndex);
 		}
 
+		void SetInternal(int wordIndex, TWord bitmask, bool value)
+		{
+			if (value)
+			{
+				mArray[wordIndex] |= bitmask;
+				++Cardinality;
+			}
+			else
+			{
+				mArray[wordIndex] &= (TWord)~bitmask;
+				--Cardinality;
+			}
+
+			mVersion++;
+		}
 		/// <summary>Set the value of a specific bit, without performing and bounds checking on the bit index</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <param name="value">New value of the bit</param>
-		public void SetInternal(int bitIndex, bool value)
+		void SetInternal(int bitIndex, bool value)
 		{
-			int index = kVectorIndexInT(bitIndex);
-			var bitmask = kVectorElementBitMask(bitIndex);
-
-			bool old_value = (mArray[index] & bitmask) != 0;
+			int index;
+			TWord bitmask;
+			bool old_value = GetInternal(bitIndex, out index, out bitmask);
 
 			if (old_value != value)
-			{
-				if (value)
-				{
-					mArray[index] |= bitmask;
-					++Cardinality;
-				}
-				else
-				{
-					mArray[index] &= (TWord)~bitmask;
-					--Cardinality;
-				}
-
-				mVersion++;
-			}
+				SetInternal(index, bitmask, value);
 		}
 		/// <summary>Set the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
@@ -308,14 +355,17 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
 
-			// TODO: Not optimal, but no code-dup
-			SetInternal(bitIndex, !GetInternal(bitIndex));
+			int index;
+			TWord bitmask;
+			bool old_value = GetInternal(bitIndex, out index, out bitmask);
+
+			SetInternal(index, bitmask, !old_value);
 		}
 
 		public void SetAll(bool value)
 		{
 			// NOTE: if the array is auto-aligned, this will end up setting alignment-only data
-			TWord fill_value = value ? TWord.MaxValue : TWord.MinValue;
+			var fill_value = value ? TWord.MaxValue : TWord.MinValue;
 			for (int x = 0, word_count = LengthInWords; x < word_count; x++)
 				mArray[x] = fill_value;
 
@@ -327,42 +377,61 @@ namespace KSoft.Collections
 			mVersion++;
 		}
 
-		int NextBit(int startBitIndex, bool stateFilter)
+		int NextBitIndex(int startBitIndex, bool stateFilter)
 		{
 			int index, bit_offset;
 			kVectorBitCursorInT(startBitIndex, out index, out bit_offset);
-			var bitmask = TWord.MaxValue >> bit_offset;
 
-			int result_bit_index = -1;
+			// get a mask for the the bits that start at bit_offset, thus ignoring bits that came before startBitIndex
+			var bitmask = kVectorElementSectionBitMask(bit_offset);
+
+			int result_bit_index = TypeExtensions.kNoneInt32;
 			var word = mArray[index];
 			for (	word = (stateFilter == false ? ~word : word) & bitmask;
 					result_bit_index == -1;
 					word =  stateFilter == false ? ~mArray[index] : mArray[index])
  			{
+				// word will be 0 if it contains bits that are NOT stateFilter, thus we want to ignore such elements.
+				// count the number of zeros (representing bits in the undesired state) leading up to the bit with 
+				// the desired state, then add the the index in which it appears at within the overall BitSet
 				if (word != 0)
-					result_bit_index = (index * kWordBitCount) + Bits.LeadingZerosCount(word);
+					result_bit_index = kCountZerosForNextBit(word) + (index * kWordBitCount);
+
+				// I perform the increment and loop condition here to keep the for() statement simple
 				if (++index == mArray.Length)
 					break;
  			}
 
-			return result_bit_index < Length ? result_bit_index : -1;
+			// If we didn't find a next bit, result will be -1 and thus less than Length, which is desired behavior
+			// else, the result is a valid index of the next bit with the desired state
+			return result_bit_index < Length 
+				? result_bit_index 
+				: TypeExtensions.kNoneInt32;
 		}
-		public int NextClearBit(int startBitIndex)
+		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
+		/// <param name="startBitIndex">Bit index to start at</param>
+		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
+		public int NextClearBitIndex(int startBitIndex = 0)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
-			return NextBit(startBitIndex, false);
+			return NextBitIndex(startBitIndex, false);
 		}
-		public int NextSetBit(int startBitIndex)
+		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
+		/// <param name="startBitIndex">Bit index to start at</param>
+		/// <returns>The next set bit index, or -1 if one isn't found</returns>
+		public int NextSetBitIndex(int startBitIndex = 0)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
-			return NextBit(startBitIndex, true);
+			return NextBitIndex(startBitIndex, true);
 		}
 
+		/// <summary>Enumeration of bit indexes in this BitSet which are 0 (clear)</summary>
 		public EnumeratorWrapper<int> ClearBitIndices { get {
 			return new EnumeratorWrapper<int>(new EnumeratorBitState(this, false));
 		} }
+		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
 		public EnumeratorWrapper<int> SetBitIndices { get {
 			return new EnumeratorWrapper<int>(new EnumeratorBitState(this, true));
 		} }
@@ -379,7 +448,7 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (value != this)
+			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
 				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
@@ -399,7 +468,7 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (value != this)
+			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
 				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
@@ -421,7 +490,7 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (value != this)
+			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
 				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
@@ -441,7 +510,7 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (value != this)
+			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
 				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)

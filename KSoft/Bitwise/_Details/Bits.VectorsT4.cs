@@ -248,6 +248,189 @@ namespace KSoft
 
 		#endregion
 
+		#region Bit Vector element section bitmask (kVectorWordFormat dependent)
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Byte"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static byte VectorElementSectionBitMaskInBytesLE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (byte)(byte.MaxValue << startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Byte"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static byte VectorElementSectionBitMaskInBytesBE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (byte)(byte.MaxValue >> startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Byte"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static byte VectorElementSectionBitMaskInBytes(int startBitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementSectionBitMaskInBytesBE(startBitIndex) :
+					VectorElementSectionBitMaskInBytesLE(startBitIndex);
+		}
+		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<byte> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementSectionBitMaskInBytesBE;
+			else
+				proc = VectorElementSectionBitMaskInBytesLE;
+		}
+
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int16"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static ushort VectorElementSectionBitMaskInInt16LE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (ushort)(ushort.MaxValue << startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int16"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static ushort VectorElementSectionBitMaskInInt16BE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (ushort)(ushort.MaxValue >> startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int16"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static ushort VectorElementSectionBitMaskInInt16(int startBitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementSectionBitMaskInInt16BE(startBitIndex) :
+					VectorElementSectionBitMaskInInt16LE(startBitIndex);
+		}
+		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<ushort> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementSectionBitMaskInInt16BE;
+			else
+				proc = VectorElementSectionBitMaskInInt16LE;
+		}
+
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int32"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static uint VectorElementSectionBitMaskInInt32LE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (uint)(uint.MaxValue << startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int32"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static uint VectorElementSectionBitMaskInInt32BE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (uint)(uint.MaxValue >> startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int32"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static uint VectorElementSectionBitMaskInInt32(int startBitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementSectionBitMaskInInt32BE(startBitIndex) :
+					VectorElementSectionBitMaskInInt32LE(startBitIndex);
+		}
+		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<uint> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementSectionBitMaskInInt32BE;
+			else
+				proc = VectorElementSectionBitMaskInInt32LE;
+		}
+
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int64"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static ulong VectorElementSectionBitMaskInInt64LE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (ulong)(ulong.MaxValue << startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int64"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static ulong VectorElementSectionBitMaskInInt64BE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (ulong)(ulong.MaxValue >> startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.Int64"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static ulong VectorElementSectionBitMaskInInt64(int startBitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementSectionBitMaskInInt64BE(startBitIndex) :
+					VectorElementSectionBitMaskInInt64LE(startBitIndex);
+		}
+		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<ulong> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementSectionBitMaskInInt64BE;
+			else
+				proc = VectorElementSectionBitMaskInInt64LE;
+		}
+
+		#endregion
+
 		#region Bit Vector element from byte[]
 		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref byte element)
@@ -315,121 +498,49 @@ namespace KSoft
 
 		#endregion
 
-		#region Bit Vector bitIndex to vector_index (kVectorWordFormat dependent)
-		[Contracts.Pure]
-		static int VectorIndexInBytesLE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-
-			return bitIndex << kByteBitShift;
-		}
-		[Contracts.Pure]
-		static int VectorIndexInBytesBE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-			
-			return bitIndex >> kByteBitShift;
-		}
+		#region Bit Vector bitIndex to vector_index
 		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.Byte"/>s</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
-		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		/// <returns>The index of a <see cref="System.Byte"/> which holds the bit in question</returns>
 		[Contracts.Pure]
-		public static int VectorIndexInBytes(int bitIndex,
-			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static int VectorIndexInBytes(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorIndexInBytesBE(bitIndex) :
-					VectorIndexInBytesLE(bitIndex);
+			return bitIndex >> kByteBitShift;
 		}
 
-		[Contracts.Pure]
-		static int VectorIndexInInt16LE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-
-			return bitIndex << kInt16BitShift;
-		}
-		[Contracts.Pure]
-		static int VectorIndexInInt16BE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-			
-			return bitIndex >> kInt16BitShift;
-		}
 		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.Int16"/>s</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
-		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		/// <returns>The index of a <see cref="System.Int16"/> which holds the bit in question</returns>
 		[Contracts.Pure]
-		public static int VectorIndexInInt16(int bitIndex,
-			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static int VectorIndexInInt16(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorIndexInInt16BE(bitIndex) :
-					VectorIndexInInt16LE(bitIndex);
+			return bitIndex >> kInt16BitShift;
 		}
 
-		[Contracts.Pure]
-		static int VectorIndexInInt32LE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-
-			return bitIndex << kInt32BitShift;
-		}
-		[Contracts.Pure]
-		static int VectorIndexInInt32BE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-			
-			return bitIndex >> kInt32BitShift;
-		}
 		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.Int32"/>s</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
-		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		/// <returns>The index of a <see cref="System.Int32"/> which holds the bit in question</returns>
 		[Contracts.Pure]
-		public static int VectorIndexInInt32(int bitIndex,
-			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static int VectorIndexInInt32(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorIndexInInt32BE(bitIndex) :
-					VectorIndexInInt32LE(bitIndex);
+			return bitIndex >> kInt32BitShift;
 		}
 
-		[Contracts.Pure]
-		static int VectorIndexInInt64LE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-
-			return bitIndex << kInt64BitShift;
-		}
-		[Contracts.Pure]
-		static int VectorIndexInInt64BE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-			
-			return bitIndex >> kInt64BitShift;
-		}
 		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.Int64"/>s</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
-		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		/// <returns>The index of a <see cref="System.Int64"/> which holds the bit in question</returns>
 		[Contracts.Pure]
-		public static int VectorIndexInInt64(int bitIndex,
-			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static int VectorIndexInInt64(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorIndexInInt64BE(bitIndex) :
-					VectorIndexInInt64LE(bitIndex);
+			return bitIndex >> kInt64BitShift;
 		}
 
 		#endregion

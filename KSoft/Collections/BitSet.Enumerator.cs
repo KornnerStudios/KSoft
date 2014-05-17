@@ -83,7 +83,7 @@ namespace KSoft.Collections
 
 				if (mBitIndex < mLastIndex)
 				{
-					mCurrent = mSet.NextBit(++mBitIndex, mStateFilter);
+					mCurrent = mSet.NextBitIndex(++mBitIndex, mStateFilter);
 
 					if (mCurrent >= 0)
 					{

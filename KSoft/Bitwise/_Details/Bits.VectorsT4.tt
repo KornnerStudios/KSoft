@@ -87,6 +87,60 @@ namespace KSoft
 <# } #>
 		#endregion
 
+		#region Bit Vector element section bitmask (kVectorWordFormat dependent)
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+	var vector_suffix= bittable_type.GetVectorsSuffix();
+#>
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>LE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (<#= prim_keyword #>)(<#= prim_keyword #>.MaxValue << startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		/*public*/ static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>BE(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return (<#= prim_keyword #>)(<#= prim_keyword #>.MaxValue >> startBitIndex);
+		}
+		/// <summary>Get the mask for a section of bits in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="startBitIndex">Bit index to begin the mask at</param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>(int startBitIndex,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+
+			return byteOrder == Shell.EndianFormat.Big ?
+					VectorElementSectionBitMaskIn<#= vector_suffix #>BE(startBitIndex) :
+					VectorElementSectionBitMaskIn<#= vector_suffix #>LE(startBitIndex);
+		}
+		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<<#= prim_keyword #>> proc,
+			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		{
+			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
+
+			if (byteOrder == Shell.EndianFormat.Big)
+				proc = VectorElementSectionBitMaskIn<#= vector_suffix #>BE;
+			else
+				proc = VectorElementSectionBitMaskIn<#= vector_suffix #>LE;
+		}
+
+<# } #>
+		#endregion
+
 		#region Bit Vector element from byte[]
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
 <#	var prim_keyword = bittable_type.Keyword;
@@ -115,39 +169,21 @@ namespace KSoft
 <# } #>
 		#endregion
 
-		#region Bit Vector bitIndex to vector_index (kVectorWordFormat dependent)
+		#region Bit Vector bitIndex to vector_index
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var const_keyword= bittable_type.GetConstantKeyword();
 	var vector_suffix= bittable_type.GetVectorsSuffix();
 #>
-		[Contracts.Pure]
-		static int VectorIndexIn<#= vector_suffix #>LE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-
-			return bitIndex << k<#= const_keyword #>BitShift;
-		}
-		[Contracts.Pure]
-		static int VectorIndexIn<#= vector_suffix #>BE(int bitIndex)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
-			
-			return bitIndex >> k<#= const_keyword #>BitShift;
-		}
 		/// <summary>Get the vector index of a bit index, for a vector represented in <see cref="System.<#= const_keyword #>"/>s</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
-		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		/// <returns>The index of a <see cref="System.<#= const_keyword #>"/> which holds the bit in question</returns>
 		[Contracts.Pure]
-		public static int VectorIndexIn<#= vector_suffix #>(int bitIndex,
-			Shell.EndianFormat byteOrder = kVectorWordFormat)
+		public static int VectorIndexIn<#= vector_suffix #>(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorIndexIn<#= vector_suffix #>BE(bitIndex) :
-					VectorIndexIn<#= vector_suffix #>LE(bitIndex);
+			return bitIndex >> k<#= const_keyword #>BitShift;
 		}
 
 <# } #>
