@@ -41,7 +41,7 @@ namespace KSoft.Collections.Test
 			const int k_larger_length = 120;
 			const int k_aligned_word_length = 64;
 
-			var bs = new BitSet(k_initial_length, true, false);
+			var bs = new BitSet(k_initial_length, defaultValue: true, fixedLength: false);
 			Assert.AreEqual(k_initial_length, bs.Cardinality);
 			Assert.AreEqual(0, bs.CardinalityZeros);
 

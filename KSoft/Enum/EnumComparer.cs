@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -21,6 +22,8 @@ namespace KSoft
 	/// <summary>
 	/// A fast and efficient implementation of <see cref="IEqualityComparer{T}"/> for Enum types.
 	/// Useful for dictionaries that use Enums as their keys.
+	/// 
+	/// Also implements <see cref="IComparer{T}"/>
 	/// </summary>
 	/// <example>
 	/// <code>
@@ -29,11 +32,14 @@ namespace KSoft
 	/// </example>
 	/// <typeparam name="TEnum">The type of the Enum.</typeparam>
 	/// <remarks>ATTN: This code is based on the following article: http://www.codeproject.com/KB/cs/EnumComparer.aspx</remarks>
-	public sealed class EnumComparer<TEnum> : System.Collections.Generic.IEqualityComparer<TEnum>
+	public sealed class EnumComparer<TEnum> : Reflection.EnumUtilBase<TEnum>, IComparer<TEnum>, IEqualityComparer<TEnum>
 		where TEnum : struct, IComparable, IConvertible, IFormattable
 	{
+		const string kCompareMethodName = "CompareTo";
+
 		static readonly Func<TEnum, TEnum, bool> kEqualsMethod;
 		static readonly Func<TEnum, int> kGetHashCodeMethod;
+		static readonly Func<TEnum, TEnum, int> kCompareMethod;
 
 		/// <summary>The singleton accessor.</summary>
 		public static readonly EnumComparer<TEnum> Instance;
@@ -41,20 +47,21 @@ namespace KSoft
 		/// <summary>Initializes the <see cref="EnumComparer{TEnum}"/> class by generating the GetHashCode and Equals methods.</summary>
 		static EnumComparer()
 		{
+			Reflection.EnumUtils.AssertTypeIsEnum(kEnumType);
+			Reflection.EnumUtils.AssertUnderlyingTypeIsSupported(kEnumType, kUnderlyingType);
+
 			kGetHashCodeMethod = GenerateGetHashCodeMethod();
 			kEqualsMethod = GenerateEqualsMethod();
+			kCompareMethod = GenerateCompareMethod();
 			Instance = new EnumComparer<TEnum>();
 		}
-
 
 		/// <summary>Private constructor to prevent user instantiation.</summary>
 		EnumComparer()
 		{
-			Reflection.EnumUtils.AssertTypeIsEnum(Reflection.EnumUtil<TEnum>.EnumType);
-			Reflection.EnumUtils.AssertUnderlyingTypeIsSupported(
-				Reflection.EnumUtil<TEnum>.EnumType, Reflection.EnumUtil<TEnum>.UnderlyingType);
 		}
 
+		#region IEqualityComparer<TEnum> Members
 		/// <summary>Determines whether the specified objects are equal.</summary>
 		/// <param name="x">The first object of type <typeparamref name="TEnum"/> to compare.</param>
 		/// <param name="y">The second object of type <typeparamref name="TEnum"/> to compare.</param>
@@ -82,8 +89,8 @@ namespace KSoft
 		/// <returns>The generated method.</returns>
 		static Func<TEnum, TEnum, bool> GenerateEqualsMethod()
 		{
-			var xParam =			Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "x");
-			var yParam =			Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "y");
+			var xParam =			Expression.Parameter(kEnumType, "x");
+			var yParam =			Expression.Parameter(kEnumType, "y");
 			var equalExpression =	Expression.Equal(xParam, yParam);
 
 			var lambda = Expression.Lambda<Func<TEnum, TEnum, bool>>(equalExpression, xParam, yParam);
@@ -101,15 +108,43 @@ namespace KSoft
 		/// <returns>The generated method.</returns>
 		static Func<TEnum, int> GenerateGetHashCodeMethod()
 		{
-			var underlying_type = Reflection.EnumUtil<TEnum>.UnderlyingType;
-
-			var objParam =				Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "obj");
-			var convertExpression =		Expression.Convert(objParam, underlying_type);
-			var getHashCodeMethod =		underlying_type.GetMethod("GetHashCode");
+			var objParam =				Expression.Parameter(kEnumType, "obj");
+			var convertExpression =		Expression.Convert(objParam, kUnderlyingType);
+			var getHashCodeMethod =		kUnderlyingType.GetMethod("GetHashCode");
 			var getHashCodeExpression = Expression.Call(convertExpression, getHashCodeMethod);
 
 			var lambda = Expression.Lambda<Func<TEnum, int>>(getHashCodeExpression, objParam);
 			return lambda.Compile();
 		}
+		#endregion
+
+		#region IComparer<TEnum> Members
+		public int Compare(TEnum x, TEnum y)
+		{
+			return kCompareMethod(x, y);
+		}
+
+		/// <summary>Generates a comparison method similar to this:
+		/// <code>
+		/// int Compare(TEnum x, TEnum y)
+		/// {
+		///     return ( (int)x ).CompareTo( (int)y );
+		/// }
+		/// </code>
+		/// Where 'int' is the underlying integer type.
+		/// </summary>
+		/// <returns>The generated method.</returns>
+		static Func<TEnum, TEnum, int> GenerateCompareMethod()
+		{
+			var xParam =			Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "x");
+			var yParam =			Expression.Parameter(Reflection.EnumUtil<TEnum>.EnumType, "y");
+			var xAsInt =			Expression.Convert(xParam, kUnderlyingType);
+			var yAsInt =			Expression.Convert(yParam, kUnderlyingType);
+			var compareExpression = Expression.Call(xAsInt, kCompareMethodName, null, yAsInt);
+
+			var lambda = Expression.Lambda<Func<TEnum, TEnum, int>>(compareExpression, xParam, yParam);
+			return lambda.Compile();
+		}
+		#endregion
 	};
 }

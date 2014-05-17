@@ -4,7 +4,7 @@ namespace KSoft
 {
 	internal static class KSoftConstants
 	{
-		/// <summary>Applied to enumeration members act as padding. Eg, for enums which are streamed or bit-encoded</summary>
+		/// <summary>Applied to enumeration members which act as padding. E.g., for enums which are streamed or bit-encoded and max be extended in the future so they have reserved members</summary>
 		public const string kReservedMsg = "Reserved member. Don't use.";
 		/// <summary>Applied to enumeration members which aren't currently supported yet in production code</summary>
 		public const string kUnsupportedMsg = "Currently unsupported. Don't use.";

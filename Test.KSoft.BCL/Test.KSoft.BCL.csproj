@@ -44,6 +44,7 @@
     <Compile Include="Enum\EnumBinaryStreamerTest.cs" />
     <Compile Include="Enum\EnumBitEncoderTest.cs" />
     <Compile Include="Enum\EnumBitStreamerTest.cs" />
+    <Compile Include="Enum\EnumComparerTest.cs" />
     <Compile Include="Enum\EnumFlagsTest.cs" />
     <Compile Include="Enum\EnumValueTest.cs" />
     <Compile Include="IO\BitStreamTest.cs" />
