@@ -2,36 +2,82 @@
 using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
+using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
 {
+	using BitEncoders = TypeExtensions.BitEncoders;
+
 	/// <summary>Represents a platform definition</summary>
-	/// <remarks>Currently only this class can define the various platform definitions</remarks>
+	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	public struct Platform :
 		IComparer<Platform>, System.Collections.IComparer,
 		IComparable<Platform>, IComparable,
 		IEquatable<Platform>
 	{
-		#region Type
-		PlatformType mType;
-		/// <summary>This platform's type</summary>
-		public PlatformType Type { get { return mType; } }
+		#region Constants
+		// nesting these into a static class makes them run before the struct's static ctor...
+		// which, being a value type cctor, may not run when we want it
+		static class Constants
+		{
+			public static readonly int kProcessorTypeShift = 0;
+
+			public static readonly int kPlatformTypeShift = Processor.BitCount;
+			public static readonly uint kPlatformTypeMask = BitEncoders.PlatformType.BitmaskTrait;
+
+			public static readonly int kBitCount = kPlatformTypeShift + BitEncoders.PlatformType.BitCountTrait;
+			public static readonly uint kBitmask = Bits.BitCountToMask32(kBitCount);
+		};
+
+		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
+		/// <remarks>10 bits at last count</remarks>
+		public static int BitCount { get { return Constants.kBitCount; } }
+		public static uint Bitmask { get { return Constants.kBitmask; } }
 		#endregion
 
-		#region ProcessorType
-		Processor mProcessorType;
-		/// <summary>This platform's normal processor type</summary>
-		public Processor ProcessorType { get { return mProcessorType; } }
+		#region Internal Value
+		[Interop.FieldOffset(0)] readonly uint mHandle;
+
+		internal uint Handle { get { return mHandle; } }
+
+		static void InitializeHandle(out uint handle,
+			PlatformType platformType, Processor processorType)
+		{
+			var encoder = new Bitwise.HandleBitEncoder();
+			encoder.Encode32(processorType.Handle, Processor.Bitmask);
+			encoder.Encode32(platformType, BitEncoders.PlatformType);
+
+			Contract.Assert(encoder.UsedBitCount == Platform.BitCount);
+
+			handle = encoder.GetHandle32();
+		}
 		#endregion
 
 		/// <summary>Construct a platform definition</summary>
 		/// <param name="platformType">Operating system of the platform</param>
 		/// <param name="processorType">Processor definition of the platform</param>
-		Platform(PlatformType platformType, Processor processorType)
+		public Platform(PlatformType platformType, Processor processorType)
 		{
-			mType = platformType;
-			mProcessorType = processorType;
+			InitializeHandle(out mHandle, platformType, processorType);
 		}
+		internal Platform(uint handle, int startBitIndex)
+		{
+			handle >>= startBitIndex;
+			handle &= Constants.kBitmask;
+
+			mHandle = handle;
+		}
+
+		#region Value properties
+		/// <summary>This platform's type</summary>
+		public PlatformType Type { get {
+			return BitEncoders.PlatformType.BitDecode(mHandle, Constants.kPlatformTypeShift);
+		} }
+		/// <summary>This platform's normal processor type</summary>
+		public Processor ProcessorType { get {
+			return new Processor(mHandle, Constants.kProcessorTypeShift);
+		} }
+		#endregion
 
 		#region Overrides
 		/// <summary>See <see cref="Object.Equals"/></summary>
@@ -40,7 +86,7 @@ namespace KSoft.Shell
 		public override bool Equals(object obj)
 		{
 			if (obj is Platform)
-				return Platform.StaticEquals(this, (Platform)obj);
+				return this.mHandle == ((Platform)obj).mHandle;
 
 			return false;
 		}
@@ -49,15 +95,7 @@ namespace KSoft.Shell
 		/// <see cref="Object.GetHashCode"/>
 		public override int GetHashCode()
 		{
-			const int kTypeShift = 24; // NOTE: This depends on how Procesor.GetHashCode works
-			const int kProcessorTypeShift = 0;
-
-			uint code = (
-					(((uint)mType) & 0xFF) << kTypeShift |
-					(((uint)mProcessorType.GetHashCode()) & 0x00FFFFFF) << kProcessorTypeShift
-				);
-
-			return unchecked((int)code);
+			return (int)mHandle;
 		}
 		/// <summary>Returns a string representation of this object</summary>
 		/// <returns>"[<see cref="Type"/>\t<see cref="ProcessorType.ToString()"/>]"</returns>
@@ -66,8 +104,8 @@ namespace KSoft.Shell
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return string.Format("[{0}\t{1}]",
-				mType.ToString(),
-				mProcessorType.ToString()
+				Type.ToString(),
+				ProcessorType.ToString()
 				);
 		}
 		#endregion
@@ -87,9 +125,10 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		int System.Collections.IComparer.Compare(object x, object y)
 		{
-			Contract.Assume(x != null && y != null);
+			Platform _x; Debug.TypeCheck.CastValue(x, out _x);
+			Platform _y; Debug.TypeCheck.CastValue(y, out _y);
 
-			return Platform.StaticCompare((Platform)x, (Platform)y);
+			return Platform.StaticCompare(_x, _y);
 		}
 		#endregion
 
@@ -106,9 +145,9 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		int IComparable.CompareTo(object obj)
 		{
-			Contract.Assume(obj != null);
+			Platform _obj; Debug.TypeCheck.CastValue(obj, out _obj);
 
-			return Platform.StaticCompare(this, (Platform)obj);
+			return Platform.StaticCompare(this, _obj);
 		}
 		#endregion
 
@@ -118,40 +157,20 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		public bool Equals(Platform other)
 		{
-			return Platform.Equals(this, other);
+			return this.mHandle == other.mHandle;
 		}
 		#endregion
 
-		/// <summary></summary>
-		/// <param name="encoder"></param>
-		/// <remarks>10 bits</remarks>
-		public void HandleEncode(ref Bitwise.HandleBitEncoder encoder)
-		{
-			encoder.Encode32(mType, TypeExtensions.BitEncoders.PlatformType);
-			mProcessorType.HandleEncode(ref encoder);
-		}
-
-		public void HandleDecode(ref Bitwise.HandleBitEncoder encoder)
-		{
-			encoder.Decode32(out mType, TypeExtensions.BitEncoders.PlatformType);
-			mProcessorType.HandleDecode(ref encoder);
-		}
-
 
 		#region Util
-		static bool StaticEquals(Platform lhs, Platform rhs)
-		{
-			return lhs.mType == rhs.mType &&
-				lhs.mProcessorType.Equals(rhs.mProcessorType);
-		}
-
 		static int StaticCompare(Platform lhs, Platform rhs)
 		{
-			int lhs_data = (int)lhs.mType, rhs_data = (int)rhs.mType;
-			int result = lhs_data - rhs_data;
+			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
+				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
 
-			if (result == 0)
-				result = lhs.CompareTo(rhs);
+			int lhs_data = (int)lhs.mHandle;
+			int rhs_data = (int)rhs.mHandle;
+			int result = lhs_data - rhs_data;
 
 			return result;
 		}

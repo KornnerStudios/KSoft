@@ -29,6 +29,7 @@
     <Compile Include="Xml\XmlElementStream.cs" />
     <Compile Include="Xml\XmlElementStream.Read.cs" />
     <Compile Include="Xml\XmlElementStream.Write.cs" />
+    <Compile Include="DefaultSerializers\Shell.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Read.cs" />
     <Compile Include="_Details\TagElementTextStream.ReadT4.cs">

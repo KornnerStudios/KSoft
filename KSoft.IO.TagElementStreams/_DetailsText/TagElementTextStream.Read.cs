@@ -22,11 +22,15 @@ namespace KSoft.IO
 		};
 		static ParseErrorType ParseVerifyInput(string input)
 		{
-			return string.IsNullOrEmpty(input) ? ParseErrorType.NoInput : ParseErrorType.None;
+			return string.IsNullOrEmpty(input) 
+				? ParseErrorType.NoInput 
+				: ParseErrorType.None;
 		}
 		static ParseErrorType ParseVerifyResult(ParseErrorType result, bool parseResult)
 		{
-			return parseResult ? ParseErrorType.None : ParseErrorType.InvalidValue;
+			return parseResult 
+				? ParseErrorType.None 
+				: ParseErrorType.InvalidValue;
 		}
 		/// <summary></summary>
 		/// <param name="type"></param>

@@ -39,4 +39,12 @@ namespace KSoft.Bitwise
 			this.Real = real;
 		}
 	};
+
+	/// <summary>Unionized value of a UInt64 and a UInt32</summary>
+	[StructLayout(LayoutKind.Explicit)]
+	public struct IntegerUnion
+	{
+		[FieldOffset(0)] public ulong u64;
+		[FieldOffset(0)] public uint u32;
+	};
 }

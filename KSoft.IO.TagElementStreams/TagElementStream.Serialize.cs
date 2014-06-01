@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
+using Exprs = System.Linq.Expressions;
 
 namespace KSoft.IO
 {
@@ -101,6 +102,22 @@ namespace KSoft.IO
 				 if (IsReading) ReadElementEnum(name, ref value);
 			else if (IsWriting) WriteElementEnum(name, value, isFlags);
 		}
+		public void StreamElementEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+			bool isFlags = false)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( TEnum );
+				ReadElementEnum(name, ref value);
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				WriteElementEnum(name, (TEnum)property.GetValue(obj, null), isFlags);
+		}
 
 		public void StreamElement(TName name, ref Values.KGuid value)
 		{
@@ -175,6 +192,28 @@ namespace KSoft.IO
 			bool executed = false;
 				 if (IsReading) executed = ReadElementEnumOpt(name, ref value);
 			else if (IsWriting) executed = WriteElementEnumOptOnTrue(name, value, predicate, isFlags);
+			return executed;
+		}
+		public bool StreamElementEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+			Predicate<TEnum> predicate = null, bool isFlags = false)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True<TEnum>;
+
+			bool executed = false;
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( TEnum );
+				executed = ReadElementEnumOpt(name, ref value);
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				executed = WriteElementEnumOptOnTrue(name, (TEnum)property.GetValue(obj, null), predicate, isFlags);
+
 			return executed;
 		}
 
@@ -266,6 +305,22 @@ namespace KSoft.IO
 				 if (IsReading) ReadAttributeEnum(name, ref value);
 			else if (IsWriting) WriteAttributeEnum(name, value, isFlags);
 		}
+		public void StreamAttributeEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+			bool isFlags = false)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( TEnum );
+				ReadAttributeEnum(name, ref value);
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				WriteAttributeEnum(name, (TEnum)property.GetValue(obj, null), isFlags);
+		}
 
 		public void StreamAttribute(TName name, ref Values.KGuid value)
 		{
@@ -340,6 +395,28 @@ namespace KSoft.IO
 			bool executed = false;
 				 if (IsReading) executed = ReadAttributeEnumOpt(name, ref value);
 			else if (IsWriting) executed = WriteAttributeEnumOptOnTrue(name, value, predicate, isFlags);
+			return executed;
+		}
+		public bool StreamAttributeEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+			Predicate<TEnum> predicate = null, bool isFlags = false)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True<TEnum>;
+
+			bool executed = false;
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( TEnum );
+				executed = ReadAttributeEnumOpt(name, ref value);
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				executed = WriteAttributeEnumOptOnTrue(name, (TEnum)property.GetValue(obj, null) , predicate, isFlags);
+
 			return executed;
 		}
 

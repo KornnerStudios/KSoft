@@ -16,11 +16,11 @@ namespace KSoft.Bitwise
 #>
 		public HandleBitEncoder(<#= bittable_type.Keyword #> initialBits)
 		{
-			m64 = 0;
-			m32 = 0;
+			mBits.u64 = 0;
+			mBits.u32 = 0;
 			mBitIndex = 0;
 
-			m<#= bittable_type.SizeOfInBits #> = initialBits;
+			mBits.u<#= bittable_type.SizeOfInBits #> = initialBits;
 		}
 <# } #>
 
@@ -31,7 +31,7 @@ namespace KSoft.Bitwise
 		/// <returns></returns>
 		public <#= bittable_type.Keyword #> GetHandle<#= bittable_type.SizeOfInBits #>()
 		{
-			return m<#= bittable_type.SizeOfInBits #>;
+			return mBits.u<#= bittable_type.SizeOfInBits #>;
 		}
 <# } #>
 
@@ -48,7 +48,7 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires<System.ArgumentNullException>(encoder != null);
 
-			encoder.BitEncode(value, ref m64, ref mBitIndex);
+			encoder.BitEncode(value, ref mBits.u64, ref mBitIndex);
 		}
 <# } #>
 
@@ -62,7 +62,7 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires<System.ArgumentException>(bitMask != 0);
 
-			Bits.BitEncodeEnum(value, ref m64, ref mBitIndex, bitMask);
+			Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, bitMask);
 		}
 
 		/// <summary>Bit encode a none-able value into this handle</summary>
@@ -73,7 +73,7 @@ namespace KSoft.Bitwise
 			Contract.Requires<System.ArgumentException>(bitMask != 0);
 			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
 
-			Bits.BitEncodeEnum((ulong)(value+1), ref m64, ref mBitIndex, bitMask);
+			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, bitMask);
 		}
 
 <# } #>
@@ -92,7 +92,7 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires<System.ArgumentNullException>(decoder != null);
 
-			value = decoder.BitDecode(m64, ref mBitIndex);
+			value = decoder.BitDecode(mBits.u64, ref mBitIndex);
 		}
 <# } #>
 
@@ -106,7 +106,7 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires<System.ArgumentException>(bitMask != 0);
 
-			value = (<#= bittable_type.Keyword #>)Bits.BitDecode(m64, ref mBitIndex, bitMask);
+			value = (<#= bittable_type.Keyword #>)Bits.BitDecode(mBits.u64, ref mBitIndex, bitMask);
 		}
 		/// <summary>Bit decode a value from this handle</summary>
 		/// <param name="value">Value decoded from this handle</param>
@@ -115,7 +115,7 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires<System.ArgumentException>(bitMask != 0);
 
-			value = (<#= bittable_type.SignedKeyword #>)Bits.BitDecodeNoneable(m64, ref mBitIndex, bitMask);
+			value = (<#= bittable_type.SignedKeyword #>)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, bitMask);
 		}
 
 <# } #>

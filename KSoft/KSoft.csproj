@@ -28,7 +28,7 @@
     <Compile Include="Bitwise\HandleBitEncoder.cs" />
     <Compile Include="Bitwise\IByteSwappable.cs" />
     <Compile Include="Bitwise\Int24.cs" />
-    <Compile Include="Bitwise\RealNumberUnions.cs" />
+    <Compile Include="Bitwise\NumberUnions.cs" />
     <Compile Include="Bitwise\Single24.cs" />
     <Compile Include="Bitwise\_Details\Bits.BitCountT4.cs">
       <AutoGen>True</AutoGen>
@@ -268,7 +268,9 @@
     <Compile Include="Xml\XmlElementWithLocation.cs" />
     <Compile Include="Xml\XmlReaderStreamOffsetCalculator.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Collections\_Details\" />
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>

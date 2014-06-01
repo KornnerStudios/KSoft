@@ -2,45 +2,93 @@
 using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
+using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
 {
+	using BitEncoders = TypeExtensions.BitEncoders;
+
 	/// <summary>Represents a processor definition</summary>
-	/// <remarks>Currently only this class can define the various processor definitions</remarks>
+	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	[System.Diagnostics.DebuggerDisplay("IA = {InstructionSet}, WordSize = {ProcessorSize}, Endian = {ByteOrder}")]
 	public struct Processor : 
 		IComparer<Processor>, System.Collections.IComparer,
 		IComparable<Processor>, IComparable,
 		IEquatable<Processor>
 	{
-		#region InstructionSet
-		InstructionSet mInstructionSet;
-		/// <summary>The processor's instruction set</summary>
-		public InstructionSet InstructionSet	{ get { return mInstructionSet; } }
+		#region Constants
+		// nesting these into a static class makes them run before the struct's static ctor...
+		// which, being a value type cctor, may not run when we want it
+		static class Constants
+		{
+			public static readonly int kByteOrderShift = 0;
+			public static readonly uint kByteOrderMask = BitEncoders.EndianFormat.BitmaskTrait;
+
+			public static readonly int kProcessorSizeShift = kByteOrderShift + BitEncoders.EndianFormat.BitCountTrait;
+			public static readonly uint kProcessorSizeMask = BitEncoders.ProcessorSize.BitmaskTrait;
+
+			public static readonly int kInstructionSetShift = kProcessorSizeShift + BitEncoders.ProcessorSize.BitCountTrait;
+			public static readonly uint kInstructionSetMask = BitEncoders.InstructionSet.BitmaskTrait;
+
+			public static readonly int kBitCount = kInstructionSetShift + BitEncoders.InstructionSet.BitCountTrait;
+			public static readonly uint kBitmask = Bits.BitCountToMask32(kBitCount);
+		};
+
+		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
+		/// <remarks>6 bits at last count</remarks>
+		public static int BitCount { get { return Constants.kBitCount; } }
+		public static uint Bitmask { get { return Constants.kBitmask; } }
 		#endregion
 
-		#region ProcessorSize
-		ProcessorSize mProcessorSize;
-		/// <summary>The processor's instruction size</summary>
-		public ProcessorSize ProcessorSize		{ get { return mProcessorSize; } }
-		#endregion
+		#region Internal Value
+		[Interop.FieldOffset(0)] readonly uint mHandle;
 
-		#region ByteOrder
-		EndianFormat mByteOrder;
-		/// <summary>The processor's byte ordering</summary>
-		public EndianFormat ByteOrder			{ get { return mByteOrder; } }
+		internal uint Handle { get { return mHandle; } }
+
+		static void InitializeHandle(out uint handle,
+			InstructionSet instSet, ProcessorSize procSize, EndianFormat byteOrder)
+		{
+			var encoder = new Bitwise.HandleBitEncoder();
+			encoder.Encode32(byteOrder, BitEncoders.EndianFormat);
+			encoder.Encode32(procSize, BitEncoders.ProcessorSize);
+			encoder.Encode32(instSet, BitEncoders.InstructionSet);
+
+			Contract.Assert(encoder.UsedBitCount == Processor.BitCount);
+
+			handle = encoder.GetHandle32();
+		}
 		#endregion
 
 		/// <summary>Construct a processor definition</summary>
 		/// <param name="size">Instruction size of the processor</param>
 		/// <param name="byteOrder">Default byte ordering of the processor</param>
 		/// <param name="instructionSet">Instruction set of the processor</param>
-		Processor(ProcessorSize size, EndianFormat byteOrder, InstructionSet instructionSet)
+		public Processor(ProcessorSize size, EndianFormat byteOrder, InstructionSet instructionSet)
 		{
-			mInstructionSet = instructionSet;
-			mProcessorSize = size;
-			mByteOrder = byteOrder;
+			InitializeHandle(out mHandle, instructionSet, size, byteOrder);
 		}
+		internal Processor(uint handle, int startBitIndex)
+		{
+			handle >>= startBitIndex;
+			handle &= Constants.kBitmask;
+
+			mHandle = handle;
+		}
+
+		#region Value properties
+		/// <summary>The processor's instruction set</summary>
+		public InstructionSet InstructionSet { get {
+			return BitEncoders.InstructionSet.BitDecode(mHandle, Constants.kInstructionSetShift);
+		} }
+		/// <summary>The processor's instruction size</summary>
+		public ProcessorSize ProcessorSize { get {
+			return BitEncoders.ProcessorSize.BitDecode(mHandle, Constants.kProcessorSizeShift);
+		} }
+		/// <summary>The processor's byte ordering</summary>
+		public EndianFormat ByteOrder { get {
+			return BitEncoders.EndianFormat.BitDecode(mHandle, Constants.kByteOrderShift);
+		} }
+		#endregion
 
 		#region Overrides
 		/// <summary>See <see cref="Object.Equals"/></summary>
@@ -49,26 +97,16 @@ namespace KSoft.Shell
 		public override bool Equals(object obj)
 		{
 			if(obj is Processor)
-				return Processor.StaticEquals(this, (Processor)obj);
+				return this.mHandle == ((Processor)obj).mHandle;
 
 			return false;
 		}
-		/// <summary>Returns a unique 32-bit identifier for this object based on it's exposed properties</summary>
+		/// <summary>Returns a unique 32-bit identifier for this object based on its exposed properties</summary>
 		/// <returns></returns>
 		/// <see cref="Object.GetHashCode"/>
 		public override int GetHashCode()
 		{
-			const int kInstructionSetShift = 16;
-			const int kProcessorSizeShift = 8;
-			const int kByteOrderShift = 0;
-
-			uint code = (
-					(((uint)mInstructionSet) & 0xFF) << kInstructionSetShift |
-					(((uint)mProcessorSize) & 0xFF) << kProcessorSizeShift |
-					(((uint)mByteOrder) & 0xFF) << kByteOrderShift
-				);
-
-			return unchecked((int)code);
+			return (int)mHandle;
 		}
 		/// <summary>Returns a string representation of this object</summary>
 		/// <returns>"[InstructionSet\tProcessorSize\tByteOrder]"</returns>
@@ -77,9 +115,9 @@ namespace KSoft.Shell
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return string.Format("[{0}\t{1}\t{2}]", 
-				mInstructionSet.ToString(), 
-				mProcessorSize.ToString(), 
-				mByteOrder.ToString()
+				InstructionSet.ToString(), 
+				ProcessorSize.ToString(), 
+				ByteOrder.ToString()
 				);
 		}
 		#endregion
@@ -131,52 +169,20 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		public bool Equals(Processor other)
 		{
-			return Processor.Equals(this, other);
+			return this.mHandle == other.mHandle;
 		}
 		#endregion
 
-		/// <summary></summary>
-		/// <param name="encoder"></param>
-		/// <remarks>6 bits</remarks>
-		public void HandleEncode(ref Bitwise.HandleBitEncoder encoder)
-		{
-			encoder.Encode32(mInstructionSet, TypeExtensions.BitEncoders.InstructionSet);
-			encoder.Encode32(mProcessorSize, TypeExtensions.BitEncoders.ProcessorSize);
-			encoder.Encode32(mByteOrder, TypeExtensions.BitEncoders.EndianFormat);
-		}
-
-		public void HandleDecode(ref Bitwise.HandleBitEncoder encoder)
-		{
-			encoder.Decode32(out mInstructionSet, TypeExtensions.BitEncoders.InstructionSet);
-			encoder.Decode32(out mProcessorSize, TypeExtensions.BitEncoders.ProcessorSize);
-			encoder.Decode32(out mByteOrder, TypeExtensions.BitEncoders.EndianFormat);
-		}
-
 
 		#region Util
-		static bool StaticEquals(Processor lhs, Processor rhs)
-		{
-			return lhs.mInstructionSet == rhs.mInstructionSet &&
-				lhs.mProcessorSize == rhs.mProcessorSize &&
-				lhs.mByteOrder == rhs.mByteOrder;
-		}
-
 		static int StaticCompare(Processor lhs, Processor rhs)
 		{
-			int lhs_data = (int)lhs.mInstructionSet, rhs_data = (int)rhs.mInstructionSet;
+			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
+				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
+
+			int lhs_data = (int)lhs.mHandle;
+			int rhs_data = (int)rhs.mHandle;
 			int result = lhs_data - rhs_data;
-
-			if (result == 0)
-			{
-				lhs_data = (int)lhs.mProcessorSize; rhs_data = (int)rhs.mProcessorSize;
-				result = lhs_data - rhs_data;
-
-				if (result == 0)
-				{
-					lhs_data = (int)lhs.mByteOrder; rhs_data = (int)rhs.mByteOrder;
-					result = lhs_data - rhs_data;
-				}
-			}
 
 			return result;
 		}
