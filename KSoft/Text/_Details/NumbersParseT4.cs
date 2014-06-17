@@ -476,7 +476,8 @@ namespace KSoft
 		#endregion
 
 		#region ParseString Byte
-		static bool ParseStringImpl(string s, ref byte value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref byte value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -493,17 +494,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref byte result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref byte result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString SByte
-		static bool ParseStringImpl(string s, ref sbyte value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref sbyte value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -520,17 +523,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref sbyte result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref sbyte result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString UInt16
-		static bool ParseStringImpl(string s, ref ushort value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref ushort value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -547,17 +552,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref ushort result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref ushort result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString Int16
-		static bool ParseStringImpl(string s, ref short value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref short value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -574,17 +581,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref short result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref short result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString UInt32
-		static bool ParseStringImpl(string s, ref uint value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref uint value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -601,17 +610,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref uint result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref uint result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString Int32
-		static bool ParseStringImpl(string s, ref int value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref int value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -628,17 +639,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref int result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref int result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString UInt64
-		static bool ParseStringImpl(string s, ref ulong value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref ulong value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -655,17 +668,19 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref ulong result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref ulong result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 		#region ParseString Int64
-		static bool ParseStringImpl(string s, ref long value, bool noThrow, int radix, int startIndex)
+		static bool ParseStringImpl(string s, ref long value, bool noThrow, int radix, int startIndex,
+			Func<Exception> getInnerException)
 		{
 			var result = string.IsNullOrEmpty(s) 
 				? ParseErrorType.NoInput 
@@ -682,13 +697,14 @@ namespace KSoft
 			if (noThrow)
 				return result == ParseErrorType.None;
 
-			return HandleParseError(result, s, startIndex);
+			return HandleParseError(result, s, startIndex, getInnerException);
 		}
-		public static bool ParseString(string s, ref long result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
+		public static bool ParseString(string s, ref long result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
+			Func<Exception> getInnerException = null)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
 		}
 		#endregion
 

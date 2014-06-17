@@ -227,6 +227,7 @@
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Encoder.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Options.cs" />
     <Compile Include="Text\TextLineInfo.cs" />
+    <Compile Include="Text\TextLineInfoException.cs" />
     <Compile Include="Text\Utilities.Bytes.cs" />
     <Compile Include="Text\Utilities.cs" />
     <Compile Include="Text\_Details\CharLookupTablesT4.cs">

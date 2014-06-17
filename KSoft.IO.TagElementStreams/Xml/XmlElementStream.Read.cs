@@ -13,7 +13,12 @@ namespace KSoft.IO
 			//return n.InnerText;
 
 			var text_node = n.LastChild;
-			return text_node != null ? text_node.Value : null; // TextNode's value
+			ReadErrorNode = text_node; // TODO: which is more informative, using the element (n) or text_node?
+
+			// TextNode's actual text
+			return text_node != null
+				? text_node.Value
+				: null;
 		}
 		#endregion
 
@@ -39,7 +44,9 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 			Contract.Assert(n != null, name);
-			//Debug.Assert.If(n != null, "Tried to read element '{0}' from node '{1}' in {2}", name, node.Name, Owner);
+
+			// update the error state with the node we're about to read from
+			ReadErrorNode = n;
 			return n;
 		}
 		#endregion
@@ -51,7 +58,9 @@ namespace KSoft.IO
 
 			XmlNode n = Cursor.Attributes[name];
 			Contract.Assert(n != null, name);
-			//Debug.Assert.If(n != null, "Tried to read attribute '{0}' from node '{1}' in {2}", name, node.Name, Owner);
+
+			// update the error state with the node we're about to read from
+			ReadErrorNode = n;
 			return n.Value;
 		}
 		#endregion
@@ -68,6 +77,10 @@ namespace KSoft.IO
 			if (n == null)
 				return null;
 
+			// element exists, update the error state with the node we're about to read from
+			ReadErrorNode = n;
+
+			// NOTE: GetInnerText will probably overwrite ReadErrorNode anyway
 			string it = GetInnerText(n);
 			if (!string.IsNullOrEmpty(it))
 				return it;
@@ -85,8 +98,13 @@ namespace KSoft.IO
 			ValidateReadPermission();
 
 			XmlNode n = Cursor.Attributes[name];
-			if (n != null)	return n.Value;
-			else			return null;
+			if (n == null)
+				return null;
+
+			// attribute exists, update the error state with the node we're about to read from
+			ReadErrorNode = n;
+
+			return n.Value;
 		}
 		#endregion
 	};

@@ -44,23 +44,13 @@ namespace KSoft.Xml
 
 		string GetFileLocationStringWithLineOnly(Text.ITextLineInfo lineInfo, bool verboseString)
 		{
-			const string k_format_string =
-				"{0} ({1})";
-			const string k_format_string_verbose =
-				"{0} (Ln {1})";
-
-			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
-				Filename, lineInfo.LineNumber.ToString());
+			return string.Format("{0} ({1})",
+				Filename, Text.TextLineInfo.ToStringLineOnly(lineInfo, verboseString));
 		}
 		string GetFileLocationStringWithColumn(Text.ITextLineInfo lineInfo, bool verboseString)
 		{
-			const string k_format_string =
-				"{0} ({1}, {2})";
-			const string k_format_string_verbose =
-				"{0} (Ln {1}, Col {2})";
-
-			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
-				Filename, lineInfo.LineNumber.ToString(), lineInfo.LinePosition.ToString());
+			return string.Format("{0} ({1})",
+				Filename, Text.TextLineInfo.ToString(lineInfo, verboseString));
 		}
 		public string GetFileLocationString(XmlNode node, bool verboseString = false)
 		{

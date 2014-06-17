@@ -25,6 +25,8 @@ namespace KSoft
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
 		public static readonly object[] EmptyArray = new object[] { };
 
+		internal static Func<Exception> GetNullException = () => null;
+
 		#region IDisposable
 		class NullDisposableImpl : IDisposable
 		{

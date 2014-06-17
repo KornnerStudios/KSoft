@@ -4,14 +4,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
-	partial class TagElementTextStream<TDoc, TCursor>
+	partial class TagElementTextStreamUtils
 	{
-		#region Parse Util
-		/// <summary>Argument value for noThrow to throw exceptions</summary>
-		const bool kThrowExcept = false;
-		/// <summary>Argument value for noThrow to not throw exceptions</summary>
-		const bool kNoExcept = true;
-
 		enum ParseErrorType
 		{
 			None,
@@ -36,8 +30,10 @@ namespace KSoft.IO
 		/// <param name="type"></param>
 		/// <param name="noThrow">Does the caller want exceptions to be thrown on errors?</param>
 		/// <param name="input"></param>
+		/// <param name="getLineInfoException">Functor to get the inner exception (should be a <see cref="Text.TextLineInfoException"/>) of the exception that is thrown</param>
 		/// <returns>True if no error handling was needed. Else, an exception is throw (if allowed)</returns>
-		static bool ParseHandleError(ParseErrorType type, bool noThrow, string input)
+		static bool ParseHandleError(ParseErrorType type, bool noThrow, string input,
+			Func<Exception> getLineInfoException)
 		{
 			// If no exceptions are wanted, return whether parsing ran without error
 			if (noThrow)
@@ -45,50 +41,82 @@ namespace KSoft.IO
 
 			switch (type)
 			{
-				case ParseErrorType.NoInput:
-					throw new ArgumentException("Input null or empty", "input");
-				case ParseErrorType.InvalidValue:
-					throw new ArgumentException(string.Format("Couldn't parse \"{0}\"", input), "input");
+			case ParseErrorType.NoInput: throw new ArgumentException
+				("Input null or empty", "input", getLineInfoException());
+			case ParseErrorType.InvalidValue: throw new ArgumentException(string.Format
+				("Couldn't parse \"{0}\"", input), "input", getLineInfoException());
 
-				default: return true;
+			default: return true;
 			}
 		}
 
-		static bool ParseString(string input, ref char value, bool noThrow)
+		public static bool ParseString(string input, ref char value, bool noThrow,
+			Func<Exception> getLineInfoException)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				value = input[0];
 
-			return ParseHandleError(result, noThrow, input);
+			return ParseHandleError(result, noThrow, input, getLineInfoException);
 		}
-		static bool ParseString(string input, ref bool value, bool noThrow)
+		public static bool ParseString(string input, ref bool value, bool noThrow,
+			Func<Exception> getLineInfoException)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				value = Text.Util.ParseBooleanLazy(input);
 
-			return ParseHandleError(result, noThrow, input);
+			return ParseHandleError(result, noThrow, input, getLineInfoException);
 		}
 
 		#region Real
-		static bool ParseString(string input, ref float value, bool noThrow)
+		public static bool ParseString(string input, ref float value, bool noThrow,
+			Func<Exception> getLineInfoException)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				result = ParseVerifyResult(result, float.TryParse(input, out value));
 
-			return ParseHandleError(result, noThrow, input);
+			return ParseHandleError(result, noThrow, input, getLineInfoException);
 		}
-		static bool ParseString(string input, ref double value, bool noThrow)
+		public static bool ParseString(string input, ref double value, bool noThrow,
+			Func<Exception> getLineInfoException)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				result = ParseVerifyResult(result, double.TryParse(input, out value));
 
-			return ParseHandleError(result, noThrow, input);
+			return ParseHandleError(result, noThrow, input, getLineInfoException);
 		}
 		#endregion
+	};
+
+	partial class TagElementTextStream<TDoc, TCursor>
+	{
+		#region Parse Util
+		Text.ITextLineInfo mReadErrorNode;
+		/// <summary>Sets the node that the current read operation is querying</summary>
+		/// <remarks>It should be assumed that this isn't reset after the current read successfully finishes</remarks>
+		protected object ReadErrorNode { set {
+			// and in fact, this property can't be used to set mReadErrorNode to null with this assert.
+			// TextStream implementations should only ever need to set the node and forget
+			Contract.Assert(value is Text.ITextLineInfo);
+
+			mReadErrorNode = (Text.ITextLineInfo)value;
+		} }
+		Exception GetLineInfoException()
+		{
+			Contract.Assert(mReadErrorNode != null,
+				"A TextStream implementation failed to set the ReadErrorNode before a read took place. " +
+				"Guess what? Said read just failed");
+
+			return new Text.TextLineInfoException(mReadErrorNode, StreamName);
+		}
+
+		/// <summary>Argument value for noThrow to throw exceptions</summary>
+		const bool kThrowExcept = false;
+		/// <summary>Argument value for noThrow to not throw exceptions</summary>
+		const bool kNoExcept = true;
 		#endregion
 
 		#region ReadElement impl
@@ -105,7 +133,7 @@ namespace KSoft.IO
 
 		protected override void ReadElement(TCursor n, ref Values.KGuid value)
 		{
-			value = Values.KGuid.ParseExactNoStyle(GetInnerText(n));
+			value = Values.KGuid.ParseExactHyphenated(GetInnerText(n));
 		}
 		#endregion
 
@@ -134,7 +162,7 @@ namespace KSoft.IO
 
 		public override void ReadAttribute(string name, ref Values.KGuid value)
 		{
-			value = Values.KGuid.ParseExactNoStyle(ReadAttribute(name));
+			value = Values.KGuid.ParseExactHyphenated(ReadAttribute(name));
 		}
 		#endregion
 
@@ -167,7 +195,7 @@ namespace KSoft.IO
 			if (string.IsNullOrEmpty(str))
 				return false;
 
-			return Values.KGuid.TryParseExactNoStyle(str, out value);
+			return Values.KGuid.TryParseExactHyphenated(str, out value);
 		}
 		#endregion
 
@@ -200,7 +228,7 @@ namespace KSoft.IO
 			if (string.IsNullOrEmpty(str))
 				return false;
 
-			return Values.KGuid.TryParseExactNoStyle(str, out value);
+			return Values.KGuid.TryParseExactHyphenated(str, out value);
 		}
 		#endregion
 	};

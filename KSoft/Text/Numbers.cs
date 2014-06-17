@@ -29,15 +29,22 @@ namespace KSoft
 		public const string kBase64Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-		static bool HandleParseError(ParseErrorType errorType, string s, int startIndex)
+		static bool HandleParseError(ParseErrorType errorType, string s, int startIndex,
+			Func<Exception> getInnerException)
 		{
+			if (getInnerException == null)
+				getInnerException = Util.GetNullException;
+
 			switch (errorType)
 			{
-				case ParseErrorType.NoInput: throw new ArgumentException("Input null or empty", "s");
-				case ParseErrorType.InvalidValue: throw new ArgumentException(string.Format("Couldn't parse '{0}'", s), "s");
-				case ParseErrorType.InvalidStartIndex: throw new ArgumentOutOfRangeException(string.Format(
-					"'{0}' is out of range of the input length of '{1}'", startIndex, s.Length), "startIndex");
-				default: return true;
+			case ParseErrorType.NoInput: throw new ArgumentException
+				("Input null or empty", "s", getInnerException());
+			case ParseErrorType.InvalidValue: throw new ArgumentException(string.Format
+				("Couldn't parse '{0}'", s), "s", getInnerException());
+			case ParseErrorType.InvalidStartIndex: throw new ArgumentOutOfRangeException(string.Format
+				("'{0}' is out of range of the input length of '{1}'", startIndex, s.Length), getInnerException());
+
+			default: return true;
 			}
 		}
 

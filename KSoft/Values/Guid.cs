@@ -236,6 +236,7 @@ namespace KSoft.Values
 		public string ToString(string format, IFormatProvider provider)	{ return mData.ToString(format, provider); }
 
 		internal string ToStringNoStyle()								{ return mData.ToString("N"); }
+		internal string ToStringHyphenated()							{ return mData.ToString("D"); }
 		#endregion
 
 		#region IEndianStreamable Members
@@ -330,7 +331,18 @@ namespace KSoft.Values
 		#region Parse
 		public static KGuid Parse(string input)						{ return new KGuid(Guid.Parse(input)); }
 		public static KGuid ParseExact(string input, string format)	{ return new KGuid(Guid.ParseExact(input, format)); }
+		/// <summary>
+		/// 32 digits: 00000000000000000000000000000000
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		internal static KGuid ParseExactNoStyle(string input)		{ return new KGuid(Guid.ParseExact(input, "N")); }
+		/// <summary>
+		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		internal static KGuid ParseExactHyphenated(string input)	{ return new KGuid(Guid.ParseExact(input, "D")); }
 
 		public static bool TryParse(string input, out KGuid result)
 		{
@@ -359,6 +371,10 @@ namespace KSoft.Values
 		internal static bool TryParseExactNoStyle(string input, out KGuid result)
 		{
 			return TryParseExact(input, "N", out result);
+		}
+		internal static bool TryParseExactHyphenated(string input, out KGuid result)
+		{
+			return TryParseExact(input, "D", out result);
 		}
 		#endregion
 

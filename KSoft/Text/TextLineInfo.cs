@@ -50,6 +50,10 @@ namespace KSoft.Text
 			mLineNumber = lineNumber;
 			mLinePosition = linePosition;
 		}
+		public TextLineInfo(ITextLineInfo otherLineInfo) : this(otherLineInfo.LineNumber, otherLineInfo.LinePosition)
+		{
+			Contract.Requires<ArgumentNullException>(otherLineInfo != null);
+		}
 
 		public bool IsEmpty { get {
 			return LineNumber == 0 && LinePosition == 0;
@@ -85,5 +89,45 @@ namespace KSoft.Text
 		{
 			return LineNumber.GetHashCode() ^ LinePosition.GetHashCode();
 		}
+
+		#region ToString
+		/// <summary>Returns a verbose string of the line/column values</summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			return ToString(this, true);
+		}
+
+		const string kNoLineInfoString = "<no line info>";
+
+		public static string ToStringLineOnly<T>(T lineInfo, bool verboseString)
+			where T : Text.ITextLineInfo
+		{
+			const string k_format_string =
+				"{0}";
+			const string k_format_string_verbose =
+				"Ln {0}";
+
+			if (!lineInfo.HasLineInfo)
+				return kNoLineInfoString;
+
+			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
+				lineInfo.LineNumber.ToString());
+		}
+		public static string ToString<T>(T lineInfo, bool verboseString)
+			where T : Text.ITextLineInfo
+		{
+			const string k_format_string =
+				"{0}, {1}";
+			const string k_format_string_verbose =
+				"Ln {0}, Col {1}";
+
+			if (!lineInfo.HasLineInfo)
+				return kNoLineInfoString;
+
+			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
+				lineInfo.LineNumber.ToString(), lineInfo.LinePosition.ToString());
+		}
+		#endregion
 	};
 }
