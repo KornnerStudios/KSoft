@@ -103,10 +103,23 @@ namespace KSoft
 			return coll == null || coll.Count == 0;
 		}
 
+		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> seq)
 		{
 			return seq ?? Enumerable.Empty<T>();
+		}
+
+		/// <summary>Query if 'seq' contains duplicate values</summary>
+		/// <param name="seq">The sequence to act on</param>
+		/// <returns>True if there are duplicates, false if all values are distinct</returns>
+		/// <remarks>Based on this answer http://stackoverflow.com/a/4712539/444977 </remarks>
+		[Contracts.Pure]
+		[System.Diagnostics.DebuggerStepThrough]
+		public static bool ContainsDuplicates<T>(this IEnumerable<T> seq)
+		{
+			// A list has *no* duplicates when All items can be Add-ed to a set.
+			return !seq.All(new HashSet<T>().Add);
 		}
 		#endregion
 

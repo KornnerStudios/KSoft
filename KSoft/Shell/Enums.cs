@@ -33,20 +33,29 @@ namespace KSoft.Shell
 	[System.Reflection.Obfuscation(Exclude=true)]
 	public enum ProcessorSize : byte
 	{
+		/// <summary>Processor size used is determined during runtime. Special for managed frameworks like .NET</summary>
+		AnyCPU,
+
 		/// <summary>32-bit processor</summary>
 		x32,
 		/// <summary>64-bit processor</summary>
 		x64,
 
+		#region Reserved
+		[Obsolete(KSoftConstants.kReservedMsg)] zUnused3,
+
+#if false
 		/// <summary>128-bit processor</summary>
 		/// <remarks>http://en.wikipedia.org/wiki/128-bit</remarks>
 		[Obsolete(KSoftConstants.kUnsupportedMsg)] x128,
 		/// <summary>256-bit processor</summary>
 		/// <remarks>http://en.wikipedia.org/wiki/256-bit</remarks>
 		[Obsolete(KSoftConstants.kUnsupportedMsg)] x256,
+#endif
+		#endregion
 
 		/// <remarks>2 bits</remarks>
-		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kMax,
+		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};
 
 	/// <summary>Supported sizes of a processor's logical word</summary>
@@ -58,8 +67,17 @@ namespace KSoft.Shell
 		x32,
 		x64,
 
+		#region Reserved
+		[Obsolete(KSoftConstants.kReservedMsg)] zUnused4,
+		[Obsolete(KSoftConstants.kReservedMsg)] zUnused5,
+		[Obsolete(KSoftConstants.kReservedMsg)] zUnused6,
+		[Obsolete(KSoftConstants.kReservedMsg)] zUnused7,
+
+#if false
 		[Obsolete(KSoftConstants.kUnsupportedMsg)] x128,
 		[Obsolete(KSoftConstants.kUnsupportedMsg)] x256,
+#endif
+		#endregion
 
 		/// <remarks>3 bits</remarks>
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
@@ -73,6 +91,10 @@ namespace KSoft.Shell
 		Intel,
 		/// <summary>PowerPC based</summary>
 		PPC,
+
+		/// <summary>Common Intermediate Language (.NET)</summary>
+		/// <remarks>http://en.wikipedia.org/wiki/Common_Intermediate_Language</remarks>
+		CIL,
 
 		/// <summary></summary>
 		/// <remarks>http://en.wikipedia.org/wiki/ARM_architecture
@@ -90,7 +112,6 @@ namespace KSoft.Shell
 		MIPS,
 
 		#region Reserved
-		[Obsolete(KSoftConstants.kReservedMsg)] zUnused4,
 		[Obsolete(KSoftConstants.kReservedMsg)] zUnused5,
 		[Obsolete(KSoftConstants.kReservedMsg)] zUnused6,
 		[Obsolete(KSoftConstants.kReservedMsg)] zUnused7,

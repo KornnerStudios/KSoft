@@ -293,6 +293,19 @@ namespace KSoft.IO
 			else if (IsWriting)
 				WriteCursor( (long)property.GetValue(obj, null) , numBase);
 		}
+
+		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		{
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( Values.KGuid );
+				ReadCursor( ref value );
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				WriteCursor( (Values.KGuid)property.GetValue(obj, null) );
+		}
 		#endregion
 
 
@@ -645,6 +658,21 @@ namespace KSoft.IO
 			}
 			else if (IsWriting)
 				WriteElement(name, (long)property.GetValue(obj, null) , numBase);
+		}
+
+		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( Values.KGuid );
+				ReadElement(name, ref value );
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				WriteElement(name, (Values.KGuid)property.GetValue(obj, null) );
 		}
 		#endregion
 
@@ -1168,6 +1196,27 @@ namespace KSoft.IO
 
 			return executed;
 		}
+
+		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = x => true;
+
+			bool executed = false;
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( Values.KGuid );
+				executed = ReadElementOpt(name, ref value );
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				executed = WriteElementOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);
+
+			return executed;
+		}
 		#endregion
 
 
@@ -1520,6 +1569,21 @@ namespace KSoft.IO
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (long)property.GetValue(obj, null) , numBase);
+		}
+
+		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( Values.KGuid );
+				ReadAttribute(name, ref value );
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				WriteAttribute(name, (Values.KGuid)property.GetValue(obj, null) );
 		}
 		#endregion
 
@@ -2040,6 +2104,27 @@ namespace KSoft.IO
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (long)property.GetValue(obj, null) , predicate, numBase);
+
+			return executed;
+		}
+
+		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = x => true;
+
+			bool executed = false;
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (IsReading)
+			{
+				var value = default( Values.KGuid );
+				executed = ReadAttributeOpt(name, ref value );
+				property.SetValue(obj, value, null);
+			}
+			else if (IsWriting)
+				executed = WriteAttributeOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);
 
 			return executed;
 		}

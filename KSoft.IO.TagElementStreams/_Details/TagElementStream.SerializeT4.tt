@@ -45,6 +45,10 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
 	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Cursor, type, false);
 } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesSpecial) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Cursor, type, false);
+} #>
 		#endregion
 
 
@@ -85,6 +89,10 @@ namespace KSoft.IO
 } #>
 
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Element, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesSpecial) {
 	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Element, type);
 } #>
 		#endregion
@@ -143,6 +151,10 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
 	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.ElementOpt, type);
 } #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesSpecial) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.ElementOpt, type);
+} #>
 		#endregion
 
 
@@ -183,6 +195,10 @@ namespace KSoft.IO
 } #>
 
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Attribute, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesSpecial) {
 	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.Attribute, type);
 } #>
 		#endregion
@@ -239,6 +255,10 @@ namespace KSoft.IO
 } #>
 
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) {
+	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.AttributeOpt, type);
+} #>
+
+<# foreach (var type in TagElementStreamsT4.SerializableTypesSpecial) {
 	 TagElementStreamsT4.GenerateObjectPropertyStreamMethod(this, TagElementStreamSubjectType.AttributeOpt, type);
 } #>
 		#endregion

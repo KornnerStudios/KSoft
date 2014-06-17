@@ -32,6 +32,15 @@ namespace KSoft.T4
 			} }
 		};
 
+		class KGuidCodeDefinition : PrimitiveCodeDefinition
+		{
+			internal KGuidCodeDefinition() : base("Values.KGuid", TypeCode.Object) { }
+
+			public override int SizeOfInBytes { get {
+				return 16;
+			} }
+		};
+
 		#region Individual definitions
 		internal static readonly NumberCodeDefinition kByte = new NumberCodeDefinition(TypeCode.Byte);
 		internal static readonly NumberCodeDefinition kSByte = new NumberCodeDefinition(TypeCode.SByte);
@@ -53,6 +62,8 @@ namespace KSoft.T4
 		internal static readonly PrimitiveCodeDefinition kChar = new CharCodeDefinition();
 
 		internal static readonly PrimitiveCodeDefinition kString = new StringCodeDefinition();
+
+		internal static readonly PrimitiveCodeDefinition kKGuid = new KGuidCodeDefinition();
 		#endregion
 
 		/// <summary>All primitive type definitions that are numeric</summary>

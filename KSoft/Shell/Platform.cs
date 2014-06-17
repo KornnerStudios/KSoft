@@ -193,6 +193,11 @@ namespace KSoft.Shell
 			'WIWI' - Nintendo Wii
 			'CUBE' - GameCube
 		*/
+		static readonly Platform kUndefined = new Platform(PlatformType.Undefined, Processor.Undefined);
+		/// <summary>Undefined platform</summary>
+		/// <remarks>Only use for comparison operations, don't query Processor properties. Results will be...undefined</remarks>
+		public static Platform Undefined { get { return kUndefined; } }
+
 		#region Windows
 		static readonly Platform kWin32 = new Platform(PlatformType.Windows, Processor.Intelx86);
 		/// <summary>Microsoft Windows 32-bit platform</summary>

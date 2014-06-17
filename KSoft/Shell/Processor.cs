@@ -188,6 +188,11 @@ namespace KSoft.Shell
 		}
 		#endregion
 
+		static readonly Processor kUndefined = new Processor(uint.MaxValue, 0);
+		/// <summary>Undefined processor definition</summary>
+		/// <remarks>Only use for comparison operations, don't query value properties. Results will be...undefined</remarks>
+		public static Processor Undefined		{ get { return kUndefined; } }
+
 		#region Intel
 		static readonly Processor kIntelx86 = new Processor(ProcessorSize.x32, EndianFormat.Little, InstructionSet.Intel);
 		/// <summary>Intel's x86 processor definition</summary>

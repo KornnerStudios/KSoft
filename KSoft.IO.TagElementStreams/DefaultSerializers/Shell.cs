@@ -4,9 +4,9 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
-	partial class TagElementStreamDefaultSerializer
+	public partial class TagElementStreamDefaultSerializer
 	{
-		public static void Stream<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
+		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
 			ref Shell.Processor value)
 			where TDoc : class
 			where TCursor : class
@@ -33,7 +33,7 @@ namespace KSoft.IO
 			}
 		}
 
-		public static void Stream<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
+		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
 			ref Shell.Platform value)
 			where TDoc : class
 			where TCursor : class
@@ -48,7 +48,7 @@ namespace KSoft.IO
 				: value.ProcessorType;
 
 			s.StreamAttributeEnum("platformType", ref platform_type);
-			Stream(s, ref processor);
+			Serialize(s, ref processor);
 
 			if (reading)
 			{

@@ -6,15 +6,34 @@ namespace KSoft
 {
 	public static partial class TypeExtensionsTagElementStreams
 	{
-		public delegate int SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext>(
-			IO.TagElementStream<TDoc, TCursor, string> s, Collections.BitSet bitset, int bitIndex, TContext ctxt)
-			where TDoc : class
-			where TCursor : class;
+		#region TagElementStreamFormat
+		[Contracts.Pure]
+		public static IO.TagElementStreamFormat GetBaseFormat(this IO.TagElementStreamFormat format)
+		{
+			return format & ~IO.TagElementStreamFormat.kTypeFlags;
+		}
+		[Contracts.Pure]
+		public static IO.TagElementStreamFormat GetTypeFlags(this IO.TagElementStreamFormat format)
+		{
+			return format & IO.TagElementStreamFormat.kTypeFlags;
+		}
+		[Contracts.Pure]
+		public static bool IsText(this IO.TagElementStreamFormat format)
+		{
+			return (format & IO.TagElementStreamFormat.Binary) == 0;
+		}
+		[Contracts.Pure]
+		public static bool IsBinary(this IO.TagElementStreamFormat format)
+		{
+			return (format & IO.TagElementStreamFormat.Binary) != 0;
+		}
+		#endregion
 
 		public static void Serialize<TDoc, TCursor, TContext>(this Collections.BitSet @this,
 			IO.TagElementStream<TDoc, TCursor, string> s,
 			string elementName,
-			TContext ctxt, SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext> streamElement,
+			TContext ctxt,
+			IO.TagElementStreamDefaultSerializer.SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext> streamElement,
 			int highestBitIndex = TypeExtensions.kNoneInt32)
 			where TDoc : class
 			where TCursor : class
@@ -24,30 +43,9 @@ namespace KSoft
 			Contract.Requires(highestBitIndex.IsNoneOrPositive());
 			Contract.Requires(highestBitIndex < @this.Length);
 
-			if (highestBitIndex.IsNone())
-				highestBitIndex = @this.Length - 1;
-
-			if (s.IsReading)
-			{
-				int bit_index = 0;
-				foreach (var node in s.ElementsByName(elementName))
-					using (s.EnterCursorBookmark(node))
-					{
-						bit_index = streamElement(s, @this, TypeExtensions.kNoneInt32, ctxt);
-						@this[bit_index] = true;
-					}
-			}
-			else if (s.IsWriting)
-			{
-				foreach (int bit_index in @this.SetBitIndices)
-				{
-					if (bit_index > highestBitIndex)
-						break;
-
-					using (s.EnterCursorBookmark(elementName))
-						streamElement(s, @this, bit_index, ctxt);
-				}
-			}
+			IO.TagElementStreamDefaultSerializer.Serialize(@this, s, elementName, 
+				ctxt, streamElement, 
+				highestBitIndex);
 		}
 	};
 };

@@ -102,6 +102,7 @@
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />
+    <Compile Include="Debug\ValueCheck.cs" />
     <Compile Include="Enum\EnumBinaryStreamer.cs" />
     <Compile Include="Enum\EnumBitEncoder.cs" />
     <Compile Include="Enum\EnumBitStreamer.cs" />

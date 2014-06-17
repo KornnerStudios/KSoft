@@ -52,6 +52,10 @@ namespace KSoft.T4
 					yield return num_type;
 		} }
 
+		public static IEnumerable<PrimitiveCodeDefinition> SerializableTypesSpecial { get {
+			yield return PrimitiveDefinitions.kKGuid;
+		} }
+
 		public static void GenerateObjectPropertyStreamMethod(Microsoft.VisualStudio.TextTemplating.TextTransformation ttFile,
 			TagElementStreamSubjectType subject, PrimitiveCodeDefinition codeDef, bool hasTNameParam = true)
 		{
