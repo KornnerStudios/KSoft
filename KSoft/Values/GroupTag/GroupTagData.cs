@@ -17,7 +17,7 @@ namespace KSoft.Values
 		#region Name
 		public const int kGroupNamePadLength = 64;
 
-		protected readonly string mName;
+		readonly string mName;
 		/// <summary>Full name of this group</summary>
 		public string Name { get { return mName; } }
 
@@ -32,8 +32,8 @@ namespace KSoft.Values
 		#endregion
 
 		#region Tag
-		protected string mTagAsString;
-		protected readonly char[] mTag;
+		readonly string mTagAsString;
+		readonly char[] mTag;
 		/// <summary>The character code of this group</summary>
 		[System.ComponentModel.Browsable(false)]
 		public char[] Tag { get { return mTag; } }
@@ -46,11 +46,12 @@ namespace KSoft.Values
 		public object UserData { get; private set; }
 
 		#region Guid
-		protected readonly Guid mGuid = Guid.Empty;
+		readonly KGuid mGuid = KGuid.Empty;
 		/// <summary>Guid for this group tag</summary>
-		public Guid Guid	{ get { return mGuid; } }
+		public KGuid Guid	{ get { return mGuid; } }
 		#endregion
 
+#if false // ObjectInvariant moot, as all non-user properties are readonly
 		[Contracts.ContractInvariantMethod]
 		void ObjectInvariant()
 		{
@@ -58,6 +59,7 @@ namespace KSoft.Values
 			Contract.Invariant(mTag != null);
 			Contract.Invariant(!string.IsNullOrEmpty(mTagAsString));
 		}
+#endif
 
 		#region Ctor
 		/// <summary>Only for Null Constructors</summary>
@@ -66,8 +68,12 @@ namespace KSoft.Values
 			Contract.Assume(expectedLength > 0);
 
 			mName = "none";
+
 			mTag = new char[expectedLength];
-			mTagAsString = "none"; // just to satisfy ObjectInvariant
+			for (int x = 0; x < mTag.Length; x++)
+				mTag[x] = (char)0xFF;
+
+			mTagAsString = new string(mTag);
 		}
 		/// <summary>Initialize a group tag from a character code and name</summary>
 		/// <param name="groupTag">Character code string</param>
@@ -90,13 +96,13 @@ namespace KSoft.Values
 		/// <param name="name">Name of this group tag</param>
 		/// <param name="guid">Guid for this group tag</param>
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
-		protected GroupTagData(string groupTag, string name, Guid guid, int expectedLength) : this(groupTag, name, expectedLength)
+		protected GroupTagData(string groupTag, string name, KGuid guid, int expectedLength) : this(groupTag, name, expectedLength)
 		{
 #if false
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
-			Contract.Requires(guid != Guid.Empty);
+			Contract.Requires(guid != KGuid.Empty);
 #endif
 
 			mGuid = guid;
@@ -124,13 +130,13 @@ namespace KSoft.Values
 		/// <param name="name">Name of this group tag</param>
 		/// <param name="guid">Guid for this group tag</param>
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
-		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, Guid guid) : this(maj, min, name)
+		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid guid) : this(maj, min, name)
 		{
 #if false
 			Contract.Requires(maj != null && maj != GroupTagData32.Null);
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(guid != Guid.Empty);
+			Contract.Requires(guid != KGuid.Empty);
 #endif
 
 			mGuid = guid;

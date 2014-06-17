@@ -13,23 +13,18 @@ namespace KSoft.Values
 		public static readonly GroupTagData32 Null = new GroupTagData32();
 		GroupTagData32() : base(4)
 		{
-			Contract.Assume(mTag.Length == 4);
-
-			mTag[0] = (char)0xFF;
-			mTag[1] = (char)0xFF;
-			mTag[2] = (char)0xFF;
-			mTag[3] = (char)0xFF;
 			mID = uint.MaxValue;
-			mTagAsString = new string(mTag);
 		}
 		#endregion
 		public static readonly IEqualityComparer<GroupTagData> kEqualityComparer = Null;
 
+#if false // ObjectInvariant moot, as all non-user properties are readonly
 		[Contracts.ContractInvariantMethod]
 		void ObjectInvariant()
 		{
 			Contract.Invariant(mTag.Length == 4);
 		}
+#endif
 
 
 		#region ID
@@ -48,23 +43,23 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(uint));
 
-			Contract.Assume(mTag.Length == sizeof(uint));
+			Contract.Assume(Tag.Length == sizeof(uint));
 
-			mID = ToUInt(mTag);
+			mID = ToUInt(Tag);
 		}
 		/// <summary>Initialize a 32-bit group tag with a <see cref="Guid"/></summary>
 		/// <param name="groupTag">Four character code string</param>
 		/// <param name="name">Name of this group tag</param>
 		/// <param name="guid">Guid for this group tag</param>
-		public GroupTagData32(string groupTag, string name, Guid guid) : base(groupTag, name, guid, sizeof(uint))
+		public GroupTagData32(string groupTag, string name, KGuid guid) : base(groupTag, name, guid, sizeof(uint))
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(uint));
 
-			Contract.Assume(mTag.Length == sizeof(uint));
+			Contract.Assume(Tag.Length == sizeof(uint));
 
-			mID = ToUInt(mTag);
+			mID = ToUInt(Tag);
 		}
 		#endregion
 
@@ -104,7 +99,7 @@ namespace KSoft.Values
 		/// <returns>True if equal to this</returns>
 		public override bool Test(char[] other)
 		{
-			return GroupTagData32.Test(mTag, other);
+			return GroupTagData32.Test(Tag, other);
 		}
 		/// <summary>Is this <see cref="GroupTagData32"/> equal to the "null" equivalent value?</summary>
 		public override bool IsNull	{ get {
@@ -280,7 +275,7 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(uint));
 
-			GroupTag = new GroupTagData32(groupTag, name, new Guid(guid));
+			GroupTag = new GroupTagData32(groupTag, name, new KGuid(guid));
 		}
 	};
 }

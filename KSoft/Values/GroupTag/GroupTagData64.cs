@@ -13,27 +13,18 @@ namespace KSoft.Values
 		public static readonly GroupTagData64 Null = new GroupTagData64();
 		GroupTagData64() : base(8)
 		{
-			Contract.Assume(mTag.Length == 8);
-
-			mTag[0] = (char)0xFF;
-			mTag[1] = (char)0xFF;
-			mTag[2] = (char)0xFF;
-			mTag[3] = (char)0xFF;
-			mTag[4] = (char)0xFF;
-			mTag[5] = (char)0xFF;
-			mTag[6] = (char)0xFF;
-			mTag[7] = (char)0xFF;
 			mID = ulong.MaxValue;
-			mTagAsString = new string(mTag);
 		}
 		#endregion
 		public static readonly IEqualityComparer<GroupTagData> kEqualityComparer = Null;
 
+#if false // ObjectInvariant moot, as all non-user properties are readonly
 		[Contracts.ContractInvariantMethod]
 		void ObjectInvariant()
 		{
 			Contract.Invariant(mTag.Length == 8);
 		}
+#endif
 
 
 		#region ID
@@ -52,23 +43,23 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(ulong));
 
-			Contract.Assume(mTag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == sizeof(ulong));
 
-			mID = ToULong(mTag);
+			mID = ToULong(Tag);
 		}
 		/// <summary>Initialize a 64-bit group tag with a <see cref="Guid"/></summary>
 		/// <param name="groupTag">Eight character code string</param>
 		/// <param name="name">Name of this group tag</param>
 		/// <param name="guid">Guid for this group tag</param>
-		public GroupTagData64(string groupTag, string name, Guid guid) : base(groupTag, name, guid, sizeof(ulong))
+		public GroupTagData64(string groupTag, string name, KGuid guid) : base(groupTag, name, guid, sizeof(ulong))
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(ulong));
 
-			Contract.Assume(mTag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == sizeof(ulong));
 
-			mID = ToULong(mTag);
+			mID = ToULong(Tag);
 		}
 		/// <summary>Specialized ctor for initialing from two <see cref="GroupTagData32"/> instances</summary>
 		/// <param name="maj">First four-character code</param>
@@ -81,9 +72,9 @@ namespace KSoft.Values
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 
-			Contract.Assume(mTag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == sizeof(ulong));
 
-			mID = ToULong(mTag);
+			mID = ToULong(Tag);
 		}
 		/// <summary>Specialized ctor for initialing from two <see cref="GroupTagData32"/> instances along with a <see cref="Guid"/></summary>
 		/// <param name="maj">First four-character code</param>
@@ -91,15 +82,15 @@ namespace KSoft.Values
 		/// <param name="name">Name of this <see cref="GroupTagData32"/> pair</param>
 		/// <param name="guid">Guid for this group tag</param>
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
-		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name, Guid guid) : base(maj, min, name, guid)
+		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name, KGuid guid) : base(maj, min, name, guid)
 		{
 			Contract.Requires(maj != null && maj != GroupTagData32.Null);
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 
-			Contract.Assume(mTag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == sizeof(ulong));
 
-			mID = ToULong(mTag);
+			mID = ToULong(Tag);
 		}
 		#endregion
 
@@ -144,7 +135,7 @@ namespace KSoft.Values
 		/// <returns>True if equal to this</returns>
 		public override bool Test(char[] other)
 		{
-			return GroupTagData64.Test(mTag, other);
+			return GroupTagData64.Test(Tag, other);
 		}
 		/// <summary>Is this <see cref="GroupTagData64"/> equal to the "null" equivalent value?</summary>
 		public override bool IsNull	{ get {
@@ -356,7 +347,7 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == sizeof(ulong));
 
-			GroupTag = new GroupTagData64(groupTag, name, new Guid(guid));
+			GroupTag = new GroupTagData64(groupTag, name, new KGuid(guid));
 		}
 	};
 }
