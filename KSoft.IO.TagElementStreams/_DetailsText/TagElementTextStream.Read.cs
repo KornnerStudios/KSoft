@@ -112,6 +112,12 @@ namespace KSoft.IO
 
 			return new Text.TextLineInfoException(mReadErrorNode, StreamName);
 		}
+		/// <summary>Throws a <see cref="Text.TextLineInfoException"/></summary>
+		/// <param name="detailsException">	The details exception. </param>
+		public sealed override void ThrowReadException(Exception detailsException)
+		{
+			throw new Text.TextLineInfoException(detailsException, mReadErrorNode, StreamName);
+		}
 
 		/// <summary>Argument value for noThrow to throw exceptions</summary>
 		const bool kThrowExcept = false;

@@ -19,7 +19,8 @@ namespace KSoft.Collections
 	[Serializable, System.Runtime.InteropServices.ComVisible(true)]
 	public partial class BitSet : ICloneable,
 		ICollection<bool>, System.Collections.ICollection,
-		IComparable<BitSet>, IEquatable<BitSet>,
+		IComparable<IReadOnlyBitSet>, IEquatable<IReadOnlyBitSet>,
+		IReadOnlyBitSet,
 		IO.IEndianStreamSerializable
 	{
 		#region Constants
@@ -274,8 +275,6 @@ namespace KSoft.Collections
 		#region Access
 		public bool this[int bitIndex] {
 			get {
-				Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
-
 				return GetInternal(bitIndex);
 			}
 			set {
@@ -307,8 +306,6 @@ namespace KSoft.Collections
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
 		public bool Get(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
-
 			return GetInternal(bitIndex);
 		}
 
@@ -413,8 +410,6 @@ namespace KSoft.Collections
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
 		public int NextClearBitIndex(int startBitIndex = 0)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
 			return NextBitIndex(startBitIndex, false);
 		}
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
@@ -422,8 +417,6 @@ namespace KSoft.Collections
 		/// <returns>The next set bit index, or -1 if one isn't found</returns>
 		public int NextSetBitIndex(int startBitIndex = 0)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
 			return NextBitIndex(startBitIndex, true);
 		}
 
@@ -552,6 +545,8 @@ namespace KSoft.Collections
 		/// <summary>returns <see cref="Cardinality"/></summary>
 		int ICollection<bool>.Count					{ get { return Cardinality; } }
 		/// <summary>returns <see cref="Cardinality"/></summary>
+		int IReadOnlyCollection<bool>.Count			{ get { return Cardinality; } }
+		/// <summary>returns <see cref="Cardinality"/></summary>
 		int System.Collections.ICollection.Count	{ get { return Cardinality; } }
 		public bool IsReadOnly						{ get { return false; } }
 		bool System.Collections.ICollection.IsSynchronized { get { return false; } }
@@ -596,8 +591,8 @@ namespace KSoft.Collections
 		{
 			return Length ^ Cardinality;
 		}
-		#region IComparable<BitSet> Members
-		public int CompareTo(BitSet other)
+		#region IComparable<IReadOnlyBitSet> Members
+		public int CompareTo(IReadOnlyBitSet other)
 		{
 			if(Length == other.Length)
 				return Cardinality - other.Cardinality;
@@ -605,8 +600,8 @@ namespace KSoft.Collections
 			return Length - other.Length;
 		}
 		#endregion
-		#region IEquatable<BitSet> Members
-		public bool Equals(BitSet other)
+		#region IEquatable<IReadOnlyBitSet> Members
+		public bool Equals(IReadOnlyBitSet other)
 		{
 			return Length == other.Length && Cardinality == other.Cardinality;
 		}

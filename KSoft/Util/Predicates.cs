@@ -11,8 +11,10 @@ namespace KSoft
 
 		public static readonly Predicate<string> IsNotNullOrEmpty = s => !string.IsNullOrEmpty(s);
 
-		public static readonly Predicate<System.Collections.ICollection> HasItems = coll => coll.Count > 0;
-		public static readonly Predicate<Collections.BitSet> HasBits = set => set.Cardinality > 0;
+		public static readonly Predicate<System.Collections.ICollection> HasItems = coll => 
+			coll != null && coll.Count > 0;
+		public static readonly Predicate<Collections.IReadOnlyBitSet> HasBits = set => 
+			set != null && set.Cardinality > 0;
 
 		//////////////////////////////////////////////////////////////////////////
 		// The following are defined as functions to use type inference at the expense of implicit Predicate<> allocations

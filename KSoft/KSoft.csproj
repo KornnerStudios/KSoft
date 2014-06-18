@@ -93,6 +93,7 @@
     <Compile Include="Collections\FixedBitArray.cs" />
     <Compile Include="Collections\FixedBitArray.Enumerator.cs" />
     <Compile Include="Collections\InvertedComparer.cs" />
+    <Compile Include="Collections\IReadOnlyBitSet.cs" />
     <Compile Include="Collections\PropertyComparer.cs" />
     <Compile Include="Collections\StringSegment.cs" />
     <Compile Include="Collections\StringSegment.Enumerator.cs" />

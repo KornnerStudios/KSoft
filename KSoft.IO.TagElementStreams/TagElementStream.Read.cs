@@ -69,6 +69,7 @@ namespace KSoft.IO
 
 	partial class TagElementStream<TDoc, TCursor, TName>
 	{
+		#region Enums
 		/// <summary>Should Enums read from the steam be treated with no respect to case sensitivity?</summary>
 		/// <remarks>If true, 'CanRead' would be parsed where 'canread' appears</remarks>
 		public bool IgnoreCaseOnEnums { get; set; }
@@ -123,6 +124,11 @@ namespace KSoft.IO
 
 			return result;
 		}
+		#endregion
+
+		/// <summary>Throws a suitable exception to detail the position information of the last read</summary>
+		/// <param name="detailsException">The additional details to include in the thrown exception (really, the inner exception. eg, InvalidData)</param>
+		public abstract void ThrowReadException(Exception detailsException);
 
 		// TODO: document that 'ref value' will equal the streamed value or 'null' after returning, depending on success
 

@@ -13,15 +13,20 @@ namespace KSoft.Text
 
 		public string StreamName { get { return mStreamName; } }
 
-		public TextLineInfoException(ITextLineInfo lineInfo, string streamName = null)
+		public TextLineInfoException(Exception innerException, ITextLineInfo lineInfo, string streamName = null) :
+			base("Text stream error", innerException)
 		{
 			Contract.Requires<ArgumentNullException>(lineInfo != null);
 
-			if(string.IsNullOrEmpty(streamName))
+			if (string.IsNullOrEmpty(streamName))
 				streamName = "<unknown text stream>";
 
 			mStreamName = streamName;
 			mLineInfo = new TextLineInfo(lineInfo);
+		}
+		public TextLineInfoException(ITextLineInfo lineInfo, string streamName = null) : this(null, lineInfo, streamName)
+		{
+			Contract.Requires<ArgumentNullException>(lineInfo != null);
 		}
 
 		public override string Message { get {

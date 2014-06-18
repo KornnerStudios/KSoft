@@ -36,6 +36,10 @@ namespace KSoft.IO
 					using (s.EnterCursorBookmark(node))
 					{
 						bit_index = streamElement(s, @this, TypeExtensions.kNoneInt32, ctxt);
+						if (bit_index.IsNone())
+							s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+								"Element is not a valid {0} value", elementName)));
+
 						@this[bit_index] = true;
 					}
 			}
