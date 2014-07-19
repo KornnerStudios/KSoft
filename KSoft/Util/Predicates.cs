@@ -29,6 +29,9 @@ namespace KSoft
 			where T : class
 		{ return obj != null; }
 
+		[Contracts.Pure] public static bool IsNotEmpty(System.Guid guid)	{ return guid != System.Guid.Empty; }
+		[Contracts.Pure] public static bool IsNotEmpty(Values.KGuid guid)	{ return guid != Values.KGuid.Empty; }
+
 		[Contracts.Pure] public static bool IsZero(int x)	{ return x == 0; }
 		[Contracts.Pure] public static bool IsZero(uint x)	{ return x == 0; }
 

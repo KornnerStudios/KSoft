@@ -94,7 +94,8 @@ namespace KSoft.IO
 	partial class TagElementTextStream<TDoc, TCursor>
 	{
 		#region Parse Util
-		Text.ITextLineInfo mReadErrorNode;
+		TextStreamReadErrorState mReadErrorState;
+
 		/// <summary>Sets the node that the current read operation is querying</summary>
 		/// <remarks>It should be assumed that this isn't reset after the current read successfully finishes</remarks>
 		protected object ReadErrorNode { set {
@@ -102,21 +103,13 @@ namespace KSoft.IO
 			// TextStream implementations should only ever need to set the node and forget
 			Contract.Assert(value is Text.ITextLineInfo);
 
-			mReadErrorNode = (Text.ITextLineInfo)value;
+			mReadErrorState.LastReadLineInfo = (Text.ITextLineInfo)value;
 		} }
-		Exception GetLineInfoException()
-		{
-			Contract.Assert(mReadErrorNode != null,
-				"A TextStream implementation failed to set the ReadErrorNode before a read took place. " +
-				"Guess what? Said read just failed");
-
-			return new Text.TextLineInfoException(mReadErrorNode, StreamName);
-		}
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/></summary>
-		/// <param name="detailsException">	The details exception. </param>
+		/// <param name="detailsException">The details (inner) exception of what went wrong</param>
 		public sealed override void ThrowReadException(Exception detailsException)
 		{
-			throw new Text.TextLineInfoException(detailsException, mReadErrorNode, StreamName);
+			mReadErrorState.ThrowReadExeception(detailsException);
 		}
 
 		/// <summary>Argument value for noThrow to throw exceptions</summary>

@@ -14,6 +14,11 @@ namespace KSoft.IO
 
 		[Contracts.Pure]
 		public override bool ValidateNameArg(string name) { return !string.IsNullOrEmpty(name); }
+
+		protected TagElementTextStream()
+		{
+			mReadErrorState = new TextStreamReadErrorState(this);
+		}
 	};
 
 	static partial class TagElementTextStreamUtils

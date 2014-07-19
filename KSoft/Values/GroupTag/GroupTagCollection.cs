@@ -8,8 +8,9 @@ namespace KSoft.Values
 {
 	/// <summary>Base interface for Group Tag collections</summary>
 	[Contracts.ContractClass(typeof(GroupTagCollectionContract))]
-	public abstract class GroupTagCollection : System.Collections.ObjectModel.ReadOnlyCollection<GroupTagData>, IO.IEndianStreamable,
-		ICollection
+	public abstract class GroupTagCollection
+		: IReadOnlyList<GroupTagData>
+		, IO.IEndianStreamable
 	{
 		/// <summary>Compare two <see cref="GroupTagData"/> objects by their <see cref="GroupTagData.Name"/> properties</summary>
 		class ByNameComparer : System.Collections.IComparer, System.Collections.Generic.IComparer<GroupTagData>
@@ -36,18 +37,17 @@ namespace KSoft.Values
 		public abstract GroupTagData NullGroupTag { get; }
 
 		#region Guid
-		protected readonly Guid mGuid = Guid.Empty;
+		protected readonly KGuid mGuid = KGuid.Empty;
 		/// <summary>Guid for this group tag collection</summary>
-		public Guid Guid { get { return mGuid; } }
+		public KGuid Guid { get { return mGuid; } }
 		#endregion
 
-		protected GroupTagCollection(GroupTagData[] groups) : base(groups) {}
-		protected GroupTagCollection(GroupTagData[] groups, Guid guid) : this(groups)
+		protected GroupTagCollection(GroupTagData[] groups)
 		{
-#if false
-			Contract.Requires(guid != Guid.Empty);
-#endif
-
+			Contract.Requires(Array.TrueForAll(groups, Predicates.IsNotNull));
+		}
+		protected GroupTagCollection(GroupTagData[] groups, KGuid guid) : this(groups)
+		{
 			mGuid = guid;
 		}
 
@@ -165,18 +165,6 @@ namespace KSoft.Values
 		/// <summary>Sort the collection by the names of the group tags</summary>
 		public void Sort() { Array.Sort<GroupTagData>(BaseGroupTags, new ByNameComparer()); }
 
-		#region IEnumerable Members
-/*
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()	{ return BaseGroupTags.GetEnumerator(); }
-		IEnumerator<GroupTagData> IEnumerable<GroupTagData>.GetEnumerator()				{ return (BaseGroupTags as IEnumerable<GroupTagData>).GetEnumerator(); }
-*/
-		#endregion
-
-		#region ICollection Members
-		bool ICollection.IsSynchronized	{ get { return BaseGroupTags.IsSynchronized; } }
-		object ICollection.SyncRoot		{ get { return BaseGroupTags.SyncRoot; } }
-		#endregion
-
 		#region IEndianStreamable Members
 		/// <summary>Seek ahead (<see cref="Count"/> * length of the <see cref="GroupTagData"/>'s character code) bytes</summary>
 		/// <param name="s"></param>
@@ -191,6 +179,28 @@ namespace KSoft.Values
 
 				g.Write(s);
 			}
+		}
+		#endregion
+
+		#region IReadOnlyList<GroupTagData> Members
+		public GroupTagData this[int index]
+		{
+			get { return BaseGroupTags[index]; }
+		}
+		public int Count
+		{
+			get { return BaseGroupTags.Length; }
+		}
+		#endregion
+
+		#region IEnumerable<GroupTagData> Members
+		public IEnumerator<GroupTagData> GetEnumerator()
+		{
+			return (IEnumerator<GroupTagData>)BaseGroupTags.GetEnumerator();
+		}
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return BaseGroupTags.GetEnumerator();
 		}
 		#endregion
 	};

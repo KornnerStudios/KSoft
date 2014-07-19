@@ -19,6 +19,8 @@ namespace KSoft.Collections
 		/// <summary>Number of bits set to false</summary>
 		int CardinalityZeros { get; }
 
+		bool IsAllZeros { get; }
+
 		#region Access
 		bool this[int bitIndex] { get; }
 
@@ -41,6 +43,41 @@ namespace KSoft.Collections
 		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
 		EnumeratorWrapper<int> SetBitIndices { get; }
 		#endregion
+
+		#region ISet-like interfaces
+		/// <summary>Determines whether this set is a subset of a specified BitSet (this is included in other)</summary>
+		/// <param name="other">The BitSet to compare to the current set</param>
+		/// <returns>true if the current set is a subset of other; otherwise, false</returns>
+		/// <remarks>
+		/// If <paramref name="other"/> contains the same bits as the current set, the current set is still considered a subset of other.
+		/// 
+		/// This method always returns <b>false</b> if the current set has elements that are not in <paramref name="other"/>.
+		/// </remarks>
+		bool IsSubsetOf(IReadOnlyBitSet other);
+		/// <summary>Determines whether this set is a superset of a specified BitSet (this includes all of other)</summary>
+		/// <param name="other">The BitSet to compare to the current set</param>
+		/// <returns>true if the current set is a superset of other; otherwise, false</returns>
+		/// <remarks>
+		/// If <paramref name="other"/> contains the same elements as the current set, the current set is still considered a superset of other.
+		///
+		/// This method always returns <b>false</b> if the current set has fewer elements than <paramref name="other"/>.
+		/// </remarks>
+		bool IsSupersetOf(IReadOnlyBitSet other);
+		/// <summary>Determines whether this set overlaps with the specified BitSet (this has 1+ bits as other)</summary>
+		/// <param name="other">The BitSet to compare to the current set</param>
+		/// <returns>true if the current set and other share at least one common element; otherwise, false</returns>
+		/// <remarks>{0, 0}.Overlaps({0, 1}) would thus be true.</remarks>
+		bool Overlaps(IReadOnlyBitSet other);
+		/// <summary>Determines whether this set's TRUE-bits overlaps with the specified BitSet (this has 1+ bits as other)</summary>
+		/// <param name="other">The BitSet to compare to the current set</param>
+		/// <returns>true if the current set and other share at least one common TRUE-bit element; otherwise, false</returns>
+		/// <remarks>{0, 0}.Overlaps({0, 1}) would thus be false.</remarks>
+		bool OverlapsSansZeros(IReadOnlyBitSet other);
+		/// <summary>Determines whether this set and the specified BitSet contain the same elements</summary>
+		/// <param name="other">The BitSet to compare to the current set</param>
+		/// <returns>true if the current set is equal to other; otherwise, false</returns>
+//		bool SetEquals(IReadOnlyBitSet other);
+		#endregion
 	};
 	[Contracts.ContractClassFor(typeof(IReadOnlyBitSet))]
 	abstract class IReadOnlyBitSetContract : IReadOnlyBitSet
@@ -61,6 +98,8 @@ namespace KSoft.Collections
 
 			throw new NotImplementedException();
 		} }
+
+		public bool IsAllZeros { get { throw new NotImplementedException(); } }
 
 		#region Access
 		public bool this[int bitIndex] { get {
@@ -93,6 +132,33 @@ namespace KSoft.Collections
 
 		public EnumeratorWrapper<int> ClearBitIndices { get { throw new NotImplementedException(); } }
 		public EnumeratorWrapper<int> SetBitIndices { get { throw new NotImplementedException(); } }
+		#endregion
+
+		#region ISet-like interfaces
+		public bool IsSubsetOf(IReadOnlyBitSet other)
+		{
+			Contract.Requires<ArgumentNullException>(other != null);
+
+			throw new NotImplementedException();
+		}
+		public bool IsSupersetOf(IReadOnlyBitSet other)
+		{
+			Contract.Requires<ArgumentNullException>(other != null);
+
+			throw new NotImplementedException();
+		}
+		public bool Overlaps(IReadOnlyBitSet other)
+		{
+			Contract.Requires<ArgumentNullException>(other != null);
+
+			throw new NotImplementedException();
+		}
+		public bool OverlapsSansZeros(IReadOnlyBitSet other)
+		{
+			Contract.Requires<ArgumentNullException>(other != null);
+
+			throw new NotImplementedException();
+		}
 		#endregion
 
 		#region IReadOnlyCollection<bool> Members

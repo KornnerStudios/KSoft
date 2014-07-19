@@ -18,7 +18,7 @@ namespace KSoft.IO
 			value = GetInnerText(n);
 <# } else { #>
 			TagElementTextStreamUtils.ParseString(GetInnerText(n), ref value, kThrowExcept,
-				GetLineInfoException);
+				mReadErrorState.GetLineInfoException);
 <# } #>
 		}
 <# } #>
@@ -27,7 +27,7 @@ namespace KSoft.IO
 		protected override void ReadElement(TCursor n, ref <#= type.Keyword #> value, NumeralBase fromBase)
 		{
 			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: GetLineInfoException);
+				getInnerException: mReadErrorState.GetLineInfoException);
 		}
 <# } #>
 		#endregion
@@ -41,7 +41,7 @@ namespace KSoft.IO
 			value = ReadAttribute(name);
 <# } else { #>
 			TagElementTextStreamUtils.ParseString(ReadAttribute(name), ref value, kThrowExcept,
-				GetLineInfoException);
+				mReadErrorState.GetLineInfoException);
 <# } #>
 		}
 <# } #>
@@ -50,7 +50,7 @@ namespace KSoft.IO
 		public override void ReadAttribute(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
 			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: GetLineInfoException);
+				getInnerException: mReadErrorState.GetLineInfoException);
 		}
 <# } #>
 		#endregion
@@ -64,7 +64,7 @@ namespace KSoft.IO
 			return (value = ReadElementOpt(name)) != null;
 <# } else { #>
 			return TagElementTextStreamUtils.ParseString(ReadElementOpt(name), ref value, kNoExcept,
-				GetLineInfoException);
+				mReadErrorState.GetLineInfoException);
 <# } #>
 		}
 <# } #>
@@ -73,7 +73,7 @@ namespace KSoft.IO
 		public override bool ReadElementOpt(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
 			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: GetLineInfoException);
+				getInnerException: mReadErrorState.GetLineInfoException);
 		}
 <# } #>
 		#endregion
@@ -87,7 +87,7 @@ namespace KSoft.IO
 			return (value = ReadAttributeOpt(name)) != null;
 <# } else { #>
 			return TagElementTextStreamUtils.ParseString(ReadAttributeOpt(name), ref value, kNoExcept,
-				GetLineInfoException);
+				mReadErrorState.GetLineInfoException);
 <# } #>
 		}
 <# } #>
@@ -96,7 +96,7 @@ namespace KSoft.IO
 		public override bool ReadAttributeOpt(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
 			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: GetLineInfoException);
+				getInnerException: mReadErrorState.GetLineInfoException);
 		}
 <# } #>
 		#endregion

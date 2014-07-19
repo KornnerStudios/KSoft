@@ -167,6 +167,11 @@ namespace KSoft.IO
 		public virtual bool SupportsComments { get { return false; } }
 		#endregion
 
+		/// <summary>Causes WriteOpt() operations to always execute, even if the predicate says not to</summary>
+		/// <remarks>
+		/// Use at your own risk. Can be useful to always write, even when a value is in a 'default' state. However,
+		/// some write predicates are used to avoid invalid operations on data (eg, null collections)
+		/// </remarks>
 		public bool IgnoreWritePredicates { get; set; }
 
 		#region Util

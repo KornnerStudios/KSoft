@@ -146,6 +146,7 @@
     <Compile Include="IO\SignatureMismatchException.cs" />
     <Compile Include="IO\IKSoftStreamBookmarks.cs" />
     <Compile Include="IO\StreamPositionContext.cs" />
+    <Compile Include="IO\TextStreamReadErrorState.cs" />
     <Compile Include="IO\VersionMismatchException.cs" />
     <Compile Include="IO\_Details\BitStream.CacheT4.cs">
       <AutoGen>True</AutoGen>
@@ -252,6 +253,7 @@
     <Compile Include="Util\TypeExtensions.cs" />
     <Compile Include="Util\TypeExtensions.System.cs" />
     <Compile Include="Util\Utilities.cs" />
+    <Compile Include="Values\EqualityTraits.cs" />
     <Compile Include="Values\GroupTag\GroupTagCollection32.cs" />
     <Compile Include="Values\GroupTag\GroupTagCollection64.cs" />
     <Compile Include="Values\GroupTag\GroupTagData.cs" />

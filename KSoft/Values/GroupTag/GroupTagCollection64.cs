@@ -3,54 +3,48 @@ using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
+using TagWord = System.UInt64;
+
 namespace KSoft.Values
 {
+	using GroupTagDatum = GroupTagData64;
+
 	/// <summary>Collection of 64-bit Group Tags</summary>
-	public class GroupTag64Collection : GroupTagCollection
+	public sealed class GroupTag64Collection : GroupTagCollection
 	{
 		#region Elements
+		readonly GroupTagDatum[] mGroupTags;
 		/// <summary>This collection's group tag elements</summary>
-		public GroupTagData64[] GroupTags { get; private set; }
+		public IReadOnlyList<GroupTagDatum> GroupTags { get { return mGroupTags; } }
 
-		protected override GroupTagData[] BaseGroupTags { get { return (GroupTagData[])GroupTags; } }
+		protected override GroupTagData[] BaseGroupTags { get { return (GroupTagData[])mGroupTags; } }
 		#endregion
 
-		public override GroupTagData NullGroupTag { get { return GroupTagData64.Null; } }
-
-		[Contracts.ContractInvariantMethod]
-		void ObjectInvariant()	{ Contract.Invariant(GroupTags != null); }
+		public override GroupTagData NullGroupTag { get { return GroupTagDatum.Null; } }
 
 		#region Ctor
 		/// <summary>Create a collection based on an existing list of group tags</summary>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(GroupTagData64[] groupTags) : base(groupTags)
+		public GroupTag64Collection(GroupTagDatum[] groupTags) : this(KGuid.Empty, groupTags)
 		{
-			Contract.Requires(groupTags != null);
-
-			GroupTags = new GroupTagData64[groupTags.Length];
-			groupTags.CopyTo(GroupTags, 0);
-
-			Contract.Assume(GroupTags != null);
+			Contract.Requires<ArgumentNullException>(groupTags != null);
 		}
 		/// <summary>Create a collection based on an existing list of group tags</summary>
 		/// <param name="guid">Guid for this group tag collection</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(Guid guid, GroupTagData64[] groupTags) : base(groupTags, guid)
+		public GroupTag64Collection(KGuid guid, GroupTagDatum[] groupTags) : base(groupTags, guid)
 		{
-			Contract.Requires(guid != Guid.Empty);
-			Contract.Requires(groupTags != null);
+			Contract.Requires<ArgumentNullException>(groupTags != null);
 
-			GroupTags = new GroupTagData64[groupTags.Length];
-			groupTags.CopyTo(GroupTags, 0);
-
-			Contract.Assume(GroupTags != null);
+			mGroupTags = new GroupTagDatum[groupTags.Length];
+			groupTags.CopyTo(mGroupTags, 0);
 		}
 		/// <summary>Create a collection using an explicit list of group tags</summary>
 		/// <param name="sort">Should we sort the list?</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(bool sort, params GroupTagData64[] groupTags) : this(groupTags)
+		public GroupTag64Collection(bool sort, params GroupTagDatum[] groupTags) : this(groupTags)
 		{
-			Contract.Requires(groupTags != null);
+			Contract.Requires<ArgumentNullException>(groupTags != null);
 
 			if (sort)
 				Sort();
@@ -59,10 +53,9 @@ namespace KSoft.Values
 		/// <param name="guid">Guid for this group tag collection</param>
 		/// <param name="sort">Should we sort the list?</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(Guid guid, bool sort, params GroupTagData64[] groupTags) : this(guid, groupTags)
+		public GroupTag64Collection(KGuid guid, bool sort, params GroupTagDatum[] groupTags) : this(guid, groupTags)
 		{
-			Contract.Requires(guid != Guid.Empty);
-			Contract.Requires(groupTags != null);
+			Contract.Requires<ArgumentNullException>(groupTags != null);
 
 			if (sort)
 				Sort();
@@ -73,13 +66,14 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData64"/></summary>
 		/// <param name="groupTag">The id of a group tag to search for</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
-		public int FindGroupIndex(ulong groupTag)
+		public int FindGroupIndex(TagWord groupTag)
 		{
 			int index = 0;
-			foreach (GroupTagData64 g in GroupTags)
+			foreach (GroupTagDatum g in GroupTags)
 			{
-				Contract.Assume(g != null);
-				if (g.ID == groupTag) return index;
+				if (g.ID == groupTag)
+					return index;
+
 				index++;
 			}
 
@@ -89,11 +83,10 @@ namespace KSoft.Values
 		/// <summary>Find a <see cref="GroupTagData64"/> object in this collection based on it's group tag</summary>
 		/// <param name="tag">Group tag to find</param>
 		/// <returns><see cref="GroupTagData64"/> object existing in this collection, or null if not found.</returns>
-		public GroupTagData64 FindTagGroup(ulong tag)
+		public GroupTagDatum FindTagGroup(TagWord tag)
 		{
-			foreach (GroupTagData64 g in GroupTags)
+			foreach (GroupTagDatum g in GroupTags)
 			{
-				Contract.Assume(g != null);
 				if (g.ID == tag)
 					return g;
 			}
@@ -104,11 +97,10 @@ namespace KSoft.Values
 		/// <summary>Determines if a group tag ID exists in this collection</summary>
 		/// <param name="tag">Group tag id to find</param>
 		/// <returns></returns>
-		public bool Contains(ulong tag)
+		public bool Contains(TagWord tag)
 		{
-			foreach (GroupTagData64 g in GroupTags)
+			foreach (GroupTagDatum g in GroupTags)
 			{
-				Contract.Assume(g != null);
 				if (g.ID == tag)
 					return true;
 			}
@@ -123,7 +115,7 @@ namespace KSoft.Values
 		/// <remarks>Doesn't actually read any data from the stream, only seeks forward</remarks>
 		public override void Read(IO.EndianReader s)
 		{
-			s.Seek(GroupTags.Length * sizeof(ulong), System.IO.SeekOrigin.Current);
+			s.Seek(GroupTags.Count * sizeof(TagWord), System.IO.SeekOrigin.Current);
 		}
 		#endregion
 	};
@@ -148,11 +140,11 @@ namespace KSoft.Values
 		}
 		/// <summary>Initialize the attribute with a type containing a <see cref="GroupTag64Collection"/></summary>
 		/// <param name="container">A type which contains static <see cref="GroupTag64Collection"/> properties</param>
-		/// <param name="collection_name">Explicit name for the "main" group collection property</param>
-		protected GroupTagContainer64Attribute(Type container, string collection_name) : base(container, collection_name)
+		/// <param name="collectionName">Explicit name for the "main" group collection property</param>
+		protected GroupTagContainer64Attribute(Type container, string collectionName) : base(container, collectionName)
 		{
 			Contract.Requires(container != null);
-			Contract.Requires(!string.IsNullOrEmpty(collection_name));
+			Contract.Requires(!string.IsNullOrEmpty(collectionName));
 		}
 
 		/// <summary>The "main" group of the class which this attribute was applied to</summary>

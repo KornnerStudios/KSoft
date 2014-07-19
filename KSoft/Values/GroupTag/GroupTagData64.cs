@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
+using TagWord = System.UInt64;
+
 namespace KSoft.Values
 {
 	/// <summary>Group Tag identifier definition using 64-bit storage space</summary>
 	public sealed class GroupTagData64 : GroupTagData
 	{
+		internal const int kExpectedTagLength = sizeof(TagWord);
+
 		#region Null
 		/// <summary>Represents a null value for <see cref="GroupTagData64"/> objects</summary>
 		public static readonly GroupTagData64 Null = new GroupTagData64();
-		GroupTagData64() : base(8)
+		GroupTagData64() : base(kExpectedTagLength)
 		{
-			mID = ulong.MaxValue;
+			mID = TagWord.MaxValue;
 		}
 		#endregion
 		public static readonly IEqualityComparer<GroupTagData> kEqualityComparer = Null;
@@ -22,28 +26,28 @@ namespace KSoft.Values
 		[Contracts.ContractInvariantMethod]
 		void ObjectInvariant()
 		{
-			Contract.Invariant(mTag.Length == 8);
+			Contract.Invariant(mTag.Length == kExpectedTagLength);
 		}
 #endif
 
 
 		#region ID
-		readonly ulong mID;
+		readonly TagWord mID;
 		/// <summary>The eight character code translated into a unsigned integer</summary>
-		public ulong ID { get { return mID; } }
+		public TagWord ID { get { return mID; } }
 		#endregion
 
 		#region Ctor
 		/// <summary>Initialize a 64-bit group tag</summary>
 		/// <param name="groupTag">Eight character code string</param>
 		/// <param name="name">Name of this group tag</param>
-		public GroupTagData64(string groupTag, string name) : base(groupTag, name, sizeof(ulong))
+		public GroupTagData64(string groupTag, string name) : base(groupTag, name, kExpectedTagLength)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == sizeof(ulong));
+			Contract.Requires(groupTag.Length == kExpectedTagLength);
 
-			Contract.Assume(Tag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -51,13 +55,13 @@ namespace KSoft.Values
 		/// <param name="groupTag">Eight character code string</param>
 		/// <param name="name">Name of this group tag</param>
 		/// <param name="guid">Guid for this group tag</param>
-		public GroupTagData64(string groupTag, string name, KGuid guid) : base(groupTag, name, guid, sizeof(ulong))
+		public GroupTagData64(string groupTag, string name, KGuid guid) : base(groupTag, name, guid, kExpectedTagLength)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == sizeof(ulong));
+			Contract.Requires(groupTag.Length == kExpectedTagLength);
 
-			Contract.Assume(Tag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -72,7 +76,7 @@ namespace KSoft.Values
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 
-			Contract.Assume(Tag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -88,7 +92,7 @@ namespace KSoft.Values
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 
-			Contract.Assume(Tag.Length == sizeof(ulong));
+			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -121,7 +125,7 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in integer form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static explicit operator ulong(GroupTagData64 value)
+		public static explicit operator TagWord(GroupTagData64 value)
 		{
 			Contract.Requires(value != null);
 
@@ -159,7 +163,7 @@ namespace KSoft.Values
 		/// <summary>Moves the stream ahead by the sizeof a eight character code (8 bytes)</summary>
 		/// <param name="s"></param>
 		/// <remarks>Doesn't actually read any data from the stream, only seeks forward</remarks>
-		public override void Read(IO.EndianReader s)	{ s.Seek(sizeof(ulong), System.IO.SeekOrigin.Current); }
+		public override void Read(IO.EndianReader s)	{ s.Seek(sizeof(TagWord), System.IO.SeekOrigin.Current); }
 		/// <summary>Writes this tag group's eight character code</summary>
 		/// <param name="s"></param>
 		public override void Write(IO.EndianWriter s)	{ s.WriteTag64(mID); }
@@ -173,10 +177,10 @@ namespace KSoft.Values
 		public static char[] Swap(char[] tag)
 		{
 			Contract.Requires(tag != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= 8);
+			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
 
 			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length == 8);
+			Contract.Ensures(Contract.Result<char[]>().Length == kExpectedTagLength);
 
 			char[] swap = new char[8];
 			swap[0] = tag[3];
@@ -199,8 +203,8 @@ namespace KSoft.Values
 		public static bool Test(char[] tag1, char[] tag2)
 		{
 			Contract.Requires(tag1 != null && tag2 != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag1.Length >= 8);
-			Contract.Requires<ArgumentOutOfRangeException>(tag2.Length >= 8);
+			Contract.Requires<ArgumentOutOfRangeException>(tag1.Length >= kExpectedTagLength);
+			Contract.Requires<ArgumentOutOfRangeException>(tag2.Length >= kExpectedTagLength);
 
 			if (tag1[0] == tag2[0] &&
 				tag1[1] == tag2[1] &&
@@ -220,13 +224,13 @@ namespace KSoft.Values
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
-		public static ulong ToULong(char[] tag)
+		public static TagWord ToULong(char[] tag)
 		{
 			Contract.Requires(tag != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= 8);
+			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
 
 			// high bits
-			ulong value = (ulong)(
+			var value = (TagWord)(
 						((byte)tag[0] << 24) |
 						((byte)tag[1] << 16) |
 						((byte)tag[2] << 8) |
@@ -234,7 +238,7 @@ namespace KSoft.Values
 					);
 			// low bits
 			value <<= 32;
-			value = (ulong)(
+			value = (TagWord)(
 						((byte)tag[4 + 0] << 24) |
 						((byte)tag[4 + 1] << 16) |
 						((byte)tag[4 + 2] << 8) |
@@ -251,13 +255,13 @@ namespace KSoft.Values
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
-		public static ulong ToULong(string tag)
+		public static TagWord ToULong(string tag)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(tag));
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= 8);
+			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
 
 			// high bits
-			ulong value = (ulong)(
+			var value = (TagWord)(
 						((byte)tag[0] << 24) |
 						((byte)tag[1] << 16) |
 						((byte)tag[2] << 8) |
@@ -265,7 +269,7 @@ namespace KSoft.Values
 					);
 			// low bits
 			value <<= 32;
-			value = (ulong)(
+			value = (TagWord)(
 						((byte)tag[4 + 0] << 24) |
 						((byte)tag[4 + 1] << 16) |
 						((byte)tag[4 + 2] << 8) |
@@ -283,14 +287,15 @@ namespace KSoft.Values
 		/// <param name="tag">optional result buffer</param>
 		/// <param name="isBigEndian">endian order override</param>
 		/// <returns>big-endian ordered eight-cc if <paramref name="isBigEndian"/> is true, little-endian if false</returns>
-		public static char[] FromULong(ulong groupTag, char[] tag = null, bool isBigEndian = true)
+		public static char[] FromULong(TagWord groupTag, char[] tag = null, bool isBigEndian = true)
 		{
 			Contract.Requires(tag == null || tag.Length >= 8);
 
 			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length >= 8);
+			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);
 
-			if (tag == null) tag = new char[8];
+			if (tag == null)
+				tag = new char[kExpectedTagLength];
 
 			if (isBigEndian)
 			{
@@ -345,7 +350,7 @@ namespace KSoft.Values
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == sizeof(ulong));
+			Contract.Requires(groupTag.Length == GroupTagData64.kExpectedTagLength);
 
 			GroupTag = new GroupTagData64(groupTag, name, new KGuid(guid));
 		}

@@ -8,7 +8,7 @@ using TWord = System.UInt32;
 
 namespace KSoft.Collections
 {
-	// http://docs.oracle.com/javase/1.4.2/docs/api/java/util/BitSet.html
+	// http://docs.oracle.com/javase/7/docs/api/java/util/BitSet.html
 	
 	// NOTE: there are multiple places in this implementation where it ignores specially handling alignment-only bits.
 	// Eg, if a BitSet has 33 bits in it, it would be aligned to 64 bits. If you then called SetAll(true) on it, it 
@@ -26,6 +26,7 @@ namespace KSoft.Collections
 		#region Constants
 		/// <summary>Number of bytes in the implementation word</summary>
 		static readonly int kWordByteCount;
+		static readonly int kWordBitMod;
 		/// <summary>Number of bits in the implementation word</summary>
 		const int kWordBitCount = sizeof(TWord) * Bits.kByteBitCount;
 
@@ -40,9 +41,9 @@ namespace KSoft.Collections
 		static BitSet()
 		{
 			int word_bit_count; // we define a const for this, so ignore it
-			int word_bit_shift, word_bit_mod; // unused
+			int word_bit_shift; // unused
 			bool success = Bits.GetBitConstants(typeof(TWord),
-				out kWordByteCount, out word_bit_count, out word_bit_shift, out word_bit_mod);
+				out kWordByteCount, out word_bit_count, out word_bit_shift, out kWordBitMod);
 			Contract.Assert(success, "TWord is an invalid type for BitSet");
 
 			kVectorLengthInT = Bits.GetVectorLengthInT<TWord>();
@@ -58,6 +59,38 @@ namespace KSoft.Collections
 				? (Func<TWord,int>)Bits.LeadingZerosCount   // Big Endian
 				: (Func<TWord,int>)Bits.TrailingZerosCount; // Little Endian
 #pragma warning restore 0162
+		}
+
+		/// <summary>
+		/// Get the mask needed for a caboose word for masking out its alignment-only (ie, unaddressable) bits
+		/// </summary>
+		/// <param name="bitLength"></param>
+		/// <returns></returns>
+		static TWord GetCabooseRetainedBitsMask(int bitLength)
+		{
+			// if there are no bits left over, then the bit length doesn't require any alignment-only bits
+			if ((bitLength & kWordBitMod) == 0)
+				return 0;
+
+			TWord retained_bits_mask;
+#pragma warning disable 0162 // comparing const values, could have 'unreachable' code
+			if (Bits.kVectorWordFormat == Shell.EndianFormat.Big)
+			{
+				retained_bits_mask = kVectorElementBitMask(bitLength-1);
+				// create a mask for all bits below the given length in a caboose word
+				retained_bits_mask -= 1;
+				// when bitvectors are written MSB->LSB, we have to invert the mask (which begins at the LSB)
+				retained_bits_mask = ~retained_bits_mask;
+			}
+			else
+			{
+				retained_bits_mask = kVectorElementBitMask(bitLength);
+				// create a mask for all bits below the given length in a caboose word
+				retained_bits_mask -= 1;
+			}
+#pragma warning restore 0162
+
+			return retained_bits_mask;
 		}
 		#endregion
 
@@ -112,23 +145,9 @@ namespace KSoft.Collections
 					// clear old, now unused, bits in the caboose word
 					if (bit_offset != 0)
 					{
-						TWord retained_bits_mask;
-#pragma warning disable 0162 // comparing const values, could have 'unreachable' code
-						if (Bits.kVectorWordFormat == Shell.EndianFormat.Big)
-						{
-							retained_bits_mask = kVectorElementBitMask(value-1);
-							// create a mask for all bits below the new length in this word
-							retained_bits_mask -= 1;
-							// when bitvectors are written MSB->LSB, we have to invert the mask (which begins at the LSB)
-							retained_bits_mask = ~retained_bits_mask;
-						}
-						else
-						{
-							retained_bits_mask = kVectorElementBitMask(value);
-							// create a mask for all bits below the new length in this word
-							retained_bits_mask -= 1;
-						}
-#pragma warning restore 0162
+						// create a mask for all bits below the new length in this word
+						var retained_bits_mask = GetCabooseRetainedBitsMask(value);
+
 						// keep the still-used bits in the vector, while masking out the old ones
 						mArray[index] &= retained_bits_mask;
 					}
@@ -162,6 +181,9 @@ namespace KSoft.Collections
 		public int Cardinality { get; private set; }
 		/// <summary>Number of bits set to false</summary>
 		public int CardinalityZeros { get { return Length - Cardinality; } }
+
+		/// <summary>Are all the bits in this set currently false?</summary>
+		public bool IsAllZeros { get { return Cardinality == 0; } }
 
 		#region Ctor
 		#region InitializeArray
@@ -259,11 +281,18 @@ namespace KSoft.Collections
 		public object Clone()	{ return new BitSet(this); }
 		#endregion
 
+		#region RecalculateCardinality
 		/// <summary>Update <see cref="Cardinality"/> for an individual word in the underlying array</summary>
 		/// <param name="wordIndex"></param>
 		void RecalculateCardinalityRound(int wordIndex)
 		{
 			Cardinality += Bits.BitCount(mArray[wordIndex]);
+		}
+		/// <summary>Undo a previous <see cref="RecalculateCardinalityRound"/> for an individual word in the underlying array</summary>
+		/// <param name="wordIndex"></param>
+		void RecalculateCardinalityUndoRound(int wordIndex)
+		{
+			Cardinality -= Bits.BitCount(mArray[wordIndex]);
 		}
 		void RecalculateCardinality()
 		{
@@ -271,6 +300,35 @@ namespace KSoft.Collections
 			for (int x = 0, word_count = LengthInWords; x < word_count; x++)
 				RecalculateCardinalityRound(x);
 		}
+		#endregion
+
+		#region ZeroAlignmentOnlyBits
+		void ZeroAlignmentOnlyBits()
+		{
+			var retained_bits_mask = GetCabooseRetainedBitsMask(Length);
+
+			mArray[LengthInWords-1] &= retained_bits_mask;
+		}
+		void ZeroAlignmentOnlyBitsForBitOperation(BitSet value)
+		{
+			// if value is longer, it could possibly contain more addressable bits in its caboose word, causing
+			// this set's caboose word to have those bits be non-zero in the Bit Operation. So zero them out.
+			if (value.Length <= this.Length)
+				return;
+
+			var retained_bits_mask = GetCabooseRetainedBitsMask(value.Length);
+
+			if (retained_bits_mask == 0)
+				return;
+
+			int last_word_index = LengthInWords - 1;
+			// the Bit Operations below update Cardinality as each word is touched
+			// so we'll need to 'undo' the last word's round before we mask out the alignment-only bits, then recalc
+			RecalculateCardinalityUndoRound(last_word_index);
+			mArray[last_word_index] &= retained_bits_mask;
+			RecalculateCardinalityRound(last_word_index);
+		}
+		#endregion
 
 		#region Access
 		public bool this[int bitIndex] {
@@ -365,6 +423,8 @@ namespace KSoft.Collections
 			var fill_value = value ? TWord.MaxValue : TWord.MinValue;
 			for (int x = 0, word_count = LengthInWords; x < word_count; x++)
 				mArray[x] = fill_value;
+			// so if any exist, zero them out
+			ZeroAlignmentOnlyBits();
 
 			if (value)
 				Cardinality = Length;
@@ -444,11 +504,15 @@ namespace KSoft.Collections
 			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
-				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
 				{
 					mArray[x] &= value.mArray[x];
 					RecalculateCardinalityRound(x);
 				}
+
+				// NOTE: we don't do ZeroAlignmentOnlyBitsForBitOperation here as a larger BitSet won't introduce
+				// new TRUE-bits in a And() operation
 
 				mVersion++;
 			}
@@ -464,11 +528,14 @@ namespace KSoft.Collections
 			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
-				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
 				{
 					mArray[x] &= ~value.mArray[x];
 					RecalculateCardinalityRound(x);
 				}
+
+				ZeroAlignmentOnlyBitsForBitOperation(value);
 			}
 			else // we're clearing with ourself, just clear all the bits
 				Clear();
@@ -486,11 +553,14 @@ namespace KSoft.Collections
 			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
-				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
 				{
 					mArray[x] |= value.mArray[x];
 					RecalculateCardinalityRound(x);
 				}
+
+				ZeroAlignmentOnlyBitsForBitOperation(value);
 
 				mVersion++;
 			}
@@ -506,11 +576,14 @@ namespace KSoft.Collections
 			if (!object.ReferenceEquals(value, this))
 			{
 				Cardinality = 0;
-				for (int x = System.Math.Min(LengthInWords, value.LengthInWords) - 1; x >= 0; x--)
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
 				{
 					mArray[x] ^= value.mArray[x];
 					RecalculateCardinalityRound(x);
 				}
+
+				ZeroAlignmentOnlyBitsForBitOperation(value);
 			}
 			else // we're xoring with ourself, just clear all the bits
 				Clear();
@@ -532,6 +605,114 @@ namespace KSoft.Collections
 
 			mVersion++;
 			return this;
+		}
+		#endregion
+
+		/// <summary>Compare the words of this set with another</summary>
+		/// <param name="other">The other set, that is equal or greater in length, to compare bits with</param>
+		/// <returns></returns>
+		bool BitwiseEquals(BitSet other)
+		{
+			Contract.Assume(other.LengthInWords <= this.LengthInWords);
+
+			if (!object.ReferenceEquals(other, this))
+			{
+				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
+				// has tweaked alignment-only data
+				for (int x = 0; x < LengthInWords; x++)
+				{
+					if (mArray[x] != other.mArray[x])
+						return false;
+				}
+			}
+
+			return true;
+		}
+		#region ISet-like interfaces
+		/// <summary>This set is included in other</summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool IsSubsetOf(IReadOnlyBitSet other)
+		{
+			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+
+			// THIS is a subset of OTHER if it contains the same set bits as OTHER
+			// If THIS is larger, then OTHER couldn't contain the bits of THIS
+			if (Length > other.Length)
+				return false;
+
+			return this.BitwiseEquals((BitSet)other);
+		}
+		/// <summary>This set includes all of other</summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool IsSupersetOf(IReadOnlyBitSet other)
+		{
+			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+
+			// THIS is a superset of OTHER if it contains the same set bits as OTHER
+			// If THIS is shorter, then THIS couldn't contain the bits of OTHER
+			if (Length < other.Length)
+				return false;
+
+			// invoke other's Equals, as the method uses the LengthInWords of 'this',
+			// thus 'this' should always be the shorter set
+			return ((BitSet)other).BitwiseEquals(this);
+		}
+		/// <summary>This set's bits match 1+ bits in other</summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool Overlaps(IReadOnlyBitSet other)
+		{
+			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+
+			if (object.ReferenceEquals(other, this))
+				return true;
+			else if (Length != 0)
+			{
+				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
+				// has tweaked alignment-only data
+				var value = (BitSet)other;
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
+				{
+					var lhs = mArray[x];
+					var rhs = value.mArray[x];
+					// if each array has similar bits active only.
+					// negate to test for matching FALSE-bits
+					if ((lhs & rhs) != 0 || (~lhs & ~rhs) != 0)
+						return true;
+				}
+			}
+
+			return false;
+		}
+		/// <summary>This set's TRUE-bits match 1+ bits in other</summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool OverlapsSansZeros(IReadOnlyBitSet other)
+		{
+			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+
+			if (object.ReferenceEquals(other, this))
+				return true;
+			else if (Length != 0)
+			{
+				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
+				// has tweaked alignment-only data
+				var value = (BitSet)other;
+				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
+				for (int x = 0; x < length_in_words; x++)
+				{
+					var lhs = mArray[x];
+					var rhs = value.mArray[x];
+					// if each array has similar bits active only. FALSE-bits are ignored
+					if ((lhs & rhs) != 0)
+						return true;
+				}
+			}
+
+			return false;
 		}
 		#endregion
 
@@ -568,6 +749,7 @@ namespace KSoft.Collections
 		/// <summary>Set all the bits to zero; doesn't modify <see cref="Length"/></summary>
 		public void Clear() { SetAll(false); }
 
+		#region CopyTo
 		public void CopyTo(bool[] array, int arrayIndex)
 		{
 			foreach(var bit in this)
@@ -586,6 +768,7 @@ namespace KSoft.Collections
 			else
 				throw new ArgumentException(string.Format("Array type unsupported {0}", array.GetType()));
 		}
+		#endregion
 
 		public override int GetHashCode()
 		{
@@ -603,6 +786,7 @@ namespace KSoft.Collections
 		#region IEquatable<IReadOnlyBitSet> Members
 		public bool Equals(IReadOnlyBitSet other)
 		{
+			// TODO: this also needs to check BitwiseEquals
 			return Length == other.Length && Cardinality == other.Cardinality;
 		}
 		#endregion

@@ -287,12 +287,32 @@ namespace KSoft.Values
 			return false;
 		}
 
+		public bool Equals(KGuid x, KGuid y)
+		{
+			// We don't compare using mData. System.Guid's Equals implementation compares each individual A...K field
+			
+			return
+				x.mDataHi == y.mDataHi &&
+				x.mDataLo == y.mDataLo;
+		}
 		public bool Equals(KGuid other)			{ return Equals(this, other); }
-		public bool Equals(KGuid x, KGuid y)	{ return x.mData == y.mData; }
 		public bool Equals(Guid other)			{ return mData == other; }
 
 		public override int GetHashCode()	{ return mData.GetHashCode(); }
 		public int GetHashCode(KGuid obj)	{ return obj.GetHashCode(); }
+
+		public static bool operator ==(KGuid a, KGuid b)
+		{
+			// We don't compare using mData. System.Guid's Equals implementation compares each individual A...K field
+			
+			return
+				a.mDataHi == b.mDataHi &&
+				a.mDataLo == b.mDataLo;
+		}
+		public static bool operator !=(KGuid a, KGuid b)
+		{
+			return !(a == b);
+		}
 		#endregion
 
 		#region IComparer<KGuid> Members

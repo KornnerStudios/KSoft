@@ -60,5 +60,49 @@ namespace KSoft.Collections.Test
 			Assert.AreEqual(k_aligned_word_length, bs.Cardinality);
 			Assert.AreEqual(0, bs.CardinalityZeros);
 		}
+
+		[TestMethod]
+		public void Collections_BitSetOperationsTest()
+		{
+			// TODO: need to validate our ZeroAlignmentOnlyBitsForBitOperation logic is working as intended
+		}
+
+		[TestMethod]
+		public void Collections_BitSetOverlapsTest()
+		{
+			var lhs_bits = new bool[] { false, false, };
+			var lhs_bs = new BitSet(lhs_bits);
+			var rhs_bits = new bool[] { false, true, };
+			var rhs_bs = new BitSet(rhs_bits);
+
+			Assert.IsTrue (lhs_bs.Overlaps(rhs_bs));
+			Assert.IsFalse(lhs_bs.OverlapsSansZeros(rhs_bs));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetSuperAndSubsetTest()
+		{
+			// the initial superset
+			var lhs_bits = new bool[] { false, true, false, true, false, true, true };
+			var lhs_bs = new BitSet(lhs_bits);
+			// the initial subset
+			var rhs_bits = new bool[] { false, true, false, true, false, true, };
+			var rhs_bs = new BitSet(rhs_bits);
+
+			Assert.IsTrue(lhs_bs.IsSupersetOf(rhs_bs));
+			Assert.IsTrue(rhs_bs.IsSubsetOf(lhs_bs));
+			// now test the inverse of the above operations. should have the inverse results
+			Assert.IsFalse(lhs_bs.IsSubsetOf(rhs_bs));
+			Assert.IsFalse(rhs_bs.IsSupersetOf(lhs_bs));
+
+			// now set LHS to be smaller than RHS.
+			lhs_bs.Length -= 2;
+			// what was once true, should now be false
+			Assert.IsTrue(lhs_bs.IsSubsetOf(rhs_bs));
+			Assert.IsTrue(rhs_bs.IsSupersetOf(lhs_bs));
+			// now test the inverse of the above operations. should have the inverse results
+			Assert.IsFalse(lhs_bs.IsSupersetOf(rhs_bs));
+			Assert.IsFalse(rhs_bs.IsSubsetOf(lhs_bs));
+		}
 	};
 }
