@@ -60,6 +60,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Bits.EncodeT4.tt</DependentUpon>
     </Compile>
+    <Compile Include="Bitwise\_Details\Bits.NoneableEncoding.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Bits.NoneableEncoding.tt</DependentUpon>
+    </Compile>
     <Compile Include="Bitwise\_Details\Bits.RotateT4.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -303,6 +308,10 @@
     <None Include="Bitwise\_Details\Bits.EncodeT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Bits.EncodeT4.cs</LastGenOutput>
+    </None>
+    <None Include="Bitwise\_Details\Bits.NoneableEncoding.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Bits.NoneableEncoding.cs</LastGenOutput>
     </None>
     <None Include="Bitwise\_Details\Bits.RotateT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

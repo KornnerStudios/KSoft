@@ -317,5 +317,77 @@ namespace KSoft.Bitwise.Test
 
 		}
 		#endregion
+
+		#region NoneableEncodingTraits
+		[TestMethod]
+		public void Bits_NoneableEncodingTraitsTest()
+		{
+			#region 32-bit
+			int i32_max_value;
+			int i32_bit_count;
+			uint i32_bit_mask;
+
+			// smallest value case
+			i32_max_value = 1;
+			i32_bit_mask = Bits.GetNoneableEncodingTraits(i32_max_value, out i32_bit_count);
+			Assert.AreEqual(1, i32_bit_count);
+			Assert.AreEqual(0x1U, i32_bit_mask);
+
+			i32_max_value = 7;
+			i32_bit_mask = Bits.GetNoneableEncodingTraits(i32_max_value, out i32_bit_count);
+			Assert.AreEqual(3, i32_bit_count);
+			Assert.AreEqual(0x7U, i32_bit_mask);
+
+			// this should output a 'inefficient' warning
+			i32_max_value = 8;
+			i32_bit_mask = Bits.GetNoneableEncodingTraits(i32_max_value, out i32_bit_count);
+			Assert.AreEqual(4, i32_bit_count);
+			Assert.AreEqual(0xFU, i32_bit_mask);
+			#endregion
+
+			#region 64-bit
+			long i64_max_value;
+			int i64_bit_count;
+			ulong i64_bit_mask;
+
+			i64_max_value = long.MaxValue >> 1;
+			i64_bit_mask = Bits.GetNoneableEncodingTraits(i64_max_value, out i64_bit_count);
+			Assert.AreEqual(62, i64_bit_count);
+			Assert.AreEqual(0x3FFFFFFFFFFFFFFFUL, i64_bit_mask);
+
+			// this should output a 'inefficient' warning
+			i64_max_value++;
+			i64_bit_mask = Bits.GetNoneableEncodingTraits(i64_max_value, out i64_bit_count);
+			Assert.AreEqual(63, i64_bit_count);
+			Assert.AreEqual(0x7FFFFFFFFFFFFFFFUL, i64_bit_mask);
+
+			// largest value case
+			i64_max_value = long.MaxValue - 1;
+			i64_bit_mask = Bits.GetNoneableEncodingTraits(i64_max_value, out i64_bit_count);
+			Assert.AreEqual(63, i64_bit_count);
+			Assert.AreEqual(0x7FFFFFFFFFFFFFFFUL, i64_bit_mask);
+			#endregion
+		}
+
+		[TestMethod]
+		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
+		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
+		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
+		{
+			int bit_count;
+
+			Bits.GetNoneableEncodingTraits(0, out bit_count);
+		}
+
+		[TestMethod]
+		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
+		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
+		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
+		{
+			int bit_count;
+
+			Bits.GetNoneableEncodingTraits(int.MaxValue, out bit_count);
+		}
+		#endregion
 	};
 }
