@@ -442,10 +442,10 @@ namespace KSoft.Collections
 			// get a mask for the the bits that start at bit_offset, thus ignoring bits that came before startBitIndex
 			var bitmask = kVectorElementSectionBitMask(bit_offset);
 
-			int result_bit_index = TypeExtensions.kNoneInt32;
+			int result_bit_index = TypeExtensions.kNone;
 			var word = mArray[index];
 			for (	word = (stateFilter == false ? ~word : word) & bitmask;
-					result_bit_index == -1;
+					result_bit_index.IsNone();
 					word =  stateFilter == false ? ~mArray[index] : mArray[index])
  			{
 				// word will be 0 if it contains bits that are NOT stateFilter, thus we want to ignore such elements.
@@ -462,8 +462,8 @@ namespace KSoft.Collections
 			// If we didn't find a next bit, result will be -1 and thus less than Length, which is desired behavior
 			// else, the result is a valid index of the next bit with the desired state
 			return result_bit_index < Length 
-				? result_bit_index 
-				: TypeExtensions.kNoneInt32;
+				? result_bit_index
+				: TypeExtensions.kNone;
 		}
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>

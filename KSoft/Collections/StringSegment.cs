@@ -49,7 +49,7 @@ namespace KSoft.Collections
 
 			int index = mData.IndexOf(value, mOffset, mCount);
 			if (index < 0)
-				return TypeExtensions.kNoneInt32;
+				return TypeExtensions.kNone;
 
 			return index - mOffset;
 		}

@@ -132,8 +132,8 @@ namespace KSoft.IO
 		/// The default value for <paramref name="endPos"/> is zero. When it is zero, <paramref name="Stream"/>'s Length is always used at 
 		/// runtime. So it will acknowledge changes in the base stream length after the constructor finishes.
 		/// </remarks>
-		public BitStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite, 
-			long startPos = TypeExtensions.kNoneInt32, long endPos = TypeExtensions.kNoneInt32, 
+		public BitStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite,
+			long startPos = TypeExtensions.kNone, long endPos = TypeExtensions.kNone, 
 			string streamName = "")
 		{
 			Contract.Requires<ArgumentNullException>(baseStream != null);
@@ -294,8 +294,8 @@ namespace KSoft.IO
 		/// doesn't require an explicit character length. If you do provide the 
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
-		public string ReadString(Memory.Strings.StringStorage storage, int length = TypeExtensions.kNoneInt32,
-			int maxLength = TypeExtensions.kNoneInt32, int prefixBitLength = TypeExtensions.kNoneInt32)
+		public string ReadString(Memory.Strings.StringStorage storage, int length = TypeExtensions.kNone,
+			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
 			ValidateStringStorageForStreaming(storage, length);
 
@@ -314,8 +314,8 @@ namespace KSoft.IO
 		/// doesn't require an explicit character length. If you do provide the 
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
-		public string ReadString(Text.StringStorageEncoding encoding, int length = TypeExtensions.kNoneInt32,
-			int maxLength = TypeExtensions.kNoneInt32, int prefixBitLength = TypeExtensions.kNoneInt32)
+		public string ReadString(Text.StringStorageEncoding encoding, int length = TypeExtensions.kNone,
+			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
 			Contract.Requires(encoding != null);
 			ValidateStringStorageForStreaming(encoding.Storage, length);
@@ -328,23 +328,23 @@ namespace KSoft.IO
 		/// <param name="storage">Definition for how we're streaming the string</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		public void Write(string value, Memory.Strings.StringStorage storage,
-			int maxLength = TypeExtensions.kNoneInt32/*, int prefixBitLength = TypeExtensions.kNoneInt32*/)
+			int maxLength = TypeExtensions.kNone/*, int prefixBitLength = TypeExtensions.kNone*/)
 		{
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
 			sse.WriteString(this, value ?? string.Empty, maxLength,
-				prefixBitLength: TypeExtensions.kNoneInt32);
+				prefixBitLength: TypeExtensions.kNone);
 		}
 		/// <summary>Writes a string using a <see cref="Data.Strings.StringStorageEncoding"/></summary>
 		/// <param name="value">String value to writee. Null defaults to an empty string</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		public void Write(string value, Text.StringStorageEncoding encoding,
-			int maxLength = TypeExtensions.kNoneInt32/*, int prefixBitLength = TypeExtensions.kNoneInt32*/)
+			int maxLength = TypeExtensions.kNone/*, int prefixBitLength = TypeExtensions.kNone*/)
 		{
 			Contract.Requires(encoding != null);
 
 			encoding.WriteString(this, value ?? string.Empty, maxLength,
-				prefixBitLength: TypeExtensions.kNoneInt32);
+				prefixBitLength: TypeExtensions.kNone);
 		}
 
 		/// <summary>Serializes a string based on a <see cref="Data.Strings.StringStorage"/> definition</summary>
@@ -353,7 +353,7 @@ namespace KSoft.IO
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		/// <returns></returns>
 		public BitStream Stream(ref string value, Memory.Strings.StringStorage storage,
-			int maxLength = TypeExtensions.kNoneInt32)
+			int maxLength = TypeExtensions.kNone)
 		{
 				 if (IsReading) value = ReadString(storage, maxLength: maxLength);
 			else if (IsWriting) Write(value, storage, maxLength: maxLength);
@@ -366,7 +366,7 @@ namespace KSoft.IO
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		/// <returns></returns>
 		public BitStream Stream(ref string value, Text.StringStorageEncoding encoding,
-			int maxLength = TypeExtensions.kNoneInt32)
+			int maxLength = TypeExtensions.kNone)
 		{
 			Contract.Requires(encoding != null);
 

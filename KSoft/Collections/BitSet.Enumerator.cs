@@ -20,7 +20,7 @@ namespace KSoft.Collections
 			{
 				mSet = set;
 				mLastIndex = set.Length - 1;
-				mBitIndex = TypeExtensions.kNoneInt32;
+				mBitIndex = TypeExtensions.kNone;
 
 				mVersion = set.mVersion;
 			}
@@ -41,7 +41,7 @@ namespace KSoft.Collections
 			object System.Collections.IEnumerator.Current { get { return this.Current; } }
 
 			public abstract bool MoveNext();
-			public void Reset()			{ mBitIndex = TypeExtensions.kNoneInt32; }
+			public void Reset()			{ mBitIndex = TypeExtensions.kNone; }
 
 			void IDisposable.Dispose()	{ }
 		};

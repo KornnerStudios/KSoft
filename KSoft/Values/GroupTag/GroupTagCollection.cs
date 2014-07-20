@@ -92,7 +92,7 @@ namespace KSoft.Values
 				index++;
 			}
 
-			return TypeExtensions.kNoneInt32;
+			return TypeExtensions.kNone;
 		}
 
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
@@ -111,7 +111,7 @@ namespace KSoft.Values
 				index++;
 			}
 
-			return TypeExtensions.kNoneInt32;
+			return TypeExtensions.kNone;
 		}
 
 		/// <summary>Finds the index of a supplied <see cref="GroupTagData"/> object</summary>
@@ -130,7 +130,7 @@ namespace KSoft.Values
 				index++;
 			}
 
-			return TypeExtensions.kNoneInt32;
+			return TypeExtensions.kNone;
 		}
 
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>

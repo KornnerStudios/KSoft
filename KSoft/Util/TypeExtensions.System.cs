@@ -121,6 +121,47 @@ namespace KSoft
 			// A list has *no* duplicates when All items can be Add-ed to a set.
 			return !seq.All(new HashSet<T>().Add);
 		}
+
+		[Contracts.Pure]
+		public static int FindIndex<T>(this IReadOnlyList<T> list,
+			int startIndex, int count, Predicate<T> match)
+		{
+			Contract.Requires<ArgumentNullException>(list != null);
+			Contract.Requires<ArgumentOutOfRangeException>(startIndex < list.Count);
+			Contract.Requires<ArgumentOutOfRangeException>(count >= 0 && startIndex <= list.Count-count);
+			Contract.Requires<ArgumentNullException>(match != null);
+			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
+			Contract.Ensures(Contract.Result<int>() < startIndex+count);
+
+			int end_index = startIndex + count;
+			for (int x = startIndex; x < end_index; x++)
+			{
+				if (match(list[x]))
+					return x;
+			}
+
+			return TypeExtensions.kNone;
+		}
+		[Contracts.Pure]
+		public static int FindIndex<T>(this IReadOnlyList<T> list,
+			int startIndex, Predicate<T> match)
+		{
+			Contract.Requires<ArgumentNullException>(list != null);
+			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
+			Contract.Ensures(Contract.Result<int>() < startIndex+list.Count);
+
+			return FindIndex(list, startIndex, list.Count-startIndex, match);
+		}
+		[Contracts.Pure]
+		public static int FindIndex<T>(this IReadOnlyList<T> list,
+			Predicate<T> match)
+		{
+			Contract.Requires<ArgumentNullException>(list != null);
+			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
+			Contract.Ensures(Contract.Result<int>() < list.Count);
+
+			return FindIndex(list, 0, list.Count, match);
+		}
 		#endregion
 
 		#region IO

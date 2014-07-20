@@ -369,7 +369,7 @@ namespace KSoft.Text
 		{
 			byte[] bytes;
 
-			actualCount = TypeExtensions.kNoneInt32; // complete string case
+			actualCount = TypeExtensions.kNone; // complete string case
 
 			// the user was nice and saved us some CPU trying to feel around for the null 
 			// because we don't have a fixed length to speed things up
@@ -406,7 +406,7 @@ namespace KSoft.Text
 		{
 			byte[] bytes;
 
-			actualCount = TypeExtensions.kNoneInt32; // complete string case
+			actualCount = TypeExtensions.kNone; // complete string case
 
 			// the user was nice and saved us some CPU trying to feel around for the null 
 			// because we don't have a fixed length to speed things up
@@ -437,7 +437,7 @@ namespace KSoft.Text
 		#region Pascal
 		byte[] ReadStrPascal(IO.EndianReader s, out int actualCount)
 		{
-			actualCount = TypeExtensions.kNoneInt32;
+			actualCount = TypeExtensions.kNone;
 
 			int length;
 			// One would think that the length prefix would be of the same endian as the stream, but just in case...
@@ -455,7 +455,7 @@ namespace KSoft.Text
 		}
 		byte[] ReadStrPascal(IO.BitStream s, out int actualCount, int prefixBitLength)
 		{
-			actualCount = TypeExtensions.kNoneInt32;
+			actualCount = TypeExtensions.kNone;
 
 			if (prefixBitLength.IsNone())
 			{
@@ -492,7 +492,7 @@ namespace KSoft.Text
 				return 0; // wtf! no characters, not cool, what a waste
 			}
 			else
-				return TypeExtensions.kNoneInt32; // complete string case
+				return TypeExtensions.kNone; // complete string case
 		}
 		int ReadStrCharArrayGetRealCountMultiByte(Shell.EndianFormat byteOrder, byte[] bytes)
 		{
@@ -505,7 +505,7 @@ namespace KSoft.Text
 				return 0; // wtf! no characters, not cool, what a waste
 			}
 			else
-				return TypeExtensions.kNoneInt32; // complete string case
+				return TypeExtensions.kNone; // complete string case
 		}
 		byte[] ReadStrCharArray(IO.EndianReader s, int length, out int actualCount)
 		{

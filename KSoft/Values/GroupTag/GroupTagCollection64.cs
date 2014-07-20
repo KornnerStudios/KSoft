@@ -77,7 +77,7 @@ namespace KSoft.Values
 				index++;
 			}
 
-			return TypeExtensions.kNoneInt32;
+			return TypeExtensions.kNone;
 		}
 
 		/// <summary>Find a <see cref="GroupTagData64"/> object in this collection based on it's group tag</summary>

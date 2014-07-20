@@ -57,7 +57,7 @@ namespace KSoft.Memory.Strings
 				}
 				// when we've past the end of the pool
 				else
-					mCurrentIndex = TypeExtensions.kNoneInt32;
+					mCurrentIndex = TypeExtensions.kNone;
 
 				return mCurrentIndex >= 0 && mCurrentIndex < mPool.Count;
 			}

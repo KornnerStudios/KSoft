@@ -12,10 +12,12 @@ namespace KSoft
 	public static partial class TypeExtensions
 	{
 		#region NONE extensions
-		public const sbyte kNoneInt8 = -1;
-		public const short kNoneInt16 = -1;
-		public const int kNoneInt32 = -1;
-		public const long kNoneInt64 = -1L;
+		public const int kNone = -1;
+
+		public const sbyte kNoneInt8 = kNone;
+		public const short kNoneInt16 = kNone;
+		public const int kNoneInt32 = kNone;
+		public const long kNoneInt64 = kNone;
 
 		[Contracts.Pure]
 		public static bool IsNone(this int value)

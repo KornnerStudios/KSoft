@@ -330,33 +330,6 @@ namespace KSoft.IO
 			else if (IsWriting) WriteAttribute(name, value);
 		}
 
-		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a string to an id</summary>
-		/// <typeparam name="TContext">Resolving context</typeparam>
-		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
-		/// <param name="name">Attribute name</param>
-		/// <param name="id">Source or destination of the postprocessed value</param>
-		/// <param name="ctxt">Resolving context</param>
-		/// <param name="idResolver">string to id resolver</param>
-		/// <param name="stringResolver">id to string resolver</param>
-		public void StreamAttributeIdAsString<TContext, TIdentifer>(TName name, ref TIdentifer id,
-			TContext ctxt,
-			Func<TContext, string, TIdentifer> idResolver,
-			Func<TContext, TIdentifer, string> stringResolver)
-		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && stringResolver != null);
-
-			bool reading = IsReading;
-			string str = reading 
-				? null 
-				: stringResolver(ctxt, id);
-
-			StreamAttribute(name, ref str);
-
-			if (reading)
-				id = idResolver(ctxt, str);
-		}
-
 		public void StreamAttribute(TName name, ref DateTime timestamp)
 		{
 			Contract.Requires(ValidateNameArg(name));
@@ -433,6 +406,124 @@ namespace KSoft.IO
 			return executed;
 		}
 
+		public bool StreamAttributeOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
+		{
+			Contract.Requires(ValidateNameArg(name));
+
+			if (predicate == null)
+				predicate = Predicates.True<DateTime>;
+
+			bool executed = false;
+			if (IsReading)
+			{
+				long time64 = 0;
+				executed = ReadAttributeOpt(name, ref time64, NumeralBase.Hex);
+				timestamp = Util.ConvertDateTimeFromUnixTime(time64);
+			}
+			else if (IsWriting)
+			{
+				executed = predicate(timestamp);
+				if (executed)
+				{
+					long time64 = Util.ConvertDateTimeToUnixTime(timestamp);
+					WriteAttribute(name, time64, NumeralBase.Hex);
+				}
+			}
+			return executed;
+		}
+		#endregion
+
+		// TODO: T4
+		#region StreamAttributeId
+		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a string to an id</summary>
+		/// <typeparam name="TContext">Resolving context</typeparam>
+		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
+		/// <param name="name">Attribute name</param>
+		/// <param name="id">Source or destination of the postprocessed value</param>
+		/// <param name="ctxt">Resolving context</param>
+		/// <param name="idResolver">string to id resolver</param>
+		/// <param name="integerResolver">id to string resolver</param>
+		public void StreamAttributeIdAsInt32<TContext, TIdentifer>(TName name, ref TIdentifer id,
+			TContext ctxt,
+			Func<TContext, int, TIdentifer> idResolver,
+			Func<TContext, TIdentifer, int> integerResolver)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(idResolver != null && integerResolver != null);
+
+			bool reading = IsReading;
+			var integer = reading 
+				? TypeExtensions.kNone
+				: integerResolver(ctxt, id);
+
+			StreamAttribute(name, ref integer);
+
+			if (reading)
+				id = idResolver(ctxt, integer);
+		}
+
+		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a string to an id</summary>
+		/// <typeparam name="TContext">Resolving context</typeparam>
+		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
+		/// <param name="name">Attribute name</param>
+		/// <param name="id">Source or destination of the postprocessed value</param>
+		/// <param name="ctxt">Resolving context</param>
+		/// <param name="idResolver">string to id resolver</param>
+		/// <param name="stringResolver">id to string resolver</param>
+		public void StreamAttributeIdAsString<TContext, TIdentifer>(TName name, ref TIdentifer id,
+			TContext ctxt,
+			Func<TContext, string, TIdentifer> idResolver,
+			Func<TContext, TIdentifer, string> stringResolver)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(idResolver != null && stringResolver != null);
+
+			bool reading = IsReading;
+			string str = reading 
+				? null 
+				: stringResolver(ctxt, id);
+
+			StreamAttribute(name, ref str);
+
+			if (reading)
+				id = idResolver(ctxt, str);
+		}
+		#endregion
+
+		// TODO: T4
+		#region StreamAttributeOptId
+		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a integer to an id</summary>
+		/// <typeparam name="TContext">Resolving context</typeparam>
+		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
+		/// <param name="name">Attribute name</param>
+		/// <param name="id">Source or destination of the postprocessed value</param>
+		/// <param name="ctxt">Resolving context</param>
+		/// <param name="idResolver">integer to id resolver</param>
+		/// <param name="integerResolver">id to integer resolver</param>
+		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
+		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		public bool StreamAttributeOptIdAsInt32<TContext, TIdentifer>(TName name, ref TIdentifer id,
+			TContext ctxt,
+			Func<TContext, int, TIdentifer> idResolver,
+			Func<TContext, TIdentifer, int> integerResolver,
+			Predicate<int> predicate = null)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires(idResolver != null && integerResolver != null);
+
+			bool reading = IsReading;
+			var integer = reading 
+				? TypeExtensions.kNone
+				: integerResolver(ctxt, id);
+
+			bool executed = StreamAttributeOpt(name, ref integer, predicate);
+
+			if (reading && executed)
+				id = idResolver(ctxt, integer);
+
+			return executed;
+		}
+
 		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a string to an id</summary>
 		/// <typeparam name="TContext">Resolving context</typeparam>
 		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
@@ -462,32 +553,6 @@ namespace KSoft.IO
 			if (reading && executed)
 				id = idResolver(ctxt, str);
 
-			return executed;
-		}
-
-		public bool StreamAttributeOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
-		{
-			Contract.Requires(ValidateNameArg(name));
-
-			if (predicate == null)
-				predicate = Predicates.True<DateTime>;
-
-			bool executed = false;
-			if (IsReading)
-			{
-				long time64 = 0;
-				executed = ReadAttributeOpt(name, ref time64, NumeralBase.Hex);
-				timestamp = Util.ConvertDateTimeFromUnixTime(time64);
-			}
-			else if (IsWriting)
-			{
-				executed = predicate(timestamp);
-				if (executed)
-				{
-					long time64 = Util.ConvertDateTimeToUnixTime(timestamp);
-					WriteAttribute(name, time64, NumeralBase.Hex);
-				}
-			}
 			return executed;
 		}
 		#endregion
