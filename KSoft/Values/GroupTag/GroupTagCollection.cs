@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -54,88 +54,63 @@ namespace KSoft.Values
 		#region Indexers
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
-		public string this[char[] tag]
-		{
-			get
+		[Contracts.Pure]
+		public string this[char[] tag] { get {
+			Contract.Requires(tag != null);
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+
+			foreach (GroupTagData t in BaseGroupTags)
 			{
-				Contract.Requires(tag != null);
-				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
-
-				foreach (GroupTagData t in BaseGroupTags)
-				{
-					Contract.Assume(t != null);
-					Contract.Assume(t.Tag.Length == tag.Length);
-					if (t.Test(tag))
-						return t.Name;
-				}
-
-				return "unknown";
+				Contract.Assume(t.Tag.Length == tag.Length);
+				if (t.Test(tag))
+					return t.Name;
 			}
-		}
+
+			return NullGroupTag.Name;
+		} }
 		#endregion
 
 		#region Searching
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
+		[Contracts.Pure]
 		public int FindGroupIndex(char[] groupTag)
 		{
 			Contract.Requires(groupTag != null);
 
-			int index = 0;
-			foreach (GroupTagData g in BaseGroupTags)
-			{
-				Contract.Assume(g != null);
-				Contract.Assume(g.Tag.Length == groupTag.Length);
-				if (g.Test(groupTag))
-					return index;
-				index++;
-			}
-
-			return TypeExtensions.kNone;
+			return BaseGroupTags.FindIndex(gt => {
+				Contract.Assume(gt.Tag.Length == groupTag.Length);
+				return gt.Test(groupTag);
+			});
 		}
 
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
-		/// <param name="groupTag">The name of a <see cref="GroupTagData"/> to search for</param>
-		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
-		public int FindGroupIndex(string groupTag)
+		/// <param name="groupName">The name of a <see cref="GroupTagData"/> to search for</param>
+		/// <returns>Index of <paramref name="groupName"/> or <b>-1</b> if not found</returns>
+		[Contracts.Pure]
+		public int FindGroupIndex(string groupName)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
+			Contract.Requires(!string.IsNullOrEmpty(groupName));
 
-			int index = 0;
-			foreach (GroupTagData g in BaseGroupTags)
-			{
-				Contract.Assume(g != null);
-				if (g.Name == groupTag)
-					return index;
-				index++;
-			}
-
-			return TypeExtensions.kNone;
+			return BaseGroupTags.FindIndex(gt => gt.Name == groupName);
 		}
 
 		/// <summary>Finds the index of a supplied <see cref="GroupTagData"/> object</summary>
 		/// <param name="group"><see cref="GroupTagData"/> object whose index we want to find</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
+		[Contracts.Pure]
 		public int FindGroupIndex(GroupTagData group)
 		{
 			Contract.Requires(group != null);
 
-			int index = 0;
-			foreach (GroupTagData g in BaseGroupTags)
-			{
-				Contract.Assume(g != null);
-				if (object.ReferenceEquals(g, group))
-					return index;
-				index++;
-			}
-
-			return TypeExtensions.kNone;
+			return BaseGroupTags.FindIndex(gt => object.ReferenceEquals(gt, group));
 		}
 
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="group_tag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="group_tag"/> isn't a part of this collection</returns>
+		[Contracts.Pure]
 		public GroupTagData FindGroup(char[] group_tag)
 		{
 			Contract.Requires(group_tag != null);
@@ -150,6 +125,7 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupTag">The name of a <see cref="GroupTagData"/> to search for</param>
 		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
+		[Contracts.Pure]
 		public GroupTagData FindGroup(string groupTag)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
@@ -164,6 +140,17 @@ namespace KSoft.Values
 
 		/// <summary>Sort the collection by the names of the group tags</summary>
 		public void Sort() { Array.Sort<GroupTagData>(BaseGroupTags, new ByNameComparer()); }
+
+		/// <summary>Does the collection contain multiple elements which share the same group tag and\or name?</summary>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public bool ContainsDuplicates()
+		{
+			var all_tags =	from gt in BaseGroupTags select gt.TagString;
+			var all_names = from gt in BaseGroupTags select gt.Name;
+
+			return all_tags.ContainsDuplicates() || all_names.ContainsDuplicates();
+		}
 
 		#region IEndianStreamable Members
 		/// <summary>Seek ahead (<see cref="Count"/> * length of the <see cref="GroupTagData"/>'s character code) bytes</summary>
@@ -198,7 +185,7 @@ namespace KSoft.Values
 		{
 			return (IEnumerator<GroupTagData>)BaseGroupTags.GetEnumerator();
 		}
-		IEnumerator IEnumerable.GetEnumerator()
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return BaseGroupTags.GetEnumerator();
 		}

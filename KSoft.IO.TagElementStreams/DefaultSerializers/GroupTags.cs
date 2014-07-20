@@ -67,10 +67,12 @@ namespace KSoft.IO
 			}
 		}
 		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
-			ref Values.GroupTag32Collection collection)
+			ref Values.GroupTag32Collection collection, string groupsElementName = "Groups")
 			where TDoc : class
 			where TCursor : class
 		{
+			Contract.Requires(!string.IsNullOrEmpty(groupsElementName));
+
 			bool reading = s.IsReading;
 
 			var guid = reading
@@ -84,7 +86,7 @@ namespace KSoft.IO
 
 			s.StreamAttributeOpt("guid", ref guid, Predicates.IsNotEmpty);
 
-			using (var bm = s.EnterCursorBookmarkOpt("Groups", tags, Predicates.HasItems)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt(groupsElementName, tags, Predicates.HasItems)) if (bm.IsNotNull)
 				StreamElements(s, ref tags);
 
 			if(reading)

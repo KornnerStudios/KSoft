@@ -15,6 +15,7 @@ namespace KSoft.Values
 		System.Collections.IComparer, IComparable
 	{
 		#region Name
+		public const string kNullGroupName = "none";
 		public const int kGroupNamePadLength = 64;
 
 		readonly string mName;
@@ -67,7 +68,7 @@ namespace KSoft.Values
 		{
 			Contract.Assume(expectedLength > 0);
 
-			mName = "none";
+			mName = kNullGroupName;
 
 			mTag = new char[expectedLength];
 			for (int x = 0; x < mTag.Length; x++)
@@ -86,6 +87,7 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
 #endif
+			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
 
 			mName = name;
 			mTagAsString = groupTag;
@@ -119,6 +121,7 @@ namespace KSoft.Values
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 #endif
+			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
 
 			mName = name;
 			mTagAsString = string.Format("{0}{1}", maj.mTagAsString, min.mTagAsString);

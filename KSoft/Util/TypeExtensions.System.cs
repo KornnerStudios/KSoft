@@ -123,6 +123,19 @@ namespace KSoft
 		}
 
 		[Contracts.Pure]
+		public static int FindIndex<T>(this IEnumerable<T> seq, Predicate<T> match)
+		{
+			Contract.Requires<ArgumentNullException>(seq != null);
+			Contract.Requires<ArgumentNullException>(match != null);
+
+			var found = seq
+				.Select((v, i) => new KeyValuePair<T, int?>(v, i))
+				.FirstOrDefault(kvp => match(kvp.Key));
+
+			return found.Value ?? TypeExtensions.kNone;
+		}
+
+		[Contracts.Pure]
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			int startIndex, int count, Predicate<T> match)
 		{

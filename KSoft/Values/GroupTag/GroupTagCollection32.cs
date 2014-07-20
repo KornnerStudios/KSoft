@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -67,46 +68,32 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData32"/></summary>
 		/// <param name="groupTag">The id of a group tag to search for</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
+		[Contracts.Pure]
 		public int FindGroupIndex(TagWord groupTag)
 		{
-			int index = 0;
-			foreach (GroupTagDatum g in GroupTags)
-			{
-				if (g.ID == groupTag)
-					return index;
-
-				index++;
-			}
-
-			return TypeExtensions.kNone;
+			return GroupTags.FindIndex(gt => gt.ID == groupTag);
 		}
 
 		/// <summary>Find a <see cref="GroupTagData32"/> object in this collection based on it's group tag</summary>
 		/// <param name="tag">Group tag to find</param>
 		/// <returns><see cref="GroupTagData32"/> object existing in this collection, or null if not found.</returns>
+		[Contracts.Pure]
 		public GroupTagDatum FindTagGroup(TagWord tag)
 		{
-			foreach (GroupTagDatum g in GroupTags)
-			{
-				if (g.ID == tag)
-					return g;
-			}
+			var matching_tags = from gt in GroupTags
+								where gt.ID == tag
+								select gt;
 
-			return null;
+			return matching_tags.FirstOrDefault();
 		}
 
 		/// <summary>Determines if a group tag ID exists in this collection</summary>
 		/// <param name="tag">Group tag id to find</param>
 		/// <returns></returns>
+		[Contracts.Pure]
 		public bool Contains(TagWord tag)
 		{
-			foreach (GroupTagDatum g in GroupTags)
-			{
-				if (g.ID == tag)
-					return true;
-			}
-
-			return false;
+			return GroupTags.Any(gt => gt.ID == tag);
 		}
 		#endregion
 
