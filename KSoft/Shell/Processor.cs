@@ -9,6 +9,8 @@ namespace KSoft.Shell
 	using BitEncoders = TypeExtensions.BitEncoders;
 
 	/// <summary>Represents a processor definition</summary>
+	[Collections.InitializeValueTypeComparer(typeof(Processor))]
+	[Collections.InitializeValueTypeEqualityComparer(typeof(Processor))]
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	[System.Diagnostics.DebuggerDisplay("IA = {InstructionSet}, WordSize = {ProcessorSize}, Endian = {ByteOrder}")]
 	public struct Processor : 

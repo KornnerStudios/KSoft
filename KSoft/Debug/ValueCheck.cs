@@ -8,7 +8,23 @@ namespace KSoft.Debug
 {
 	public static class ValueCheck
 	{
-		[Contracts.Pure]
+		public static void AreEqual<T>(string description, T expected, T actual,
+			string expectedDisplayValue = null, string actualDisplayValue = null)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(description));
+
+			if (!EqualityComparer<T>.Default.Equals(expected, actual))
+			{
+				if (expectedDisplayValue == null)
+					expectedDisplayValue = expected.ToString();
+				if (actualDisplayValue == null)
+					actualDisplayValue = actual.ToString();
+
+				throw new InvalidDataException(string.Format("{0}. Expected '{0}' but got '{1}'",
+					description, expectedDisplayValue, actualDisplayValue));
+			}
+		}
+
 		public static void IsLessThanEqualTo(string description, int expectedMax, int actualMax)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(description));
@@ -18,7 +34,6 @@ namespace KSoft.Debug
 					description, expectedMax, actualMax));
 		}
 
-		[Contracts.Pure]
 		public static void IsDistinct<T>(string description, string valueName, IEnumerable<T> seq)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(description));

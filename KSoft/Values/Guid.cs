@@ -43,6 +43,8 @@ namespace KSoft.Values
 	};
 
 	/// <remarks>Caveat emptor: has a static ctor</remarks>
+	[Collections.InitializeValueTypeComparer(typeof(KGuid))]
+	[Collections.InitializeValueTypeEqualityComparer(typeof(KGuid))]
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]
@@ -59,48 +61,67 @@ namespace KSoft.Values
 
 		const int kVariantBitCount = 3;
 		const int kVariantBitShift = Bits.kByteBitCount - kVariantBitCount;
+
+		/// <summary>
+		/// Guid format is 32 digits: 00000000000000000000000000000000
+		/// </summary>
+		public const string kFormatNoStyle = "N";
+		/// <summary>
+		/// Guid format is 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
+		/// </summary>
+		public const string kFormatHyphenated = "D";
 		#endregion
 
 		#region Guid Accessors
-		static readonly Func<Guid, int> kGetData1;
-		static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, int> kSetData1;
-		static readonly Func<Guid, short> kGetData2;
-		static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> kSetData2;
-		static readonly Func<Guid, short> kGetData3;
-		static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> kSetData3;
-		static readonly Func<Guid, byte>[] kGetData4;
-		static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[] kSetData4;
-
-		static KGuid()
+		// nesting these into a static class makes them run before the struct's static ctor...
+		// which, being a value type cctor, may not run when we want it
+		/// <summary><see cref="System.Guid"/> internal accessors</summary>
+		static class SysGuid
 		{
-			const string	kData1Name = "_a", 
-							kData2Name = "_b",
-							kData3Name = "_c";
+			const string kData1Name = "_a";
+			public static readonly Func<Guid, int> GetData1;
+			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, int> SetData1;
 
-			kGetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
-			kSetData1 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, int>		(kData1Name);
-			kGetData2 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData2Name);
-			kSetData2 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, short>	(kData2Name);
-			kGetData3 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData3Name);
-			kSetData3 = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, short>	(kData3Name);
+			const string kData2Name = "_b";
+			public static readonly Func<Guid, short> GetData2;
+			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> SetData2;
 
-			string[] kData4Names = { "_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k", };
-			kGetData4 = new Func<Guid, byte>[kData4Names.Length];
-			kSetData4 = new Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[kData4Names.Length];
+			const string kData3Name = "_c";
+			public static readonly Func<Guid, short> GetData3;
+			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> SetData3;
 
-			for (int x = 0; x < kData4Names.Length; x++)
+			public static readonly Func<Guid, byte>[] GetData4;
+			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[] SetData4;
+
+			static SysGuid()
 			{
-				kGetData4[x] = Reflection.Util.GenerateMemberGetter			<Guid, byte>(kData4Names[x]);
-				kSetData4[x] = Reflection.Util.GenerateValueTypeMemberSetter<Guid, byte>(kData4Names[x]);
-			}
-		}
+				GetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
+				SetData1 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, int>		(kData1Name);
+				GetData2 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData2Name);
+				SetData2 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	(kData2Name);
+				GetData3 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData3Name);
+				SetData3 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	(kData3Name);
 
-		public int Data1 { get { return kGetData1(mData); } }
-		public int Data2 { get { return kGetData2(mData); } }
-		public int Data3 { get { return kGetData3(mData); } }
+				string[] kData4Names = { "_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k", };
+				GetData4 = new Func<Guid, byte>[kData4Names.Length];
+				SetData4 = new Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[kData4Names.Length];
+
+				for (int x = 0; x < kData4Names.Length; x++)
+				{
+					GetData4[x] = Reflection.Util.GenerateMemberGetter			<Guid, byte>(kData4Names[x]);
+					SetData4[x] = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, byte>(kData4Names[x]);
+				}
+			}
+		};
+
+		public int Data1 { get { return SysGuid.GetData1(mData); } }
+		public int Data2 { get { return SysGuid.GetData2(mData); } }
+		public int Data3 { get { return SysGuid.GetData3(mData); } }
 		public long Data4 { get {
-			byte	d = kGetData4[0](mData), e = kGetData4[1](mData), f = kGetData4[2](mData), g = kGetData4[3](mData), 
-					h = kGetData4[4](mData), i = kGetData4[5](mData), j = kGetData4[6](mData), k = kGetData4[7](mData);
+			byte	d = SysGuid.GetData4[0](mData), e = SysGuid.GetData4[1](mData),
+					f = SysGuid.GetData4[2](mData), g = SysGuid.GetData4[3](mData), 
+					h = SysGuid.GetData4[4](mData), i = SysGuid.GetData4[5](mData),
+					j = SysGuid.GetData4[6](mData), k = SysGuid.GetData4[7](mData);
 			long result;
 
 			result =  d; result <<= Bits.kByteBitCount;
@@ -123,14 +144,14 @@ namespace KSoft.Values
 		public Guid ToGuid() { return mData; }
 
 		public long MostSignificantBits { get {
-			long result = kGetData1(mData);
+			long result = SysGuid.GetData1(mData);
 			result <<= Bits.kInt32BitCount;
 
 			result <<= Bits.kInt16BitCount;
-			result |= (uint)kGetData2(mData);
+			result |= (uint)SysGuid.GetData2(mData);
 
 			result <<= Bits.kInt16BitCount;
-			result |= (uint)kGetData3(mData);
+			result |= (uint)SysGuid.GetData3(mData);
 
 			return (long)result;
 		} }
@@ -142,11 +163,11 @@ namespace KSoft.Values
 
 		#region Version and Variant
 		public UuidVersion Version { get {
-			return (UuidVersion)(kGetData3(mData) >> kVersionBitShift);
+			return (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift);
 		} }
 
 		public UuidVariant Variant { get {
-			int raw = kGetData4[0](mData) >> kVariantBitShift;
+			int raw = SysGuid.GetData4[0](mData) >> kVariantBitShift;
 
 			// Special condition due to the 'type' bits starting in the right-most (ie, MSB) bits,
 			// plus for NCS and Standard the lower two bits are documented in RFC as being 'don't care'
@@ -180,8 +201,8 @@ namespace KSoft.Values
 
 			// NOTE: While the Variant field is 3-bits, both the Java and RFC implementations
 			// seem to lob the two MSB off, instead of 0x1F
-			int hi = kGetData4[0](mData) & 0x3F;
-			int lo = kGetData4[1](mData);
+			int hi = SysGuid.GetData4[0](mData) & 0x3F;
+			int lo = SysGuid.GetData4[1](mData);
 
 			return (hi << 8) | lo;
 		} }
@@ -192,8 +213,8 @@ namespace KSoft.Values
 
 			long result = 0;
 
-			for (int x = 2; x < kGetData4.Length; x++, result <<= Bits.kByteBitCount)
-				result |= kGetData4[x](mData);
+			for (int x = 2; x < SysGuid.GetData4.Length; x++, result <<= Bits.kByteBitCount)
+				result |= SysGuid.GetData4[x](mData);
 
 			return result;
 		} }
@@ -235,32 +256,32 @@ namespace KSoft.Values
 		/// <see cref="Guid.ToString(string, IFormatProvider)"/>
 		public string ToString(string format, IFormatProvider provider)	{ return mData.ToString(format, provider); }
 
-		internal string ToStringNoStyle()								{ return mData.ToString("N"); }
-		internal string ToStringHyphenated()							{ return mData.ToString("D"); }
+		internal string ToStringNoStyle()								{ return mData.ToString(kFormatNoStyle); }
+		internal string ToStringHyphenated()							{ return mData.ToString(kFormatHyphenated); }
 		#endregion
 
 		#region IEndianStreamable Members
 		public void Read(IO.EndianReader s)
 		{
-			kSetData1(ref mData, s.ReadInt32());
-			kSetData2(ref mData, s.ReadInt16());
-			kSetData3(ref mData, s.ReadInt16());
+			SysGuid.SetData1(ref mData, s.ReadInt32());
+			SysGuid.SetData2(ref mData, s.ReadInt16());
+			SysGuid.SetData3(ref mData, s.ReadInt16());
 
-			foreach (var data4 in kSetData4)
+			foreach (var data4 in SysGuid.SetData4)
 				data4(ref mData, s.ReadByte());
 		}
 
 		public void Write(IO.EndianWriter s)
 		{
-			int data1 = kGetData1(mData);
-			short data2 = kGetData2(mData);
-			short data3 = kGetData3(mData);
+			int data1 = SysGuid.GetData1(mData);
+			short data2 = SysGuid.GetData2(mData);
+			short data3 = SysGuid.GetData3(mData);
 
 			s.Write(data1);
 			s.Write(data2);
 			s.Write(data3);
 
-			foreach (var data4 in kGetData4)
+			foreach (var data4 in SysGuid.GetData4)
 				s.Write(data4(mData));
 		}
 		#endregion
@@ -356,13 +377,13 @@ namespace KSoft.Values
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactNoStyle(string input)		{ return new KGuid(Guid.ParseExact(input, "N")); }
+		internal static KGuid ParseExactNoStyle(string input)		{ return new KGuid(Guid.ParseExact(input, kFormatNoStyle)); }
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactHyphenated(string input)	{ return new KGuid(Guid.ParseExact(input, "D")); }
+		internal static KGuid ParseExactHyphenated(string input)	{ return new KGuid(Guid.ParseExact(input, kFormatHyphenated)); }
 
 		public static bool TryParse(string input, out KGuid result)
 		{
@@ -390,11 +411,11 @@ namespace KSoft.Values
 		}
 		internal static bool TryParseExactNoStyle(string input, out KGuid result)
 		{
-			return TryParseExact(input, "N", out result);
+			return TryParseExact(input, kFormatNoStyle, out result);
 		}
 		internal static bool TryParseExactHyphenated(string input, out KGuid result)
 		{
-			return TryParseExact(input, "D", out result);
+			return TryParseExact(input, kFormatHyphenated, out result);
 		}
 		#endregion
 
@@ -407,11 +428,11 @@ namespace KSoft.Values
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>((index+kSizeOf) <= buffer.Length);
 
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, kGetData1(mData)); index += sizeof(int);
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, kGetData2(mData)); index += sizeof(short);
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, kGetData3(mData)); index += sizeof(short);
+			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData1(mData)); index += sizeof(int);
+			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData2(mData)); index += sizeof(short);
+			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData3(mData)); index += sizeof(short);
 			for (int x = 0; x < 8; x++, index++)
-				buffer[x] = kGetData4[x](mData);
+				buffer[x] = SysGuid.GetData4[x](mData);
 		}
 		#endregion
 	};

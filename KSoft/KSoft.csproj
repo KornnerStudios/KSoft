@@ -104,7 +104,6 @@
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
     <Compile Include="Collections\ValueTypeComparer.cs" />
     <Compile Include="Collections\ValueTypeEqualityComparer.cs" />
-    <Compile Include="Collections\ValueTypeEquatableComparer.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />

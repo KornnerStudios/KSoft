@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
@@ -39,5 +41,26 @@ namespace KSoft.Collections
 
 		public override bool Equals(T x, T y)	{ return mDummy.Equals(x, y); }
 		public override int GetHashCode(T obj)	{ return mDummy.GetHashCode(obj); }
+	};
+
+	public sealed class InitializeValueTypeEqualityComparerAttribute : Attribute
+	{
+		const string kValueTypeEqualityComparer_SingletonPropertyName
+			= "Default";
+
+		public InitializeValueTypeEqualityComparerAttribute(Type targetType)
+		{
+			Contract.Requires(targetType != null);
+			Contract.Requires(targetType.IsValueType &&
+				targetType.IsCuriouslyRecurringTemplatePattern(typeof(IEqualityComparer<>)),
+				"targetType doesn't meet the type constraints of ValueTypeEqualityComparer"
+			);
+
+			var generic_type = typeof(ValueTypeEqualityComparer<>);
+			// create ValueTypeEqualityComparer<targetType>
+			var concrete_type = generic_type.MakeGenericType(targetType);
+
+			concrete_type.ForceStaticCtorToRunViaProperty(kValueTypeEqualityComparer_SingletonPropertyName);
+		}
 	};
 }

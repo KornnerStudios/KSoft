@@ -26,14 +26,14 @@ namespace KSoft.Values
 		#region Ctor
 		/// <summary>Create a collection based on an existing list of group tags</summary>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(GroupTagDatum[] groupTags) : this(KGuid.Empty, groupTags)
+		public GroupTag32Collection(params GroupTagDatum[] groupTags) : this(KGuid.Empty, groupTags)
 		{
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 		}
 		/// <summary>Create a collection based on an existing list of group tags and a <see cref="Guid"/></summary>
 		/// <param name="guid">Guid for this group tag collection</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(KGuid guid, GroupTagDatum[] groupTags) : base(groupTags, guid)
+		public GroupTag32Collection(KGuid guid, params GroupTagDatum[] groupTags) : base(groupTags, guid)
 		{
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
@@ -106,6 +106,11 @@ namespace KSoft.Values
 			s.Seek(GroupTags.Count * sizeof(TagWord), System.IO.SeekOrigin.Current);
 		}
 		#endregion
+
+		/// <summary>Get a new instance of an empty collection</summary>
+		public static GroupTag32Collection Empty { get { 
+			return new GroupTag32Collection();
+		} }
 	};
 
 

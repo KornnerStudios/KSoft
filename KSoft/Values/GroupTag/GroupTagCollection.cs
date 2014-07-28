@@ -42,6 +42,12 @@ namespace KSoft.Values
 		public KGuid Guid { get { return mGuid; } }
 		#endregion
 
+		/// <summary>Does this instance represent an empty collection of the concrete GroupTagData type?</summary>
+		/// <remarks>If the Guid is not zero, but there are no GroupTags, this will return false</remarks>
+		public bool IsEmpty { get {
+			return BaseGroupTags.Length == 0 && Guid == KGuid.Empty;
+		} }
+
 		protected GroupTagCollection(GroupTagData[] groups)
 		{
 			Contract.Requires(Array.TrueForAll(groups, Predicates.IsNotNull));

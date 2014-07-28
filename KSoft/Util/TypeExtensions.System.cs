@@ -95,6 +95,65 @@ namespace KSoft
 		}
 		#endregion
 
+		#region Type
+		/// <summary>Test whether the subject type implements the specified interface type</summary>
+		/// <param name="subject">The type in question</param>
+		/// <param name="genericType">The interface type which the subject may or may not implement</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static bool ImplementsInterface(this Type subject, Type interfaceType)
+		{
+			Contract.Requires(subject != null);
+			Contract.Requires(interfaceType != null);
+			Contract.Requires(interfaceType.IsInterface);
+
+			return interfaceType.IsAssignableFrom(subject);
+		}
+
+		/// <summary>Test whether the subject type derives from a generic type using CRTP</summary>
+		/// <param name="subject">The type in question</param>
+		/// <param name="genericType">The generic type which has a single type parameter, which will be populated with subject</param>
+		/// <returns></returns>
+		/// <remarks>See: http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern </remarks>
+		[Contracts.Pure]
+		public static bool IsCuriouslyRecurringTemplatePattern(this Type subject, Type genericType)
+		{
+			Contract.Requires(subject != null);
+			Contract.Requires(genericType != null);
+			Contract.Requires(genericType.IsGenericType && genericType.IsGenericTypeDefinition);
+			Contract.Requires(genericType.GetGenericArguments().Length == 1);
+
+			var concrete_type = genericType.MakeGenericType(subject);
+
+			return concrete_type.IsAssignableFrom(subject);
+		}
+
+		/// <summary>Force the .cctor of a type to run by invoking the getter of a static property</summary>
+		/// <param name="subject">The type in question</param>
+		/// <param name="staticPropertyName">Name of the static property to get</param>
+		public static void ForceStaticCtorToRunViaProperty(this Type subject, string staticPropertyName)
+		{
+			Contract.Requires(subject != null);
+			Contract.Requires(!string.IsNullOrEmpty(staticPropertyName));
+
+			const BindingFlags k_static_property_binding_flags
+				= BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.DeclaredOnly;
+
+			var static_props = subject.GetProperties(k_static_property_binding_flags);
+			var static_prop = (
+					from prop in static_props
+					where prop.Name == staticPropertyName
+					select prop
+				).First();
+
+			// This doesn't cause the static ctor to run it would seem.
+			//Activator.CreateInstance(concrete_type);
+
+			// However, effectively invoking ValueTypeComparer<>.Default does
+			static_prop.GetValue(null);
+		}
+		#endregion
+
 		#region Collections
 		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]

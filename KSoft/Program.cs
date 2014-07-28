@@ -17,18 +17,6 @@ namespace KSoft
 
 		public static void Initialize()
 		{
-			Util.ValueTypeInitializeEquatableComparer	<Values.PtrHandle>();
-			Util.ValueTypeInitializeComparer			<Values.PtrHandle>();
-
-			Util.ValueTypeInitializeEquatableComparer	<Memory.Strings.StringStorage>();
-			Util.ValueTypeInitializeComparer			<Memory.Strings.StringStorage>();
-			Values.KGuid.Empty.ToGuid(); // will cause the static ctor to execute
-			Util.ValueTypeInitializeEquatableComparer	<Values.KGuid>();
-			Util.ValueTypeInitializeComparer			<Values.KGuid>();
-			Util.ValueTypeInitializeEquatableComparer	<Shell.Platform>();
-			Util.ValueTypeInitializeComparer			<Shell.Platform>();
-			Util.ValueTypeInitializeEquatableComparer	<Shell.Processor>();
-			Util.ValueTypeInitializeComparer			<Shell.Processor>();
 		}
 
 		public static void Dispose()

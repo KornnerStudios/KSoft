@@ -9,6 +9,8 @@ namespace KSoft.Shell
 	using BitEncoders = TypeExtensions.BitEncoders;
 
 	/// <summary>Represents a platform definition</summary>
+	[Collections.InitializeValueTypeComparer(typeof(Platform))]
+	[Collections.InitializeValueTypeEqualityComparer(typeof(Platform))]
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	public struct Platform :
 		IComparer<Platform>, System.Collections.IComparer,

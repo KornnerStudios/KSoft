@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
@@ -41,5 +40,27 @@ namespace KSoft.Collections
 		}
 
 		public override int Compare(T x, T y)	{ return mDummy.Compare(x, y); }
+	};
+
+	public sealed class InitializeValueTypeComparerAttribute : Attribute
+	{
+		const string kValueTypeComparer_SingletonPropertyName
+			= "Default";
+
+		public InitializeValueTypeComparerAttribute(Type targetType)
+		{
+			Contract.Requires(targetType != null);
+			Contract.Requires(targetType.IsValueType &&
+				targetType.ImplementsInterface(typeof(System.Collections.IComparer)) &&
+				targetType.IsCuriouslyRecurringTemplatePattern(typeof(IComparer<>)),
+				"targetType doesn't meet the type constraints of ValueTypeComparer"
+			);
+
+			var generic_type = typeof(ValueTypeComparer<>);
+			// create ValueTypeComparer<targetType>
+			var concrete_type = generic_type.MakeGenericType(targetType);
+
+			concrete_type.ForceStaticCtorToRunViaProperty(kValueTypeComparer_SingletonPropertyName);
+		}
 	};
 }

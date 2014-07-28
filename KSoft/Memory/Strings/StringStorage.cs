@@ -7,6 +7,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 namespace KSoft.Memory.Strings
 {
 	/// <summary>String storage definition</summary>
+	[Collections.InitializeValueTypeComparer(typeof(StringStorage))]
+	[Collections.InitializeValueTypeEqualityComparer(typeof(StringStorage))]
 	public struct StringStorage : //IO.IEndianStreamable,
 		IEquatable<StringStorage>, IEqualityComparer<StringStorage>, 
 		IComparer<StringStorage>, IComparable<StringStorage>,

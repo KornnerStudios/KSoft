@@ -7,6 +7,8 @@ namespace KSoft.Collections.Test
 	[TestClass]
 	public class ValueTypeComparersTest : BaseTestClass
 	{
+		[InitializeValueTypeComparer(typeof(TestValueType))]
+		[InitializeValueTypeEqualityComparer(typeof(TestValueType))]
 		struct TestValueType :
 			System.Collections.IComparer, IComparer<TestValueType>,
 			IEquatable<TestValueType>, IEqualityComparer<TestValueType>
@@ -43,33 +45,17 @@ namespace KSoft.Collections.Test
 		};
 
 		[TestMethod]
-		public void Collections_ValueTypeComparerStaticCtorTest()
+		public void Collections_InitializeValueTypeComparerTest()
 		{
-			var comparer = ValueTypeComparer<TestValueType>.Default;
-			Assert.IsNotNull(comparer);
-			Assert.IsInstanceOfType(comparer, typeof(ValueTypeComparer<TestValueType>));
-			comparer = Comparer<TestValueType>.Default;
+			var comparer = Comparer<TestValueType>.Default;
 			Assert.IsInstanceOfType(comparer, typeof(ValueTypeComparer<TestValueType>));
 		}
 
 		[TestMethod]
-		public void Collections_ValueTypeEqualityComparerStaticCtorTest()
+		public void Collections_InitializeValueTypeEqualityComparerTest()
 		{
-			var comparer = ValueTypeEqualityComparer<TestValueType>.Default;
-			Assert.IsNotNull(comparer);
+			var comparer = EqualityComparer<TestValueType>.Default;
 			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEqualityComparer<TestValueType>));
-			comparer = EqualityComparer<TestValueType>.Default;
-			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEqualityComparer<TestValueType>));
-		}
-
-		[TestMethod]
-		public void Collections_ValueTypeEquatableComparerStaticCtorTest()
-		{
-			var comparer = ValueTypeEquatableComparer<TestValueType>.Default;
-			Assert.IsNotNull(comparer);
-			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEquatableComparer<TestValueType>));
-			comparer = EqualityComparer<TestValueType>.Default;
-			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEquatableComparer<TestValueType>));
 		}
 	};
 }
