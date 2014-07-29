@@ -7,7 +7,11 @@ namespace KSoft.Collections
 {
 	/// <summary></summary>
 	/// <typeparam name="T"></typeparam>
-	/// <remarks>Based on .NET's own (internal) <b>ObjectEqualityComparer{T}</b></remarks>
+	/// <remarks>
+	/// Based on .NET's own (internal) <b>ObjectEqualityComparer{T}</b>
+	/// 
+	/// This will overwrite any changes made by <see cref="ValueTypeEquatableComparer{T}"/>!
+	/// </remarks>
 	sealed class ValueTypeEqualityComparer<T> : EqualityComparer<T>
 		where T : struct, IEqualityComparer<T>
 	{
@@ -43,6 +47,7 @@ namespace KSoft.Collections
 		public override int GetHashCode(T obj)	{ return mDummy.GetHashCode(obj); }
 	};
 
+#if false // This is aspect programming. Bare Attributes can't be used like this.
 	public sealed class InitializeValueTypeEqualityComparerAttribute : Attribute
 	{
 		const string kValueTypeEqualityComparer_SingletonPropertyName
@@ -63,4 +68,5 @@ namespace KSoft.Collections
 			concrete_type.ForceStaticCtorToRunViaProperty(kValueTypeEqualityComparer_SingletonPropertyName);
 		}
 	};
+#endif
 }

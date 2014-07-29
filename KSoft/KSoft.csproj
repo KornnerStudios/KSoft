@@ -104,6 +104,7 @@
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
     <Compile Include="Collections\ValueTypeComparer.cs" />
     <Compile Include="Collections\ValueTypeEqualityComparer.cs" />
+    <Compile Include="Collections\ValueTypeEquatableComparer.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />
@@ -273,9 +274,11 @@
       <DependentUpon>HandleBitEncoderT4.tt</DependentUpon>
     </Compile>
     <Compile Include="Xml\XmlAttributeWithLocation.cs" />
+    <Compile Include="Xml\XmlCDataSectionWithLocation.cs" />
     <Compile Include="Xml\XmlDocumentWithLocation.cs" />
     <Compile Include="Xml\XmlElementWithLocation.cs" />
     <Compile Include="Xml\XmlReaderStreamOffsetCalculator.cs" />
+    <Compile Include="Xml\XmlTextWithLocation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\_Details\" />

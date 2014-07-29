@@ -7,8 +7,11 @@ namespace KSoft.Collections.Test
 	[TestClass]
 	public class ValueTypeComparersTest : BaseTestClass
 	{
+#if false // This is aspect programming. Bare Attributes can't be used like this.
+		// However, unlike with KSoft.dll's types, these attributes ran automatically (must be due to VS getting the custom attributes on everything in the test assembly)
 		[InitializeValueTypeComparer(typeof(TestValueType))]
 		[InitializeValueTypeEqualityComparer(typeof(TestValueType))]
+#endif
 		struct TestValueType :
 			System.Collections.IComparer, IComparer<TestValueType>,
 			IEquatable<TestValueType>, IEqualityComparer<TestValueType>
@@ -45,6 +48,36 @@ namespace KSoft.Collections.Test
 		};
 
 		[TestMethod]
+		public void Collections_ValueTypeComparerStaticCtorTest()
+		{
+			Util.ValueTypeInitializeComparer<TestValueType>();
+
+			var comparer = Comparer<TestValueType>.Default;
+			Assert.IsInstanceOfType(comparer, typeof(ValueTypeComparer<TestValueType>));
+		}
+
+		[TestMethod]
+		public void Collections_ValueTypeEqualityComparerStaticCtorTest()
+		{
+			// REMINDER: This overwrites ValueTypeEquatableComparer's changes
+			Util.ValueTypeInitializeEqualityComparer<TestValueType>();
+
+			var comparer = EqualityComparer<TestValueType>.Default;
+			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEqualityComparer<TestValueType>));
+		}
+
+		[TestMethod]
+		public void Collections_ValueTypeEquatableComparerStaticCtorTest()
+		{
+			// REMINDER: This overwrites ValueTypeEqualityComparer's changes
+			Util.ValueTypeInitializeEquatableComparer<TestValueType>();
+
+			var comparer = EqualityComparer<TestValueType>.Default;
+			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEquatableComparer<TestValueType>));
+		}
+
+#if false // This is aspect programming. Bare Attributes can't be used like this.
+		[TestMethod]
 		public void Collections_InitializeValueTypeComparerTest()
 		{
 			var comparer = Comparer<TestValueType>.Default;
@@ -57,5 +90,6 @@ namespace KSoft.Collections.Test
 			var comparer = EqualityComparer<TestValueType>.Default;
 			Assert.IsInstanceOfType(comparer, typeof(ValueTypeEqualityComparer<TestValueType>));
 		}
+#endif
 	};
 }

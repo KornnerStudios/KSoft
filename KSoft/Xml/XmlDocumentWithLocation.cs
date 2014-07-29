@@ -32,15 +32,27 @@ namespace KSoft.Xml
 			mLoadReader = null;
 		}
 
+		#region Create overrides
 		public override XmlAttribute CreateAttribute(string prefix, string localName, string namespaceURI)
 		{
 			return new XmlAttributeWithLocation(prefix, localName, namespaceURI, this);
+		}
+
+		public override XmlCDataSection CreateCDataSection(string data)
+		{
+			return new XmlCDataSectionWithLocation(data, this);
 		}
 
 		public override XmlElement CreateElement(string prefix, string localName, string namespaceURI)
 		{
 			return new XmlElementWithLocation(prefix, localName, namespaceURI, this);
 		}
+
+		public override XmlText CreateTextNode(string text)
+		{
+			return new XmlTextWithLocation(text, this);
+		}
+		#endregion
 
 		string GetFileLocationStringWithLineOnly(Text.ITextLineInfo lineInfo, bool verboseString)
 		{

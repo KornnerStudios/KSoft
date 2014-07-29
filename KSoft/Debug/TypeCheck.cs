@@ -66,8 +66,8 @@ namespace KSoft.Debug
 			result = obj as TResult;
 
 			if (result == null)
-				throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'", 
-					typeof(TIn).FullName, typeof(TResult).FullName));
+				throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'",
+					obj.GetType().FullName, typeof(TResult).FullName));
 		}
 		/// <summary>Basically a beefed up argument type checker</summary>
 		/// <typeparam name="TIn">Input type</typeparam>

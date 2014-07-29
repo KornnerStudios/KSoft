@@ -46,7 +46,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(stream != null);
 
-			mOldUserData = (mStream = stream).Owner;
+			mOldUserData = (mStream = stream).UserData;
 			mStream.UserData = newUserData;
 		}
 

@@ -43,8 +43,6 @@ namespace KSoft.Values
 	};
 
 	/// <remarks>Caveat emptor: has a static ctor</remarks>
-	[Collections.InitializeValueTypeComparer(typeof(KGuid))]
-	[Collections.InitializeValueTypeEqualityComparer(typeof(KGuid))]
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]

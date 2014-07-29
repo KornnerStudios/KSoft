@@ -104,7 +104,7 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(sourceStream != null);
 			Contract.Requires<ArgumentException>(sourceStream.HasPermissions(permissions));
 
-			this.StreamName = sourceStream.ToString();
+			SetStreamName(sourceStream);
 
 			Document = new Xml.XmlDocumentWithLocation();
 			Document.Load(sourceStream);

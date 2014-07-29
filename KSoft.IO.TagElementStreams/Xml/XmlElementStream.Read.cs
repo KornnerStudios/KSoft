@@ -13,12 +13,14 @@ namespace KSoft.IO
 			//return n.InnerText;
 
 			var text_node = n.LastChild;
-			ReadErrorNode = text_node; // TODO: which is more informative, using the element (n) or text_node?
+			if (text_node != null)
+			{
+				ReadErrorNode = text_node; // TODO: which is more informative, using the element (n) or text_node?
+				// TextNode's actual text
+				return text_node.Value;
+			}
 
-			// TextNode's actual text
-			return text_node != null
-				? text_node.Value
-				: null;
+			return null;
 		}
 		#endregion
 
@@ -31,6 +33,8 @@ namespace KSoft.IO
 			Contract.Assert(n != null, name);
 
 			oldCursor = Cursor;
+			// update the error state with the node we're about to read from
+			ReadErrorNode = n;
 			Cursor = n;
 		}
 		public override void ReadElementEnd(ref XmlElement oldCursor)

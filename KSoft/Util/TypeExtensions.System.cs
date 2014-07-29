@@ -149,7 +149,7 @@ namespace KSoft
 			// This doesn't cause the static ctor to run it would seem.
 			//Activator.CreateInstance(concrete_type);
 
-			// However, effectively invoking ValueTypeComparer<>.Default does
+			// However, effectively invoking a static property does
 			static_prop.GetValue(null);
 		}
 		#endregion
@@ -338,19 +338,19 @@ namespace KSoft
 		public static T GetCustomAttribute<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			return provider.GetCustomAttributes<T>(inherited).FirstOrDefault();
 		}
 
 		/// <summary>Returns all custom attributes of type T in the inheritance chain</summary>
 		[Contracts.Pure]
-		public static List<T> GetCustomAttributes<T>(this ICustomAttributeProvider provider, bool inherited = false)
+		public static IEnumerable<T> GetCustomAttributes<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 
-			return provider.GetCustomAttributes(typeof(T), inherited).Cast<T>().ToList();
+			return provider.GetCustomAttributes(typeof(T), inherited).Cast<T>();
 		}
 		#endregion
 

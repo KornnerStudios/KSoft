@@ -208,5 +208,24 @@ namespace KSoft
 				return rhs;
 		}
 		#endregion
+
+		public static void ValueTypeInitializeComparer<T>()
+			where T : struct, System.Collections.IComparer, IComparer<T>
+		{
+			var comparer = Collections.ValueTypeComparer<T>.Default;
+			comparer = null;
+		}
+		public static void ValueTypeInitializeEqualityComparer<T>()
+			where T : struct, IEqualityComparer<T>
+		{
+			var comparer = Collections.ValueTypeEqualityComparer<T>.Default;
+			comparer = null;
+		}
+		public static void ValueTypeInitializeEquatableComparer<T>()
+			where T : struct, IEquatable<T>
+		{
+			var comparer = Collections.ValueTypeEquatableComparer<T>.Default;
+			comparer = null;
+		}
 	};
 }

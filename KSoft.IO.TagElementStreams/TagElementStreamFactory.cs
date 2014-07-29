@@ -41,13 +41,16 @@ namespace KSoft.IO
 
 				#region Register Text
 				var extension_format = BaseFormat;
-				string extension = GetExtension(BaseFormat);
+				string extension = GetExtension(extension_format);
 				if (extension != null)
 					gRegisteredFileExtensions.Add(extension, extension_format);
 				#endregion
 				#region Register Binary
 				extension_format |= TagElementStreamFormat.Binary;
-				extension = GetExtension(BaseFormat);
+				// TODO: not all binary formats are implemented yet, and will throw an exception
+				try { extension = GetExtension(extension_format); }
+				catch (NotImplementedException) { extension = null; }
+
 				if (extension != null)
 					gRegisteredFileExtensions.Add(extension, extension_format);
 				#endregion
@@ -117,7 +120,12 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Xml);
 
 			if (format.IsText())
-				return new XmlElementStream(sourceStream, permissions, owner);
+			{
+				var stream = new XmlElementStream(sourceStream, permissions, owner);
+				stream.InitializeAtRootElement();
+
+				return stream;
+			}
 			else if (format.IsBinary()) // haven't decided on a standard to use yet
 				throw new NotImplementedException("General binary XML files not yet implemented");
 
@@ -225,7 +233,6 @@ namespace KSoft.IO
 			using(var fs = File.Open(filename, FileMode.Open, permissions))
 			{
 				var stream = Open(fs, format, permissions, owner);
-				stream.StreamName = filename;
 
 				return stream;
 			}

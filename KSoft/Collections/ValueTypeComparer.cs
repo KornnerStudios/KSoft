@@ -42,6 +42,7 @@ namespace KSoft.Collections
 		public override int Compare(T x, T y)	{ return mDummy.Compare(x, y); }
 	};
 
+#if false // This is aspect programming. Bare Attributes can't be used like this.
 	public sealed class InitializeValueTypeComparerAttribute : Attribute
 	{
 		const string kValueTypeComparer_SingletonPropertyName
@@ -63,4 +64,5 @@ namespace KSoft.Collections
 			concrete_type.ForceStaticCtorToRunViaProperty(kValueTypeComparer_SingletonPropertyName);
 		}
 	};
+#endif
 }

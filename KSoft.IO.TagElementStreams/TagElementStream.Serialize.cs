@@ -74,6 +74,8 @@ namespace KSoft.IO
 		#region Stream Element
 		public void StreamElementBegin(TName name, out TCursor oldCursor)
 		{
+			Contract.Requires(StreamMode != 0, "StreamMode not set! This is an error while trying to actually stream");
+
 			oldCursor = null;
 
 				 if (IsReading) ReadElementBegin(name, out oldCursor);

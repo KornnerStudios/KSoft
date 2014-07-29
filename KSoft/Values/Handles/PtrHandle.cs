@@ -20,8 +20,6 @@ namespace KSoft.Values
 
 	/// <summary>Wrapper structure for handling either a 32-bit or 64-bit pointer (address)</summary>
 	/// <remarks>If you use the parameterless ctor, the pointer will be implicitly 32-bit</remarks>
-	[Collections.InitializeValueTypeComparer(typeof(PtrHandle))]
-	[Collections.InitializeValueTypeEqualityComparer(typeof(PtrHandle))]
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size = PtrHandle.kSizeOf)]
 //	[System.ComponentModel.TypeConverter(typeof(PtrHandleConverter))]
 	public struct PtrHandle : IO.IEndianStreamable,

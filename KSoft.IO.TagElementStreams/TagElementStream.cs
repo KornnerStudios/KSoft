@@ -52,6 +52,20 @@ namespace KSoft.IO
 		/// <summary></summary>
 		/// <remarks>If this is for a file, this is the file name this stream is handling</remarks>
 		public string StreamName { get; protected set; }
+
+		protected void SetStreamName(System.IO.Stream stream)
+		{
+			Contract.Assume(stream != null);
+
+			StreamName = null;
+
+			var fs = stream as System.IO.FileStream;
+			if (fs != null)
+				StreamName = fs.Name;
+
+			if (StreamName == null)
+				stream.ToString();
+		}
 		#endregion
 
 		#region Document

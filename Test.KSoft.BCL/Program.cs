@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft
 {
+	[TestClass] // required for AssemblyInitialize & AssemblyCleanup to work
 	static partial class TestLibrary
 	{
 		[AssemblyInitialize]
