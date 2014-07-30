@@ -275,8 +275,8 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadElements (ICollection)
-		void ReadElements<T, TContext>(IEnumerable<TCursor> elements, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action, Func<TContext, T> ctor)
+		void ReadElements<T, TContext>(IEnumerable<TCursor> elements,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			foreach (var node in elements)
 				using (EnterCursorBookmark(node))
@@ -287,8 +287,8 @@ namespace KSoft.IO
 					coll.Add(value);
 				}
 		}
-		public void ReadElements<T, TContext>(ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action, Func<TContext, T> ctor)
+		public void ReadElements<T, TContext>(
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			Contract.Requires<ArgumentNullException>(coll != null);
 			Contract.Requires(action != null);
@@ -296,8 +296,8 @@ namespace KSoft.IO
 
 			ReadElements(this.Elements, coll, ctxt, action, ctor);
 		}
-		public void ReadElements<T, TContext>(ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action)
+		public void ReadElements<T, TContext>(
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 			where T : new()
 		{
 			Contract.Requires<ArgumentNullException>(coll != null);
@@ -305,8 +305,8 @@ namespace KSoft.IO
 
 			ReadElements(this.Elements, coll, ctxt, action, _ctxt => new T());
 		}
-		public void ReadElements<T, TContext>(TName name, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action, Func<TContext, T> ctor)
+		public void ReadElements<T, TContext>(TName name,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires<ArgumentNullException>(coll != null);
@@ -315,8 +315,8 @@ namespace KSoft.IO
 
 			ReadElements(this.ElementsByName(name), coll, ctxt, action, ctor);
 		}
-		public void ReadElements<T, TContext>(TName name, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action)
+		public void ReadElements<T, TContext>(TName name,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 			where T : new()
 		{
 			Contract.Requires(ValidateNameArg(name));
@@ -326,8 +326,8 @@ namespace KSoft.IO
 			ReadElements(this.ElementsByName(name), coll, ctxt, action, _ctxt => new T());
 		}
 
-		void ReadStreamableElements<T, TContext>(IEnumerable<TCursor> elements, ICollection<T> coll,
-			TContext ctxt, Func<TContext, T> ctor)
+		void ReadStreamableElements<T, TContext>(IEnumerable<TCursor> elements,
+			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			foreach (var node in elements)
@@ -339,8 +339,8 @@ namespace KSoft.IO
 					coll.Add(value);
 				}
 		}
-		public void ReadStreamableElements<T, TContext>(ICollection<T> coll,
-			TContext ctxt, Func<TContext, T> ctor)
+		public void ReadStreamableElements<T, TContext>(
+			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			Contract.Requires<ArgumentNullException>(coll != null);
@@ -348,8 +348,8 @@ namespace KSoft.IO
 
 			ReadStreamableElements(this.Elements, coll, ctxt, ctor);
 		}
-		public void ReadStreamableElements<T, TContext>(TName name, ICollection<T> coll,
-			TContext ctxt, Func<TContext, T> ctor)
+		public void ReadStreamableElements<T, TContext>(TName name,
+			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			Contract.Requires(ValidateNameArg(name));
@@ -361,14 +361,81 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadElements (IDictionary)
-		void ReadStreamableElements<TKey,TValue,TContext>(IEnumerable<TCursor> elements, TContext ctxt,
-			IDictionary<TKey,TValue> dic, StreamAction<TKey,TContext> streamKey)
+		void ReadElements<TKey, TValue, TContext>(IEnumerable<TCursor> elements,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
+		{
+			foreach (var node in elements)
+				using (EnterCursorBookmark(node))
+				{
+					var key = default(TKey);
+					streamKey(this, ctxt, ref key);
+
+					var value = valueCtor(ctxt);
+					streamValue(this, ctxt, ref value);
+
+					dic.Add(key, value);
+				}
+		}
+		public void ReadElements<TKey, TValue, TContext>(
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
+		{
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null && valueCtor != null);
+
+			ReadElements(this.Elements, dic, ctxt, streamKey, streamValue, valueCtor);
+		}
+		public void ReadElements<TKey, TValue, TContext>(
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue)
+			where TValue : new()
+		{
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null);
+
+			ReadElements(this.Elements, dic, ctxt, streamKey, streamValue, _ctxt => new TValue());
+		}
+		public void ReadElements<TKey, TValue, TContext>(TName name,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null && valueCtor != null);
+
+			ReadElements(this.ElementsByName(name), dic, ctxt, streamKey, streamValue, valueCtor);
+		}
+		public void ReadElements<TKey, TValue, TContext>(TName name,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue)
+			where TValue : new()
+		{
+			Contract.Requires(ValidateNameArg(name));
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null);
+
+			ReadElements(this.ElementsByName(name), dic, ctxt, streamKey, streamValue, _ctxt => new TValue());
+		}
+
+		void ReadStreamableElements<TKey, TValue, TContext>(IEnumerable<TCursor> elements,
+			IDictionary<TKey,TValue> dic, TContext ctxt,
+			StreamAction<TKey,TContext> streamKey)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			foreach (var node in elements)
 				using (EnterCursorBookmark(node))
 				{
-					TKey key = default(TKey);
+					var key = default(TKey);
 					streamKey(this, ctxt, ref key);
 
 					var value = new TValue();
@@ -377,13 +444,14 @@ namespace KSoft.IO
 					dic.Add(key, value);
 				}
 		}
-		public void ReadStreamableElements<TKey,TValue,TContext>(TName name, IDictionary<TKey, TValue> dic,
-			TContext ctxt, StreamAction<TKey, TContext> streamKey)
+		public void ReadStreamableElements<TKey, TValue, TContext>(TName name,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires<ArgumentNullException>(dic != null);
 
-			ReadStreamableElements(this.ElementsByName(name), ctxt, dic, streamKey);
+			ReadStreamableElements(this.ElementsByName(name), dic, ctxt, streamKey);
 		}
 		#endregion
 

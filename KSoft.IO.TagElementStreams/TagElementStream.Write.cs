@@ -219,8 +219,8 @@ namespace KSoft.IO
 		#endregion
 
 		#region WriteElements (ICollection)
-		public void WriteElements<T, TContext>(TName elementName, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action)
+		public void WriteElements<T, TContext>(TName elementName,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
 			Contract.Requires<ArgumentNullException>(coll != null);
@@ -234,7 +234,8 @@ namespace KSoft.IO
 				}
 		}
 
-		public void WriteStreamableElements<T>(TName elementName, ICollection<T> coll,
+		public void WriteStreamableElements<T>(TName elementName,
+			ICollection<T> coll,
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
@@ -249,21 +250,46 @@ namespace KSoft.IO
 		#endregion
 
 		#region WriteElements (IDictionary)
-		public void WriteStreamableElements<TKey, TValue, TContext>(TName elementName, IDictionary<TKey, TValue> dic,
-			TContext ctxt, StreamAction<TKey, TContext> streamKey)
-			where TValue : ITagElementStreamable<TName>
+		public void WriteElements<TKey, TValue, TContext>(TName elementName,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
 			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null);
 
 			foreach (var kv in dic)
 				using (EnterCursorBookmark(elementName))
 				{
-					TKey key = kv.Key;
+					var key = kv.Key;
 					streamKey(this, ctxt, ref key);
 
-					kv.Value.Serialize(this);
+					var v = kv.Value;
+					streamValue(this, ctxt, ref v);
 				}
+		}
+
+		public void WriteStreamableElements<TKey, TValue, TContext>(TName elementName,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
+			where TValue : ITagElementStreamable<TName>
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+
+			foreach (var kv in dic)
+				if (shouldWritePredicate == null || shouldWritePredicate(kv))
+					using (EnterCursorBookmark(elementName))
+					{
+						TKey key = kv.Key;
+						streamKey(this, ctxt, ref key);
+
+						kv.Value.Serialize(this);
+					}
 		}
 		#endregion
 

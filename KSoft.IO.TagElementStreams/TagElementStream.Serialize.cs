@@ -560,39 +560,43 @@ namespace KSoft.IO
 		#endregion
 
 		#region StreamElements (ICollection)
-		public void StreamElements<T, TContext>(TName elementName, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action, Func<TContext, T> ctor)
+		public void StreamElements<T, TContext>(TName elementName,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(coll != null);
 			Contract.Requires(action != null);
 			Contract.Requires(ctor != null);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, action, ctor);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, action);
 		}
-		public void StreamElements<T, TContext>(TName elementName, ICollection<T> coll, TContext ctxt,
-			StreamAction<T, TContext> action)
+		public void StreamElements<T, TContext>(TName elementName,
+			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 			where T : new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(coll != null);
 			Contract.Requires(action != null);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, action);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, action);
 		}
-		public void StreamElements<T, TContext>(TName elementName, ICollection<T> coll, TContext ctxt,
+		public void StreamElements<T, TContext>(TName elementName,
+			ICollection<T> coll, TContext ctxt,
 			StreamAction<T, TContext> read, StreamAction<T, TContext> write)
 			where T : new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(coll != null);
 			Contract.Requires(read != null && write != null);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, read);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, write);
 		}
 
-		public void StreamableElements<T, TContext>(TName elementName, ICollection<T> coll,
-			TContext ctxt, Func<TContext, T> ctor,
+		public void StreamableElements<T, TContext>(TName elementName,
+			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor,
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
@@ -603,7 +607,8 @@ namespace KSoft.IO
 				 if (IsReading) ReadStreamableElements(elementName, coll, ctxt, ctor);
 			else if (IsWriting) WriteStreamableElements(elementName, coll, shouldWritePredicate);
 		}
-		public void StreamableElements<T>(TName elementName, ICollection<T> coll,
+		public void StreamableElements<T>(TName elementName,
+			ICollection<T> coll,
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>, new()
 		{
@@ -615,15 +620,56 @@ namespace KSoft.IO
 		#endregion
 
 		#region StreamElements (IDictionary)
-		public void StreamableElements<TKey, TValue, TContext>(TName elementName, IDictionary<TKey, TValue> dic,
-			TContext ctxt, StreamAction<TKey, TContext> streamKey)
+		public void StreamElements<TKey, TValue, TContext>(TName elementName,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null && valueCtor != null);
+
+				 if (IsReading) ReadElements(elementName, dic, ctxt, streamKey, streamValue, valueCtor);
+			else if (IsWriting) WriteElements(elementName, dic, ctxt, streamKey, streamValue);
+		}
+		public void StreamElements<TKey, TValue, TContext>(TName elementName,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			StreamAction<TValue, TContext> streamValue)
+			where TValue : new()
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(dic != null);
+			Contract.Requires(streamKey != null);
+			Contract.Requires(streamValue != null);
+
+				 if (IsReading) ReadElements(elementName, dic, ctxt, streamKey, streamValue);
+			else if (IsWriting) WriteElements(elementName, dic, ctxt, streamKey, streamValue);
+		}
+
+		public void StreamableElements<TKey, TValue, TContext>(TName elementName,
+			IDictionary<TKey, TValue> dic, TContext ctxt,
+			StreamAction<TKey, TContext> streamKey,
+			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
 			Contract.Requires<ArgumentNullException>(dic != null);
 
 				 if (IsReading) ReadStreamableElements(elementName, dic, ctxt, streamKey);
-			else if (IsWriting) WriteStreamableElements(elementName, dic, ctxt, streamKey);
+			else if (IsWriting) WriteStreamableElements(elementName, dic, ctxt, streamKey, shouldWritePredicate);
+		}
+		public void StreamableElements<TKey, TValue>(TName elementName,
+			IDictionary<TKey, TValue> dic,
+			StreamAction<TKey, object> streamKey,
+			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
+			where TValue : ITagElementStreamable<TName>, new()
+		{
+			Contract.Requires(ValidateNameArg(elementName));
+			Contract.Requires<ArgumentNullException>(dic != null);
+
+			StreamableElements(elementName, dic, (object)null, streamKey, shouldWritePredicate);
 		}
 		#endregion
 
