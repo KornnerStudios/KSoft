@@ -436,6 +436,7 @@ namespace KSoft.IO
 		#endregion
 
 		// TODO: T4
+		// TODO: wrap idResolver calls in try/catch then throw anything via ThrowReadException
 		#region StreamAttributeId
 		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a string to an id</summary>
 		/// <typeparam name="TContext">Resolving context</typeparam>
@@ -493,6 +494,7 @@ namespace KSoft.IO
 		#endregion
 
 		// TODO: T4
+		// TODO: wrap idResolver calls in try/catch then throw anything via ThrowReadException
 		#region StreamAttributeOptId
 		/// <summary>Stream the Value of attribute <paramref name="name"/> and process it from a integer to an id</summary>
 		/// <typeparam name="TContext">Resolving context</typeparam>

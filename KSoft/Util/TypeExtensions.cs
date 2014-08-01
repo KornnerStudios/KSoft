@@ -13,6 +13,8 @@ namespace KSoft
 	{
 		#region NONE extensions
 		public const int kNone = -1;
+		/// <summary>The default string representation of a value which has a 'None' state</summary>
+		public const string kNoneDisplayString = "NONE";
 
 		public const sbyte kNoneInt8 = kNone;
 		public const short kNoneInt16 = kNone;

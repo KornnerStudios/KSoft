@@ -63,11 +63,12 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public string this[char[] tag] { get {
 			Contract.Requires(tag != null);
+			Contract.Requires(tag.Length == NullGroupTag.Tag.Length,
+				"Tag lengths mismatch");
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			foreach (GroupTagData t in BaseGroupTags)
 			{
-				Contract.Assume(t.Tag.Length == tag.Length);
 				if (t.Test(tag))
 					return t.Name;
 			}
@@ -81,14 +82,25 @@ namespace KSoft.Values
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
 		[Contracts.Pure]
-		public int FindGroupIndex(char[] groupTag)
+		public int FindGroupIndexByTag(char[] groupTag)
 		{
 			Contract.Requires(groupTag != null);
+			Contract.Requires(groupTag.Length == NullGroupTag.Tag.Length,
+				"Tag lengths mismatch");
 
-			return BaseGroupTags.FindIndex(gt => {
-				Contract.Assume(gt.Tag.Length == groupTag.Length);
-				return gt.Test(groupTag);
-			});
+			return BaseGroupTags.FindIndex(gt => gt.Test(groupTag));
+		}
+		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
+		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
+		/// <returns>Index of <paramref name="tagString"/> or <b>-1</b> if not found</returns>
+		[Contracts.Pure]
+		public int FindGroupIndexByTag(string tagString)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(tagString));
+			Contract.Requires(tagString.Length == NullGroupTag.Tag.Length,
+				"Tag lengths mismatch");
+
+			return BaseGroupTags.FindIndex(gt => gt.TagString == tagString);
 		}
 
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
@@ -114,14 +126,30 @@ namespace KSoft.Values
 		}
 
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
-		/// <param name="group_tag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
-		/// <returns>Null if <paramref name="group_tag"/> isn't a part of this collection</returns>
+		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
+		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
 		[Contracts.Pure]
-		public GroupTagData FindGroup(char[] group_tag)
+		public GroupTagData FindGroup(char[] groupTag)
 		{
-			Contract.Requires(group_tag != null);
+			Contract.Requires(groupTag != null);
 
-			int index = FindGroupIndex(group_tag);
+			int index = FindGroupIndexByTag(groupTag);
+			if (index.IsNone())
+				return null;
+
+			return BaseGroupTags[index];
+		}
+		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
+		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
+		/// <returns>Null if <paramref name="tagString"/> isn't a part of this collection</returns>
+		[Contracts.Pure]
+		public GroupTagData FindGroupByTag(string tagString)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(tagString));
+			Contract.Requires(tagString.Length == NullGroupTag.Tag.Length,
+				"Tag lengths mismatch");
+
+			int index = FindGroupIndexByTag(tagString);
 			if (index.IsNone())
 				return null;
 
@@ -129,14 +157,14 @@ namespace KSoft.Values
 		}
 
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
-		/// <param name="groupTag">The name of a <see cref="GroupTagData"/> to search for</param>
-		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
+		/// <param name="groupName">The name of a <see cref="GroupTagData"/> to search for</param>
+		/// <returns>Null if <paramref name="groupName"/> isn't a part of this collection</returns>
 		[Contracts.Pure]
-		public GroupTagData FindGroup(string groupTag)
+		public GroupTagData FindGroup(string groupName)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
+			Contract.Requires(!string.IsNullOrEmpty(groupName));
 
-			int index = FindGroupIndex(groupTag);
+			int index = FindGroupIndex(groupName);
 			if (index.IsNone())
 				return null;
 

@@ -6,6 +6,15 @@ namespace KSoft.Reflection.Test
 {
 	using MessageBoxDelegateGeneric = Func<IntPtr, string, string, uint, int>;
 
+	#region GenerateConstructorFunc aliases
+	using TestGenerateConstructorFuncClassPrivateCtor =		Func<
+		UtilitiesTest.TestGenerateConstructorFuncClass>;
+	using TestGenerateConstructorFuncClassInternalCtor =	Func<int,
+		UtilitiesTest.TestGenerateConstructorFuncClass>;
+	using TestGenerateConstructorFuncClassPublicCtor =		Func<object, double,
+		UtilitiesTest.TestGenerateConstructorFuncClass>;
+	#endregion
+
 	[TestClass]
 	public partial class UtilitiesTest : BaseTestClass
 	{
@@ -64,7 +73,7 @@ namespace KSoft.Reflection.Test
 		}
 		#endregion
 
-
+		#region PropertyNameFromExpr
 		class TestPropertyNameFromExprClass
 		{
 			public int Property { get; set; }
@@ -81,7 +90,7 @@ namespace KSoft.Reflection.Test
 			name = Reflection.Util.PropertyNameFromExpr((TestPropertyNameFromExprClass v) => v.Property);
 			Assert.AreEqual("Property", name);
 		}
-
+		#endregion
 
 		[TestMethod]
 		public void Reflection_GenerateLiteralMemberGetterTest()
@@ -91,5 +100,43 @@ namespace KSoft.Reflection.Test
 
 			Assert.AreEqual(1024, kDefaultBufferSize());
 		}
+
+		#region GenerateConstructorFunc
+		internal class TestGenerateConstructorFuncClass
+		{
+			private TestGenerateConstructorFuncClass()
+			{
+			}
+			internal TestGenerateConstructorFuncClass(int i)
+			{
+			}
+			public TestGenerateConstructorFuncClass(object o, double d)
+			{
+
+			}
+		};
+		[TestMethod]
+		public void Reflection_GenerateConstructorFuncTest()
+		{
+			const Reflect.BindingFlags k_non_public_ctor_binding_flags =
+				Reflect.BindingFlags.Instance | Reflect.BindingFlags.NonPublic;
+
+			var ctor_priv = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass, 
+				TestGenerateConstructorFuncClassPrivateCtor>(k_non_public_ctor_binding_flags);
+			Assert.IsNotNull(ctor_priv);
+
+			var ctor_internal = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+				TestGenerateConstructorFuncClassInternalCtor>(k_non_public_ctor_binding_flags);
+			Assert.IsNotNull(ctor_internal);
+
+			var ctor_public = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+				TestGenerateConstructorFuncClassPublicCtor>();
+			Assert.IsNotNull(ctor_public);
+
+			Assert.IsNotNull(ctor_priv());
+			Assert.IsNotNull(ctor_internal(1234));
+			Assert.IsNotNull(ctor_public(null, 1234.0));
+		}
+		#endregion
 	};
 }

@@ -69,7 +69,7 @@ namespace KSoft.Values
 		/// <param name="groupTag">The id of a group tag to search for</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
 		[Contracts.Pure]
-		public int FindGroupIndex(TagWord groupTag)
+		public int FindGroupIndexByTag(TagWord groupTag)
 		{
 			return GroupTags.FindIndex(gt => gt.ID == groupTag);
 		}
@@ -78,7 +78,7 @@ namespace KSoft.Values
 		/// <param name="tag">Group tag to find</param>
 		/// <returns><see cref="GroupTagData32"/> object existing in this collection, or null if not found.</returns>
 		[Contracts.Pure]
-		public GroupTagDatum FindTagGroup(TagWord tag)
+		public GroupTagDatum FindGroupByTag(TagWord tag)
 		{
 			var matching_tags = from gt in GroupTags
 								where gt.ID == tag

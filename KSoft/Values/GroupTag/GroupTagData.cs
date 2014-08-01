@@ -15,7 +15,7 @@ namespace KSoft.Values
 		System.Collections.IComparer, IComparable
 	{
 		#region Name
-		public const string kNullGroupName = "none";
+		public const string kNullGroupName = TypeExtensions.kNoneDisplayString;
 		public const int kGroupNamePadLength = 64;
 
 		readonly string mName;

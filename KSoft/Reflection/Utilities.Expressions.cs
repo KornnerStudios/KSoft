@@ -110,6 +110,8 @@ namespace KSoft.Reflection
 		}
 
 		public static TFunc GenerateObjectMethodProxy<T, TSig, TFunc>(string methodName, TSig signature)
+			where TFunc : class
+			where TSig : class
 		{
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(methodName));
 			Contract.Requires<ArgumentNullException>(signature != null);
@@ -135,5 +137,82 @@ namespace KSoft.Reflection
 			}
 			return Expr.Lambda<TFunc>(call, params_lamda).Compile();
 		}
+
+		#region GenerateConstructorFunc
+		// Inspired by: http://rogeralsing.com/2008/02/28/linq-expressions-creating-objects/
+
+		static TFunc GenerateConstructorFuncImpl<TFunc>(
+			Type type,
+			Reflect.BindingFlags bindingAttr)
+			where TFunc : class
+		{
+			var func_type = typeof(TFunc);
+			var func_method_info = func_type.GetMethod(kDelegateInvokeMethodName);
+			#region func_method_info validation
+			if (!func_method_info.ReturnType.IsAssignableFrom(type))
+			{
+				string msg = string.Format("Generation failed: {0} returns a {1} which isn't assignable from {2}",
+					func_type, func_method_info.ReturnType, type);
+				throw new InvalidOperationException(msg);
+			}
+			#endregion
+
+			var func_params = func_method_info.GetParameters().Select(p => p.ParameterType).ToArray();
+			var ctor = type.GetConstructor(bindingAttr, null, func_params, null);
+			#region ctor validation
+			if (ctor == null)
+			{
+				var param_names = new System.Text.StringBuilder();
+				foreach (var param_type in func_params)
+				{
+					if (param_names.Length != 0)
+						param_names.Append(',');
+					param_names.Append(param_type.Name);
+				}
+				if (param_names.Length == 0)
+					param_names.Append("<no-parameters>");
+
+				string msg = string.Format("Generation failed: {0} has no ctor which matches the bindings '{1}' and takes the following parameter types: {2}",
+					type, bindingAttr, param_names);
+
+				throw new InvalidOperationException(msg);
+			}
+			#endregion
+
+			// have to convert it to a collection, else a different set of Parameter objects will be created for New and the Lambda
+			var call_params = (from param_type in func_params
+							  select Expr.Parameter(param_type)).ToArray();
+
+			var new_expr = Expr.New(ctor, call_params);
+			var lambda = Expr.Lambda<TFunc>(new_expr, call_params);
+
+			return lambda.Compile();
+		}
+
+		public static TFunc GenerateConstructorFunc<T, TFunc>(
+			Type type,
+			Reflect.BindingFlags bindingAttr = Reflect.BindingFlags.Public | Reflect.BindingFlags.Instance)
+			where TFunc : class
+		{
+			Contract.Requires<ArgumentNullException>(type != null);
+			Contract.Requires<ArgumentException>(type.IsSubclassOf(typeof(T)));
+			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
+			Contract.Ensures(Contract.Result<TFunc>() != null);
+
+			return GenerateConstructorFuncImpl<TFunc>(type, bindingAttr);
+		}
+
+		public static TFunc GenerateConstructorFunc<T, TFunc>(
+			Reflect.BindingFlags bindingAttr = Reflect.BindingFlags.Public | Reflect.BindingFlags.Instance)
+			where TFunc : class
+		{
+			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
+			Contract.Ensures(Contract.Result<TFunc>() != null);
+
+			var type = typeof(T);
+
+			return GenerateConstructorFuncImpl<TFunc>(type, bindingAttr);
+		}
+		#endregion
 	};
 }
