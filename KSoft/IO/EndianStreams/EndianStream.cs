@@ -486,6 +486,13 @@ namespace KSoft.IO
 
 			return this;
 		}
+		public EndianStream StreamUInt40(ref ulong value)
+		{
+				 if (IsReading) value = Reader.ReadUInt40();
+			else if (IsWriting) Writer.WriteUInt40(value);
+
+			return this;
+		}
 		#endregion
 
 		#region Stream strings

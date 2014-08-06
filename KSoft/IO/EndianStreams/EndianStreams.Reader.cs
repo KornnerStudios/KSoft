@@ -265,6 +265,22 @@ namespace KSoft.IO
 
 			return value;
 		}
+
+		/// <summary>Reads an unsigned 24-bit integer</summary>
+		/// <returns></returns>
+		public ulong ReadUInt40()
+		{
+			var value = 
+				((ulong)base.ReadByte()) |
+				((ulong)base.ReadByte() << 8) |
+				((ulong)base.ReadByte() << 16) |
+				((ulong)base.ReadByte() << 24) |
+				((ulong)base.ReadByte() << 32)
+				;
+			if(mRequiresByteSwap) Bitwise.ByteSwap.SwapUInt40(ref value);
+
+			return value;
+		}
 		#endregion
 
 		#region Read string

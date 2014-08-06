@@ -186,6 +186,18 @@ namespace KSoft.IO
 			base.Write((byte)(value >>  8));
 			base.Write((byte)(value >> 16));
 		}
+
+		/// <summary>Writes an unsigned 40-bit integer</summary>
+		/// <param name="value"></param>
+		public void WriteUInt40(ulong value)
+		{
+			if (mRequiresByteSwap) Bitwise.ByteSwap.SwapUInt40(ref value);
+			base.Write((byte) value);
+			base.Write((byte)(value >>  8));
+			base.Write((byte)(value >> 16));
+			base.Write((byte)(value >> 24));
+			base.Write((byte)(value >> 32));
+		}
 		#endregion
 
 		#region Write string

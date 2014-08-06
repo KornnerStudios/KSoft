@@ -29,6 +29,7 @@ namespace KSoft.Bitwise
 	public static partial class ByteSwap
 	{
 		public const int kSizeOfInt24 = sizeof(byte) * 3;
+		public const int kSizeOfInt40 = sizeof(byte) * 5;
 
 		// ArrayStart, {Count}, {Elements}, ArrayEnd
 		internal const int kMinumumNumberOfDefinitionBsCodes = 4;
@@ -94,6 +95,8 @@ namespace KSoft.Bitwise
 			(short)BsCode.ArrayEnd);
 		#endregion
 
+		// TODO: refactor KSoft.T4's BS code generation to support non-word-size values
+		
 		#region UInt24
 		/// <summary>Swaps a UInt24 and returns the result</summary>
 		/// <param name="value"></param>
@@ -172,6 +175,35 @@ namespace KSoft.Bitwise
 		public static void SwapInt24(byte[] buffer, int offset)
 		{
 			SwapUInt24(buffer, offset);
+		}
+		#endregion
+		#region UInt40
+		/// <summary>Swaps a UInt40 and returns the result</summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static ulong SwapUInt40(
+			ulong value)
+		{
+			return
+				((value >> 32) & 0x00000000000000FF) | 
+				((value >> 16) & 0x000000000000FF00) | 
+				((value >>  0) & 0x0000000000FF0000) | 
+				((value << 16) & 0x00000000FF000000) | 
+				((value << 32) & 0x000000FF00000000);
+		}
+		/// <summary>Swaps a UInt40 by reference</summary>
+		/// <param name="value"></param>
+		[Contracts.Pure]
+		public static void SwapUInt40(
+			ref ulong value)
+		{
+			value =
+				((value >> 32) & 0x00000000000000FF) | 
+				((value >> 16) & 0x000000000000FF00) | 
+				((value >>  0) & 0x0000000000FF0000) | 
+				((value << 16) & 0x00000000FF000000) | 
+				((value << 32) & 0x000000FF00000000);
 		}
 		#endregion
 		#region Single

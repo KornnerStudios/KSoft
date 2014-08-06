@@ -25,13 +25,19 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt32((uint)value_before));
 			Assert.AreEqual((int)value_after,  ByteSwap.SwapInt32 ((int) value_before));
 
-			// TODO: UInt24
-
 			// UInt16
 			value_before >>= 16;
 			value_after >>= 16;
 			Assert.AreEqual((ushort)value_after, ByteSwap.SwapUInt16((ushort)value_before));
 			Assert.AreEqual((short)value_after,  ByteSwap.SwapInt16 ((short) value_before));
+
+			value_before = 0x123456;
+			value_after = 0x563412;
+			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt24((uint)value_before));
+
+			value_before = 0x123456789A;
+			value_after = 0x9A78563412;
+			Assert.AreEqual(value_after, ByteSwap.SwapUInt40(value_before));
 		}
 
 		[TestMethod]
