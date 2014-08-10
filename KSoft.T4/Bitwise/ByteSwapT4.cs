@@ -7,21 +7,104 @@ namespace KSoft.T4.Bitwise
 {
 	partial class BitwiseT4
 	{
-		public static IEnumerable<NumberCodeDefinition> ByteSwapableIntegers { get {
-			yield return PrimitiveDefinitions.kUInt16;
-			yield return PrimitiveDefinitions.kUInt32;
-			yield return PrimitiveDefinitions.kUInt64;
+		public sealed class ByteSwapableIntegerDefinition
+		{
+			NumberCodeDefinition mCodeDef;
+			int mSizeOfInBits;
+			int mSizeOfInBytes;
+
+			public ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef, int bitCount)
+			{
+				mCodeDef = codeDef;
+				mSizeOfInBits = bitCount;
+				mSizeOfInBytes = bitCount / kBitsPerByte;
+			}
+			public ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef)
+				: this(codeDef, codeDef.SizeOfInBits)
+			{
+			}
+
+			public NumberCodeDefinition CodeDefinition { get { return mCodeDef; } }
+			public int SizeOfInBits { get { return mSizeOfInBits; } }
+			public int SizeOfInBytes { get { return mSizeOfInBytes; } }
+
+			/// <summary>Can this integer not be represented via a one of .NET's System.Int types?</summary>
+			public bool IsUnnaturalWord { get { return SizeOfInBits != mCodeDef.SizeOfInBits; } }
+
+			public string Keyword { get { return mCodeDef.Keyword; } }
+			public string SignedKeyword { get { return mCodeDef.SignedKeyword; } }
+			public TypeCode Code { get { return mCodeDef.Code; } }
+			public TypeCode SignedCode { get { return mCodeDef.SignedCode; } }
+
+			public string ToStringHexFormat { get { return mCodeDef.ToStringHexFormat; } }
+			public bool BitOperatorsImplicitlyUpCast { get { return mCodeDef.BitOperatorsImplicitlyUpCast; } }
+
+			public string GetConstantKeyword()
+			{
+				return IsUnnaturalWord
+					? "Int" + SizeOfInBits.ToString()
+					: mCodeDef.GetConstantKeyword();
+			}
+
+			public NumberCodeDefinition TryGetSignedDefinition() { return mCodeDef.TryGetSignedDefinition(); }
+
+			public string WordTypeNameUnsigned { get {
+				return IsUnnaturalWord
+					? "UInt" + SizeOfInBits.ToString()
+					: Code.ToString();
+			} }
+			public string WordTypeNameSigned { get {
+				return IsUnnaturalWord
+					? "Int" + SizeOfInBits.ToString()
+					: SignedCode.ToString();
+			} }
+			public string GetOverloadSuffixForUnnaturalWord(bool signed)
+			{
+				if (!IsUnnaturalWord)
+					return "";
+
+				return signed
+					? WordTypeNameSigned
+					: WordTypeNameUnsigned;
+			}
+
+			public string SizeOfCode { get {
+				return IsUnnaturalWord
+					? "kSizeOf" + GetConstantKeyword()
+					: string.Format("sizeof({0})", Keyword);
+			} }
+
+			public IntegerByteSwapCodeGenerator NewByteSwapCodeGenerator(TextTemplating.TextTransformation ttFile,
+				string valueName = "value")
+			{
+				return new IntegerByteSwapCodeGenerator(ttFile, this, valueName);
+			}
+
+			public IntegerByteAccessCodeGenerator NewByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
+				string byteName = "b", string bufferName = "buffer", string offsetName = "offset")
+			{
+				return new IntegerByteAccessCodeGenerator(ttFile, mCodeDef, byteName, bufferName, offsetName, mSizeOfInBits);
+			}
+		};
+
+		public static IEnumerable<ByteSwapableIntegerDefinition> ByteSwapableIntegers { get {
+			yield return new ByteSwapableIntegerDefinition(PrimitiveDefinitions.kUInt16);
+			yield return new ByteSwapableIntegerDefinition(PrimitiveDefinitions.kUInt32);
+			yield return new ByteSwapableIntegerDefinition(PrimitiveDefinitions.kUInt64);
+
+			yield return new ByteSwapableIntegerDefinition(PrimitiveDefinitions.kUInt32, 24);
+			yield return new ByteSwapableIntegerDefinition(PrimitiveDefinitions.kUInt64, 40);
 		} }
 
 		public class IntegerByteSwapCodeGenerator
 		{
 			TextTemplating.TextTransformation mFile;
-			NumberCodeDefinition mDef;
+			ByteSwapableIntegerDefinition mDef;
 
 			string mValueName;
 
 			public IntegerByteSwapCodeGenerator(TextTemplating.TextTransformation ttFile,
-				NumberCodeDefinition def, string valueName)
+				ByteSwapableIntegerDefinition def, string valueName)
 			{
 				mFile = ttFile;
 				mDef = def;
@@ -35,7 +118,9 @@ namespace KSoft.T4.Bitwise
 				// this is for casting the final result back into the smaller integer type
 				if (cast)
 				{
-					var def = signed ? mDef.TryGetSignedDefinition() : mDef;
+					var def = signed
+						? mDef.TryGetSignedDefinition()
+						: mDef.CodeDefinition;
 
 					mFile.WriteLine("({0})( ", def.Keyword);
 					mFile.PushIndent(TextTransformationCodeBlockBookmark.kIndent);
@@ -53,7 +138,8 @@ namespace KSoft.T4.Bitwise
 			void GenerateStep(bool signed, int shift, string mask, bool lastOperation = false)
 			{
 				// mask is not added when this is the last op in signed expression as the mask will be an unsigned value
-				bool mask_op = !signed || !lastOperation;
+				// this isn't the case for unnatural-words, which should consume fewer bits than the MSB/sign-bit
+				bool mask_op = mDef.IsUnnaturalWord || !signed || !lastOperation;
 				if (mask_op)
 					mFile.Write("(");
 				else

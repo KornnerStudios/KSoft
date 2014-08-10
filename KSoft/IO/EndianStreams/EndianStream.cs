@@ -471,6 +471,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		// TODO: generate with T4
 		#region Stream numerics
 		public EndianStream StreamInt24(ref int value)
 		{

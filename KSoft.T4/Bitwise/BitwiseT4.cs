@@ -96,6 +96,8 @@ namespace KSoft.T4.Bitwise
 
 			TextTemplating.TextTransformation mFile;
 			NumberCodeDefinition mDef;
+			int mSizeOfInBits;
+			int mSizeOfInBytes;
 			string mByteName;
 
 			string mBufferName;
@@ -103,10 +105,17 @@ namespace KSoft.T4.Bitwise
 
 			public IntegerByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
 				NumberCodeDefinition def,
-				string byteName, string bufferName, string offsetName = null)
+				string byteName, string bufferName, string offsetName = null,
+				int bitCount = -1)
 			{
 				mFile = ttFile;
 				mDef = def;
+				mSizeOfInBits = bitCount == -1
+					? mDef.SizeOfInBits
+					: bitCount;
+				mSizeOfInBytes = bitCount == -1
+					? mDef.SizeOfInBytes
+					: bitCount / kBitsPerByte;
 				mByteName = byteName;
 
 				mBufferName = bufferName;
@@ -116,11 +125,11 @@ namespace KSoft.T4.Bitwise
 			void GenerateByteDeclarationsCode()
 			{
 				mFile.Write("{0} ", kByteKeyword);
-				for (int x = 0; x < mDef.SizeOfInBytes; x++)
+				for (int x = 0; x < mSizeOfInBytes; x++)
 				{
 					mFile.Write("{0}{1}", mByteName, x);
 
-					if (x < (mDef.SizeOfInBytes - 1))
+					if (x < (mSizeOfInBytes - 1))
 						mFile.Write(", ");
 				}
 				mFile.WriteLine(";");
@@ -138,7 +147,7 @@ namespace KSoft.T4.Bitwise
 			{
 				Debug.Assert(mOffsetName != null, "generator not setup for read/write from/to a buffer");
 
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
+				for (int x = 0; x < mSizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
 					mFile.Write("{0}{1} = ", mByteName, x);
 					mFile.Write("{0}[{1}++]", mBufferName, mOffsetName);
@@ -156,13 +165,13 @@ namespace KSoft.T4.Bitwise
 			void GenerateBytesFromValueCode(string valueName, bool littleEndian)
 			{
 				int bit_offset = !littleEndian
-					? mDef.SizeOfInBits
+					? mSizeOfInBits
 					: 0 - kBitsPerByte;
 				int bit_adjustment = !littleEndian
 					? -kBitsPerByte
 					: +kBitsPerByte;
 
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
+				for (int x = 0; x < mSizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
 					mFile.Write("{0}{1} = ", mByteName, x);
 					mFile.Write("({0})({1} >> {2,2})", kByteKeyword, valueName, bit_offset += bit_adjustment);
@@ -188,7 +197,7 @@ namespace KSoft.T4.Bitwise
 					? k_swap_format
 					: k_replacement_format;
 
-				for (int x = 0; x < mDef.SizeOfInBytes; x++, mFile.WriteLine(";"))
+				for (int x = 0; x < mSizeOfInBytes; x++, mFile.WriteLine(";"))
 				{
 					mFile.Write(format, mBufferName, mOffsetName);
 					mFile.Write("{0}{1}", mByteName, x);

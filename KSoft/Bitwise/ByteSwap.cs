@@ -28,9 +28,6 @@ namespace KSoft.Bitwise
 
 	public static partial class ByteSwap
 	{
-		public const int kSizeOfInt24 = sizeof(byte) * 3;
-		public const int kSizeOfInt40 = sizeof(byte) * 5;
-
 		// ArrayStart, {Count}, {Elements}, ArrayEnd
 		internal const int kMinumumNumberOfDefinitionBsCodes = 4;
 
@@ -95,117 +92,6 @@ namespace KSoft.Bitwise
 			(short)BsCode.ArrayEnd);
 		#endregion
 
-		// TODO: refactor KSoft.T4's BS code generation to support non-word-size values
-		
-		#region UInt24
-		/// <summary>Swaps a UInt24 and returns the result</summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
-		public static uint SwapUInt24(
-			uint value)
-		{
-			return 
-				((value >> 16) & 0x000000FF) |
-				((value >>  0) & 0x0000FF00) |
-				((value << 16) & 0x00FF0000);
-		}
-		/// <summary>Swaps a UInt24 by reference</summary>
-		/// <param name="value"></param>
-		[Contracts.Pure]
-		public static void SwapUInt24(
-			ref uint value)
-		{
-			value =
-				((value >> 16) & 0x000000FF) |
-				((value >>  0) & 0x0000FF00) |
-				((value << 16) & 0x00FF0000);
-		}
-		/// <summary>Swaps a UInt24 at a position in a bye array</summary>
-		/// <param name="buffer">source array</param>
-		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
-		public static void SwapUInt24(byte[] buffer, int offset)
-		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+kSizeOfInt24 <= buffer.Length);
-
-			byte 
-				b0 = buffer[offset++], 
-				b1 = buffer[offset++], 
-				b2 = buffer[offset++];
-
-			buffer[--offset] = b0;
-			buffer[--offset] = b1;
-			buffer[--offset] = b2;
-		}
-		#endregion
-		// TODO: verify we don't need any sign-extension magic
-		#region Int24
-		/// <summary>Swaps a Int24 and returns the result</summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
-		public static int SwapInt24(
-			int value)
-		{
-			return 
-				((value >> 16) & 0x000000FF) |
-				((value >>  0) & 0x0000FF00) |
-				((value << 16) & 0x00FF0000);
-		}
-		/// <summary>Swaps a Int24 by reference</summary>
-		/// <param name="value"></param>
-		[Contracts.Pure]
-		public static void SwapInt24(
-			ref int value)
-		{
-			value =
-				((value >> 16) & 0x000000FF) |
-				((value >>  0) & 0x0000FF00) |
-				((value << 16) & 0x00FF0000);
-		}
-		/// <summary>Swaps a Int24 at a position in a bye array</summary>
-		/// <param name="buffer">source array</param>
-		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
-		public static void SwapInt24(byte[] buffer, int offset)
-		{
-			SwapUInt24(buffer, offset);
-		}
-		#endregion
-		#region UInt40
-		/// <summary>Swaps a UInt40 and returns the result</summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
-		public static ulong SwapUInt40(
-			ulong value)
-		{
-			return
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
-				((value << 32) & 0x000000FF00000000);
-		}
-		/// <summary>Swaps a UInt40 by reference</summary>
-		/// <param name="value"></param>
-		[Contracts.Pure]
-		public static void SwapUInt40(
-			ref ulong value)
-		{
-			value =
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
-				((value << 32) & 0x000000FF00000000);
-		}
-		#endregion
 		#region Single
 		/// <summary>Swaps a <see cref="Single" /> and returns the result</summary>
 		/// <param name="value"></param>

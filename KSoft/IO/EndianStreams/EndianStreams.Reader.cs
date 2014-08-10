@@ -243,6 +243,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		// TODO: generate with T4
 		#region Read numerics
 		/// <summary>Reads a signed 24-bit integer</summary>
 		/// <returns></returns>

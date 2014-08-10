@@ -14,11 +14,17 @@ namespace KSoft.Bitwise
 <# foreach (var bittable_type in BitwiseT4.ByteSwapableIntegers) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var const_keyword= bittable_type.GetConstantKeyword();
-	var byte_swap_gen = new BitwiseT4.IntegerByteSwapCodeGenerator(this, bittable_type, "value");
-	var byte_access_gen = new BitwiseT4.IntegerByteAccessCodeGenerator(this,
-		bittable_type, "b", "buffer", "offset");
+	var byte_swap_gen = bittable_type.NewByteSwapCodeGenerator(this);
+	var byte_access_gen = bittable_type.NewByteAccessCodeGenerator(this);
+	var overload_suffix_for_uint = bittable_type.GetOverloadSuffixForUnnaturalWord(signed: false);
+	var overload_suffix_for_int = bittable_type.GetOverloadSuffixForUnnaturalWord(signed: true);
 #>
-		#region <#= bittable_type.Code #>
+<# if (bittable_type.IsUnnaturalWord) { #>
+		public const int kSizeOfU<#= const_keyword #> = sizeof(byte) * <#= bittable_type.SizeOfInBytes #>;
+		public const int kSizeOf<#= const_keyword #> = kSizeOfU<#= const_keyword #>;
+
+<# } /*IsUnnaturalWord*/ #>
+		#region <#= bittable_type.WordTypeNameUnsigned #>
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> and returns the result</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -32,7 +38,7 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> by reference</summary>
 		/// <param name="value"></param>
 		[Contracts.Pure]
-		public static void Swap(
+		public static void Swap<#= overload_suffix_for_uint #>(
 			ref <#= prim_keyword #> value)
 		{
 			value = 
@@ -48,7 +54,7 @@ namespace KSoft.Bitwise
 			Contract.Requires<ArgumentOutOfRangeException>(
 				offset >= 0 && offset < buffer.Length);
 			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(<#= prim_keyword #>) <= buffer.Length);
+				offset+<#= bittable_type.SizeOfCode #> <= buffer.Length);
 
 <# byte_access_gen.GenerateByteDeclarations(); #>
 <# byte_access_gen.GenerateBytesFromBuffer(); #>
@@ -65,14 +71,14 @@ namespace KSoft.Bitwise
 		/// when written to the buffer
 		/// </remarks>
 		[Contracts.Pure]
-		public static void ReplaceBytes(byte[] buffer, int offset,
+		public static void ReplaceBytes<#= overload_suffix_for_uint #>(byte[] buffer, int offset,
 			<#= prim_keyword #> value)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
 			Contract.Requires<ArgumentOutOfRangeException>(
 				offset >= 0 && offset < buffer.Length);
 			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(<#= prim_keyword #>) <= buffer.Length);
+				offset+<#= bittable_type.SizeOfCode #> <= buffer.Length);
 
 <# byte_access_gen.GenerateByteDeclarations(); #>
 			if(BitConverter.IsLittleEndian) {
@@ -85,7 +91,10 @@ namespace KSoft.Bitwise
 		}
 		#endregion
 
-		#region <#= bittable_type.SignedCode #>
+<# if (bittable_type.IsUnnaturalWord) { #>
+		// TODO: verify we don't need any sign-extension magic
+<# } /*IsUnnaturalWord*/ #>
+		#region <#= bittable_type.WordTypeNameSigned #>
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> and returns the result</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -99,7 +108,7 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
 		/// <param name="value"></param>
 		[Contracts.Pure]
-		public static void Swap(
+		public static void Swap<#= overload_suffix_for_int #>(
 			ref <#= bittable_type.SignedKeyword #> value)
 		{
 			value = 
@@ -119,10 +128,10 @@ namespace KSoft.Bitwise
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
 		[Contracts.Pure]
-		public static void ReplaceBytes(byte[] buffer, int offset,
+		public static void ReplaceBytes<#= overload_suffix_for_int #>(byte[] buffer, int offset,
 			<#= bittable_type.SignedKeyword #> value)
 		{
-			ReplaceBytes(buffer, offset, (<#= prim_keyword #>)value);
+			ReplaceBytes<#= overload_suffix_for_uint #>(buffer, offset, (<#= prim_keyword #>)value);
 		}
 		#endregion
 

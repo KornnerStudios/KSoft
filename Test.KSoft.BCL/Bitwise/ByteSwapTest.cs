@@ -9,6 +9,12 @@ namespace KSoft.Bitwise.Test
 		const ulong kBeforeValue = 0x1234123412341234;
 		const ulong kAfterValue = 0x3412341234123412;
 
+		const ulong kBeforeValueUInt40 = 0x123456789A;
+		const ulong kAfterValueUInt40 = 0x9A78563412;
+
+		const ulong kBeforeValueUInt24 = 0x123456;
+		const ulong kAfterValueUInt24 = 0x563412;
+
 		[TestMethod]
 		public void ByteSwap_SwapIntegersTest()
 		{
@@ -31,13 +37,17 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual((ushort)value_after, ByteSwap.SwapUInt16((ushort)value_before));
 			Assert.AreEqual((short)value_after,  ByteSwap.SwapInt16 ((short) value_before));
 
-			value_before = 0x123456;
-			value_after = 0x563412;
-			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt24((uint)value_before));
-
-			value_before = 0x123456789A;
-			value_after = 0x9A78563412;
+			// UInt40
+			value_before = kBeforeValueUInt40;
+			value_after = kAfterValueUInt40;
 			Assert.AreEqual(value_after, ByteSwap.SwapUInt40(value_before));
+			Assert.AreEqual((long)value_after, ByteSwap.SwapInt40((long)value_before));
+
+			// UInt24
+			value_before = kBeforeValueUInt24;
+			value_after = kAfterValueUInt24;
+			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt24((uint)value_before));
+			Assert.AreEqual((int)value_after,  ByteSwap.SwapInt24 ((int) value_before));
 		}
 
 		[TestMethod]
@@ -52,6 +62,13 @@ namespace KSoft.Bitwise.Test
 			buffer_bc = BitConverter.GetBytes(value);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 
+			// UInt40
+			value = kBeforeValueUInt40;
+			Array.Clear(buffer, 0, buffer.Length);
+			ByteSwap.ReplaceBytesUInt40(buffer, 0, value);
+			buffer_bc = BitConverter.GetBytes(value);
+			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+
 			// UInt32
 			value >>= 32;
 			Array.Clear(buffer, 0, buffer.Length);
@@ -59,7 +76,12 @@ namespace KSoft.Bitwise.Test
 			buffer_bc = BitConverter.GetBytes((uint)value);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 
-			// TODO: UInt24
+			// UInt24
+			value = kBeforeValueUInt24;
+			Array.Clear(buffer, 0, buffer.Length);
+			ByteSwap.ReplaceBytesUInt24(buffer, 0, (uint)value);
+			buffer_bc = BitConverter.GetBytes((uint)value);
+			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 
 			// UInt16
 			value >>= 16;
@@ -92,8 +114,6 @@ namespace KSoft.Bitwise.Test
 			buffer_bc = BitConverter.GetBytes((uint)value_after);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 
-			// TODO: UInt24
-
 			// UInt16
 			value_before >>= 16;
 			value_after >>= 16;
@@ -101,6 +121,24 @@ namespace KSoft.Bitwise.Test
 			ByteSwap.ReplaceBytes(buffer, 0, (ushort)value_before);
 			ByteSwap.SwapInt16(buffer, 0);
 			buffer_bc = BitConverter.GetBytes((ushort)value_after);
+			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+
+			// UInt40
+			value_before = kBeforeValueUInt40;
+			value_after = kAfterValueUInt40;
+			Array.Clear(buffer, 0, buffer.Length);
+			ByteSwap.ReplaceBytesUInt40(buffer, 0, value_before);
+			ByteSwap.SwapInt40(buffer, 0);
+			buffer_bc = BitConverter.GetBytes(value_after);
+			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+
+			// UInt24
+			value_before = kBeforeValueUInt24;
+			value_after = kAfterValueUInt24;
+			Array.Clear(buffer, 0, buffer.Length);
+			ByteSwap.ReplaceBytesUInt24(buffer, 0, (uint)value_before);
+			ByteSwap.SwapInt24(buffer, 0);
+			buffer_bc = BitConverter.GetBytes((uint)value_after);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 		}
 	};

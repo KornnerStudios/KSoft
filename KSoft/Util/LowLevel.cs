@@ -58,7 +58,7 @@ namespace KSoft.LowLevel.Util
 		/// <returns>Handle to allocated memory</returns>
 		public static IntPtr New<T>()
 		{
-			return Marshal.AllocHGlobal(Marshal.SizeOf(typeof(T)));
+			return Marshal.AllocHGlobal(SizeOf<T>());
 		}
 		
 		/// <summary>Free unmanaged memory for an existing object</summary>
@@ -73,9 +73,14 @@ namespace KSoft.LowLevel.Util
 		/// <summary>Calculate the byte size of an object</summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		public static uint SizeOf<T>()
+		public static int SizeOf<T>()
 		{
-			return (uint)Marshal.SizeOf(typeof(T));
+			return
+#if __MonoCS__
+				Marshal.SizeOf(typeof(T));
+#else
+				Marshal.SizeOf<T>();
+#endif
 		}
 	};
 }

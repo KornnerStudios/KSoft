@@ -93,8 +93,8 @@ namespace KSoft
 
 			public MemoryCopier(bool dummy)
 			{
-				mDstTypeSize = System.Runtime.InteropServices.Marshal.SizeOf<TDst>();
-				mSrcTypeSize = System.Runtime.InteropServices.Marshal.SizeOf<TSrc>();
+				mDstTypeSize = LowLevel.Util.Unmanaged.SizeOf<TDst>();
+				mSrcTypeSize = LowLevel.Util.Unmanaged.SizeOf<TSrc>();
 			}
 
 			internal void CopyInternal(TDst[] dst, int dstOffset,
