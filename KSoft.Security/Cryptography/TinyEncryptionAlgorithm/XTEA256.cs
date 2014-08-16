@@ -4,7 +4,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Security.Cryptography
 {
-	public class XTEA256 : XTEABase
+	public sealed class XTEA256
+		: XTEABase
 	{
 		public void SetKey(byte[] b)
 		{
@@ -32,6 +33,7 @@ namespace KSoft.Security.Cryptography
 
 		protected override void EncryptBlock(byte[] input, byte[] output, int offset)
 		{
+			Contract.Assert(false); // TODO
 		}
 
 		protected override void DecryptBlock(byte[] input, byte[] output, int offset)

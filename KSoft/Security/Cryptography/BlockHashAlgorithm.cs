@@ -5,7 +5,8 @@ using HashAlgorithm = System.Security.Cryptography.HashAlgorithm;
 
 namespace KSoft.Security.Cryptography
 {
-	public abstract class BlockHashAlgorithm : HashAlgorithm
+	public abstract class BlockHashAlgorithm
+		: HashAlgorithm
 	{
 		byte[] mBlockBuffer;
 

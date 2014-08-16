@@ -68,4 +68,13 @@ namespace KSoft.IO
 		}
 		#endregion
 	};
+
+	partial class EndianStream
+	{
+		public void StreamVirtualAddress(ref Values.PtrHandle physicalAddress)
+		{
+				 if (IsReading) Reader.ReadVirtualAddress(out physicalAddress);
+			else if (IsWriting) Writer.WriteVirtualAddress(physicalAddress);
+		}
+	};
 }

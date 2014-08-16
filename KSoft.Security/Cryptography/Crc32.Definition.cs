@@ -6,7 +6,7 @@ namespace KSoft.Security.Cryptography
 {
 	public static partial class Crc32
 	{
-		public class Definition
+		public sealed class Definition
 		{
 			readonly uint mPolynomial;
 			readonly uint[] mCrcTable;

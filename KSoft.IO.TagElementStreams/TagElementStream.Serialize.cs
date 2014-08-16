@@ -833,5 +833,47 @@ namespace KSoft.IO
 				throw new SignatureMismatchException(dataDescription, expectedSignature, data);
 		}
 		#endregion
+
+		public void StreamString(TName name, ref string value, bool toLower,
+			TagElementNodeType type = TagElementNodeType.Attribute, bool intern = false)
+		{
+			Contract.Requires(type.RequiresName() == (name != null));
+
+				 if (type == TagElementNodeType.Element)	StreamElement(name, ref value);
+			else if (type == TagElementNodeType.Attribute)	StreamAttribute(name, ref value);
+			else if (type == TagElementNodeType.Text)		StreamCursor(ref value);
+
+			if (IsReading)
+			{
+				if (toLower) value = value.ToLowerInvariant();
+				if (intern) value = string.Intern(value);
+			}
+		}
+		public bool StreamStringOpt(TName name, ref string value, bool toLower,
+			TagElementNodeType type = TagElementNodeType.Attribute, bool intern = false)
+		{
+			Contract.Requires(type.RequiresName() == (name != null));
+
+			bool result = true;
+				 if (type == TagElementNodeType.Element)	result = StreamElementOpt(name, ref value, Predicates.IsNotNullOrEmpty);
+			else if (type == TagElementNodeType.Attribute)	result = StreamAttributeOpt(name, ref value, Predicates.IsNotNullOrEmpty);
+			else if (type == TagElementNodeType.Text)		StreamCursor(ref value);
+
+			if (IsReading)
+			{
+				if (toLower) value = value.ToLowerInvariant();
+				if (intern) value = string.Intern(value);
+			}
+
+			return result;
+		}
+
+		public bool StreamElementNamedFlag(TName name, ref bool value)
+		{
+			if (IsReading) value = ElementsExists(name);
+			else if (IsWriting && value) WriteElement(name);
+
+			return value;
+		}
 	};
 }

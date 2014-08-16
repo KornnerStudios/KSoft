@@ -12,7 +12,8 @@ namespace KSoft.Security.Cryptography
 		internal static readonly uint[] kDefaultTable = new Definition().CrcTable;
 	};
 
-	public class CrcHash32 : HashAlgorithm
+	public sealed class CrcHash32
+		: HashAlgorithm
 	{
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.CrcHash32";

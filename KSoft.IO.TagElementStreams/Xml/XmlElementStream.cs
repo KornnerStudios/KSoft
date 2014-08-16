@@ -47,6 +47,14 @@ namespace KSoft.IO
 			return n != null;
 		}
 
+		public override bool AttributesExist { get { return Cursor != null && Cursor.HasAttributes; } }
+
+		public override IEnumerable<string> AttributeNames { get {
+			if (AttributesExist)
+				foreach (XmlAttribute attr in Cursor.Attributes)
+					yield return attr.Name;
+		} }
+
 		public override bool ElementsExists(string name)
 		{
 			if (Cursor == null)
@@ -61,17 +69,19 @@ namespace KSoft.IO
 
 		public override bool ElementsExist { get { return Cursor != null && Cursor.HasChildNodes; } }
 
-		public override IEnumerable<XmlElement> Elements { get { 
-			foreach(XmlNode n in Cursor)
-				if(n is XmlElement)
-					yield return (XmlElement)n;
+		public override IEnumerable<XmlElement> Elements { get {
+			if (ElementsExist)
+				foreach (XmlNode n in Cursor)
+					if (n is XmlElement)
+						yield return (XmlElement)n;
 		} }
 
 		public override IEnumerable<XmlElement> ElementsByName(string localName)
 		{
-			foreach(XmlNode n in Cursor.ChildNodes)
-				if(n is XmlElement && n.Name == localName)
-					yield return (XmlElement)n;
+			if (ElementsExist)
+				foreach (XmlNode n in Cursor.ChildNodes)
+					if (n is XmlElement && n.Name == localName)
+						yield return (XmlElement)n;
 
 #if false // this returns ALL descendants, no just immediate children
 			var elements = Cursor.GetElementsByTagName(localName);

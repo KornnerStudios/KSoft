@@ -11,7 +11,8 @@ namespace KSoft.Security.Cryptography
 		V1 = 0x01, // Versions are implemented via the padding byte used in each version
 		V2 = 0x80,
 	};
-	public class TigerHash : BlockHashAlgorithm
+	public sealed class TigerHash
+		: BlockHashAlgorithm
 	{
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.TigerHash";

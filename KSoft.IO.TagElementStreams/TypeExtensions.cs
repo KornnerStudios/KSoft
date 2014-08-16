@@ -6,6 +6,15 @@ namespace KSoft
 {
 	public static partial class TypeExtensionsTagElementStreams
 	{
+		/// <summary>Does the requested type require an associated name in the element stream?</summary>
+		/// <param name="nodeType"></param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static bool RequiresName(this IO.TagElementNodeType nodeType)
+		{
+			return nodeType != IO.TagElementNodeType.Text; // aka, Cursor
+		}
+
 		#region TagElementStreamFormat
 		[Contracts.Pure]
 		public static IO.TagElementStreamFormat GetBaseFormat(this IO.TagElementStreamFormat format)

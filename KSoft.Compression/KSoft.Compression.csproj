@@ -4,37 +4,29 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0632A00B-DE9E-4350-A3F8-3A82F9C780AF}</ProjectGuid>
+    <ProjectGuid>{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KSoft.Security</RootNamespace>
-    <AssemblyName>KSoft.Security</AssemblyName>
+    <RootNamespace>KSoft.Compression</RootNamespace>
+    <AssemblyName>KSoft.Compression</AssemblyName>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\KSoft.BCL.props" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(VitaRootDir)shared\external_libraries\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cryptography\Adler32.BitComputer.cs" />
-    <Compile Include="Cryptography\Adler32.cs" />
-    <Compile Include="Cryptography\Crc32.cs" />
-    <Compile Include="Cryptography\Crc32.Definition.cs" />
-    <Compile Include="Cryptography\JenkinsHash\JenkinsHash.cs" />
-    <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup.cs" />
-    <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup2.cs" />
-    <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup3.cs" />
-    <Compile Include="Cryptography\TigerHash.cs" />
-    <Compile Include="Cryptography\TinyEncryptionAlgorithm\TinyEncryptionAlgorithm.cs" />
-    <Compile Include="Cryptography\TinyEncryptionAlgorithm\XTEA.Base.cs" />
-    <Compile Include="Cryptography\TinyEncryptionAlgorithm\XTEA.cs" />
-    <Compile Include="Cryptography\TinyEncryptionAlgorithm\XTEA256.cs" />
+    <Compile Include="IO\Compression\ZLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KSoft\KSoft.csproj">
+    <ProjectReference Include="$(VitaRootDir)\KSoft\KSoft\KSoft.csproj">
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
     </ProjectReference>

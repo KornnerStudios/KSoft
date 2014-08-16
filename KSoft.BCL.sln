@@ -26,6 +26,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSoft.Terminal", "KSoft.Ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSoft.T4", "KSoft.T4\KSoft.T4.csproj", "{17AB134C-9C71-4CCF-84D9-D90F6DD58A0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSoft.Compression", "KSoft.Compression\KSoft.Compression.csproj", "{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSoft.Math", "KSoft.Math\KSoft.Math.csproj", "{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -170,6 +174,26 @@ Global
 		{17AB134C-9C71-4CCF-84D9-D90F6DD58A0A}.Release|Win32.ActiveCfg = Release|Any CPU
 		{17AB134C-9C71-4CCF-84D9-D90F6DD58A0A}.Release|x64.ActiveCfg = Release|Any CPU
 		{17AB134C-9C71-4CCF-84D9-D90F6DD58A0A}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Release|Win32.ActiveCfg = Release|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Release|x64.ActiveCfg = Release|Any CPU
+		{0B27603C-CEB1-4A3A-B56F-CBC14B8C06E7}.Release|x86.ActiveCfg = Release|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Release|Win32.ActiveCfg = Release|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Release|x64.ActiveCfg = Release|Any CPU
+		{423F13FC-DA0C-4C82-B75E-60A1BFEA7BB6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -111,6 +111,12 @@ namespace KSoft.IO
 		{
 			mReadErrorState.ThrowReadExeception(detailsException);
 		}
+		public Text.TextLineInfo TryGetLastReadLineInfo()
+		{
+			return IsReading && mReadErrorState.LastReadLineInfo != null
+				? new Text.TextLineInfo(mReadErrorState.LastReadLineInfo)
+				: Text.TextLineInfo.Empty;
+		}
 
 		/// <summary>Argument value for noThrow to throw exceptions</summary>
 		const bool kThrowExcept = false;

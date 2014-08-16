@@ -224,6 +224,8 @@
     <Compile Include="Reflection\Utilities.cs" />
     <Compile Include="Reflection\Utilities.Expressions.cs" />
     <Compile Include="Reflection\Utilities.MemberAccess.cs" />
+    <Compile Include="Security\Cryptography\BlockHashAlgorithm.cs" />
+    <Compile Include="Security\Cryptography\CryptographyTransformType.cs" />
     <Compile Include="Shell\Enums.cs" />
     <Compile Include="Shell\Platform.cs" />
     <Compile Include="Shell\Processor.cs" />

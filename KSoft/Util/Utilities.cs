@@ -49,6 +49,22 @@ namespace KSoft
 		}
 		#endregion
 
+		public static void ClearAndNull<T>(ref T[] array)
+		{
+			if (array != null)
+			{
+				array = null;
+			}
+		}
+		public static void ClearAndNull<T>(ref ICollection<T> coll)
+		{
+			if (coll != null)
+			{
+				coll.Clear();
+				coll = null;
+			}
+		}
+
 		#region Unix Time
 		/// <summary>The UTC of the <b>time_t</b> C++ construct</summary>
 		public static readonly DateTime kUnixTimeEpoch = new System.DateTime(1970, 1, 1, 0,0,0, System.DateTimeKind.Utc);

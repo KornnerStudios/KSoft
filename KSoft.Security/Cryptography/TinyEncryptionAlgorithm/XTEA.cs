@@ -4,7 +4,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Security.Cryptography
 {
-	public class XTEA : XTEABase
+	public sealed class XTEA
+		: XTEABase
 	{
 		public void SetKey(byte[] b)
 		{

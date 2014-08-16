@@ -19,9 +19,11 @@ namespace KSoft.IO
 
 		/// <summary>Line info of the last read that took place</summary>
 		/// <remarks>Rather, about to take place. Should be set before a read with a possible error executes</remarks>
-		public Text.ITextLineInfo LastReadLineInfo { set {
-			mReadLineInfo = value;
-		} }
+		public Text.ITextLineInfo LastReadLineInfo
+		{
+			get { return mReadLineInfo; }
+			set { mReadLineInfo = value; }
+		}
 
 		const string kReadLineInfoIsNullMsg = 
 			"A Text stream reader implementation failed to set the LastReadLineInfo before a read took place. " +

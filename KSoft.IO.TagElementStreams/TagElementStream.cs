@@ -85,6 +85,20 @@ namespace KSoft.IO
 			}
 		}
 
+		/// <summary>Try to get the number of child elements within the cursor</summary>
+		/// <param name="defaultCount">Return value to use if this fails to get the element count</param>
+		/// <returns></returns>
+		public int TryGetCursorElementCount(int defaultCount = 0)
+		{
+			var count = Cursor != null
+				? PredictElementCount(Cursor)
+				: TypeExtensions.kNone;
+
+			return count < 0
+				? defaultCount
+				: count;
+		}
+
 		/// <summary>
 		/// Initializes the <see cref="Cursor"/> to the underlying document's root
 		/// (eg, <see cref="XmlDocument.DocumentElement"/>)
@@ -195,6 +209,12 @@ namespace KSoft.IO
 		/// <remarks>Returns false if <see cref="ValidateNameArg(TName)"/> fails on <paramref name="name"/></remarks>
 		public abstract bool AttributeExists(TName name);
 
+		/// <summary>Checks to see if the current scope has attributes</summary>
+		/// <returns></returns>
+		public abstract bool AttributesExist { get; }
+
+		public abstract IEnumerable<TName> AttributeNames { get; }
+
 		/// <summary>Checks to see if the current scope has a fully defined element named <paramref name="name"/></summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -221,6 +241,11 @@ namespace KSoft.IO
 
 		[Contracts.Pure]
 		public abstract bool ValidateNameArg(TName name);
+		[Contracts.Pure]
+		public virtual bool ValidateNameArg(TName nodeName, TagElementNodeType nodeType)
+		{
+			return nodeType.RequiresName() == ValidateNameArg(nodeName);
+		}
 	};
 
 	[Contracts.ContractClassFor(typeof(TagElementStream<,,>))]

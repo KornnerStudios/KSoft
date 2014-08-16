@@ -236,6 +236,10 @@ namespace KSoft.IO
 		public bool CanWrite	{ get { return Writer != null; } }
 
 		#region Ctor
+		private EndianStream()
+		{
+		}
+
 		public EndianStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite)
 		{
 			Contract.Requires<ArgumentNullException>(baseStream != null);
@@ -281,6 +285,33 @@ namespace KSoft.IO
 				Reader = new EndianReader(baseStream, byteOrder, streamOwner, name);
 			if (baseStream.CanWrite && permissions.CanWrite())
 				Writer = new EndianWriter(baseStream, byteOrder, streamOwner, name);
+		}
+
+		public static EndianStream UsingReader(EndianReader reader)
+		{
+			Contract.Requires<ArgumentNullException>(reader != null);
+			Contract.Ensures(Contract.Result<EndianStream>() != null);
+
+			var s = new EndianStream();
+			s.BaseStream = reader.BaseStream;
+			s.StreamPermissions = FileAccess.Read;
+			s.StreamMode = FileAccess.Read;
+			s.Reader = reader;
+
+			return s;
+		}
+		public static EndianStream UsingWriter(EndianWriter writer)
+		{
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Ensures(Contract.Result<EndianStream>() != null);
+
+			var s = new EndianStream();
+			s.BaseStream = writer.BaseStream;
+			s.StreamPermissions = FileAccess.Write;
+			s.StreamMode = FileAccess.Write;
+			s.Writer = writer;
+
+			return s;
 		}
 		#endregion
 
