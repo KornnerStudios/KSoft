@@ -859,7 +859,7 @@ namespace KSoft.IO
 			else if (type == TagElementNodeType.Attribute)	result = StreamAttributeOpt(name, ref value, Predicates.IsNotNullOrEmpty);
 			else if (type == TagElementNodeType.Text)		StreamCursor(ref value);
 
-			if (IsReading)
+			if (IsReading && result)
 			{
 				if (toLower) value = value.ToLowerInvariant();
 				if (intern) value = string.Intern(value);
