@@ -37,29 +37,5 @@ namespace KSoft
 
 			return value - (value-1) % mult + (mult-1);
 		}
-
-		#region Bitwise
-		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Signed representation of the high-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static int GetHighBitsSigned(uint value)	{ return (int)((value >> 16) & 0xFFFFFFFF); }
-		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Signed representation of the low-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static int GetLowBitsSigned(uint value)	{ return (int)(value & 0xFFFFFFFF); }
-
-		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static uint GetHighBits(ulong value)	{ return (uint)((value >> 32) & 0xFFFFFFFF); }
-		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
-		public static uint GetLowBits(ulong value)	{ return (uint)(value & 0xFFFFFFFF); }
-		#endregion
 	};
 }

@@ -248,14 +248,15 @@ namespace KSoft.Values
 		public override int GetHashCode()
 		{
 			// 32-bit cases
-			if (!Is64bit) return u32.GetHashCode();
+			if (!Is64bit)
+				return u32.GetHashCode();
 
 			// 64-bit cases
 			int hi, lo;
 			unchecked
 			{
-				hi = (int)IntegerMath.GetHighBits(u64);
-				lo = (int)IntegerMath.GetLowBits(u64);
+				hi = (int)Bits.GetHighBits(u64);
+				lo = (int)Bits.GetLowBits(u64);
 			}
 
 			return hi ^ lo;

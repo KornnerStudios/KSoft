@@ -12,6 +12,19 @@ namespace KSoft.IO
 		/// <summary>Element's qualified name, or null if <see cref="Cursor"/> is null</summary>
 		public abstract string CursorName { get; }
 
+		#region GuidFormatString
+		string mGuidFormatString = Values.KGuid.kFormatHyphenated;
+		/// <summary>
+		/// The formatting string for read/writing Guid values.
+		/// Hyphenated is the default format. Setting this to NULL reverts the format to default
+		/// </summary>
+		public string GuidFormatString
+		{
+			get { return mGuidFormatString; }
+			set { mGuidFormatString = value ?? Values.KGuid.kFormatHyphenated; }
+		}
+		#endregion
+
 		[Contracts.Pure]
 		public override bool ValidateNameArg(string name) { return !string.IsNullOrEmpty(name); }
 

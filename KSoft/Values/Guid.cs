@@ -42,7 +42,6 @@ namespace KSoft.Values
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};
 
-	/// <remarks>Caveat emptor: has a static ctor</remarks>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]
@@ -254,7 +253,15 @@ namespace KSoft.Values
 		/// <see cref="Guid.ToString(string, IFormatProvider)"/>
 		public string ToString(string format, IFormatProvider provider)	{ return mData.ToString(format, provider); }
 
+		/// <summary>
+		/// 32 digits: 00000000000000000000000000000000
+		/// </summary>
+		/// <returns></returns>
 		internal string ToStringNoStyle()								{ return mData.ToString(kFormatNoStyle); }
+		/// <summary>
+		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
+		/// </summary>
+		/// <returns></returns>
 		internal string ToStringHyphenated()							{ return mData.ToString(kFormatHyphenated); }
 		#endregion
 

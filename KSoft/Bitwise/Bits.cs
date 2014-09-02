@@ -21,7 +21,7 @@ namespace KSoft
 		}
 
 		#region MultiplyDeBruijnBitPosition
-		static readonly int[]	kMultiplyDeBruijnBitPositionHighestBitSet32,
+		static readonly byte[]	kMultiplyDeBruijnBitPositionHighestBitSet32,
 								kMultiplyDeBruijnBitPositionLeadingZeros32,
 								kMultiplyDeBruijnBitPositionTrailingZeros32;
 		#endregion
@@ -46,17 +46,17 @@ namespace KSoft
 			#endregion
 
 			#region MultiplyDeBruijnBitPosition
-			kMultiplyDeBruijnBitPositionHighestBitSet32 = new int[kInt32BitCount]
+			kMultiplyDeBruijnBitPositionHighestBitSet32 = new byte[kInt32BitCount]
 			{
 				0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
 				8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
 			};
 
-			kMultiplyDeBruijnBitPositionLeadingZeros32 = new int[kInt32BitCount];
+			kMultiplyDeBruijnBitPositionLeadingZeros32 = new byte[kInt32BitCount];
 			for (int x = 0; x < kMultiplyDeBruijnBitPositionLeadingZeros32.Length; x++)
-				kMultiplyDeBruijnBitPositionLeadingZeros32[x] = kMultiplyDeBruijnBitPositionHighestBitSet32[x]+1;
+				kMultiplyDeBruijnBitPositionLeadingZeros32[x] = (byte)(kMultiplyDeBruijnBitPositionHighestBitSet32[x]+1);
 
-			kMultiplyDeBruijnBitPositionTrailingZeros32 = new int[kInt32BitCount]
+			kMultiplyDeBruijnBitPositionTrailingZeros32 = new byte[kInt32BitCount]
 			{
 				0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
 				31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
@@ -205,12 +205,35 @@ namespace KSoft
 #endif
 		#endregion
 
+		#region Get high/low bits
+		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Signed representation of the high-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static int GetHighBitsSigned(uint value)	{ return (int)((value >> 16) & 0xFFFFFFFF); }
+		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Signed representation of the low-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static int GetLowBitsSigned(uint value)	{ return (int)(value & 0xFFFFFFFF); }
+
+		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static uint GetHighBits(ulong value)	{ return (uint)((value >> 32) & 0xFFFFFFFF); }
+		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static uint GetLowBits(ulong value)	{ return (uint)(value & 0xFFFFFFFF); }
+		#endregion
+
 		#region HighestBitSetIndex
 		[Contracts.Pure]
-		public static int IndexOfHighestBitSet(uint value)
+		public static byte IndexOfHighestBitSet(uint value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() < kInt32BitCount);
+			Contract.Ensures(Contract.Result<byte>() < kInt32BitCount);
 
 			value |= value >> 1; // first round down to one less than a power of 2 
 			value |= value >> 2;
@@ -222,19 +245,19 @@ namespace KSoft
 			return kMultiplyDeBruijnBitPositionHighestBitSet32[index];
 		}
 		[Contracts.Pure]
-		public static int IndexOfHighestBitSet(ulong value)
+		public static byte IndexOfHighestBitSet(ulong value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() < kInt64BitCount);
+			Contract.Ensures(Contract.Result<byte>() < kInt64BitCount);
 
 			int index = 0;
-			uint high = IntegerMath.GetHighBits(value);
+			uint high = GetHighBits(value);
 			if(high != 0)
 				index = IndexOfHighestBitSet(high) + kInt32BitCount;
 			else
-				index = IndexOfHighestBitSet(IntegerMath.GetLowBits(value));
+				index = IndexOfHighestBitSet(GetLowBits(value));
 
-			return index;
+			Contract.Assume(index >= 0);
+			return (byte)index;
 		}
 		#endregion
 
@@ -243,30 +266,27 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int LeadingZerosCount(byte value)
+		public static byte LeadingZerosCount(byte value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kByteBitCount);
-			return LeadingZerosCount((uint)value) - (kByteBitCount * 3);
+			Contract.Ensures(Contract.Result<byte>() <= kByteBitCount);
+			return (byte)( LeadingZerosCount((uint)value) - (kByteBitCount * 3) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int LeadingZerosCount(ushort value)
+		public static byte LeadingZerosCount(ushort value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kInt16BitCount);
-			return LeadingZerosCount((uint)value) - (kByteBitCount * 2);
+			Contract.Ensures(Contract.Result<byte>() <= kInt16BitCount);
+			return (byte)( LeadingZerosCount((uint)value) - (kByteBitCount * 2) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int LeadingZerosCount(uint value)
+		public static byte LeadingZerosCount(uint value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kInt32BitCount);
+			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			if (value == 0)
 				return kInt32BitCount;
 
@@ -278,21 +298,20 @@ namespace KSoft
 
 			// subtract the log base 2 from the number of bits in the integer
 			uint index = (value * 0x07C4ACDDU) >> 27;
-			return kInt32BitCount - kMultiplyDeBruijnBitPositionLeadingZeros32[index];
+			return (byte)(kInt32BitCount - kMultiplyDeBruijnBitPositionLeadingZeros32[index]);
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int LeadingZerosCount(ulong value)
+		public static byte LeadingZerosCount(ulong value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kInt64BitCount);
+			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
 
-			int count = LeadingZerosCount(IntegerMath.GetHighBits(value));
+			byte count = LeadingZerosCount(GetHighBits(value));
 			// The high bits were all zero, continue checking low bits
 			if (count == kInt32BitCount)
-				count +=LeadingZerosCount(IntegerMath.GetLowBits(value));
+				count += LeadingZerosCount(GetLowBits(value));
 
 			return count;
 		}
@@ -303,10 +322,9 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int TrailingZerosCount(uint value)
+		public static byte TrailingZerosCount(uint value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kInt32BitCount);
+			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			if (value == 0)
 				return kInt32BitCount;
 
@@ -320,15 +338,14 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static int TrailingZerosCount(ulong value)
+		public static byte TrailingZerosCount(ulong value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() <= kInt64BitCount);
+			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
 
-			int count = TrailingZerosCount(IntegerMath.GetLowBits(value));
+			byte count = TrailingZerosCount(GetLowBits(value));
 			// The low bits were all zero, continue checking high bits
 			if (count == kInt32BitCount)
-				count +=TrailingZerosCount(IntegerMath.GetHighBits(value));
+				count += TrailingZerosCount(GetHighBits(value));
 
 			return count;
 		}

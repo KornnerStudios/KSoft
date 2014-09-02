@@ -27,7 +27,7 @@ namespace KSoft.Bitwise
 		/// <returns></returns>
 		public uint GetCombinedHandle()
 		{
-			uint hi = IntegerMath.GetHighBits(mBits.u64);
+			uint hi = Bits.GetHighBits(mBits.u64);
 
 			// this order allows a user to XOR again with GetHandle32 to get 
 			// the upper 32-bit values of m64

@@ -16,7 +16,7 @@ namespace KSoft.IO
 
 		protected override void WriteElement(TCursor n, Values.KGuid value)
 		{
-			WriteElement(n, value.ToStringHyphenated());
+			WriteElement(n, value.ToString(mGuidFormatString));
 		}
 		#endregion
 
@@ -32,7 +32,7 @@ namespace KSoft.IO
 
 		public override void WriteAttribute(string name, Values.KGuid value)
 		{
-			CursorWriteAttribute(name, value.ToStringHyphenated());
+			CursorWriteAttribute(name, value.ToString(mGuidFormatString));
 		}
 		#endregion
 	};

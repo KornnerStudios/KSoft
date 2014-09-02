@@ -55,8 +55,8 @@ namespace KSoft.Security.Cryptography
 			#region Compute 64-bits
 			public void ComputeLE(ulong value)
 			{
-				uint lo = IntegerMath.GetLowBits(value);
-				uint hi = IntegerMath.GetHighBits(value);
+				uint lo = Bits.GetLowBits(value);
+				uint hi = Bits.GetHighBits(value);
 				uint _value;
 
 				_value = lo;
@@ -73,8 +73,8 @@ namespace KSoft.Security.Cryptography
 			}
 			public void ComputeBE(ulong value)
 			{
-				uint lo = IntegerMath.GetLowBits(value);
-				uint hi = IntegerMath.GetHighBits(value);
+				uint lo = Bits.GetLowBits(value);
+				uint hi = Bits.GetHighBits(value);
 				uint _value;
 
 				_value = hi;

@@ -36,7 +36,7 @@ namespace KSoft.Collections
 		static readonly Bits.VectorIndexInT kVectorIndexInT;
 		static readonly Bits.VectorBitCursorInT kVectorBitCursorInT;
 
-		static readonly Func<TWord, int> kCountZerosForNextBit;
+		static readonly Func<TWord, byte> kCountZerosForNextBit;
 
 		static BitSet()
 		{
@@ -56,8 +56,8 @@ namespace KSoft.Collections
 			// Big:    Bits go from MSB->LSB, so we want to count the 'left most' zeros
 			// Little: Bits go from LSB->MSB, so we want to count the 'right most' zeros
 			kCountZerosForNextBit = Bits.kVectorWordFormat == Shell.EndianFormat.Big
-				? (Func<TWord,int>)Bits.LeadingZerosCount   // Big Endian
-				: (Func<TWord,int>)Bits.TrailingZerosCount; // Little Endian
+				? (Func<TWord,byte>)Bits.LeadingZerosCount   // Big Endian
+				: (Func<TWord,byte>)Bits.TrailingZerosCount; // Little Endian
 #pragma warning restore 0162
 		}
 

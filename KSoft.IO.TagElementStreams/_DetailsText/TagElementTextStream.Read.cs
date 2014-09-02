@@ -138,7 +138,7 @@ namespace KSoft.IO
 
 		protected override void ReadElement(TCursor n, ref Values.KGuid value)
 		{
-			value = Values.KGuid.ParseExactHyphenated(GetInnerText(n));
+			value = Values.KGuid.ParseExact(GetInnerText(n), mGuidFormatString);
 		}
 		#endregion
 
@@ -167,7 +167,7 @@ namespace KSoft.IO
 
 		public override void ReadAttribute(string name, ref Values.KGuid value)
 		{
-			value = Values.KGuid.ParseExactHyphenated(ReadAttribute(name));
+			value = Values.KGuid.ParseExact(ReadAttribute(name), mGuidFormatString);
 		}
 		#endregion
 
