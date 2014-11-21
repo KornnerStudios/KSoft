@@ -31,6 +31,7 @@
     <Compile Include="Text\NumbersT4.cs" />
     <Compile Include="Text\TextT4.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="Values\BittableHandleGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

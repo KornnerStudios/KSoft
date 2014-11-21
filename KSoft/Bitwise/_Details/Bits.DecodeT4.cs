@@ -35,6 +35,17 @@ namespace KSoft
 
 			return (int)BitDecode(bits, bitIndex, bitMask) - 1;
 		}
+		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static uint BitDecode(uint bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (bits >> traits.BitIndex) & traits.Bitmask32;
+		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
@@ -50,7 +61,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt32BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt32BitCount);
 
 			var value = (bits >> bitIndex) & bitMask;
 			bitIndex += bit_count;
@@ -102,6 +113,17 @@ namespace KSoft
 
 			return (long)BitDecode(bits, bitIndex, bitMask) - 1;
 		}
+		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static ulong BitDecode(ulong bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (bits >> traits.BitIndex) & traits.Bitmask64;
+		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
@@ -117,7 +139,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt64BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt64BitCount);
 
 			var value = (bits >> bitIndex) & bitMask;
 			bitIndex += bit_count;

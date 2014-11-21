@@ -6,6 +6,7 @@ using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
 {
+	using BitFieldTraits = Bitwise.BitFieldTraits;
 	using BitEncoders = TypeExtensions.BitEncoders;
 
 	/// <summary>Represents a platform definition</summary>
@@ -20,19 +21,19 @@ namespace KSoft.Shell
 		// which, being a value type cctor, may not run when we want it
 		static class Constants
 		{
-			public static readonly int kProcessorTypeShift = 0;
+			public static readonly BitFieldTraits kProcessorBitField =
+				new BitFieldTraits(Processor.BitCount);
+			public static readonly BitFieldTraits kPlatformTypeBitField =
+				new BitFieldTraits(BitEncoders.PlatformType.BitCountTrait, kProcessorBitField);
 
-			public static readonly int kPlatformTypeShift = Processor.BitCount;
-			public static readonly uint kPlatformTypeMask = BitEncoders.PlatformType.BitmaskTrait;
-
-			public static readonly int kBitCount = kPlatformTypeShift + BitEncoders.PlatformType.BitCountTrait;
-			public static readonly uint kBitmask = Bits.BitCountToMask32(kBitCount);
+			public static readonly BitFieldTraits kLastBitField =
+				kPlatformTypeBitField;
 		};
 
 		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
 		/// <remarks>10 bits at last count</remarks>
-		public static int BitCount { get { return Constants.kBitCount; } }
-		public static uint Bitmask { get { return Constants.kBitmask; } }
+		public static int BitCount { get { return Constants.kLastBitField.FieldsBitCount; } }
+		public static uint Bitmask { get { return Constants.kLastBitField.FieldsBitmask.u32; } }
 		#endregion
 
 		#region Internal Value
@@ -60,10 +61,10 @@ namespace KSoft.Shell
 		{
 			InitializeHandle(out mHandle, platformType, processorType);
 		}
-		internal Platform(uint handle, int startBitIndex)
+		internal Platform(uint handle, BitFieldTraits platformField)
 		{
-			handle >>= startBitIndex;
-			handle &= Constants.kBitmask;
+			handle >>= platformField.BitIndex;
+			handle &= Bitmask;
 
 			mHandle = handle;
 		}
@@ -71,11 +72,11 @@ namespace KSoft.Shell
 		#region Value properties
 		/// <summary>This platform's type</summary>
 		public PlatformType Type { get {
-			return BitEncoders.PlatformType.BitDecode(mHandle, Constants.kPlatformTypeShift);
+			return BitEncoders.PlatformType.BitDecode(mHandle, Constants.kProcessorBitField.BitIndex);
 		} }
 		/// <summary>This platform's normal processor type</summary>
 		public Processor ProcessorType { get {
-			return new Processor(mHandle, Constants.kProcessorTypeShift);
+			return new Processor(mHandle, Constants.kProcessorBitField);
 		} }
 		#endregion
 

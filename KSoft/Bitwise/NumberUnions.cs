@@ -46,5 +46,23 @@ namespace KSoft.Bitwise
 	{
 		[FieldOffset(0)] public ulong u64;
 		[FieldOffset(0)] public uint u32;
+
+		IntegerUnion(ulong x64) : this()
+		{
+			this.u64 = x64;
+		}
+		IntegerUnion(uint x32) : this()
+		{
+			this.u32 = x32;
+		}
+
+		public static IntegerUnion FromUInt32(uint x32)
+		{
+			return new IntegerUnion(x32);
+		}
+		public static IntegerUnion FromUInt64(ulong x64)
+		{
+			return new IntegerUnion(x64);
+		}
 	};
 }

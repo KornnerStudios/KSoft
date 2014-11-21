@@ -24,7 +24,8 @@ namespace KSoft.T4.Bitwise
 		const byte kMaskNibbleMsb = unchecked((byte)~kMaskNibbleLsb);
 		#endregion
 
-		public abstract class BitFondleCodeGenerator : BitUtilCodeGenerator
+		public abstract class BitFondleCodeGenerator
+			: BitUtilCodeGenerator
 		{
 			/// <summary>Name of the input parameter of the method we're generating code for</summary>
 			protected const string kBitsParamName = "bits";
@@ -85,7 +86,8 @@ namespace KSoft.T4.Bitwise
 			protected string BuildWordMaskForIntegerLsb(int wordSize) { return BuildWordMaskForInteger(wordSize, lhs:false); }
 		};
 
-		public class BitReverseCodeGenerator : BitFondleCodeGenerator
+		public class BitReverseCodeGenerator
+			: BitFondleCodeGenerator
 		{
 			public BitReverseCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
 				: base(ttFile, def)
@@ -162,11 +164,12 @@ namespace KSoft.T4.Bitwise
 				if (mDef.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint),		"swap halves");
 				if (mDef.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong),	"swap words");
 
-				mFile.WriteLine("");
+				mFile.NewLine();
 			}
 		};
 
-		public class BitCountCodeGenerator : BitFondleCodeGenerator
+		public class BitCountCodeGenerator
+			: BitFondleCodeGenerator
 		{
 			public BitCountCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
 				: base(ttFile, def)
@@ -236,7 +239,7 @@ namespace KSoft.T4.Bitwise
 				if (mDef.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint));
 				if (mDef.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong));
 
-				mFile.WriteLine("");
+				mFile.NewLine();
 			}
 		};
 	};

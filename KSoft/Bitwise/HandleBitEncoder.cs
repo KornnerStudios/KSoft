@@ -15,7 +15,7 @@ namespace KSoft.Bitwise
 		void ObjectInvariant()
 		{
 			Contract.Invariant(mBitIndex >= 0);
-			Contract.Invariant(mBitIndex < Bits.kInt64BitCount);
+			Contract.Invariant(mBitIndex <= Bits.kInt64BitCount);
 		}
 
 		/// <summary>How many bits have actually been consumed by the handle data</summary>
@@ -36,9 +36,9 @@ namespace KSoft.Bitwise
 
 		void VerifyBitIndex(int advanceBitCount)
 		{
-			if (mBitIndex + advanceBitCount >= Bits.kInt64BitCount)
+			if (mBitIndex + advanceBitCount > Bits.kInt64BitCount)
 				throw new System.ArgumentOutOfRangeException("bitIndex", mBitIndex + advanceBitCount,
-					"bitIndex is or will be greater than or equal to Bits.kInt64BitCount");
+					"bitIndex is or will be greater than to Bits.kInt64BitCount");
 		}
 
 		/// <summary>Clear the internal state of the encoder</summary>

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace KSoft.T4
 {
 	/// <summary>Type definition for a code numeric (integer or real) primitive</summary>
-	public class NumberCodeDefinition : PrimitiveCodeDefinition
+	public class NumberCodeDefinition
+		: PrimitiveCodeDefinition
 	{
 		/// <summary>Integer type keyword to use for in code for performing number operations</summary>
 		public string OperationWord { get; private set; }

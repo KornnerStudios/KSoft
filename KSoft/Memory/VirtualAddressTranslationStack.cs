@@ -10,7 +10,8 @@ namespace KSoft.Memory
 	/// (VAs) when serialized to a stream, and from VAs to PAs when serialized from a stream
 	/// </summary>
 	/// <remarks>Should only be instanced and used directly be the EndianStream classes</remarks>
-	class VirtualAddressTranslationStack : Stack<Values.PtrHandle>
+	class VirtualAddressTranslationStack
+		: Stack<Values.PtrHandle>
 	{
 		const int kDefaultCapacity = 8;
 
@@ -20,21 +21,21 @@ namespace KSoft.Memory
 		public Values.PtrHandle CurrentAddress { get { return mCurrentPA; } }
 
 		#region Ctor
-		public VirtualAddressTranslationStack(Shell.ProcessorSize ptrSize) : 
-			this(ptrSize, kDefaultCapacity)
+		public VirtualAddressTranslationStack(Shell.ProcessorSize ptrSize)
+			: this(ptrSize, kDefaultCapacity)
 		{
 		}
 
-		public VirtualAddressTranslationStack(Shell.ProcessorSize ptrSize, int capacity) : 
-			base(capacity != 0 ? capacity : kDefaultCapacity)
+		public VirtualAddressTranslationStack(Shell.ProcessorSize ptrSize, int capacity)
+			: base(capacity != 0 ? capacity : kDefaultCapacity)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(
 				ptrSize == Shell.ProcessorSize.x32 || ptrSize == Shell.ProcessorSize.x64);
 
 			switch (ptrSize)
 			{
-				case Shell.ProcessorSize.x32: mNull = Values.PtrHandle.Null32; break;
-				case Shell.ProcessorSize.x64: mNull = Values.PtrHandle.Null64; break;
+			case Shell.ProcessorSize.x32: mNull = Values.PtrHandle.Null32; break;
+			case Shell.ProcessorSize.x64: mNull = Values.PtrHandle.Null64; break;
 			}
 
 			mCurrentPA = mNull;

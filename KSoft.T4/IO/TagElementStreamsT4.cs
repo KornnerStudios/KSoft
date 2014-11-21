@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4
 {
@@ -56,7 +57,7 @@ namespace KSoft.T4
 			yield return PrimitiveDefinitions.kKGuid;
 		} }
 
-		public static void GenerateObjectPropertyStreamMethod(Microsoft.VisualStudio.TextTemplating.TextTransformation ttFile,
+		public static void GenerateObjectPropertyStreamMethod(TextTemplating.TextTransformation ttFile,
 			TagElementStreamSubjectType subject, PrimitiveCodeDefinition codeDef, bool hasTNameParam = true)
 		{
 			ttFile.PushIndent("\t");
@@ -93,7 +94,7 @@ namespace KSoft.T4
 				using (var cb1 = ttFile.EnterCodeBlock())
 					ttFile.WriteLine("predicate = x => true;");
 
-				ttFile.WriteLine("");
+				ttFile.NewLine();
 				ttFile.WriteLine("bool executed = false;");
 			}
 
@@ -127,7 +128,7 @@ namespace KSoft.T4
 
 			if (is_opt)
 			{
-				ttFile.WriteLine("");
+				ttFile.NewLine();
 				ttFile.WriteLine("return executed;");
 			}
 

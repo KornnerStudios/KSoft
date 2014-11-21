@@ -193,7 +193,7 @@ namespace KSoft.T4.Bitwise
 				for(int x = mDef.SizeOfInBytes-1; x >= 0; x--, shift += k_step_shift_inc, mask <<= kBitsPerByte)
 				{
 					GenerateStep(signed, shift, mask.ToString(hex_format), x == 0);
-					mFile.WriteLine("");
+					mFile.NewLine();
 				}
 
 				GenerateEpilogue(cast);
@@ -205,7 +205,7 @@ namespace KSoft.T4.Bitwise
 				{
 					GenerateCode(signed);
 
-					mFile.WriteLine(";");
+					mFile.EndStmt();
 				}
 			}
 		};

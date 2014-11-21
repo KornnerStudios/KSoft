@@ -48,6 +48,15 @@ namespace KSoft.T4
 			return bookmark;
 		}
 
+		internal static void NewLine(this TextTemplating.TextTransformation ttFile)
+		{
+			ttFile.WriteLine("");
+		}
+		internal static void EndStmt(this TextTemplating.TextTransformation ttFile)
+		{
+			ttFile.WriteLine(";");
+		}
+
 		static void WriteXmlDocLine(TextTemplating.TextTransformation ttFile,
 			string xmlTag, string attributeText, string text)
 		{
@@ -106,7 +115,8 @@ namespace KSoft.T4
 			return condition ? string.Format(trueStringFormat, args) : string.Empty;
 		}
 
-		class NullDisposableImpl : IDisposable
+		class NullDisposableImpl
+			: IDisposable
 		{
 			public void Dispose() { }
 		};

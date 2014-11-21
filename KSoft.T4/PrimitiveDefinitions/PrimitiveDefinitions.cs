@@ -5,7 +5,8 @@ namespace KSoft.T4
 {
 	public class PrimitiveDefinitions
 	{
-		class BooleanCodeDefinition : PrimitiveCodeDefinition
+		class BooleanCodeDefinition
+			: PrimitiveCodeDefinition
 		{
 			internal BooleanCodeDefinition() : base("bool", TypeCode.Boolean) { }
 
@@ -14,7 +15,8 @@ namespace KSoft.T4
 			} }
 		};
 
-		class CharCodeDefinition : PrimitiveCodeDefinition
+		class CharCodeDefinition
+			: PrimitiveCodeDefinition
 		{
 			internal CharCodeDefinition() : base("char", TypeCode.Char) { }
 
@@ -23,7 +25,8 @@ namespace KSoft.T4
 			} }
 		};
 
-		class StringCodeDefinition : PrimitiveCodeDefinition
+		class StringCodeDefinition
+			: PrimitiveCodeDefinition
 		{
 			internal StringCodeDefinition() : base("string", TypeCode.String) { }
 
@@ -32,7 +35,8 @@ namespace KSoft.T4
 			} }
 		};
 
-		class KGuidCodeDefinition : PrimitiveCodeDefinition
+		class KGuidCodeDefinition
+			: PrimitiveCodeDefinition
 		{
 			internal KGuidCodeDefinition() : base("Values.KGuid", TypeCode.Object) { }
 

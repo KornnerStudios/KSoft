@@ -6,6 +6,7 @@ using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
 {
+	using BitFieldTraits = Bitwise.BitFieldTraits;
 	using BitEncoders = TypeExtensions.BitEncoders;
 
 	/// <summary>Represents a processor definition</summary>
@@ -21,23 +22,21 @@ namespace KSoft.Shell
 		// which, being a value type cctor, may not run when we want it
 		static class Constants
 		{
-			public static readonly int kByteOrderShift = 0;
-			public static readonly uint kByteOrderMask = BitEncoders.EndianFormat.BitmaskTrait;
+			public static readonly BitFieldTraits kByteOrderBitField =
+				new BitFieldTraits(BitEncoders.EndianFormat.BitCountTrait);
+			public static readonly BitFieldTraits kProcessorSizeBitField =
+				new BitFieldTraits(BitEncoders.ProcessorSize.BitCountTrait, kByteOrderBitField);
+			public static readonly BitFieldTraits kInstructionSetBitField =
+				new BitFieldTraits(BitEncoders.InstructionSet.BitCountTrait, kProcessorSizeBitField);
 
-			public static readonly int kProcessorSizeShift = kByteOrderShift + BitEncoders.EndianFormat.BitCountTrait;
-			public static readonly uint kProcessorSizeMask = BitEncoders.ProcessorSize.BitmaskTrait;
-
-			public static readonly int kInstructionSetShift = kProcessorSizeShift + BitEncoders.ProcessorSize.BitCountTrait;
-			public static readonly uint kInstructionSetMask = BitEncoders.InstructionSet.BitmaskTrait;
-
-			public static readonly int kBitCount = kInstructionSetShift + BitEncoders.InstructionSet.BitCountTrait;
-			public static readonly uint kBitmask = Bits.BitCountToMask32(kBitCount);
+			public static readonly BitFieldTraits kLastBitField =
+				kInstructionSetBitField;
 		};
 
 		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
 		/// <remarks>6 bits at last count</remarks>
-		public static int BitCount { get { return Constants.kBitCount; } }
-		public static uint Bitmask { get { return Constants.kBitmask; } }
+		public static int BitCount { get { return Constants.kLastBitField.FieldsBitCount; } }
+		public static uint Bitmask { get { return Constants.kLastBitField.FieldsBitmask.u32; } }
 		#endregion
 
 		#region Internal Value
@@ -67,10 +66,10 @@ namespace KSoft.Shell
 		{
 			InitializeHandle(out mHandle, instructionSet, size, byteOrder);
 		}
-		internal Processor(uint handle, int startBitIndex)
+		internal Processor(uint handle, BitFieldTraits processorField)
 		{
-			handle >>= startBitIndex;
-			handle &= Constants.kBitmask;
+			handle >>= processorField.BitIndex;
+			handle &= Bitmask;
 
 			mHandle = handle;
 		}
@@ -78,15 +77,15 @@ namespace KSoft.Shell
 		#region Value properties
 		/// <summary>The processor's instruction set</summary>
 		public InstructionSet InstructionSet { get {
-			return BitEncoders.InstructionSet.BitDecode(mHandle, Constants.kInstructionSetShift);
+			return BitEncoders.InstructionSet.BitDecode(mHandle, Constants.kInstructionSetBitField.BitIndex);
 		} }
 		/// <summary>The processor's instruction size</summary>
 		public ProcessorSize ProcessorSize { get {
-			return BitEncoders.ProcessorSize.BitDecode(mHandle, Constants.kProcessorSizeShift);
+			return BitEncoders.ProcessorSize.BitDecode(mHandle, Constants.kProcessorSizeBitField.BitIndex);
 		} }
 		/// <summary>The processor's byte ordering</summary>
 		public EndianFormat ByteOrder { get {
-			return BitEncoders.EndianFormat.BitDecode(mHandle, Constants.kByteOrderShift);
+			return BitEncoders.EndianFormat.BitDecode(mHandle, Constants.kByteOrderBitField.BitIndex);
 		} }
 		#endregion
 
@@ -188,7 +187,7 @@ namespace KSoft.Shell
 		}
 		#endregion
 
-		static readonly Processor kUndefined = new Processor(uint.MaxValue, 0);
+		static readonly Processor kUndefined = new Processor(uint.MaxValue, BitFieldTraits.Empty);
 		/// <summary>Undefined processor definition</summary>
 		/// <remarks>Only use for comparison operations, don't query value properties. Results will be...undefined</remarks>
 		public static Processor Undefined		{ get { return kUndefined; } }

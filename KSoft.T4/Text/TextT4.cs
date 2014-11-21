@@ -158,7 +158,8 @@ namespace KSoft.T4
 			}
 		};
 
-		public abstract class CharToByteLookupTableCodeGeneratorBase : CharLookupTableCodeGeneratorBase
+		public abstract class CharToByteLookupTableCodeGeneratorBase
+			: CharLookupTableCodeGeneratorBase
 		{
 			public CharToByteLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -174,7 +175,8 @@ namespace KSoft.T4
 				mFile.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
 			}
 		};
-		public sealed class CharToByteLookupTable36CodeGenerator : CharToByteLookupTableCodeGeneratorBase
+		public sealed class CharToByteLookupTable36CodeGenerator
+			: CharToByteLookupTableCodeGeneratorBase
 		{
 			public CharToByteLookupTable36CodeGenerator(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -191,7 +193,8 @@ namespace KSoft.T4
 				return digitIndex;
 			}
 		};
-		public sealed class CharToByteLookupTable62CodeGenerator : CharToByteLookupTableCodeGeneratorBase
+		public sealed class CharToByteLookupTable62CodeGenerator
+			: CharToByteLookupTableCodeGeneratorBase
 		{
 			public CharToByteLookupTable62CodeGenerator(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -200,7 +203,8 @@ namespace KSoft.T4
 
 			protected override string TableNamePostfix { get { return 62.ToString(); } }
 		};
-		public sealed class CharToByteLookupTable16CodeGenerator : CharToByteLookupTableCodeGeneratorBase
+		public sealed class CharToByteLookupTable16CodeGenerator
+			: CharToByteLookupTableCodeGeneratorBase
 		{
 			public CharToByteLookupTable16CodeGenerator(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -222,7 +226,8 @@ namespace KSoft.T4
 			}
 		};
 
-		public abstract class CharIsDigitLookupTableCodeGeneratorBase : CharLookupTableCodeGeneratorBase
+		public abstract class CharIsDigitLookupTableCodeGeneratorBase
+			: CharLookupTableCodeGeneratorBase
 		{
 			public CharIsDigitLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -247,7 +252,8 @@ namespace KSoft.T4
 				return string.Format("{0},\t", is_digit.ToValueKeyword());
 			}
 		};
-		public sealed class CharIsDigitLookupTable62CodeGenerator : CharIsDigitLookupTableCodeGeneratorBase
+		public sealed class CharIsDigitLookupTable62CodeGenerator
+			: CharIsDigitLookupTableCodeGeneratorBase
 		{
 			public CharIsDigitLookupTable62CodeGenerator(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
@@ -256,7 +262,8 @@ namespace KSoft.T4
 
 			protected override string TableNamePostfix { get { return 62.ToString(); } }
 		};
-		public sealed class CharIsDigitLookupTable16CodeGenerator : CharIsDigitLookupTableCodeGeneratorBase
+		public sealed class CharIsDigitLookupTable16CodeGenerator
+			: CharIsDigitLookupTableCodeGeneratorBase
 		{
 			public CharIsDigitLookupTable16CodeGenerator(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)

@@ -6,8 +6,11 @@ namespace KSoft.T4
 	{
 		NoBrackets,
 		Brackets,
+		/// <summary>Mainly for a class definition statement</summary>
+		BracketsStatement,
 	};
-	struct TextTransformationCodeBlockBookmark : IDisposable
+	struct TextTransformationCodeBlockBookmark
+		: IDisposable
 	{
 		internal const string kIndent = "\t";
 
@@ -25,7 +28,8 @@ namespace KSoft.T4
 
 		internal void Enter()
 		{
-			if (mType == TextTransformationCodeBlockType.Brackets)
+			if (mType == TextTransformationCodeBlockType.Brackets ||
+				mType == TextTransformationCodeBlockType.BracketsStatement)
 				mFile.WriteLine("{");
 
 			for (int x = 0; x < mIndentCount; x++)
@@ -39,6 +43,8 @@ namespace KSoft.T4
 
 			if (mType == TextTransformationCodeBlockType.Brackets)
 				mFile.WriteLine("}");
+			else if (mType == TextTransformationCodeBlockType.BracketsStatement)
+				mFile.WriteLine("};");
 		}
 	};
 }

@@ -19,6 +19,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitwise\BitFieldTraits.cs" />
     <Compile Include="Bitwise\Bits.cs" />
     <Compile Include="Bitwise\Bits.Vectors.cs" />
     <Compile Include="Bitwise\ByteSwap.cs" />

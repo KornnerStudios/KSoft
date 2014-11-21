@@ -44,7 +44,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt32BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt32BitCount);
 
 			bits = BitEncodeEnum(value, bits, bitIndex, bitMask);
 			bitIndex += bit_count;
@@ -87,7 +87,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt64BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt64BitCount);
 
 			bits = BitEncodeEnum(value, bits, bitIndex, bitMask);
 			bitIndex += bit_count;
@@ -133,7 +133,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt32BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt32BitCount);
 
 			bits = BitEncodeFlags(value, bits, bitIndex, bitMask);
 			bitIndex += bit_count;
@@ -176,7 +176,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.kInt64BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.kInt64BitCount);
 
 			bits = BitEncodeFlags(value, bits, bitIndex, bitMask);
 			bitIndex += bit_count;
@@ -229,6 +229,24 @@ namespace KSoft
 			bits &= ~bitMask;
 			BitEncodeFlags(value, ref bits, ref bitIndex, bitMask);
 		}
+		/// <summary>Bit encode a value into an unsigned integer, removing the original data in the value's range</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="traits"></param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		/// <remarks>
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// so any existing values will be lost after <paramref name="value"/> is added
+		/// </remarks>
+		[Contracts.Pure]
+		public static uint BitEncode(uint value, uint bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			var bitmask = traits.Bitmask32;
+			// Use the bit mask's invert so we can get all of the non-value bits
+			return BitEncodeFlags(value, bits & (~bitmask), traits.BitIndex, bitmask);
+		}
 
 		/// <summary>Bit encode a value into an unsigned integer, removing the original data in the value's range</summary>
 		/// <param name="value">Value to encode</param>
@@ -273,6 +291,24 @@ namespace KSoft
 			// Use the bit mask's invert so we can get all of the non-value bits
 			bits &= ~bitMask;
 			BitEncodeFlags(value, ref bits, ref bitIndex, bitMask);
+		}
+		/// <summary>Bit encode a value into an unsigned integer, removing the original data in the value's range</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="traits"></param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		/// <remarks>
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// so any existing values will be lost after <paramref name="value"/> is added
+		/// </remarks>
+		[Contracts.Pure]
+		public static ulong BitEncode(ulong value, ulong bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			var bitmask = traits.Bitmask64;
+			// Use the bit mask's invert so we can get all of the non-value bits
+			return BitEncodeFlags(value, bits & (~bitmask), traits.BitIndex, bitmask);
 		}
 
 		#endregion

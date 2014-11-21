@@ -45,6 +45,17 @@ namespace KSoft
 
 			return (<#= sign_keyword #>)BitDecode(bits, bitIndex, bitMask) - 1;
 		}
+		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static <#= prim_keyword #> BitDecode(<#= prim_keyword #> bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (bits >> traits.BitIndex) & traits.Bitmask<#= bittable_type.SizeOfInBits.ToString() #>;
+		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
@@ -60,7 +71,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(bitMask != 0);
 
 			int bit_count = BitCount(bitMask);
-			Contract.Assert((bitIndex + bit_count) < Bits.k<#= const_keyword #>BitCount);
+			Contract.Assert((bitIndex + bit_count) <= Bits.k<#= const_keyword #>BitCount);
 
 			var value = (bits >> bitIndex) & bitMask;
 			bitIndex += bit_count;
