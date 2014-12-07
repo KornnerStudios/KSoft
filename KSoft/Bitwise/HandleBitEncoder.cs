@@ -9,7 +9,7 @@ namespace KSoft.Bitwise
 	public partial struct HandleBitEncoder
 	{
 		IntegerUnion mBits;
-		int   mBitIndex;
+		int mBitIndex;
 
 		[Contracts.ContractInvariantMethod]
 		void ObjectInvariant()
@@ -44,8 +44,7 @@ namespace KSoft.Bitwise
 		/// <summary>Clear the internal state of the encoder</summary>
 		public void Reset()
 		{
-			mBits.u64 = 0;
-			mBits.u32 = 0; // just to be safe
+			mBits = new IntegerUnion();
 			mBitIndex = 0;
 		}
 
