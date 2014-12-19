@@ -109,23 +109,30 @@ namespace KSoft.Reflection
 			return GenerateDynamicDelegateType(method.ReturnType, method.GetParameters().Select(p => p.ParameterType).ToArray());
 		}
 
-		public static TFunc GenerateObjectMethodProxy<T, TSig, TFunc>(string methodName, TSig signature)
+		public static TFunc GenerateObjectMethodProxy<T, TFunc, TSig>(
+			string methodName,
+			Reflect.BindingFlags bindingAttr = Reflect.BindingFlags.NonPublic | Reflect.BindingFlags.Instance)
 			where TFunc : class
 			where TSig : class
 		{
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(methodName));
-			Contract.Requires<ArgumentNullException>(signature != null);
 			Contract.Requires<ArgumentException>(typeof(TSig).IsSubclassOf(typeof(Delegate)));
 			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
 			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			var type = typeof(T);
-			var sig = signature as Delegate;
-			var method_params = sig.Method.GetParameters().Select(p => p.ParameterType).ToArray();
-			var method = type.GetMethod(methodName, method_params);
+			var sig_method_info = typeof(TSig).GetMethod(kDelegateInvokeMethodName);
+			var method_params = sig_method_info.GetParameters().Select(p => p.ParameterType).ToArray();
+			var method = type.GetMethod(methodName, bindingAttr, null, method_params, null);
+
+			if (method == null)
+				throw new InvalidOperationException(string.Format("Couldn't find a method in {0} named '{1}' ({2})",
+					type, methodName, bindingAttr));
 
 			var param_this =Expr.Parameter(type, kThisName);
-			var @params =	sig.Method.GetParameters().Select(p => Expr.Parameter(p.ParameterType));
+			// have to convert it to a collection, else a different set of Parameter objects will be created for Call and the Lambda
+			var @params =	(from param_type in method_params
+							select Expr.Parameter(param_type)).ToArray();
 			var call =		Expr.Call(param_this, method, @params);
 
 			var params_lamda = new System.Linq.Expressions.ParameterExpression[method_params.Length+1];

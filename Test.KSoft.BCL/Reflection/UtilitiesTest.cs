@@ -6,6 +6,13 @@ namespace KSoft.Reflection.Test
 {
 	using MessageBoxDelegateGeneric = Func<IntPtr, string, string, uint, int>;
 
+	#region GenerateObjectMethodProxy aliases
+	using TestGenerateObjectMethodProxyClassPrivateFuncSig = Func<int,
+		bool>;
+	using TestGenerateObjectMethodProxyClassPrivateFunc = Func<UtilitiesTest.TestGenerateObjectMethodProxyClass, int,
+		bool>;
+	#endregion
+
 	#region GenerateConstructorFunc aliases
 	using TestGenerateConstructorFuncClassPrivateCtor =		Func<
 		UtilitiesTest.TestGenerateConstructorFuncClass>;
@@ -100,6 +107,31 @@ namespace KSoft.Reflection.Test
 
 			Assert.AreEqual(1024, kDefaultBufferSize());
 		}
+
+		#region GenerateObjectMethodProxy
+		internal class TestGenerateObjectMethodProxyClass
+		{
+			private bool PrivateFunc(int value)
+			{
+				return true;
+			}
+		};
+		[TestMethod]
+		public void Reflection_GenerateObjectMethodProxyTest()
+		{
+			var proxy_func = 
+				Util.GenerateObjectMethodProxy<
+					TestGenerateObjectMethodProxyClass,
+					TestGenerateObjectMethodProxyClassPrivateFunc,
+					TestGenerateObjectMethodProxyClassPrivateFuncSig>(
+						"PrivateFunc");
+
+			Assert.IsNotNull(proxy_func,
+				"PrivateFunc-proxy method generation failed");
+			Assert.AreEqual(true, proxy_func(new TestGenerateObjectMethodProxyClass(), 0),
+				"PrivateFunc-proxy didn't return true, something is very wrong");
+		}
+		#endregion
 
 		#region GenerateConstructorFunc
 		internal class TestGenerateConstructorFuncClass
