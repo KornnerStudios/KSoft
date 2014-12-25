@@ -58,3 +58,12 @@ If there are other .NET languages which don't (easily) offer bit flag operations
 
 [EnumHasFlagMsdn]: http://msdn.microsoft.com/en-us/library/system.enum.hasflag%28v=vs.110%29.aspx
 [EnumHasFlagSO]: http://stackoverflow.com/questions/7368652/what-is-it-that-makes-enum-hasflag-so-slow
+
+## Building
+Before you try building any of the projects, first [read the requirements](https://bitbucket.org/KornnerStudios/ksoft/wiki/Requirements) you may need.
+
+KSoft.T4 should always be the first thing that gets built. It's the meta assembly used by many of the T4 documents that are found in all the other assemblies. It's only needed when building projects, not at runtime.
+
+**NOTE**: The BCL contains some C++/cli projects, which cause the 'Win32' Platform to be defined. The only projects that get built with this active platform are these C++/cli projects. Instead, you should opt for the 'x86' Platform which will also build the .NET assemblies. Long story short, *don't* select 'Win32' for your active configuration.
+
+However, at the time of this writing these C++/cli projects haven't been populated with meaningful code, so you're currently safe just building for 'Any CPU'
