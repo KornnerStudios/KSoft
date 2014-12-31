@@ -22,7 +22,7 @@ namespace KSoft.Collections
 				mEnd = mStart + segment.mCount;
 				mCurrent = mStart - 1;
 			}
-			void IDisposable.Dispose() { }
+			public void Dispose() { }
 
 			#region IEnumerator<char> Members
 			public char Current { get {

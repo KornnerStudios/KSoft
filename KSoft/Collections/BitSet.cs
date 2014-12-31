@@ -17,10 +17,11 @@ namespace KSoft.Collections
 	// Eg, if a BitSet has 33 bits in it, it would be aligned to 64 bits. If you then called SetAll(true) on it, it 
 	// would end up setting 64 bits to true. If you then set the Length to be 64, those previously alignment-only bits
 	// would then retain their true state.
+	// ...however, as of 2015, Length and all other places should now be void of this problem (with alignment only bits)
 
 	[System.Diagnostics.DebuggerDisplay("Length = {Length}, Cardinality = {Cardinality}")]
 	[Serializable, System.Runtime.InteropServices.ComVisible(true)]
-	public partial class BitSet
+	public sealed partial class BitSet
 		: ICollection<bool>, System.Collections.ICollection
 		, IReadOnlyBitSet
 		, IO.IEndianStreamSerializable

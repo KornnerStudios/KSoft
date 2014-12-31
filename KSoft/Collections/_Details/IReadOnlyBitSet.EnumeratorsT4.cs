@@ -46,7 +46,7 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			void IDisposable.Dispose()	{ }
+			public void Dispose()	{ }
 		};
 
 		[Serializable]
@@ -91,7 +91,7 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			void IDisposable.Dispose()	{ }
+			public void Dispose()	{ }
 		};
 
 	};

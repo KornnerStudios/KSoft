@@ -5,15 +5,14 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	using StateEnumerator = IReadOnlyBitSetEnumerators.StateEnumerator;
 	using StateFilterEnumerator = IReadOnlyBitSetEnumerators.StateFilterEnumerator;
 
 	using StateFilterEnumeratorWrapper = EnumeratorWrapper<int, IReadOnlyBitSetEnumerators.StateFilterEnumerator>;
 
-	public class EnumBitSet<TEnum> : //ICloneable,
-		ICollection<TEnum>, System.Collections.ICollection,
-		IComparable<EnumBitSet<TEnum>>, IEquatable<EnumBitSet<TEnum>>,
-		IO.IEndianStreamSerializable
+	public sealed class EnumBitSet<TEnum>
+		: ICollection<TEnum>, System.Collections.ICollection
+		, IComparable<EnumBitSet<TEnum>>, IEquatable<EnumBitSet<TEnum>>
+		, IO.IEndianStreamSerializable
 		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		static readonly Func<int, TEnum> FromInt32 = Reflection.EnumValue<TEnum>.FromInt32;
@@ -268,7 +267,7 @@ namespace KSoft.Collections
 			public bool MoveNext()		{ return mEnumerator.MoveNext(); }
 			public void Reset()			{ mEnumerator.Reset(); }
 
-			void IDisposable.Dispose()	{ }
+			public void Dispose()		{ mEnumerator.Dispose(); }
 		};
 
 		#region IEndianStreamSerializable Members
