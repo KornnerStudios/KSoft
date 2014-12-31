@@ -432,7 +432,6 @@ namespace KSoft
 		#endregion
 
 		#region Bit Vector element from byte[]
-		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref byte element)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
@@ -448,7 +447,6 @@ namespace KSoft
 			proc = VectorElementFromBufferInT;
 		}
 
-		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref ushort element)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
@@ -464,7 +462,6 @@ namespace KSoft
 			proc = VectorElementFromBufferInT;
 		}
 
-		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref uint element)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
@@ -480,7 +477,6 @@ namespace KSoft
 			proc = VectorElementFromBufferInT;
 		}
 
-		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref ulong element)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
@@ -605,7 +601,6 @@ namespace KSoft
 		/// <param name="bitIndex">Index to translate into a cursor</param>
 		/// <param name="index">Element index of the cursor</param>
 		/// <param name="bitOffset">Element bit offset of the current</param>
-		[Contracts.Pure]
 		public static void VectorBitCursorInBytes(int bitIndex, out int index, out int bitOffset)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
@@ -618,7 +613,6 @@ namespace KSoft
 		/// <param name="bitIndex">Index to translate into a cursor</param>
 		/// <param name="index">Element index of the cursor</param>
 		/// <param name="bitOffset">Element bit offset of the current</param>
-		[Contracts.Pure]
 		public static void VectorBitCursorInInt16(int bitIndex, out int index, out int bitOffset)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
@@ -631,7 +625,6 @@ namespace KSoft
 		/// <param name="bitIndex">Index to translate into a cursor</param>
 		/// <param name="index">Element index of the cursor</param>
 		/// <param name="bitOffset">Element bit offset of the current</param>
-		[Contracts.Pure]
 		public static void VectorBitCursorInInt32(int bitIndex, out int index, out int bitOffset)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
@@ -644,7 +637,6 @@ namespace KSoft
 		/// <param name="bitIndex">Index to translate into a cursor</param>
 		/// <param name="index">Element index of the cursor</param>
 		/// <param name="bitOffset">Element bit offset of the current</param>
-		[Contracts.Pure]
 		public static void VectorBitCursorInInt64(int bitIndex, out int index, out int bitOffset)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);

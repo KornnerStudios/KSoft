@@ -21,6 +21,7 @@
     <Compile Include="Bitwise\BitwiseT4.cs" />
     <Compile Include="Bitwise\BitFondlingT4.cs" />
     <Compile Include="Bitwise\ByteSwapT4.cs" />
+    <Compile Include="Collections\CollectionsT4.cs" />
     <Compile Include="IO\EndianStreamsT4.cs" />
     <Compile Include="IO\TagElementStreamsT4.cs" />
     <Compile Include="PrimitiveDefinitions\NumberCodeDefinition.cs" />

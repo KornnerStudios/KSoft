@@ -28,9 +28,9 @@ namespace KSoft.Bitwise
 		{
 			return Bitwise.Flags.Test(data, kSignBitMask);
 		}
-		public static uint SetSigned(uint data, bool is_signed)
+		public static uint SetSigned(uint data, bool isSigned)
 		{
-			return Bitwise.Flags.Modify(is_signed, data, kSignBitMask);
+			return Bitwise.Flags.Modify(isSigned, data, kSignBitMask);
 		}
 		#endregion
 

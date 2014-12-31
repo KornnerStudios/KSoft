@@ -8,10 +8,12 @@ namespace KSoft.Collections
 	partial struct StringSegment
 	{
 		[Serializable]
-		class Enumerator : IEnumerator<char>
+		public struct Enumerator
+			: IEnumerator<char>
 		{
-			string mData;
-			int mCurrent, mStart, mEnd;
+			readonly string mData;
+			readonly int mStart, mEnd;
+			int mCurrent;
 
 			public Enumerator(StringSegment segment)
 			{
@@ -20,7 +22,7 @@ namespace KSoft.Collections
 				mEnd = mStart + segment.mCount;
 				mCurrent = mStart - 1;
 			}
-			public void Dispose() { }
+			void IDisposable.Dispose() { }
 
 			#region IEnumerator<char> Members
 			public char Current { get {

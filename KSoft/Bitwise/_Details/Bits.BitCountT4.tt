@@ -11,12 +11,25 @@ namespace KSoft
 {
 	partial class Bits
 	{
-		// look at this http://www.df.lth.se/~john_e/gems/gem002d.html
-
+#if false // old, solid impl
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
 <#	var code_gen = new BitwiseT4.BitCountCodeGenerator(
 		this, bittable_type);
-	
+
+	code_gen.Generate();
+#>
+
+<# } #>
+#endif
+
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	var code_gen = new BitwiseT4.FastBitCountCodeGenerator(
+		this, bittable_type);
+
+		// TODO: the formula doesn't work with 16-bits correctly...not sure who's fault it is yet
+		if (bittable_type.Code == TypeCode.UInt16)
+			continue;
+
 	code_gen.Generate();
 #>
 

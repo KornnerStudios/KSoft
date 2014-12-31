@@ -1,0 +1,67 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.Collections
+{
+	static partial class IReadOnlyBitSetEnumerators
+	{
+<# foreach (var enum_def in CollectionsT4.BitSetEnumeratorDefs) { #>
+<#	var enum_type_name = enum_def.Name + "Enumerator";
+	var enum_result_keyword = enum_def.ResultCodeDef.Keyword;
+#>
+		[Serializable]
+		partial struct <#= enum_type_name #>
+			: IEnumerator< <#= enum_result_keyword #> >
+		{
+			readonly IReadOnlyBitSet mSet;
+			readonly int mLastIndex;
+			readonly int mVersion;
+			int mBitIndex;
+			<#= enum_result_keyword #> mCurrent;
+<# if (enum_def.Name == "StateFilter") { #>
+			// defined here to avoid: CS0282: There is no defined ordering between fields in multiple declarations of partial class or struct
+			readonly bool mStateFilter;
+			readonly int mStartBitIndex;
+<# } #>
+
+			<#= enum_type_name #>(IReadOnlyBitSet bitset, bool dummy)
+				: this()
+			{
+				mSet = bitset;
+				mLastIndex = bitset.Length - 1;
+				mVersion = bitset.Version;
+				mBitIndex = TypeExtensions.kNone;
+			}
+
+			void VerifyVersion()
+			{
+				if (mVersion != mSet.Version)
+					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
+			}
+
+			public <#= enum_result_keyword #> Current { get {
+				if (mBitIndex.IsNone())			throw new InvalidOperationException("Enumeration has not started");
+				if (mBitIndex > mLastIndex)		throw new InvalidOperationException("Enumeration already finished");
+
+				return mCurrent;
+			} }
+			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+
+			public void Reset()
+			{
+				VerifyVersion();
+				mBitIndex = TypeExtensions.kNone;
+			}
+
+			void IDisposable.Dispose()	{ }
+		};
+
+<# } #>
+	};
+}

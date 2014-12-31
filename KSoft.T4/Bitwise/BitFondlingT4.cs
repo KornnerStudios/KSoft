@@ -32,7 +32,7 @@ namespace KSoft.T4.Bitwise
 			/// <summary>Name of the local variable we're using to fondle the bits of the input parameter</summary>
 			protected const string kFondleVarName = "x";
 
-			public BitFondleCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
+			protected BitFondleCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
 				: base(ttFile, def)
 			{
 			}
@@ -40,10 +40,9 @@ namespace KSoft.T4.Bitwise
 			/// <summary>Declares and initializes the variable (of the underlying number type) used for bit fondling</summary>
 			protected override void GeneratePrologue()
 			{
-				if (mDef.SizeOfInBits == PrimitiveDefinitions.kUInt64.SizeOfInBits)
-					mFile.Write(PrimitiveDefinitions.kUInt64.Keyword);
-				else
-					mFile.Write(PrimitiveDefinitions.kUInt32.Keyword);
+				mFile.Write(mDef.SizeOfInBits == PrimitiveDefinitions.kUInt64.SizeOfInBits
+					? PrimitiveDefinitions.kUInt64.Keyword
+					: PrimitiveDefinitions.kUInt32.Keyword);
 
 				mFile.WriteLine(" {0} = {1};", kFondleVarName, kBitsParamName);
 			}
@@ -168,6 +167,11 @@ namespace KSoft.T4.Bitwise
 			}
 		};
 
+		// based on http://www.df.lth.se/~john_e/gems/gem002d.html
+		// UInt8  - ~57 bytes of IL generated (Debug AnyCPU)
+		// UInt16 - ~84
+		// UInt32 - ~87
+		// UInt64 - ~164
 		public class BitCountCodeGenerator
 			: BitFondleCodeGenerator
 		{
@@ -210,7 +214,7 @@ namespace KSoft.T4.Bitwise
 				if (doc != null)
 					mFile.WriteLine(" // {0}", doc);
 				else
-					mFile.WriteLine("");
+					mFile.NewLine();
 			}
 			void GenerateBitOperationCode(byte byteMaskLHS, byte byteMaskRHS, int shiftAmount, string doc = null)
 			{
@@ -242,5 +246,59 @@ namespace KSoft.T4.Bitwise
 				mFile.NewLine();
 			}
 		};
+
+		// based on http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+		// UInt8  - ~44 bytes of IL generated (Debug AnyCPU)
+		// UInt16 - ~64
+		// UInt32 - ~65
+		// UInt64 - ~86
+		// TODO: the generated code for 16-bit isn't working right...who's fault is this?
+		public class FastBitCountCodeGenerator
+			: BitCountCodeGenerator
+		{
+			public FastBitCountCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
+				: base(ttFile, def)
+			{
+			}
+
+			void GenerateCodeStep1()
+			{
+				// v = v - ((v >> 1) & (T)~(T)0/3);
+				mFile.WriteLine("{0} =  {0} - (({0} >> 1) & {1});",
+					kFondleVarName,
+					BuildBitMaskForInteger(kMaskEvenBits));
+			}
+			void GenerateCodeStep2()
+			{
+				// v = (v & (T)~(T)0/15*3) + ((v >> 2) & (T)~(T)0/15*3);
+				mFile.WriteLine("{0} = ({0} & {1}) + (({0} >> 2) & {1});",
+					kFondleVarName,
+					BuildBitMaskForInteger(kMaskConsecutivePairsLsb));
+			}
+			void GenerateCodeStep3()
+			{
+				// v = (v + (v >> 4)) & (T)~(T)0/255*15;
+				mFile.WriteLine("{0} =  {0} + ({0} >> 4) & {1};",
+					kFondleVarName,
+					BuildBitMaskForInteger(kMaskNibbleLsb));
+			}
+			void GenerateCodeFinalCount()
+			{
+				// c = (T)(v * ((T)~(T)0/255)) >> (sizeof(T) - 1) * CHAR_BIT;
+				mFile.WriteLine("{0} = ({0} * {1}) >> {2};",
+					kFondleVarName,
+					BuildBitMaskForInteger(0x01),
+					mDef.SizeOfInBits - kBitsPerByte);
+			}
+			protected override void GenerateCode()
+			{
+				GenerateCodeStep1();
+				GenerateCodeStep2();
+				GenerateCodeStep3();
+				GenerateCodeFinalCount();
+
+				mFile.NewLine();
+			}
+		}
 	};
 }

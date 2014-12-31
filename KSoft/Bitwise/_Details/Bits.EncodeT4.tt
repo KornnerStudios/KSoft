@@ -45,7 +45,6 @@ namespace KSoft
 		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
-		[Contracts.Pure]
 		public static void BitEncodeEnum(<#= prim_keyword #> value, ref <#= prim_keyword #> bits, ref int bitIndex, <#= prim_keyword #> bitMask)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex >= 0);
@@ -96,7 +95,6 @@ namespace KSoft
 		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
-		[Contracts.Pure]
 		public static void BitEncodeFlags(<#= prim_keyword #> value, ref <#= prim_keyword #> bits, ref int bitIndex, <#= prim_keyword #> bitMask)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex >= 0);
@@ -151,7 +149,6 @@ namespace KSoft
 		/// On return <paramref name="bitIndex"/> is incremented by the bit count (determined 
 		/// from <paramref name="bitMask"/>)
 		/// </remarks>
-		[Contracts.Pure]
 		public static void BitEncode(<#= prim_keyword #> value, ref <#= prim_keyword #> bits, ref int bitIndex, <#= prim_keyword #> bitMask)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex >= 0);

@@ -5,6 +5,11 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
+	using StateEnumerator = IReadOnlyBitSetEnumerators.StateEnumerator;
+	using StateFilterEnumerator = IReadOnlyBitSetEnumerators.StateFilterEnumerator;
+
+	using StateFilterEnumeratorWrapper = EnumeratorWrapper<int, IReadOnlyBitSetEnumerators.StateFilterEnumerator>;
+
 	public class EnumBitSet<TEnum> : //ICloneable,
 		ICollection<TEnum>, System.Collections.ICollection,
 		IComparable<EnumBitSet<TEnum>>, IEquatable<EnumBitSet<TEnum>>,
@@ -16,7 +21,8 @@ namespace KSoft.Collections
 
 		static readonly int kBitSetLength = EnumBitEncoder32<TEnum>.kBitCount;
 
-		BitSet mBits;
+		readonly BitSet mBits;
+		readonly TEnum mInvalidSentinelValue;
 
 		/// <summary>Returns the "logical size" of the BitSet</summary>
 		public int Length			{ get { return kBitSetLength; } }
@@ -24,6 +30,9 @@ namespace KSoft.Collections
 		public int Cardinality		{ get { return mBits.Cardinality; } }
 		/// <summary>Number of bits set to false</summary>
 		public int CardinalityZeros	{ get { return mBits.CardinalityZeros; } }
+
+		/// <summary>Member or value to use when an operation results in an invalid value (eg, NextSetBit)</summary>
+		public TEnum InvalidSentinelValue { get { return mInvalidSentinelValue; } }
 
 		#region Ctor
 		static string CtorExceptionMsgTEnumIsFlags { get {
@@ -34,12 +43,15 @@ namespace KSoft.Collections
 			return string.Format("Tried to use a Enum with a NONE member in an EnumBitSet - {0}",
 				Reflection.EnumUtil<TEnum>.EnumType.Name);
 		} }
-		public EnumBitSet()
+		/// <summary></summary>
+		/// <param name="invalidSentinelValue">Member or value to use when an operation results in an invalid value (eg, NextSetBit)</param>
+		public EnumBitSet(TEnum invalidSentinelValue = default(TEnum))
 		{
 			Contract.Requires<ArgumentException>(!Reflection.EnumUtil<TEnum>.IsFlags, CtorExceptionMsgTEnumIsFlags);
 			Contract.Requires<ArgumentException>(!EnumBitEncoder32<TEnum>.kHasNone, CtorExceptionMsgTEnumHasNone);
 
 			mBits = new BitSet(kBitSetLength);
+			mInvalidSentinelValue = invalidSentinelValue;
 		}
 		#endregion
 
@@ -104,37 +116,39 @@ namespace KSoft.Collections
 
 		/// <summary>Get the enum member of the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
-		/// <param name="noneSentienlValue">Member to use when there isn't another clear bit after <see cref="startBitIndex"/></param>
-		/// <returns>The enum member whose bit is 0, or <see cref="noneSentienlValue"/> there isn't another one</returns>
-		public TEnum NextClearBit(TEnum startBitIndex, TEnum noneSentienlValue)
+		/// <returns>The enum member whose bit is 0, or <see cref="InvalidSentinelValue"/> there isn't another one</returns>
+		public TEnum NextClearBit(TEnum startBitIndex)
 		{
 			int bit_index = NextClearBitIndex(startBitIndex);
 			return bit_index.IsNotNone()
 				? FromInt32(bit_index)
-				: noneSentienlValue;
+				: mInvalidSentinelValue;
 		}
 		/// <summary>Get the enum member of the bit index of the next bit which is 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
-		/// <param name="noneSentienlValue">Member to use when there isn't another set bit after <see cref="startBitIndex"/></param>
-		/// <returns>The enum member whose bit is 0, or <see cref="noneSentienlValue"/> there isn't another one</returns>
-		public TEnum NextSetBit(TEnum startBitIndex, TEnum noneSentienlValue)
+		/// <returns>The enum member whose bit is 0, or <see cref="InvalidSentinelValue"/> there isn't another one</returns>
+		public TEnum NextSetBit(TEnum startBitIndex)
 		{
 			int bit_index = NextSetBitIndex(startBitIndex);
 			return bit_index.IsNotNone()
 				? FromInt32(bit_index)
-				: noneSentienlValue;
+				: mInvalidSentinelValue;
 		}
 
 		/// <summary>Enumeration of enum members whose bits are 0 (clear)</summary>
-		public EnumeratorWrapper<TEnum> ClearBitIndices { get {
-			return new EnumeratorWrapper<TEnum>(new EnumeratorBitState(mBits.ClearBitIndices.GetEnumerator()));
+		public EnumeratorWrapper<TEnum, EnumeratorBitState> ClearBitIndices { get {
+			return new EnumeratorWrapper<TEnum, EnumeratorBitState>(
+				new EnumeratorBitState(mBits.ClearBitIndices.GetEnumerator()));
 		} }
 		/// <summary>Enumeration of enum members whose bits are 1 (set)</summary>
-		public EnumeratorWrapper<TEnum> SetBitIndices { get {
-			return new EnumeratorWrapper<TEnum>(new EnumeratorBitState(mBits.SetBitIndices.GetEnumerator()));
+		public EnumeratorWrapper<TEnum, EnumeratorBitState> SetBitIndices { get {
+			return new EnumeratorWrapper<TEnum, EnumeratorBitState>(
+				new EnumeratorBitState(mBits.SetBitIndices.GetEnumerator()));
 		} }
 
-		public IEnumerator<TEnum> GetEnumerator()
+		public EnumeratorBitState GetEnumerator()
+		{ return new EnumeratorBitState(mBits.SetBitIndices.GetEnumerator()); }
+		IEnumerator<TEnum> IEnumerable<TEnum>.GetEnumerator()
 		{ return new EnumeratorBitState(mBits.SetBitIndices.GetEnumerator()); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{ return new EnumeratorBitState(mBits.SetBitIndices.GetEnumerator()); }
@@ -238,15 +252,15 @@ namespace KSoft.Collections
 		public bool Equals(EnumBitSet<TEnum> other)		{ return mBits.Equals(other.mBits); }
 		#endregion
 
-		sealed class EnumeratorBitState : IEnumerator<TEnum>, ICloneable
+		public struct EnumeratorBitState
+			: IEnumerator<TEnum>
 		{
-			readonly IEnumerator<int> mEnumerator;
+			StateFilterEnumerator mEnumerator;
 
-			public EnumeratorBitState(IEnumerator<int> bitStateEnumerator)
+			public EnumeratorBitState(StateFilterEnumerator bitStateEnumerator)
 			{
 				mEnumerator = bitStateEnumerator;
 			}
-			public object Clone()		{ return MemberwiseClone(); }
 
 			public TEnum Current		{ get { return FromInt32(mEnumerator.Current); } }
 			object System.Collections.IEnumerator.Current { get { return this.Current; } }
@@ -254,7 +268,7 @@ namespace KSoft.Collections
 			public bool MoveNext()		{ return mEnumerator.MoveNext(); }
 			public void Reset()			{ mEnumerator.Reset(); }
 
-			void IDisposable.Dispose()	{ mEnumerator.Dispose(); }
+			void IDisposable.Dispose()	{ }
 		};
 
 		#region IEndianStreamSerializable Members

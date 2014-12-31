@@ -103,11 +103,12 @@ namespace KSoft.Bitwise
 		/// <summary>Tests whether or not <paramref name="obj"/> is equal to this</summary>
 		/// <param name="obj">The other object</param>
 		/// <returns>Returns true if <paramref name="obj"/> is a <see cref="Flags32"/> object and if it's value is the same as this</returns>
-		public override bool Equals(object obj)	{ return obj is Flags32 && (obj as Flags32).mValue == mValue; }
-		/// <summary><see cref="uint.GetHashCode"/></summary>
+		public override bool Equals(object obj)	{ return obj is Flags32 && ((Flags32)obj).mValue == mValue; }
+		/// <summary><see cref="uint.GetHashCode()"/></summary>
 		/// <returns></returns>
+		/// <remarks>Beware: this uses the underlying flags value's hash code</remarks>
 		public override int GetHashCode()		{ return mValue.GetHashCode(); }
-		/// <summary><see cref="uint.ToString"/></summary>
+		/// <summary><see cref="uint.ToString()"/></summary>
 		/// <returns>Returns a 8 character hexadecimal value in a string</returns>
 		public override string ToString()
 		{

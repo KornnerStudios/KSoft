@@ -36,10 +36,11 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires(flags != null);
 
-			bool ret = false;
 			foreach (var i in flags)
-				ret = ret & Test(value, i);
-			return ret;
+				if(!Test(value, i))
+					return false;
+
+			return true;
 		}
 
 		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
@@ -87,10 +88,11 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires(flags != null);
 
-			bool ret = false;
 			foreach (var i in flags)
-				ret = ret & Test(value, i);
-			return ret;
+				if(!Test(value, i))
+					return false;
+
+			return true;
 		}
 
 		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
@@ -138,10 +140,11 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires(flags != null);
 
-			bool ret = false;
 			foreach (var i in flags)
-				ret = ret & Test(value, i);
-			return ret;
+				if(!Test(value, i))
+					return false;
+
+			return true;
 		}
 
 		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
@@ -189,10 +192,11 @@ namespace KSoft.Bitwise
 		{
 			Contract.Requires(flags != null);
 
-			bool ret = false;
 			foreach (var i in flags)
-				ret = ret & Test(value, i);
-			return ret;
+				if(!Test(value, i))
+					return false;
+
+			return true;
 		}
 
 		/// <summary>Returns true if any one of the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
@@ -252,7 +256,7 @@ namespace KSoft.Bitwise
 		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>
 		/// <param name="rhs">Other bit-vector whose bits we wish to remove from <paramref name="lhs"/></param>
-		/// <returns><paramref name="lhs"/> AND-EQUALS <paramref name="rhs"/></returns>
+		/// <returns><paramref name="lhs"/> AND-EQUALS ~<paramref name="rhs"/></returns>
 		public static uint Remove(uint lhs, uint rhs)
 		{
 			return lhs &= ~rhs;
@@ -268,7 +272,7 @@ namespace KSoft.Bitwise
 		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>
 		/// <param name="rhs">Other bit-vector whose bits we wish to remove from <paramref name="lhs"/></param>
-		/// <returns><paramref name="lhs"/> AND-EQUALS <paramref name="rhs"/></returns>
+		/// <returns><paramref name="lhs"/> AND-EQUALS ~<paramref name="rhs"/></returns>
 		public static ulong Remove(ulong lhs, ulong rhs)
 		{
 			return lhs &= ~rhs;

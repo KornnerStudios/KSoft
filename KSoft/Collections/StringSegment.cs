@@ -5,15 +5,18 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	public partial struct StringSegment : IReadOnlyList<char>,
-		IEquatable<StringSegment>,
-		IList<char>, ICollection<char>
+	using StringSegmentEnumerator = StringSegment.Enumerator;
+
+	public partial struct StringSegment
+		: IReadOnlyList<char>
+		, IEquatable<StringSegment>
+		, IList<char>
 	{
-		string mData;
+		readonly string mData;
 		public string Data { get { return mData; } }
-		int mOffset;
+		readonly int mOffset;
 		public int Offset { get { return mOffset; } }
-		int mCount;
+		readonly int mCount;
 		public int Count { get { return mCount; } }
 
 		#region Ctor
@@ -82,13 +85,16 @@ namespace KSoft.Collections
 		#endregion
 
 		#region IEnumerable<char> Members
-		public IEnumerator<char> GetEnumerator()
+		public StringSegmentEnumerator GetEnumerator()
 		{
 			VerifyData();
 
-			return new Enumerator(this);
+			return new StringSegmentEnumerator(this);
 		}
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return GetEnumerator(); }
+		IEnumerator<char> IEnumerable<char>.GetEnumerator()
+		{ return GetEnumerator(); }
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{ return GetEnumerator(); }
 		#endregion
 
 		#region NotImplemented IList<char> Members

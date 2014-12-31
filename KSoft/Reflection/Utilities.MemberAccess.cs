@@ -120,13 +120,13 @@ namespace KSoft.Reflection
 		/// <typeparam name="V">Type of the value we're setting</typeparam>
 		/// <param name="this">The object instance to fondle</param>
 		/// <param name="value">The new value to set the member to</param>
-		public delegate void ValueTypeMemberSetterDelegate<T, V>(ref T @this, V value);
+		public delegate void ValueTypeMemberSetterDelegate<T, in V>(ref T @this, V value);
 		/// <summary>Signature for a method which sets a specific member of a reference type</summary>
 		/// <typeparam name="T">Type of the reference-type we're fondling</typeparam>
 		/// <typeparam name="V">Type of the value we're setting</typeparam>
 		/// <param name="this">The object instance to fondle</param>
 		/// <param name="value">The new value to set the member to</param>
-		public delegate void ReferenceTypeMemberSetterDelegate<T, V>(T @this, V value);
+		public delegate void ReferenceTypeMemberSetterDelegate<in T, in V>(T @this, V value);
 
 		/// <summary>Generate a specific member setter for a specific value type</summary>
 		/// <typeparam name="T">The type which contains the member</typeparam>

@@ -31,16 +31,15 @@ namespace KSoft.T4
 				: char.ToLowerInvariant(c);
 		}
 
-		public abstract class CharLookupTableCodeGeneratorBase
+		public abstract class CharLookupCodeGeneratorBase
 		{
 			protected TextTemplating.TextTransformation mFile;
 
-			public CharLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
+			protected CharLookupCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 			{
 				mFile = ttFile;
 			}
 
-			protected abstract PrimitiveCodeDefinition TableElementType { get; }
 			protected abstract string TableName { get; }
 			protected abstract string TableNamePostfix { get; }
 			protected virtual string RowHeaderTabString { get { return "\t"; } }
@@ -50,6 +49,18 @@ namespace KSoft.T4
 			{
 				return IsAlphabetOrDigit(charByte);
 			}
+		};
+
+		public abstract class CharLookupTableCodeGeneratorBase
+			: CharLookupCodeGeneratorBase
+		{
+			protected CharLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
+				: base(ttFile)
+			{
+			}
+
+			protected abstract PrimitiveCodeDefinition TableElementType { get; }
+
 			protected virtual int OverrideDigitIndex(int charByte, int digitIndex)
 			{
 				return digitIndex;
@@ -275,6 +286,97 @@ namespace KSoft.T4
 			protected override bool LookupUsesCharByte(int charByte)
 			{
 				return IsHexidecimalDigit(charByte);
+			}
+		};
+
+
+		public abstract class CharLookupBitVectorCodeGeneratorBase
+			: CharLookupCodeGeneratorBase
+		{
+			const int kVectorElementBitSize = Bitwise.BitwiseT4.kBitsPerByte;
+			static readonly PrimitiveCodeDefinition kVectorElementDef = PrimitiveDefinitions.kByte;
+
+			protected CharLookupBitVectorCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
+				: base(ttFile)
+			{
+			}
+
+			protected override string TableName { get { return "kCharIsDigitBitVector"; } }
+
+			protected override void WriteXmlDoc()
+			{
+				mFile.WriteXmlDocSummary("Latin-1 lookup bitvector for testing if char is a digit");
+				mFile.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
+			}
+
+			protected virtual string BitArrayElementToElementText(byte element)
+			{
+				return string.Format("{0},\t", element.ToString("X2"));
+			}
+
+			static int GetBitArrayLength(int bitLength, int wordBitSize)
+			{
+				if (bitLength <= 0)
+					return 0;
+
+				return ((bitLength - 1) / wordBitSize) + 1;
+			}
+			System.Collections.BitArray BuildBitArray()
+			{
+				var bits = new System.Collections.BitArray(sizeof(byte) * Bitwise.BitwiseT4.kBitsPerByte);
+
+				for (int x = byte.MinValue;
+					x <= byte.MaxValue;
+					x++)
+				{
+					if (LookupUsesCharByte(x))
+					{
+						bits[x] = true;
+					}
+				}
+
+				return bits;
+			}
+			public void Generate()
+			{
+				using (mFile.EnterCodeBlock())
+				using (mFile.EnterCodeBlock())
+				{
+					WriteXmlDoc();
+					mFile.WriteLine("static readonly {0}[] {1}{2} = {{",
+						kVectorElementDef.Keyword,
+						TableName,
+						TableNamePostfix);
+				}
+
+				var bits = BuildBitArray();
+				byte[] bitvector = new byte[GetBitArrayLength(bits.Length, kVectorElementBitSize)];
+				bits.CopyTo(bitvector, 0);
+
+				for (int x = 0, column = 0, row = 0;
+					x <= bitvector.Length;
+					x++)
+				{
+					if (column == 0)
+						mFile.PushIndent("\t");
+
+					mFile.Write(BitArrayElementToElementText(bitvector[x]));
+
+					if (column++ == kMaxHexidecimal-1)
+					{
+						mFile.PopIndent();
+
+						mFile.WriteLine("// {0}", row.ToString("X"));
+						column = 0;
+						row++;
+					}
+				}
+
+				using (mFile.EnterCodeBlock())
+				using (mFile.EnterCodeBlock())
+				{
+					mFile.WriteLine("};");
+				}
 			}
 		};
 	};

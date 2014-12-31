@@ -5,10 +5,14 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
+	using StateFilterEnumeratorWrapper = EnumeratorWrapper<int, IReadOnlyBitSetEnumerators.StateFilterEnumerator>;
+
 	[Contracts.ContractClass(typeof(IReadOnlyBitSetContract))]
-	public interface IReadOnlyBitSet : ICloneable,
-		IReadOnlyCollection<bool>,
-		IComparable<IReadOnlyBitSet>, IEquatable<IReadOnlyBitSet>
+	public interface IReadOnlyBitSet
+		: ICloneable
+		, IReadOnlyCollection<bool>
+		, IComparable<IReadOnlyBitSet>
+		, IEquatable<IReadOnlyBitSet>
 	{
 		/// <summary>Returns the "logical size" of the BitSet</summary>
 		/// <remarks>IE, the index of the highest addressable bit plus one</remarks>
@@ -21,6 +25,9 @@ namespace KSoft.Collections
 
 		bool IsAllZeros { get; }
 
+		/// <summary>Versioning id used to sanity check enumerators</summary>
+		int Version { get; }
+
 		#region Access
 		bool this[int bitIndex] { get; }
 
@@ -29,6 +36,7 @@ namespace KSoft.Collections
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
 		bool Get(int bitIndex);
 
+		int NextBitIndex(int startBitIndex, bool stateFilter);
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
@@ -39,9 +47,9 @@ namespace KSoft.Collections
 		int NextSetBitIndex(int startBitIndex = 0);
 
 		/// <summary>Enumeration of bit indexes in this BitSet which are 0 (clear)</summary>
-		EnumeratorWrapper<int> ClearBitIndices { get; }
+		StateFilterEnumeratorWrapper ClearBitIndices { get; }
 		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
-		EnumeratorWrapper<int> SetBitIndices { get; }
+		StateFilterEnumeratorWrapper SetBitIndices { get; }
 		#endregion
 
 		#region ISet-like interfaces
@@ -73,9 +81,9 @@ namespace KSoft.Collections
 		/// <returns>true if the current set and other share at least one common TRUE-bit element; otherwise, false</returns>
 		/// <remarks>{0, 0}.Overlaps({0, 1}) would thus be false.</remarks>
 		bool OverlapsSansZeros(IReadOnlyBitSet other);
-		/// <summary>Determines whether this set and the specified BitSet contain the same elements</summary>
-		/// <param name="other">The BitSet to compare to the current set</param>
-		/// <returns>true if the current set is equal to other; otherwise, false</returns>
+//		/// <summary>Determines whether this set and the specified BitSet contain the same elements</summary>
+//		/// <param name="other">The BitSet to compare to the current set</param>
+//		/// <returns>true if the current set is equal to other; otherwise, false</returns>
 //		bool SetEquals(IReadOnlyBitSet other);
 		#endregion
 	};
@@ -101,6 +109,8 @@ namespace KSoft.Collections
 
 		public bool IsAllZeros { get { throw new NotImplementedException(); } }
 
+		public int Version { get { throw new NotImplementedException(); } }
+
 		#region Access
 		public bool this[int bitIndex] { get {
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
@@ -115,6 +125,13 @@ namespace KSoft.Collections
 			throw new NotImplementedException();
 		}
 
+		public int NextBitIndex(int startBitIndex, bool stateFilter)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+
+			throw new NotImplementedException();
+		}
 		public int NextClearBitIndex(int startBitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
@@ -130,8 +147,8 @@ namespace KSoft.Collections
 			throw new NotImplementedException();
 		}
 
-		public EnumeratorWrapper<int> ClearBitIndices { get { throw new NotImplementedException(); } }
-		public EnumeratorWrapper<int> SetBitIndices { get { throw new NotImplementedException(); } }
+		public StateFilterEnumeratorWrapper ClearBitIndices { get { throw new NotImplementedException(); } }
+		public StateFilterEnumeratorWrapper SetBitIndices { get { throw new NotImplementedException(); } }
 		#endregion
 
 		#region ISet-like interfaces

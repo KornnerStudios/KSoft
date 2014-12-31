@@ -40,6 +40,7 @@
     <Compile Include="Bitwise\ByteSwapTest.cs" />
     <Compile Include="Bitwise\Single24Test.cs" />
     <Compile Include="Collections\BitSetTest.cs" />
+    <Compile Include="Collections\ClrDictionaryInspectorTest.cs" />
     <Compile Include="Collections\ValueTypeComparersTest.cs" />
     <Compile Include="Enum\EnumBinaryStreamerTest.cs" />
     <Compile Include="Enum\EnumBitEncoderTest.cs" />

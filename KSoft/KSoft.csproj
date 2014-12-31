@@ -92,7 +92,7 @@
       <DependentUpon>FlagsT4.tt</DependentUpon>
     </Compile>
     <Compile Include="Collections\BitSet.cs" />
-    <Compile Include="Collections\BitSet.Enumerator.cs" />
+    <Compile Include="Collections\ClrDictionaryInspector.cs" />
     <Compile Include="Collections\EnumBitSet.cs" />
     <Compile Include="Collections\EnumeratorWrapper.cs" />
     <Compile Include="Collections\Enums.cs" />
@@ -100,12 +100,23 @@
     <Compile Include="Collections\FixedBitArray.Enumerator.cs" />
     <Compile Include="Collections\InvertedComparer.cs" />
     <Compile Include="Collections\IReadOnlyBitSet.cs" />
+    <Compile Include="Collections\IReadOnlyBitSet.Enumerators.cs" />
     <Compile Include="Collections\PropertyComparer.cs" />
     <Compile Include="Collections\StringSegment.cs" />
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
     <Compile Include="Collections\ValueTypeComparer.cs" />
     <Compile Include="Collections\ValueTypeEqualityComparer.cs" />
     <Compile Include="Collections\ValueTypeEquatableComparer.cs" />
+    <Compile Include="Collections\_Details\BitSetT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BitSetT4.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IReadOnlyBitSet.EnumeratorsT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />
@@ -283,9 +294,7 @@
     <Compile Include="Xml\XmlReaderStreamOffsetCalculator.cs" />
     <Compile Include="Xml\XmlTextWithLocation.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Collections\_Details\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
@@ -337,6 +346,14 @@
     <None Include="Bitwise\_Details\FlagsT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FlagsT4.cs</LastGenOutput>
+    </None>
+    <None Include="Collections\_Details\BitSetT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BitSetT4.cs</LastGenOutput>
+    </None>
+    <None Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IReadOnlyBitSet.EnumeratorsT4.cs</LastGenOutput>
     </None>
     <None Include="Enum\_Details\EnumBitEncoderT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

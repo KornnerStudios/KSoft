@@ -22,7 +22,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="UInt16" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref ushort value)
 		{
@@ -35,7 +34,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="UInt16" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapUInt16(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -60,7 +58,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			ushort value)
 		{
@@ -100,7 +97,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Int16" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref short value)
 		{
@@ -113,7 +109,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Int16" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapInt16(byte[] buffer, int offset)
 		{
 			SwapUInt16(buffer, offset);
@@ -123,7 +118,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			short value)
 		{
@@ -148,7 +142,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="UInt32" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref uint value)
 		{
@@ -162,7 +155,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="UInt32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapUInt32(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -191,7 +183,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			uint value)
 		{
@@ -238,7 +229,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Int32" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref int value)
 		{
@@ -252,7 +242,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Int32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapInt32(byte[] buffer, int offset)
 		{
 			SwapUInt32(buffer, offset);
@@ -262,7 +251,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			int value)
 		{
@@ -291,7 +279,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="UInt64" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref ulong value)
 		{
@@ -309,7 +296,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="UInt64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapUInt64(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -346,7 +332,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			ulong value)
 		{
@@ -409,7 +394,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Int64" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap(
 			ref long value)
 		{
@@ -427,7 +411,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Int64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapInt64(byte[] buffer, int offset)
 		{
 			SwapUInt64(buffer, offset);
@@ -437,7 +420,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			long value)
 		{
@@ -464,7 +446,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="UInt32" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapUInt24(
 			ref uint value)
 		{
@@ -477,7 +458,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="UInt32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapUInt24(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -504,7 +484,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytesUInt24(byte[] buffer, int offset,
 			uint value)
 		{
@@ -548,7 +527,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Int32" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapInt24(
 			ref int value)
 		{
@@ -561,7 +539,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Int32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapInt24(byte[] buffer, int offset)
 		{
 			SwapUInt24(buffer, offset);
@@ -571,7 +548,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytesInt24(byte[] buffer, int offset,
 			int value)
 		{
@@ -600,7 +576,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="UInt64" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapUInt40(
 			ref ulong value)
 		{
@@ -615,7 +590,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="UInt64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapUInt40(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -646,7 +620,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytesUInt40(byte[] buffer, int offset,
 			ulong value)
 		{
@@ -698,7 +671,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Int64" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapInt40(
 			ref long value)
 		{
@@ -713,7 +685,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Int64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapInt40(byte[] buffer, int offset)
 		{
 			SwapUInt40(buffer, offset);
@@ -723,7 +694,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytesInt40(byte[] buffer, int offset,
 			long value)
 		{

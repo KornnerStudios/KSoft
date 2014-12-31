@@ -72,7 +72,7 @@ namespace KSoft.Shell
 		#region Value properties
 		/// <summary>This platform's type</summary>
 		public PlatformType Type { get {
-			return BitEncoders.PlatformType.BitDecode(mHandle, Constants.kProcessorBitField.BitIndex);
+			return BitEncoders.PlatformType.BitDecode(mHandle, Constants.kPlatformTypeBitField.BitIndex);
 		} }
 		/// <summary>This platform's normal processor type</summary>
 		public Processor ProcessorType { get {
@@ -244,10 +244,13 @@ namespace KSoft.Shell
 		#region Operating Environment
 		static class OperatingEnvironment
 		{
+			internal static readonly bool kIsMonoRuntime;
 			internal static readonly Platform kEnvironment;
 
 			static OperatingEnvironment()
 			{
+				kIsMonoRuntime = System.Type.GetType("Mono.Runtime") != null;
+
 				// TODO: .NET 4 upgrade:
 				// System.Environment.Is64BitProcess and Is64BitOperatingSystem
 				ProcessorSize size;
@@ -301,6 +304,10 @@ namespace KSoft.Shell
 			}
 		};
 
+		/// <summary>Is the current .NET runtime Mono based, or Microsoft?</summary>
+		public static bool IsMonoRuntime  { get {
+			return OperatingEnvironment.kIsMonoRuntime;
+		} }
 		/// <summary>Get the library's platform definition for the current operating environment</summary>
 		public static Platform Environment { get {
 			return OperatingEnvironment.kEnvironment;

@@ -64,12 +64,83 @@ namespace KSoft.Collections.Test
 		[TestMethod]
 		public void Collections_BitSetOperationsTest()
 		{
-			// TODO: need to validate our ZeroAlignmentOnlyBitsForBitOperation logic is working as intended
+			var lhs_bits = new bool[] { false, false, true, };
+			var lhs_bs = new BitSet(lhs_bits);
+			// rhs is our operation input, and it needs to be longer than lhs to also validate 
+			// ClearAlignmentOnlyBitsForBitOperation's logic is working as intended
+			var rhs_bits = new bool[] { false, true, false, true, };
+			var rhs_bs = new BitSet(rhs_bits);
+
+			lhs_bs.Or(rhs_bs);
+			Assert.AreEqual(2, lhs_bs.Cardinality);
+			Assert.AreEqual(1, lhs_bs.CardinalityZeros);
+			Assert.AreEqual(lhs_bs[0], false);
+			Assert.AreEqual(lhs_bs[1], true);
+			Assert.AreEqual(lhs_bs[2], true);
+
+			// also undoes the OR operation
+			lhs_bs.AndNot(rhs_bs);
+			Assert.AreEqual(1, lhs_bs.Cardinality);
+			Assert.AreEqual(2, lhs_bs.CardinalityZeros);
+			Assert.AreEqual(lhs_bs[0], false);
+			Assert.AreEqual(lhs_bs[1], false);
+			Assert.AreEqual(lhs_bs[2], true);
+
+			lhs_bs.And(rhs_bs);
+			Assert.AreEqual(0, lhs_bs.Cardinality);
+			Assert.AreEqual(3, lhs_bs.CardinalityZeros);
+			Assert.AreEqual(lhs_bs[0], false);
+			Assert.AreEqual(lhs_bs[1], false);
+			Assert.AreEqual(lhs_bs[2], false);
+
+			// at this point lhs is zero, and the only bit in rhs which is on (relative to lhs's bit-space) is the 2nd
+			lhs_bs.Xor(rhs_bs);
+			Assert.AreEqual(1, lhs_bs.Cardinality);
+			Assert.AreEqual(2, lhs_bs.CardinalityZeros);
+			Assert.AreEqual(lhs_bs[0], false);
+			Assert.AreEqual(lhs_bs[1], true);
+			Assert.AreEqual(lhs_bs[2], false);
+
+			lhs_bs.Not();
+			Assert.AreEqual(2, lhs_bs.Cardinality);
+			Assert.AreEqual(1, lhs_bs.CardinalityZeros);
+			Assert.AreEqual(lhs_bs[0], true);
+			Assert.AreEqual(lhs_bs[1], false);
+			Assert.AreEqual(lhs_bs[2], true);
+		}
+
+		[TestMethod]
+		public void Collections_BitSetOperationsWithEmptyInputTest()
+		{
+			var bs_empty = new BitSet();
+			var bits = new bool[] { false, false, true, };
+			var bs = new BitSet(bits);
+			Action bs_verify_unchanged_func = () =>
+			{
+				Assert.AreEqual(1, bs.Cardinality);
+				Assert.AreEqual(2, bs.CardinalityZeros);
+				Assert.AreEqual(bs[0], false);
+				Assert.AreEqual(bs[1], false);
+				Assert.AreEqual(bs[2], true);
+			};
+
+			bs.Or(bs_empty);
+			bs_verify_unchanged_func();
+
+			bs.AndNot(bs_empty);
+			bs_verify_unchanged_func();
+
+			bs.And(bs_empty);
+			bs_verify_unchanged_func();
+
+			bs.Xor(bs_empty);
+			bs_verify_unchanged_func();
 		}
 
 		[TestMethod]
 		public void Collections_BitSetOverlapsTest()
 		{
+			var empty_bs = new BitSet();
 			var lhs_bits = new bool[] { false, false, };
 			var lhs_bs = new BitSet(lhs_bits);
 			var rhs_bits = new bool[] { false, true, };
@@ -77,6 +148,8 @@ namespace KSoft.Collections.Test
 
 			Assert.IsTrue (lhs_bs.Overlaps(rhs_bs));
 			Assert.IsFalse(lhs_bs.OverlapsSansZeros(rhs_bs));
+			Assert.IsFalse(lhs_bs.Overlaps(empty_bs));
+			Assert.IsFalse(lhs_bs.OverlapsSansZeros(empty_bs));
 		}
 
 		[TestMethod]
@@ -88,6 +161,8 @@ namespace KSoft.Collections.Test
 			// the initial subset
 			var rhs_bits = new bool[] { false, true, false, true, false, true, };
 			var rhs_bs = new BitSet(rhs_bits);
+
+			lhs_bs.FixedLength = false;
 
 			Assert.IsTrue(lhs_bs.IsSupersetOf(rhs_bs));
 			Assert.IsTrue(rhs_bs.IsSubsetOf(lhs_bs));

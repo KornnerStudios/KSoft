@@ -37,7 +37,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap<#= overload_suffix_for_uint #>(
 			ref <#= prim_keyword #> value)
 		{
@@ -47,7 +46,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void SwapU<#= const_keyword #>(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -70,7 +68,6 @@ namespace KSoft.Bitwise
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes<#= overload_suffix_for_uint #>(byte[] buffer, int offset,
 			<#= prim_keyword #> value)
 		{
@@ -107,7 +104,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void Swap<#= overload_suffix_for_int #>(
 			ref <#= bittable_type.SignedKeyword #> value)
 		{
@@ -117,7 +113,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		[Contracts.Pure]
 		public static void Swap<#= const_keyword #>(byte[] buffer, int offset)
 		{
 			SwapU<#= const_keyword #>(buffer, offset);
@@ -127,7 +122,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes<#= overload_suffix_for_int #>(byte[] buffer, int offset,
 			<#= bittable_type.SignedKeyword #> value)
 		{

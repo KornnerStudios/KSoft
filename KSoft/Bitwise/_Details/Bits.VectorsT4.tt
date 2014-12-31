@@ -146,7 +146,6 @@ namespace KSoft
 <#	var prim_keyword = bittable_type.Keyword;
 	var const_keyword= bittable_type.GetConstantKeyword();
 #>
-		[Contracts.Pure]
 		public static void VectorElementFromBufferInT(byte[] buffer, int index, ref <#= prim_keyword #> element)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(buffer != null);
@@ -219,7 +218,6 @@ namespace KSoft
 		/// <param name="bitIndex">Index to translate into a cursor</param>
 		/// <param name="index">Element index of the cursor</param>
 		/// <param name="bitOffset">Element bit offset of the current</param>
-		[Contracts.Pure]
 		public static void VectorBitCursorIn<#= vector_suffix #>(int bitIndex, out int index, out int bitOffset)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);

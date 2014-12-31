@@ -6,8 +6,7 @@ namespace KSoft
 {
 	partial class Bits
 	{
-		// look at this http://www.df.lth.se/~john_e/gems/gem002d.html
-
+#if false // old, solid impl
 		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
 		/// <param name="bits">Integer whose bits to count</param>
 		/// <returns></returns>
@@ -66,6 +65,53 @@ namespace KSoft
 			x = ((x & 0xFF00FF00FF00FF00) >>  8) + (x & 0x00FF00FF00FF00FF);
 			x = ((x & 0xFFFF0000FFFF0000) >> 16) + (x & 0x0000FFFF0000FFFF);
 			x = ((x & 0xFFFFFFFF00000000) >> 32) + (x & 0x00000000FFFFFFFF);
+
+			return (int)x;
+		}
+
+#endif
+
+		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
+		/// <param name="bits">Integer whose bits to count</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int BitCount(byte bits)
+		{
+			uint x = bits;
+			x =  x - ((x >> 1) & 0x55);
+			x = (x & 0x33) + ((x >> 2) & 0x33);
+			x =  x + (x >> 4) & 0x0F;
+			x = (x * 0x01) >> 0;
+
+			return (int)x;
+		}
+
+		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
+		/// <param name="bits">Integer whose bits to count</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int BitCount(uint bits)
+		{
+			uint x = bits;
+			x =  x - ((x >> 1) & 0x55555555);
+			x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+			x =  x + (x >> 4) & 0x0F0F0F0F;
+			x = (x * 0x01010101) >> 24;
+
+			return (int)x;
+		}
+
+		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
+		/// <param name="bits">Integer whose bits to count</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int BitCount(ulong bits)
+		{
+			ulong x = bits;
+			x =  x - ((x >> 1) & 0x5555555555555555);
+			x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
+			x =  x + (x >> 4) & 0x0F0F0F0F0F0F0F0F;
+			x = (x * 0x0101010101010101) >> 56;
 
 			return (int)x;
 		}
