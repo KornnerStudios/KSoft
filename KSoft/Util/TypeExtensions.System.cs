@@ -37,6 +37,13 @@ namespace KSoft
 
 		#region Array
 		[Contracts.Pure]
+		[System.Diagnostics.DebuggerStepThrough]
+		public static IEnumerator<T> GetGenericEnumerator<T>(this T[] array)
+		{
+			return (IEnumerator<T>)array.GetEnumerator();
+		}
+
+		[Contracts.Pure]
 		public static bool EqualsZero<T>(this T[] array)
 			where T : struct, IEquatable<T>
 		{

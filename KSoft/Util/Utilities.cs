@@ -22,13 +22,20 @@ namespace KSoft
 
 	public static partial class Util
 	{
+		// Based on http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx
+		// MSDN example uses "nq" suffix, yet doesn't explain it. I knew SOMEONE had to have commented on this. If you check
+		// the VS2010-era DebuggerDisplay docs you'll find a Community Addition reply with WTF "nq" is for (and the above link)
+		/// <summary>DebuggerDisplay value to use to display the object's {DebuggerDisplay} value without any quotes</summary>
+		public const string DebuggerDisplayPropNameSansQuotes = "{DebuggerDisplay,nq}";
+
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
 		public static readonly object[] EmptyArray = new object[] { };
 
-		internal static Func<Exception> GetNullException = () => null;
+		internal static readonly Func<Exception> GetNullException = () => null;
 
 		#region IDisposable
-		class NullDisposableImpl : IDisposable
+		sealed class NullDisposableImpl
+			: IDisposable
 		{
 			public void Dispose() { }
 		};
@@ -51,10 +58,7 @@ namespace KSoft
 
 		public static void ClearAndNull<T>(ref T[] array)
 		{
-			if (array != null)
-			{
-				array = null;
-			}
+			array = null;
 		}
 		public static void ClearAndNull<T>(ref ICollection<T> coll)
 		{
@@ -67,7 +71,7 @@ namespace KSoft
 
 		#region Unix Time
 		/// <summary>The UTC of the <b>time_t</b> C++ construct</summary>
-		public static readonly DateTime kUnixTimeEpoch = new System.DateTime(1970, 1, 1, 0,0,0, System.DateTimeKind.Utc);
+		public static readonly DateTime kUnixTimeEpoch = new DateTime(1970, 1, 1, 0,0,0, DateTimeKind.Utc);
 
 		/// <summary>Convert a <b>time_t</b> or <b>time64_t</b> value to a <see cref="System.DateTime"/></summary>
 		/// <param name="time_t">The <b>time_t</b> numerical value</param>
@@ -98,19 +102,20 @@ namespace KSoft
 		#endregion
 
 		#region Comparer Factory
-		class ComparerFactory<T> : IComparer<T>
+		sealed class ComparerFactory<T>
+			: IComparer<T>
 		{
-			readonly Func<T, T, int> m_comparer;
+			readonly Func<T, T, int> mComparer;
 
 			ComparerFactory(Func<T, T, int> comparer)
 			{
-				m_comparer = comparer;
+				mComparer = comparer;
 			}
 
 			#region IComparer<T> Members
 			public int Compare(T x, T y)
 			{
-				return m_comparer(x, y);
+				return mComparer(x, y);
 			}
 			#endregion
 
@@ -136,7 +141,8 @@ namespace KSoft
 		/// <param name="y">Second object to compare</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static bool GenericReferenceEquals<T>(T x, T y) where T : class, IEquatable<T>
+		public static bool GenericReferenceEquals<T>(T x, T y)
+			where T : class, IEquatable<T>
 		{
 			// Handles 'x is same instance as y' and 'null == null'
 			bool result = object.ReferenceEquals(x, y);
@@ -164,10 +170,9 @@ namespace KSoft
 			Contract.Requires<ArgumentNullException>(rhs != null);
 			Contract.Requires(choiceProperty != null);
 
-			if (choiceProperty(lhs) < choiceProperty(rhs))
-				return lhs;
-			else
-				return rhs;
+			return choiceProperty(lhs) < choiceProperty(rhs)
+				? lhs
+				: rhs;
 		}
 		/// <summary>Returns the value with the smaller of two properties</summary>
 		/// <typeparam name="T"></typeparam>
@@ -181,10 +186,9 @@ namespace KSoft
 		{
 			Contract.Requires(choiceProperty != null);
 
-			if (choiceProperty(lhs) < choiceProperty(rhs))
-				return lhs;
-			else
-				return rhs;
+			return choiceProperty(lhs) < choiceProperty(rhs)
+				? lhs
+				: rhs;
 		}
 
 		/// <summary>Returns the object with the larger of two properties</summary>
@@ -201,10 +205,9 @@ namespace KSoft
 			Contract.Requires<ArgumentNullException>(rhs != null);
 			Contract.Requires(choiceProperty != null);
 
-			if (choiceProperty(lhs) > choiceProperty(rhs))
-				return lhs;
-			else
-				return rhs;
+			return choiceProperty(lhs) > choiceProperty(rhs)
+				? lhs
+				: rhs;
 		}
 		/// <summary>Returns the value with the larger of two properties</summary>
 		/// <typeparam name="T"></typeparam>
@@ -218,28 +221,31 @@ namespace KSoft
 		{
 			Contract.Requires(choiceProperty != null);
 
-			if (choiceProperty(lhs) > choiceProperty(rhs))
-				return lhs;
-			else
-				return rhs;
+			return choiceProperty(lhs) > choiceProperty(rhs)
+				? lhs
+				: rhs;
 		}
+
 		#endregion
 
 		public static void ValueTypeInitializeComparer<T>()
 			where T : struct, System.Collections.IComparer, IComparer<T>
 		{
+			// ReSharper disable once NotAccessedVariable
 			var comparer = Collections.ValueTypeComparer<T>.Default;
 			comparer = null;
 		}
 		public static void ValueTypeInitializeEqualityComparer<T>()
 			where T : struct, IEqualityComparer<T>
 		{
+			// ReSharper disable once NotAccessedVariable
 			var comparer = Collections.ValueTypeEqualityComparer<T>.Default;
 			comparer = null;
 		}
 		public static void ValueTypeInitializeEquatableComparer<T>()
 			where T : struct, IEquatable<T>
 		{
+			// ReSharper disable once NotAccessedVariable
 			var comparer = Collections.ValueTypeEquatableComparer<T>.Default;
 			comparer = null;
 		}

@@ -108,6 +108,74 @@ namespace KSoft.Reflection.Test
 			Assert.AreEqual(1024, kDefaultBufferSize());
 		}
 
+		#region Generate MemberSetter fail tests
+		struct MemberSetterTestStruct
+		{
+#pragma warning disable 649
+			private readonly string mValueReadonly;
+#pragma warning restore 649
+
+			private string ValueNoSetter { get { return mValueReadonly; } }
+		};
+		// ReSharper disable once ClassNeverInstantiated.Local
+		class MemberSetterTestClass
+		{
+#pragma warning disable 649
+			private readonly string mValueReadonly;
+			private static readonly string mStaticValueReadonly;
+#pragma warning restore 649
+
+			private string ValueNoSetter { get { return mValueReadonly; } }
+
+			private static string StaticValueNoSetter { get { return mStaticValueReadonly; } }
+		};
+
+		[TestMethod]
+		[Description("Validate GenerateValueTypeMemberSetter fails on readonly field")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateValueTypeMemberSetterFailTest1()
+		{
+			Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("mValueReadonly");
+		}
+		[TestMethod]
+		[Description("Validate GenerateValueTypeMemberSetter fails on a get-only property")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateValueTypeMemberSetterFailTest2()
+		{
+			Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("ValueNoSetter");
+		}
+
+		[TestMethod]
+		[Description("Validate GenerateReferenceTypeMemberSetter fails on readonly field")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateReferenceTypeMemberSetterFailTest1()
+		{
+			Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("mValueReadonly");
+		}
+		[TestMethod]
+		[Description("Validate GenerateReferenceTypeMemberSetter fails on a get-only property")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateReferenceTypeMemberSetterFailTest2()
+		{
+			Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("ValueNoSetter");
+		}
+
+		[TestMethod]
+		[Description("Validate GenerateStaticFieldSetter fails on readonly field")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateStaticFieldSetterFailTest()
+		{
+			Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>("mStaticValueReadonly");
+		}
+		[TestMethod]
+		[Description("Validate GenerateStaticPropertySetter fails on a get-only property")]
+		[ExpectedException(typeof(MemberAccessException))]
+		public void Reflection_GenerateStaticPropertySetterFailTest()
+		{
+			Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>("StaticValueNoSetter");
+		}
+		#endregion
+
 		#region GenerateObjectMethodProxy
 		internal class TestGenerateObjectMethodProxyClass
 		{

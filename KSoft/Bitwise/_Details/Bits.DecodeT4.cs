@@ -46,6 +46,17 @@ namespace KSoft
 
 			return (bits >> traits.BitIndex) & traits.Bitmask32;
 		}
+		/// <summary>Bit decode a none-able value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static int BitDecodeNoneable(uint bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (int)BitDecode(bits, traits.BitIndex, traits.Bitmask32) - 1;
+		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
@@ -123,6 +134,17 @@ namespace KSoft
 			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
 
 			return (bits >> traits.BitIndex) & traits.Bitmask64;
+		}
+		/// <summary>Bit decode a none-able value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static long BitDecodeNoneable(ulong bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (long)BitDecode(bits, traits.BitIndex, traits.Bitmask64) - 1;
 		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>

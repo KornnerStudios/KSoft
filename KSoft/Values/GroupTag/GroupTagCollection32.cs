@@ -56,7 +56,6 @@ namespace KSoft.Values
 		/// <param name="groupTags">Group tags to populate this collection with</param>
 		public GroupTag32Collection(KGuid guid, bool sort, params GroupTagDatum[] groupTags) : this(guid, groupTags)
 		{
-			Contract.Requires(guid != KGuid.Empty);
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
 			if (sort)

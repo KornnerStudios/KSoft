@@ -83,6 +83,26 @@ namespace KSoft.Bitwise
 
 		/// <summary>Bit encode a value into this handle</summary>
 		/// <param name="value">Value to encode</param>
+		/// <param name="traits"></param>
+		public void Encode32(uint value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, traits.Bitmask32);
+		}
+		/// <summary>Bit encode a none-able value into this handle</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="traits"></param>
+		public void EncodeNoneable32(int value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
+
+			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, traits.Bitmask32);
+		}
+
+		/// <summary>Bit encode a value into this handle</summary>
+		/// <param name="value">Value to encode</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void Encode64(ulong value, ulong bitMask)
 		{
@@ -100,6 +120,26 @@ namespace KSoft.Bitwise
 			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
 
 			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, bitMask);
+		}
+
+		/// <summary>Bit encode a value into this handle</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="traits"></param>
+		public void Encode64(ulong value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, traits.Bitmask64);
+		}
+		/// <summary>Bit encode a none-able value into this handle</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="traits"></param>
+		public void EncodeNoneable64(long value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
+
+			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, traits.Bitmask64);
 		}
 
 		#endregion
@@ -149,6 +189,25 @@ namespace KSoft.Bitwise
 
 		/// <summary>Bit decode a value from this handle</summary>
 		/// <param name="value">Value decoded from this handle</param>
+		/// <param name="traits"></param>
+		public void Decode32(out uint value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			value = (uint)Bits.BitDecode(mBits.u64, ref mBitIndex, traits.Bitmask32);
+		}
+		/// <summary>Bit decode a value from this handle</summary>
+		/// <param name="value">Value decoded from this handle</param>
+		/// <param name="traits"></param>
+		public void DecodeNoneable32(out int value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			value = (int)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, traits.Bitmask32);
+		}
+
+		/// <summary>Bit decode a value from this handle</summary>
+		/// <param name="value">Value decoded from this handle</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void Decode64(out ulong value, ulong bitMask)
 		{
@@ -164,6 +223,25 @@ namespace KSoft.Bitwise
 			Contract.Requires<System.ArgumentException>(bitMask != 0);
 
 			value = (long)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, bitMask);
+		}
+
+		/// <summary>Bit decode a value from this handle</summary>
+		/// <param name="value">Value decoded from this handle</param>
+		/// <param name="traits"></param>
+		public void Decode64(out ulong value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			value = (ulong)Bits.BitDecode(mBits.u64, ref mBitIndex, traits.Bitmask64);
+		}
+		/// <summary>Bit decode a value from this handle</summary>
+		/// <param name="value">Value decoded from this handle</param>
+		/// <param name="traits"></param>
+		public void DecodeNoneable64(out long value, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+
+			value = (long)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, traits.Bitmask64);
 		}
 
 		#endregion

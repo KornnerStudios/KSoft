@@ -14,7 +14,6 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentNullException">obj == null</exception>
 		/// <exception cref="ArgumentException">When <paramref name="obj"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static void CastValue<TResult>(object obj, out TResult result)
 			where TResult : struct
 		{
@@ -56,7 +55,6 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentNullException">obj == null</exception>
 		/// <exception cref="ArgumentException">When <paramref name="obj"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static void CastReference<TIn, TResult>(TIn obj, out TResult result)
 			where TIn : class 
 			where TResult : class
@@ -111,7 +109,6 @@ namespace KSoft.Debug
 		/// <param name="result">On return; null if <paramref name="obj"/> is null or <code>obj as <typeparamref name="TResult"/></code></param>
 		/// <exception cref="ArgumentException">When <paramref name="obj"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static void TryCastReference<TIn, TResult>(TIn obj, out TResult result)
 			where TIn : class
 			where TResult : class

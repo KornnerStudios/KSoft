@@ -15,6 +15,7 @@ namespace KSoft
 		readonly IEnumerator<T> mEnumerator;
 
 		public EnumeratorWrapper(IEnumerator<T> enumerator) { mEnumerator = enumerator; }
+		public EnumeratorWrapper(IEnumerable<T> enumerable) { mEnumerator = enumerable.GetEnumerator(); }
 
 		#region IEnumerable<T> Members
 		public IEnumerator<T> GetEnumerator() { return mEnumerator; }

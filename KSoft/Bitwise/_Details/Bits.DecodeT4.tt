@@ -56,6 +56,17 @@ namespace KSoft
 
 			return (bits >> traits.BitIndex) & traits.Bitmask<#= bittable_type.SizeOfInBits.ToString() #>;
 		}
+		/// <summary>Bit decode a none-able value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static <#= sign_keyword #> BitDecodeNoneable(<#= prim_keyword #> bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+
+			return (<#= sign_keyword #>)BitDecode(bits, traits.BitIndex, traits.Bitmask<#= bittable_type.SizeOfInBits.ToString() #>) - 1;
+		}
 
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>

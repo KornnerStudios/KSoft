@@ -34,6 +34,15 @@ namespace KSoft.Debug
 					description, expectedMax, actualMax));
 		}
 
+		public static void IsGreaterThanEqualTo(string description, int expectedMin, int actualMin)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(description));
+
+			if (actualMin < expectedMin)
+				throw new InvalidDataException(string.Format("{0}. Expected at least {1}, got {2}",
+					description, expectedMin, actualMin));
+		}
+
 		public static void IsDistinct<T>(string description, string valueName, IEnumerable<T> seq)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(description));

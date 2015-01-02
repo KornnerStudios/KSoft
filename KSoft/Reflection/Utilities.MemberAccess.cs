@@ -16,6 +16,9 @@ namespace KSoft.Reflection
 
 		#region Generate Field Accessor Utils
 		// ALT: http://forums.asp.net/post/5109977.aspx
+		
+		// NOTE: for properties, it's possible they're write only. I'm not going to validate that extreme edge case.
+		// If you're trying to wrap such a property then you don't deserve to be using these APIs :P
 
 		/// <summary>Generate a specific member getter for a specific type</summary>
 		/// <typeparam name="T">The type which contains the member</typeparam>
@@ -128,6 +131,36 @@ namespace KSoft.Reflection
 		/// <param name="value">The new value to set the member to</param>
 		public delegate void ReferenceTypeMemberSetterDelegate<in T, in V>(T @this, V value);
 
+		static void ValidatePropertyForGenerateSetter(Reflect.MemberInfo member)
+		{
+			if (member.MemberType != Reflect.MemberTypes.Property)
+				return;
+
+			var prop_info = (Reflect.PropertyInfo)member;
+			if (!prop_info.CanWrite)
+				throw new MemberAccessException("Tried to generate setter for get-only property " + 
+					member.Name + " in " + member.ReflectedType);
+		}
+		static void ValidateMemberForGenerateSetter(Reflect.MemberInfo member)
+		{
+			switch(member.MemberType)
+			{
+			case Reflect.MemberTypes.Field:
+				if (((Reflect.FieldInfo)member).IsInitOnly)
+					throw new MemberAccessException("Tried to generate setter for readonly field " +
+						member.Name + " in " + member.ReflectedType);
+				break;
+
+			case Reflect.MemberTypes.Property:
+				ValidatePropertyForGenerateSetter(member);
+				break;
+
+			default:
+				throw new MemberAccessException("Tried to generate setter for unsupported member type " +
+					member.Name + " in " + member.ReflectedType);
+			}
+		}
+
 		/// <summary>Generate a specific member setter for a specific value type</summary>
 		/// <typeparam name="T">The type which contains the member</typeparam>
 		/// <typeparam name="V">The member's actual type</typeparam>
@@ -154,6 +187,9 @@ namespace KSoft.Reflection
 			var param_this =	Expr.Parameter(this_ref, kThisName);
 			var param_value =	Expr.Parameter(typeof(V), kValueName);			// the member's new value
 			var member =		Expr.PropertyOrField(param_this, memberName);	// i.e., 'this.memberName'
+
+			ValidateMemberForGenerateSetter(member.Member);
+
 			var assign =		Expr.Assign(member, param_value);				// i.e., 'this.memberName = value'
 			var lambda =		Expr.Lambda<ValueTypeMemberSetterDelegate<T, V>>(
 									assign, param_this, param_value);
@@ -166,6 +202,7 @@ namespace KSoft.Reflection
 		/// <typeparam name="V">The member's actual type</typeparam>
 		/// <param name="memberName">The member's name as defined in <typeparamref name="T"/></param>
 		/// <returns>A compiled lambda which can access (set) the member</returns>
+		/// <exception cref="MemberAccessException"><paramref name="memberName"/> is readonly</exception>
 		/// <remarks>Generates a method similar to this:
 		/// <code>
 		/// void SetMethod(T @this, V value)
@@ -183,6 +220,9 @@ namespace KSoft.Reflection
 			var param_this =	Expr.Parameter(typeof(T), kThisName);
 			var param_value =	Expr.Parameter(typeof(V), kValueName);			// the member's new value
 			var member =		Expr.PropertyOrField(param_this, memberName);	// i.e., 'this.memberName'
+
+			ValidateMemberForGenerateSetter(member.Member);
+
 			var assign =		Expr.Assign(member, param_value);				// i.e., 'this.memberName = value'
 			var lambda =		Expr.Lambda<ReferenceTypeMemberSetterDelegate<T, V>>(
 									assign, param_this, param_value);
@@ -194,6 +234,7 @@ namespace KSoft.Reflection
 		/// <param name="type">The type which contains the member</param>
 		/// <param name="memberName">The member's name as defined in <paramref name="type"/></param>
 		/// <returns>A compiled lambda which can access (set) the member</returns>
+		/// <exception cref="MemberAccessException"><paramref name="memberName"/> is readonly</exception>
 		/// <remarks>Generates a method similar to this:
 		/// <code>
 		/// void SetMethod(object @this, V value)
@@ -213,6 +254,9 @@ namespace KSoft.Reflection
 			var param_value =	Expr.Parameter(typeof(V), kValueName);			// the member's new value
 			var cast_this =		Expr.Convert(param_this, type);					// i.e., '((type)this)'
 			var member =		Expr.PropertyOrField(cast_this, memberName);	// i.e., 'this.memberName'
+
+			ValidateMemberForGenerateSetter(member.Member);
+
 			var assign =		Expr.Assign(member, param_value);				// i.e., 'this.memberName = value'
 			var lambda =		Expr.Lambda<ReferenceTypeMemberSetterDelegate<object, V>>(
 									assign, param_this, param_value);
@@ -241,6 +285,9 @@ namespace KSoft.Reflection
 
 			var param_value =	Expr.Parameter(typeof(V), kValueName);		// the member's new value
 			var member =		Expr.Property(null, typeof(T), memberName);	// i.e., 'T.memberName'
+
+			ValidatePropertyForGenerateSetter(member.Member);
+
 			var assign =		Expr.Assign(member, param_value);			// i.e., 'T.memberName = value'
 			var lambda =		Expr.Lambda<Action<V>>(assign, param_value);
 
@@ -251,6 +298,7 @@ namespace KSoft.Reflection
 		/// <typeparam name="V">The static member's actual type</typeparam>
 		/// <param name="memberName">The member's name as defined in <typeparamref name="T"/></param>
 		/// <returns>A compiled lambda which can access (set) the member</returns>
+		/// <exception cref="MemberAccessException"><paramref name="memberName"/> is readonly</exception>
 		/// <remarks>Generates a method similar to this:
 		/// <code>
 		/// void SetMethod(V value)
@@ -267,6 +315,9 @@ namespace KSoft.Reflection
 
 			var param_value =	Expr.Parameter(typeof(V), kValueName);		// the member's new value
 			var member =		Expr.Field(null, typeof(T), memberName);	// i.e., 'T.memberName'
+
+			ValidateMemberForGenerateSetter(member.Member);
+
 			var assign =		Expr.Assign(member, param_value);			// i.e., 'T.memberName = value'
 			var lambda =		Expr.Lambda<Action<V>>(assign, param_value);
 

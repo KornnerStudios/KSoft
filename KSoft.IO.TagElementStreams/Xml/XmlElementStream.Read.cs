@@ -30,7 +30,9 @@ namespace KSoft.IO
 			ValidateReadPermission();
 
 			XmlElement n = Cursor[name];
-			Contract.Assert(n != null, name);
+			if (n == null)
+				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
+					"Element doesn't exist: " + name));
 
 			oldCursor = Cursor;
 			// update the error state with the node we're about to read from
@@ -47,7 +49,9 @@ namespace KSoft.IO
 			ValidateReadPermission();
 
 			XmlElement n = Cursor[name];
-			Contract.Assert(n != null, name);
+			if (n == null)
+				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
+					"Element doesn't exist: " + name));
 
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
@@ -61,8 +65,11 @@ namespace KSoft.IO
 			ValidateReadPermission();
 
 			XmlNode n = Cursor.Attributes[name];
-			Contract.Assert(n != null, name);
+			if (n == null)
+				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
+					"Attribute doesn't exist: " + name));
 
+			Contract.Assume(n != null);
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
 			return n.Value;
@@ -86,10 +93,10 @@ namespace KSoft.IO
 
 			// NOTE: GetInnerText will probably overwrite ReadErrorNode anyway
 			string it = GetInnerText(n);
-			if (!string.IsNullOrEmpty(it))
-				return it;
 
-			return null;
+			return !string.IsNullOrEmpty(it)
+				? it
+				: null;
 		}
 		#endregion
 
