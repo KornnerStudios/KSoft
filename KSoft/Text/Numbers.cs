@@ -29,6 +29,7 @@ namespace KSoft
 		public const string kBase64Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+		[Contracts.Pure]
 		static bool HandleParseError(ParseErrorType errorType, string s, int startIndex,
 			Func<Exception> getInnerException)
 		{
@@ -88,6 +89,102 @@ namespace KSoft
 
 				Separator = separator;
 				Terminator = terminator;
+			}
+
+			[Contracts.Pure]
+			internal int PredictedCount(string values)
+			{
+				Contract.Assume(values != null);
+
+				int count = 1;
+
+				// using StringSegment and its Enumerator won't allocate any reference types
+				var sseg = new Collections.StringSegment(values);
+				foreach(char c in sseg)
+				{
+					if (c == Separator)
+						count++;
+					else if (c == Terminator)
+						break;
+				}
+
+				return count;
+			}
+		};
+
+		// TODO: IsWhiteSpace can be rather expensive, and it is used in TryParseImpl. Perhaps we can make a variant
+		// that can safely assume all characters are non-ws, and have TryParseList impls call it instead?
+		// The TryParse() below would need to be updated to catch trailing ws
+		
+		// TODO: add an option to just flat out skip unsuccessful items?
+
+		abstract class TryParseNumberListBase<T, TListItem>
+			where T : struct
+		{
+			protected readonly StringListDesc mDesc;
+			protected readonly string mValues;
+			protected List<TListItem> mList;
+
+			protected TryParseNumberListBase(StringListDesc desc, string values)
+			{
+				mDesc = desc;
+				mValues = values;
+			}
+
+			protected abstract IEnumerable<T?> EmptyResult { get; }
+
+			void InitializeList()
+			{
+				// ReSharper disable once ImpureMethodCallOnReadonlyValueField - yes IT IS fucking Pure you POS
+				int predicated_count = mDesc.PredictedCount(mValues);
+				mList = new List<TListItem>(predicated_count);
+			}
+
+			protected abstract TListItem CreateItem(int start, int length);
+
+			protected abstract IEnumerable<T?> CreateResult();
+
+			public IEnumerable<T?> TryParse()
+			{
+				if (mValues == null)
+					return EmptyResult;
+
+				InitializeList();
+
+				bool found_terminator = false;
+				int value_length = mValues.Length;
+				for (int start = 0; !found_terminator && start < value_length; )
+				{
+					// Skip any starting whitespace
+					while (start < value_length && char.IsWhiteSpace(mValues[start]))
+						++start;
+
+					int end = start;
+					int length = 0;
+					while (end < value_length)
+					{
+						char c = mValues[end];
+						found_terminator = c == mDesc.Terminator;
+						// NOTE: TryParseImpl actually handles leading and trailing whitespace
+						if (c == mDesc.Separator || found_terminator)
+							break;
+
+						// NOTE: we wouldn't want to update length if we hit ws before the separator and the TryParseImpl assumes no ws
+						++length;
+						++end;
+					}
+
+					if (length > 0)
+						mList.Add(CreateItem(start, length));
+
+					start = end + 1;
+				}
+				
+				// TODO: should we add support for throwing an exception or such when a terminator isn't encountered?
+
+				return mList.Count == 0
+					? EmptyResult
+					: CreateResult();
 			}
 		};
 	};

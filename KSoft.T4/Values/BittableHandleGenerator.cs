@@ -26,9 +26,9 @@ namespace KSoft.T4.Values
 		const string kNullFieldName = "Null";
 		#endregion
 
-		TextTemplating.TextTransformation mFile;
-		string mUnderlyingTypeName;
-		string mStructName;
+		readonly TextTemplating.TextTransformation mFile;
+		readonly string mUnderlyingTypeName;
+		readonly string mStructName;
 
 		public string BackingFieldName { get; set; }
 

@@ -22,7 +22,7 @@ namespace KSoft
 
 
 
-			for(var radix_in_word = (uint)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (uint)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -34,7 +34,10 @@ namespace KSoft
 					result += (uint)x;
 				}
 				else // Character wasn't found in the look-up table, it is invalid
+				{
 					success = false;
+					break;
+				}
 			}
 
 
@@ -96,7 +99,7 @@ namespace KSoft
 					++pos;
 			}
 
-			for(var radix_in_word = (int)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (int)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -108,7 +111,10 @@ namespace KSoft
 					result += (int)x;
 				}
 				else // Character wasn't found in the look-up table, it is invalid
+				{
 					success = false;
+					break;
+				}
 			}
 
 			// Negate the result if anything was processed 
@@ -162,7 +168,7 @@ namespace KSoft
 
 
 
-			for(var radix_in_word = (ulong)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (ulong)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -174,7 +180,10 @@ namespace KSoft
 					result += (ulong)x;
 				}
 				else // Character wasn't found in the look-up table, it is invalid
+				{
 					success = false;
+					break;
+				}
 			}
 
 
@@ -236,7 +245,7 @@ namespace KSoft
 					++pos;
 			}
 
-			for(var radix_in_word = (long)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (long)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -248,7 +257,10 @@ namespace KSoft
 					result += (long)x;
 				}
 				else // Character wasn't found in the look-up table, it is invalid
+				{
 					success = false;
+					break;
+				}
 			}
 
 			// Negate the result if anything was processed 
@@ -709,499 +721,691 @@ namespace KSoft
 		#endregion
 
 		#region TryParse list Byte
-		static readonly Lazy<byte?[]> kTryParseListByteEmptyResult = 
-			new Lazy<byte?[]>(() => new byte?[0]);
-
-		static byte? TryParseListTaskByte(object state)
+		abstract class TryParseByteListBase<TListItem>
+			: TryParseNumberListBase<
+					byte,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			byte result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (byte?)null;
-		}
-		public static IEnumerable<byte?> TryParseByte(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListByteEmptyResult.Value;
-
-			var tasks_list = new List<Task<byte?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseByteListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<byte?>.Factory.StartNew(TryParseListTaskByte,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<byte?[]> kEmptyResult = 
+				new Lazy<byte?[]>(() => new byte?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListByteEmptyResult.Value;
+			protected override IEnumerable<byte?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected byte? ProcessItem(int start, int length)
+			{
+				var result = (byte)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (byte?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseByteListAsync
+			: TryParseByteListBase< Task<byte?> >
+		{
+			public TryParseByteListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static byte? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseByteListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<byte?> CreateItem(int start, int length)
+			{
+				return Task<byte?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseByteListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<byte?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<byte?> TryParseByteAsync(StringListDesc desc, string values)
+		{
+			return new TryParseByteListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseByteList
+			: TryParseByteListBase< byte? >
+		{
+			public TryParseByteList(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override byte? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<byte?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<byte?> TryParseByte(StringListDesc desc, string values)
+		{
+			return new TryParseByteList(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list SByte
-		static readonly Lazy<sbyte?[]> kTryParseListSByteEmptyResult = 
-			new Lazy<sbyte?[]>(() => new sbyte?[0]);
-
-		static sbyte? TryParseListTaskSByte(object state)
+		abstract class TryParseSByteListBase<TListItem>
+			: TryParseNumberListBase<
+					sbyte,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			sbyte result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (sbyte?)null;
-		}
-		public static IEnumerable<sbyte?> TryParseSByte(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListSByteEmptyResult.Value;
-
-			var tasks_list = new List<Task<sbyte?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseSByteListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<sbyte?>.Factory.StartNew(TryParseListTaskSByte,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<sbyte?[]> kEmptyResult = 
+				new Lazy<sbyte?[]>(() => new sbyte?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListSByteEmptyResult.Value;
+			protected override IEnumerable<sbyte?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected sbyte? ProcessItem(int start, int length)
+			{
+				var result = (sbyte)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (sbyte?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseSByteListAsync
+			: TryParseSByteListBase< Task<sbyte?> >
+		{
+			public TryParseSByteListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static sbyte? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseSByteListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<sbyte?> CreateItem(int start, int length)
+			{
+				return Task<sbyte?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseSByteListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<sbyte?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<sbyte?> TryParseSByteAsync(StringListDesc desc, string values)
+		{
+			return new TryParseSByteListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseSByteList
+			: TryParseSByteListBase< sbyte? >
+		{
+			public TryParseSByteList(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override sbyte? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<sbyte?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<sbyte?> TryParseSByte(StringListDesc desc, string values)
+		{
+			return new TryParseSByteList(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list UInt16
-		static readonly Lazy<ushort?[]> kTryParseListUInt16EmptyResult = 
-			new Lazy<ushort?[]>(() => new ushort?[0]);
-
-		static ushort? TryParseListTaskUInt16(object state)
+		abstract class TryParseUInt16ListBase<TListItem>
+			: TryParseNumberListBase<
+					ushort,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			ushort result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (ushort?)null;
-		}
-		public static IEnumerable<ushort?> TryParseUInt16(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListUInt16EmptyResult.Value;
-
-			var tasks_list = new List<Task<ushort?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseUInt16ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<ushort?>.Factory.StartNew(TryParseListTaskUInt16,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<ushort?[]> kEmptyResult = 
+				new Lazy<ushort?[]>(() => new ushort?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListUInt16EmptyResult.Value;
+			protected override IEnumerable<ushort?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected ushort? ProcessItem(int start, int length)
+			{
+				var result = (ushort)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (ushort?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseUInt16ListAsync
+			: TryParseUInt16ListBase< Task<ushort?> >
+		{
+			public TryParseUInt16ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static ushort? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseUInt16ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<ushort?> CreateItem(int start, int length)
+			{
+				return Task<ushort?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseUInt16ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<ushort?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<ushort?> TryParseUInt16Async(StringListDesc desc, string values)
+		{
+			return new TryParseUInt16ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseUInt16List
+			: TryParseUInt16ListBase< ushort? >
+		{
+			public TryParseUInt16List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override ushort? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<ushort?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<ushort?> TryParseUInt16(StringListDesc desc, string values)
+		{
+			return new TryParseUInt16List(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list Int16
-		static readonly Lazy<short?[]> kTryParseListInt16EmptyResult = 
-			new Lazy<short?[]>(() => new short?[0]);
-
-		static short? TryParseListTaskInt16(object state)
+		abstract class TryParseInt16ListBase<TListItem>
+			: TryParseNumberListBase<
+					short,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			short result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (short?)null;
-		}
-		public static IEnumerable<short?> TryParseInt16(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListInt16EmptyResult.Value;
-
-			var tasks_list = new List<Task<short?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseInt16ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<short?>.Factory.StartNew(TryParseListTaskInt16,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<short?[]> kEmptyResult = 
+				new Lazy<short?[]>(() => new short?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListInt16EmptyResult.Value;
+			protected override IEnumerable<short?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected short? ProcessItem(int start, int length)
+			{
+				var result = (short)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (short?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseInt16ListAsync
+			: TryParseInt16ListBase< Task<short?> >
+		{
+			public TryParseInt16ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static short? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseInt16ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<short?> CreateItem(int start, int length)
+			{
+				return Task<short?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseInt16ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<short?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<short?> TryParseInt16Async(StringListDesc desc, string values)
+		{
+			return new TryParseInt16ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseInt16List
+			: TryParseInt16ListBase< short? >
+		{
+			public TryParseInt16List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override short? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<short?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<short?> TryParseInt16(StringListDesc desc, string values)
+		{
+			return new TryParseInt16List(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list UInt32
-		static readonly Lazy<uint?[]> kTryParseListUInt32EmptyResult = 
-			new Lazy<uint?[]>(() => new uint?[0]);
-
-		static uint? TryParseListTaskUInt32(object state)
+		abstract class TryParseUInt32ListBase<TListItem>
+			: TryParseNumberListBase<
+					uint,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			uint result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (uint?)null;
-		}
-		public static IEnumerable<uint?> TryParseUInt32(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListUInt32EmptyResult.Value;
-
-			var tasks_list = new List<Task<uint?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseUInt32ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<uint?>.Factory.StartNew(TryParseListTaskUInt32,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<uint?[]> kEmptyResult = 
+				new Lazy<uint?[]>(() => new uint?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListUInt32EmptyResult.Value;
+			protected override IEnumerable<uint?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected uint? ProcessItem(int start, int length)
+			{
+				var result = (uint)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (uint?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseUInt32ListAsync
+			: TryParseUInt32ListBase< Task<uint?> >
+		{
+			public TryParseUInt32ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static uint? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseUInt32ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<uint?> CreateItem(int start, int length)
+			{
+				return Task<uint?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseUInt32ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<uint?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<uint?> TryParseUInt32Async(StringListDesc desc, string values)
+		{
+			return new TryParseUInt32ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseUInt32List
+			: TryParseUInt32ListBase< uint? >
+		{
+			public TryParseUInt32List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override uint? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<uint?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<uint?> TryParseUInt32(StringListDesc desc, string values)
+		{
+			return new TryParseUInt32List(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list Int32
-		static readonly Lazy<int?[]> kTryParseListInt32EmptyResult = 
-			new Lazy<int?[]>(() => new int?[0]);
-
-		static int? TryParseListTaskInt32(object state)
+		abstract class TryParseInt32ListBase<TListItem>
+			: TryParseNumberListBase<
+					int,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			int result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (int?)null;
-		}
-		public static IEnumerable<int?> TryParseInt32(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListInt32EmptyResult.Value;
-
-			var tasks_list = new List<Task<int?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseInt32ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<int?>.Factory.StartNew(TryParseListTaskInt32,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<int?[]> kEmptyResult = 
+				new Lazy<int?[]>(() => new int?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListInt32EmptyResult.Value;
+			protected override IEnumerable<int?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected int? ProcessItem(int start, int length)
+			{
+				var result = (int)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (int?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseInt32ListAsync
+			: TryParseInt32ListBase< Task<int?> >
+		{
+			public TryParseInt32ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static int? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseInt32ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<int?> CreateItem(int start, int length)
+			{
+				return Task<int?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseInt32ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<int?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<int?> TryParseInt32Async(StringListDesc desc, string values)
+		{
+			return new TryParseInt32ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseInt32List
+			: TryParseInt32ListBase< int? >
+		{
+			public TryParseInt32List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override int? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<int?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<int?> TryParseInt32(StringListDesc desc, string values)
+		{
+			return new TryParseInt32List(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list UInt64
-		static readonly Lazy<ulong?[]> kTryParseListUInt64EmptyResult = 
-			new Lazy<ulong?[]>(() => new ulong?[0]);
-
-		static ulong? TryParseListTaskUInt64(object state)
+		abstract class TryParseUInt64ListBase<TListItem>
+			: TryParseNumberListBase<
+					ulong,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			ulong result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (ulong?)null;
-		}
-		public static IEnumerable<ulong?> TryParseUInt64(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListUInt64EmptyResult.Value;
-
-			var tasks_list = new List<Task<ulong?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseUInt64ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<ulong?>.Factory.StartNew(TryParseListTaskUInt64,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<ulong?[]> kEmptyResult = 
+				new Lazy<ulong?[]>(() => new ulong?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListUInt64EmptyResult.Value;
+			protected override IEnumerable<ulong?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected ulong? ProcessItem(int start, int length)
+			{
+				var result = (ulong)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (ulong?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseUInt64ListAsync
+			: TryParseUInt64ListBase< Task<ulong?> >
+		{
+			public TryParseUInt64ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static ulong? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseUInt64ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<ulong?> CreateItem(int start, int length)
+			{
+				return Task<ulong?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseUInt64ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<ulong?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<ulong?> TryParseUInt64Async(StringListDesc desc, string values)
+		{
+			return new TryParseUInt64ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseUInt64List
+			: TryParseUInt64ListBase< ulong? >
+		{
+			public TryParseUInt64List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override ulong? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<ulong?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<ulong?> TryParseUInt64(StringListDesc desc, string values)
+		{
+			return new TryParseUInt64List(desc, values).TryParse();
 		}
 		#endregion
 		#region TryParse list Int64
-		static readonly Lazy<long?[]> kTryParseListInt64EmptyResult = 
-			new Lazy<long?[]>(() => new long?[0]);
-
-		static long? TryParseListTaskInt64(object state)
+		abstract class TryParseInt64ListBase<TListItem>
+			: TryParseNumberListBase<
+					long,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			long result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (long?)null;
-		}
-		public static IEnumerable<long?> TryParseInt64(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseListInt64EmptyResult.Value;
-
-			var tasks_list = new List<Task<long?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected TryParseInt64ListBase(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<long?>.Factory.StartNew(TryParseListTaskInt64,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
+			static readonly Lazy<long?[]> kEmptyResult = 
+				new Lazy<long?[]>(() => new long?[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseListInt64EmptyResult.Value;
+			protected override IEnumerable<long?> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected long? ProcessItem(int start, int length)
+			{
+				var result = (long)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (long?)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class TryParseInt64ListAsync
+			: TryParseInt64ListBase< Task<long?> >
+		{
+			public TryParseInt64ListAsync(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static long? ProcessItemAsync(object state)
+			{
+				var args = (Tuple<TryParseInt64ListAsync, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<long?> CreateItem(int start, int length)
+			{
+				return Task<long?>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<TryParseInt64ListAsync, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<long?> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<long?> TryParseInt64Async(StringListDesc desc, string values)
+		{
+			return new TryParseInt64ListAsync(desc, values).TryParse();
+		}
+
+		sealed class TryParseInt64List
+			: TryParseInt64ListBase< long? >
+		{
+			public TryParseInt64List(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override long? CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<long?> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<long?> TryParseInt64(StringListDesc desc, string values)
+		{
+			return new TryParseInt64List(desc, values).TryParse();
 		}
 		#endregion
 	};

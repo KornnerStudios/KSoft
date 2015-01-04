@@ -49,7 +49,7 @@ namespace KSoft
 			}
 <#		} #>
 
-			for(var radix_in_word = (<#= prim_keyword #>)radix; success && pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for(var radix_in_word = (<#= prim_keyword #>)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -64,7 +64,10 @@ namespace KSoft
 					result += (<#= prim_keyword #>)x;
 				}
 				else // Character wasn't found in the look-up table, it is invalid
+				{
 					success = false;
+					break;
+				}
 			}
 
 <#		if (is_signed) { #>
@@ -198,68 +201,95 @@ namespace KSoft
 <# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
 <#	if (!num_type.IsInteger) continue;
 	var prim_keyword = num_type.Keyword;
+	var prim_keyword_nullable = num_type.Keyword + "?";
+	var try_parse_num_list_base_name = "TryParse" + num_type.Code + "List" + "Base";
+	var try_parse_num_list_sync_name = "TryParse" + num_type.Code + "List";
+	var try_parse_num_list_async_name ="TryParse" + num_type.Code + "List" + "Async";
 #>
 		#region TryParse list <#= num_type.Code #>
-		static readonly Lazy<<#= prim_keyword #>?[]> kTryParseList<#= num_type.Code #>EmptyResult = 
-			new Lazy<<#= prim_keyword #>?[]>(() => new <#= prim_keyword #>?[0]);
-
-		static <#= prim_keyword #>? TryParseListTask<#= num_type.Code #>(object state)
+		abstract class <#= try_parse_num_list_base_name #><TListItem>
+			: TryParseNumberListBase<
+					<#= prim_keyword #>,
+					TListItem
+				>
 		{
-			var args = (Tuple<StringListDesc, string, int, int>)state;
-			var desc = args.Item1;
-			<#= prim_keyword #> result = 0;
-			bool success = TryParseImpl(args.Item2, ref result, (int)desc.Radix, args.Item3, args.Item4, desc.Digits);
-			return success ? result : (<#= prim_keyword #>?)null;
-		}
-		public static IEnumerable<<#= prim_keyword #>?> TryParse<#= num_type.Code #>(StringListDesc desc, string values)
-		{
-			if(values == null)
-				return kTryParseList<#= num_type.Code #>EmptyResult.Value;
-
-			var tasks_list = new List<Task<<#= prim_keyword #>?>>();
-
-			char c;
-			bool found_terminator = false;
-			for (int start = 0; !found_terminator && start < values.Length; )
+			protected <#= try_parse_num_list_base_name #>(StringListDesc desc, string values)
+				: base(desc, values)
 			{
-				// Skip any starting whitespace
-				while (start < values.Length && char.IsWhiteSpace(values[start]))
-					++start;
-
-				int end = start;
-				int length = 0;
-				while (end < values.Length)
-				{
-					c = values[end];
-					found_terminator = c == desc.Terminator;
-					if (c == desc.Separator || found_terminator)
-						break;
-
-					++end;
-					++length;
-				}
-
-				if (length > 0)
-					tasks_list.Add(Task<<#= prim_keyword #>?>.Factory.StartNew(TryParseListTask<#= num_type.Code #>,
-						new Tuple<StringListDesc, string, int, int>(desc, values, start, length))
-						);
-
-				start = end + 1;
 			}
 
-<# // TODO: should we add support for throwing an exception or such when a terminator isn't encountered? #>
+			static readonly Lazy<<#= prim_keyword_nullable #>[]> kEmptyResult = 
+				new Lazy<<#= prim_keyword_nullable #>[]>(() => new <#= prim_keyword_nullable #>[0]);
 
-			if(tasks_list.Count == 0)
-				return kTryParseList<#= num_type.Code #>EmptyResult.Value;
+			protected override IEnumerable<<#= prim_keyword_nullable #>> EmptyResult { get {
+				return kEmptyResult.Value;
+			} }
 
-			var tasks = tasks_list.ToArray();
-			tasks_list = null;
-			Task.WaitAll(tasks);
+			protected <#= prim_keyword_nullable #> ProcessItem(int start, int length)
+			{
+				var result = (<#= prim_keyword #>)0;
+				bool success = TryParseImpl(mValues, ref result, (int)mDesc.Radix, start, length, mDesc.Digits);
+				return success
+					? result
+					: (<#= prim_keyword_nullable #>)null;
+			}
+		};
 
-			var results =	from task in tasks
-							select task.Result;
+		sealed class <#= try_parse_num_list_async_name #>
+			: <#= try_parse_num_list_base_name #>< Task<<#= prim_keyword_nullable #>> >
+		{
+			public <#= try_parse_num_list_async_name #>(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
 
-			return results;
+			static <#= prim_keyword_nullable #> ProcessItemAsync(object state)
+			{
+				var args = (Tuple<<#= try_parse_num_list_async_name #>, int, int>)state;
+				var me = args.Item1;
+				return me.ProcessItem(args.Item2, args.Item3);
+			}
+			protected override Task<<#= prim_keyword_nullable #>> CreateItem(int start, int length)
+			{
+				return Task<<#= prim_keyword_nullable #>>.Factory.StartNew(
+						ProcessItemAsync,
+						new Tuple<<#= try_parse_num_list_async_name #>, int, int>(this, start, length)
+					);
+			}
+
+			protected override IEnumerable<<#= prim_keyword_nullable #>> CreateResult()
+			{
+				return 
+					from task in mList
+					select task.Result;
+			}
+		};
+		public static IEnumerable<<#= prim_keyword_nullable #>> TryParse<#= num_type.Code #>Async(StringListDesc desc, string values)
+		{
+			return new <#= try_parse_num_list_async_name #>(desc, values).TryParse();
+		}
+
+		sealed class <#= try_parse_num_list_sync_name #>
+			: <#= try_parse_num_list_base_name #>< <#= prim_keyword_nullable #> >
+		{
+			public <#= try_parse_num_list_sync_name #>(StringListDesc desc, string values)
+				: base(desc, values)
+			{
+			}
+
+			protected override <#= prim_keyword_nullable #> CreateItem(int start, int length)
+			{
+				return base.ProcessItem(start, length);
+			}
+
+			protected override IEnumerable<<#= prim_keyword_nullable #>> CreateResult()
+			{
+				return mList;
+			}
+		};
+		public static IEnumerable<<#= prim_keyword_nullable #>> TryParse<#= num_type.Code #>(StringListDesc desc, string values)
+		{
+			return new <#= try_parse_num_list_sync_name #>(desc, values).TryParse();
 		}
 		#endregion
 <# } #>

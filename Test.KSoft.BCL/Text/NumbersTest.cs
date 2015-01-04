@@ -35,6 +35,12 @@ namespace KSoft.Text.Test
 
 			results = Numbers.TryParseInt32(desc, kInt32ListStringWithSpaces);
 			VerifyTryParseInt32List(results);
+
+			results = Numbers.TryParseInt32Async(desc, kInt32ListString);
+			VerifyTryParseInt32List(results);
+
+			results = Numbers.TryParseInt32Async(desc, kInt32ListStringWithSpaces);
+			VerifyTryParseInt32List(results);
 		}
 		[TestMethod]
 		public void Text_NumbersToStringListTest()
@@ -57,6 +63,12 @@ namespace KSoft.Text.Test
 
 			results = Numbers.TryParseInt32(desc, kInt32ListStringWithSpaces + desc.Terminator + k_garbage_chars);
 			VerifyTryParseInt32List(results);
+
+			results = Numbers.TryParseInt32Async(desc, kInt32ListString + desc.Terminator + k_garbage_chars);
+			VerifyTryParseInt32List(results);
+
+			results = Numbers.TryParseInt32Async(desc, kInt32ListStringWithSpaces + desc.Terminator + k_garbage_chars);
+			VerifyTryParseInt32List(results);
 		}
 		[TestMethod]
 		public void Text_NumbersToStringListWithTerminatorTest()
@@ -66,6 +78,22 @@ namespace KSoft.Text.Test
 
 			var result = Numbers.ToStringList(desc, kInt32List, e => true);
 			Assert.AreEqual(kInt32ListString + desc.Terminator, result);
+		}
+
+		[TestMethod]
+		[Description("dotTrace profiling method")]
+		public void Text_NumbersStringListParseTestProfile()
+		{
+			var desc = Numbers.StringListDesc.Default;
+
+			for(int x = 0; x < 100000; x++)
+			{
+				var results_async = Numbers.TryParseInt32Async(desc, kInt32ListString);
+				var results_sync = Numbers.TryParseInt32(desc, kInt32ListString);
+
+				VerifyTryParseInt32List(results_sync);
+				VerifyTryParseInt32List(results_async);
+			}
 		}
 		#endregion
 	};

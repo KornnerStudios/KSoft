@@ -172,7 +172,7 @@ namespace KSoft.T4
 		public abstract class CharToByteLookupTableCodeGeneratorBase
 			: CharLookupTableCodeGeneratorBase
 		{
-			public CharToByteLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
+			protected CharToByteLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
 			{
 			}
@@ -240,7 +240,7 @@ namespace KSoft.T4
 		public abstract class CharIsDigitLookupTableCodeGeneratorBase
 			: CharLookupTableCodeGeneratorBase
 		{
-			public CharIsDigitLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
+			protected CharIsDigitLookupTableCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 				: base(ttFile)
 			{
 			}
@@ -350,7 +350,7 @@ namespace KSoft.T4
 				}
 
 				var bits = BuildBitArray();
-				byte[] bitvector = new byte[GetBitArrayLength(bits.Length, kVectorElementBitSize)];
+				var bitvector = new byte[GetBitArrayLength(bits.Length, kVectorElementBitSize)];
 				bits.CopyTo(bitvector, 0);
 
 				for (int x = 0, column = 0, row = 0;
