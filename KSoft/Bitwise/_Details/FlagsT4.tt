@@ -80,7 +80,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> != <paramref name="rhs"/></returns>
 		public static <#= prim_keyword #> Add(<#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
 		{
-			return lhs |= rhs;
+			return lhs | rhs;
 		}
 		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector reference</param>
@@ -103,7 +103,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> AND-EQUALS ~<paramref name="rhs"/></returns>
 		public static <#= prim_keyword #> Remove(<#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
 		{
-			return lhs &= ~rhs;
+			return lhs & ~rhs;
 		}
 		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>
@@ -111,6 +111,29 @@ namespace KSoft.Bitwise
 		public static void Remove(ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
 		{
 			lhs &= ~rhs;
+		}
+
+<# } #>
+		#endregion
+
+		#region Toggle
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+#>
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		/// <returns><paramref name="lhs"/> XOR-EQUALS <paramref name="rhs"/></returns>
+		public static <#= prim_keyword #> Toggle(<#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			return lhs ^ rhs;
+		}
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		public static void Toggle(ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
+		{
+			lhs ^= rhs;
 		}
 
 <# } #>

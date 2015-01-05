@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Debug = System.Diagnostics.Debug;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4.Bitwise
 {
+	public enum BitOperation
+	{
+		Clear,
+		Set,
+		Toggle,
+		Test,
+
+		kFirst = Clear,
+		kLast = Test
+	};
+
 	public static partial class BitwiseT4
 	{
 		public const int kBitsPerByte = sizeof(byte) * 8;
@@ -62,6 +74,64 @@ namespace KSoft.T4.Bitwise
 		} }
 		#endregion
 
+		#region BitOperation extensions
+		public static string FlagsMethod(this BitOperation op)
+		{
+			switch (op)
+			{
+			case BitOperation.Clear:	return "Bitwise.Flags.Remove";
+			case BitOperation.Set:		return "Bitwise.Flags.Add";
+			case BitOperation.Toggle:	return "Bitwise.Flags.Toggle";
+			case BitOperation.Test:		return "Bitwise.Flags.Test";
+
+			default: throw new InvalidOperationException(op.ToString());
+			}
+		}
+		public static string FlagsMethodBitsPrefix(this BitOperation op)
+		{
+			switch (op)
+			{
+			case BitOperation.Clear:
+			case BitOperation.Set:
+			case BitOperation.Toggle:
+				return "ref";
+
+			default:
+				return "";
+			}
+		}
+		public static string ResultType(this BitOperation op)
+		{
+			switch (op)
+			{
+			case BitOperation.Test:
+				return "bool";
+
+			default:
+				return "void";
+			}
+		}
+		public static string ResultDefault(this BitOperation op)
+		{
+			switch (op)
+			{
+			case BitOperation.Test:
+				return "false";
+
+			default:
+				return "";
+			}
+		}
+		public static bool IsNotPure(this BitOperation op)
+		{
+			return op != BitOperation.Test;
+		}
+		public static bool RequiresCardinalityReUpdate(this BitOperation op)
+		{
+			return op == BitOperation.Set || op == BitOperation.Toggle;
+		}
+		#endregion
+
 		#region BittableTypes
 		static readonly IReadOnlyList<NumberCodeDefinition> kBittableTypes_Unsigned = new List<NumberCodeDefinition> {
 			PrimitiveDefinitions.kByte,
@@ -79,9 +149,7 @@ namespace KSoft.T4.Bitwise
 		} }
 
 		public static IEnumerable<NumberCodeDefinition> BittableTypes { get {
-			foreach (var num_type in PrimitiveDefinitions.Numbers)
-				if (num_type.IsInteger)
-					yield return num_type;
+			return PrimitiveDefinitions.Numbers.Where(num_type => num_type.IsInteger);
 		} }
 
 		public static IEnumerable<NumberCodeDefinition> BittableTypesInt32 { get {
@@ -94,14 +162,14 @@ namespace KSoft.T4.Bitwise
 		{
 			static readonly string kByteKeyword = NumberCodeDefinition.TypeCodeToKeyword(TypeCode.Byte);
 
-			TextTemplating.TextTransformation mFile;
-			NumberCodeDefinition mDef;
-			int mSizeOfInBits;
-			int mSizeOfInBytes;
-			string mByteName;
+			readonly TextTemplating.TextTransformation mFile;
+			//readonly NumberCodeDefinition mDef;
+			readonly int mSizeOfInBits;
+			readonly int mSizeOfInBytes;
+			readonly string mByteName;
 
-			string mBufferName;
-			string mOffsetName; // NOTE: offset variable must be mutable!
+			readonly string mBufferName;
+			readonly string mOffsetName; // NOTE: offset variable must be mutable!
 
 			public IntegerByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
 				NumberCodeDefinition def,
@@ -109,12 +177,12 @@ namespace KSoft.T4.Bitwise
 				int bitCount = -1)
 			{
 				mFile = ttFile;
-				mDef = def;
+				//mDef = def;
 				mSizeOfInBits = bitCount == -1
-					? mDef.SizeOfInBits
+					? def.SizeOfInBits
 					: bitCount;
 				mSizeOfInBytes = bitCount == -1
-					? mDef.SizeOfInBytes
+					? def.SizeOfInBytes
 					: bitCount / kBitsPerByte;
 				mByteName = byteName;
 

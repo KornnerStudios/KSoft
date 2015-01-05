@@ -224,7 +224,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> != <paramref name="rhs"/></returns>
 		public static uint Add(uint lhs, uint rhs)
 		{
-			return lhs |= rhs;
+			return lhs | rhs;
 		}
 		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector reference</param>
@@ -240,7 +240,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> != <paramref name="rhs"/></returns>
 		public static ulong Add(ulong lhs, ulong rhs)
 		{
-			return lhs |= rhs;
+			return lhs | rhs;
 		}
 		/// <summary>Adds <paramref name="rhs"/> to <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector reference</param>
@@ -259,7 +259,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> AND-EQUALS ~<paramref name="rhs"/></returns>
 		public static uint Remove(uint lhs, uint rhs)
 		{
-			return lhs &= ~rhs;
+			return lhs & ~rhs;
 		}
 		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>
@@ -275,7 +275,7 @@ namespace KSoft.Bitwise
 		/// <returns><paramref name="lhs"/> AND-EQUALS ~<paramref name="rhs"/></returns>
 		public static ulong Remove(ulong lhs, ulong rhs)
 		{
-			return lhs &= ~rhs;
+			return lhs & ~rhs;
 		}
 		/// <summary>Removes <paramref name="rhs"/> from <paramref name="lhs"/></summary>
 		/// <param name="lhs">Existing bit-vector</param>
@@ -283,6 +283,41 @@ namespace KSoft.Bitwise
 		public static void Remove(ref ulong lhs, ulong rhs)
 		{
 			lhs &= ~rhs;
+		}
+
+		#endregion
+
+		#region Toggle
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		/// <returns><paramref name="lhs"/> XOR-EQUALS <paramref name="rhs"/></returns>
+		public static uint Toggle(uint lhs, uint rhs)
+		{
+			return lhs ^ rhs;
+		}
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		public static void Toggle(ref uint lhs, uint rhs)
+		{
+			lhs ^= rhs;
+		}
+
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		/// <returns><paramref name="lhs"/> XOR-EQUALS <paramref name="rhs"/></returns>
+		public static ulong Toggle(ulong lhs, ulong rhs)
+		{
+			return lhs ^ rhs;
+		}
+		/// <summary>Complements <paramref name="rhs"/> bits in <paramref name="lhs"/></summary>
+		/// <param name="lhs">Existing bit-vector</param>
+		/// <param name="rhs">Other bit-vector whose bits we wish to complement in <paramref name="lhs"/></param>
+		public static void Toggle(ref ulong lhs, ulong rhs)
+		{
+			lhs ^= rhs;
 		}
 
 		#endregion

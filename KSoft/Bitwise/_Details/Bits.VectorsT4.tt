@@ -69,19 +69,21 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorElementBitMaskIn<#= vector_suffix #>BE(bitIndex) :
-					VectorElementBitMaskIn<#= vector_suffix #>LE(bitIndex);
+			return byteOrder == Shell.EndianFormat.Big
+				? VectorElementBitMaskIn<#= vector_suffix #>BE(bitIndex)
+				: VectorElementBitMaskIn<#= vector_suffix #>LE(bitIndex);
 		}
+		/// <summary>Get the procedure for building a mask of a specific bit in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="proc"></param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		public static void GetVectorElementBitMaskInT(out VectorElementBitMask<<#= prim_keyword #>> proc,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
 			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
 
-			if (byteOrder == Shell.EndianFormat.Big)
-				proc = VectorElementBitMaskIn<#= vector_suffix #>BE;
-			else
-				proc = VectorElementBitMaskIn<#= vector_suffix #>LE;
+			proc = byteOrder == Shell.EndianFormat.Big
+				? (VectorElementBitMask<<#= prim_keyword #>>)VectorElementBitMaskIn<#= vector_suffix #>BE
+				: (VectorElementBitMask<<#= prim_keyword #>>)VectorElementBitMaskIn<#= vector_suffix #>LE;
 		}
 
 <# } #>
@@ -123,19 +125,21 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 
-			return byteOrder == Shell.EndianFormat.Big ?
-					VectorElementSectionBitMaskIn<#= vector_suffix #>BE(startBitIndex) :
-					VectorElementSectionBitMaskIn<#= vector_suffix #>LE(startBitIndex);
+			return byteOrder == Shell.EndianFormat.Big
+				? VectorElementSectionBitMaskIn<#= vector_suffix #>BE(startBitIndex)
+				: VectorElementSectionBitMaskIn<#= vector_suffix #>LE(startBitIndex);
 		}
+		/// <summary>Get the procedure for building a mask of a section of bits in a vector, relative to the vector's element size (<see cref="System.<#= const_keyword #>"/>)</summary>
+		/// <param name="proc"></param>
+		/// <param name="byteOrder">Order in which bits are enumerated (first to last)</param>
 		public static void GetVectorElementSectionBitMaskInT(out VectorElementBitMask<<#= prim_keyword #>> proc,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
 			Contract.Ensures(Contract.ValueAtReturn(out proc) != null);
 
-			if (byteOrder == Shell.EndianFormat.Big)
-				proc = VectorElementSectionBitMaskIn<#= vector_suffix #>BE;
-			else
-				proc = VectorElementSectionBitMaskIn<#= vector_suffix #>LE;
+			proc = byteOrder == Shell.EndianFormat.Big
+				? (VectorElementBitMask<<#= prim_keyword #>>)VectorElementSectionBitMaskIn<#= vector_suffix #>BE
+				: (VectorElementBitMask<<#= prim_keyword #>>)VectorElementSectionBitMaskIn<#= vector_suffix #>LE;
 		}
 
 <# } #>

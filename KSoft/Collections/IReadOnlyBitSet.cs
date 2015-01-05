@@ -30,6 +30,12 @@ namespace KSoft.Collections
 
 		#region Access
 		bool this[int bitIndex] { get; }
+		/// <summary>Tests the states of a range of bits</summary>
+		/// <param name="frombitIndex">bit index to start reading from (inclusive)</param>
+		/// <param name="toBitIndex">bit index to stop reading at (exclusive)</param>
+		/// <returns>True if any bits are set, false if they're all clear</returns>
+		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
+		bool this[int frombitIndex, int toBitIndex] { get; }
 
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
@@ -114,6 +120,12 @@ namespace KSoft.Collections
 		#region Access
 		public bool this[int bitIndex] { get {
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+
+			throw new NotImplementedException();
+		} }
+		public bool this[int frombitIndex, int toBitIndex] { get {
+			Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
+			Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && (frombitIndex+toBitIndex) <= Length);
 
 			throw new NotImplementedException();
 		} }

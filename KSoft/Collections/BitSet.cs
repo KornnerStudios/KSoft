@@ -27,11 +27,12 @@ namespace KSoft.Collections
 		, IO.IEndianStreamSerializable
 	{
 		#region Constants
-		/// <summary>Number of bytes in the implementation word</summary>
-		static readonly int kWordByteCount;
 		static readonly int kWordBitMod;
 		/// <summary>Number of bits in the implementation word</summary>
 		const int kWordBitCount = sizeof(TWord) * Bits.kByteBitCount;
+
+		const TWord kWordAllBitsClear = TWord.MinValue;
+		const TWord kWordAllBitsSet = TWord.MaxValue;
 
 		static readonly Bits.VectorLengthInT kVectorLengthInT;
 		static readonly Bits.VectorElementBitMask<TWord> kVectorElementBitMask;
@@ -43,10 +44,11 @@ namespace KSoft.Collections
 
 		static BitSet()
 		{
+			int word_byte_count;
 			int word_bit_count; // we define a const for this, so ignore it
 			int word_bit_shift; // unused
 			bool success = Bits.GetBitConstants(typeof(TWord),
-				out kWordByteCount, out word_bit_count, out word_bit_shift, out kWordBitMod);
+				out word_byte_count, out word_bit_count, out word_bit_shift, out kWordBitMod);
 			Contract.Assert(success, "TWord is an invalid type for BitSet");
 
 			kVectorLengthInT = Bits.GetVectorLengthInT<TWord>();
@@ -362,6 +364,33 @@ namespace KSoft.Collections
 				SetInternal(bitIndex, value);
 			}
 		}
+		public bool this[int frombitIndex, int toBitIndex] {
+			get {
+				// REMINDER: Contracts already specified by IReadOnlyBitSet's contract
+
+				int bitCount = toBitIndex - frombitIndex;
+				return bitCount > 0 && TestBits(frombitIndex, bitCount);
+			}
+			set {
+				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
+				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && (frombitIndex+toBitIndex) <= Length);
+
+				// handle the cases of the set already being all 1's or 0's
+				if (value && Cardinality == Length)
+					return;
+				if (!value && CardinalityZeros == Length)
+					return;
+
+				int bitCount = toBitIndex - frombitIndex;
+				if (bitCount == 0)
+					return;
+
+				if (value)
+					SetBits(frombitIndex, bitCount);
+				else
+					ClearBits(frombitIndex, bitCount);
+			}
+		}
 
 		bool GetInternal(int bitIndex, out int wordIndex, out TWord bitmask)
 		{
@@ -409,6 +438,7 @@ namespace KSoft.Collections
 		void SetInternal(int bitIndex, bool value)
 		{
 			// TODO: is it really worth checking that we're not setting a bit to the same state?
+			// Yes, currently, as SetInternal updates Cardinality
 
 			int index;
 			TWord bitmask;
@@ -450,7 +480,9 @@ namespace KSoft.Collections
 				wordCount = LengthInWords;
 
 			// NOTE: if the array is auto-aligned, this will end up setting alignment-only data
-			var fill_value = value ? TWord.MaxValue : TWord.MinValue;
+			var fill_value = value
+				? kWordAllBitsSet
+				: kWordAllBitsClear;
 			for (int x = 0; x < wordCount; x++)
 				mArray[x] = fill_value;
 

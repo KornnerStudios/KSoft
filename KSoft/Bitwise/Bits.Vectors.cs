@@ -17,7 +17,8 @@ namespace KSoft
 		public delegate int VectorLengthInT(int bitsCount);
 		#region Bit Vector length calculations
 		[Contracts.Pure]
-		public static VectorLengthInT GetVectorLengthInT<T>() where T : struct
+		public static VectorLengthInT GetVectorLengthInT<T>()
+			where T : struct
 		{
 			Contract.Ensures(Contract.Result<VectorLengthInT>() != null);
 
@@ -50,9 +51,11 @@ namespace KSoft
 		/// <typeparam name="T">Underlying bit vector's element type</typeparam>
 		/// <param name="bitIndex">Bit index to get the mask for</param>
 		/// <returns></returns>
-		public delegate T VectorElementBitMask<T>(int bitIndex) where T : struct;
+		public delegate T VectorElementBitMask<out T>(int bitIndex)
+			where T : struct;
 
-		public delegate void VectorElementFromBuffer<T>(byte[] buffer, int index, ref T element) where T : struct;
+		public delegate void VectorElementFromBuffer<T>(byte[] buffer, int index, ref T element)
+			where T : struct;
 
 		/// <summary>Get the vector index of a bit index, for a vector represented by a specific element type</summary>
 		/// <param name="bitIndex">Index of the bit which we want the vector index of</param>
@@ -97,7 +100,8 @@ namespace KSoft
 		public delegate int VectorBitIndexInT(int index, int bitOffset);
 		#region Bit Vector cursor to bitIndex
 		[Contracts.Pure]
-		public static VectorBitIndexInT GetVectorBitIndexInT<T>() where T : struct
+		public static VectorBitIndexInT GetVectorBitIndexInT<T>()
+			where T : struct
 		{
 			Contract.Ensures(Contract.Result<VectorBitIndexInT>() != null);
 
@@ -133,7 +137,8 @@ namespace KSoft
 		public delegate void VectorBitCursorInT(int bitIndex, out int index, out int bitOffset);
 		#region Bit Vector cursor from bitIndex
 		[Contracts.Pure]
-		public static VectorBitCursorInT GetVectorBitCursorInT<T>() where T : struct
+		public static VectorBitCursorInT GetVectorBitCursorInT<T>()
+			where T : struct
 		{
 			Contract.Ensures(Contract.Result<VectorBitCursorInT>() != null);
 
