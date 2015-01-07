@@ -179,5 +179,40 @@ namespace KSoft.Collections.Test
 			Assert.IsFalse(lhs_bs.IsSupersetOf(rhs_bs));
 			Assert.IsFalse(rhs_bs.IsSubsetOf(lhs_bs));
 		}
+
+		[TestMethod]
+		public void Collections_BitSetRangeOperationsTest()
+		{
+			const int k_initial_size = 33;
+			var bs = new BitSet(k_initial_size, true);
+
+			Assert.AreEqual(k_initial_size, bs.Cardinality);
+			Assert.AreEqual(0, bs.CardinalityZeros);
+
+			// clear all but the first bit
+			bs.ClearBits(1, k_initial_size-1);
+			Assert.AreEqual(1, bs.Cardinality);
+			Assert.AreEqual(k_initial_size - 1, bs.CardinalityZeros);
+
+			// set all the modified bits back
+			bs.SetBits(1, k_initial_size-1);
+			Assert.AreEqual(k_initial_size, bs.Cardinality);
+			Assert.AreEqual(0, bs.CardinalityZeros);
+
+			// will invert all the bits (to false)
+			bs.ToggleBits(0, bs.Length);
+			Assert.AreEqual(0, bs.Cardinality);
+			Assert.AreEqual(k_initial_size, bs.CardinalityZeros);
+
+			// this should do nothing
+			bs.SetBits(1, 0);
+			Assert.AreEqual(0, bs.Cardinality);
+			Assert.AreEqual(k_initial_size, bs.CardinalityZeros);
+
+			Assert.IsFalse(bs.TestBits(0, bs.Length));
+
+			bs.SetBits(31, 2);
+			Assert.IsTrue(bs.TestBits(0, bs.Length));
+		}
 	};
 }

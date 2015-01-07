@@ -128,7 +128,7 @@ namespace KSoft.T4.Bitwise
 		}
 		public static bool RequiresCardinalityReUpdate(this BitOperation op)
 		{
-			return op == BitOperation.Set || op == BitOperation.Toggle;
+			return op != BitOperation.Test;
 		}
 		#endregion
 

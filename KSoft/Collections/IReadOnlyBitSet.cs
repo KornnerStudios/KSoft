@@ -56,6 +56,12 @@ namespace KSoft.Collections
 		StateFilterEnumeratorWrapper ClearBitIndices { get; }
 		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
 		StateFilterEnumeratorWrapper SetBitIndices { get; }
+
+		/// <summary>Test to see if any bit is on in a range of bits</summary>
+		/// <param name="startBitIndex">Bit index to start testing at</param>
+		/// <param name="bitCount">number of bits to test</param>
+		/// <returns>True if ANY bit is on (set) in the range, false is they're all off (clear)</returns>
+		bool TestBits(int startBitIndex, int bitCount);
 		#endregion
 
 		#region ISet-like interfaces
@@ -161,6 +167,14 @@ namespace KSoft.Collections
 
 		public StateFilterEnumeratorWrapper ClearBitIndices { get { throw new NotImplementedException(); } }
 		public StateFilterEnumeratorWrapper SetBitIndices { get { throw new NotImplementedException(); } }
+
+		public bool TestBits(int startBitIndex, int bitCount)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
+			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+
+			throw new NotImplementedException();
+		}
 		#endregion
 
 		#region ISet-like interfaces

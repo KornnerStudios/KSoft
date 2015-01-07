@@ -200,7 +200,7 @@ namespace KSoft.Collections
 
 			mArray = new TWord[kVectorLengthInT(length)];
 
-			SetAllInternal(defaultValue, mArray.Length);
+			SetAllInternal(defaultValue);
 
 			// the above method doesn't modify anything besides the raw bits,
 			if (defaultValue)
@@ -306,6 +306,11 @@ namespace KSoft.Collections
 		{
 			Cardinality -= Bits.BitCount(mArray[wordIndex]);
 		}
+		void RecalculateCardinalityFinishRounds(int startWordIndex)
+		{
+			for (int x = startWordIndex, word_count = LengthInWords; x < word_count; x++)
+				RecalculateCardinalityRound(x);
+		}
 		void RecalculateCardinality()
 		{
 			Cardinality = 0;
@@ -315,12 +320,11 @@ namespace KSoft.Collections
 		#endregion
 
 		#region ClearAlignmentOnlyBits
-		void ClearAlignmentOnlyBits(int cabooseWordIndex = TypeExtensions.kNone)
+		void ClearAlignmentOnlyBits()
 		{
-			if (cabooseWordIndex.IsNone())
-				cabooseWordIndex = LengthInWords - 1;
+			int caboose_word_index = LengthInWords - 1;
 
-			if (cabooseWordIndex < 0)
+			if (caboose_word_index < 0)
 				return;
 
 			var retained_bits_mask = GetCabooseRetainedBitsMask(Length);
@@ -328,9 +332,9 @@ namespace KSoft.Collections
 			if (retained_bits_mask == 0)
 				return;
 
-			mArray[cabooseWordIndex] &= retained_bits_mask;
+			mArray[caboose_word_index] &= retained_bits_mask;
 		}
-		void ClearAlignmentOnlyBitsForBitOperation(BitSet value)
+		void ClearAlignmentOnlyBitsForBitOperation(IReadOnlyBitSet value)
 		{
 			// if the operation value is longer, it could possibly contain more addressable bits in its caboose word,
 			// causing this set's caboose word to have those bits be non-zero in the Bit Operation. So zero them out.
@@ -470,24 +474,19 @@ namespace KSoft.Collections
 			SetInternal(index, bitmask, !old_value);
 		}
 
-		void SetAllInternal(bool value, int wordCount = TypeExtensions.kNone)
+		void SetAllInternal(bool value)
 		{
-			// NOTE: the reason for having an explicit wordCount param here is due to how the ctor helper method
-			// InitializeArrayWithDefault (which calls this) works. Length won't yet be initialized until after
-			// said method completes
-			
-			if (wordCount.IsNone())
-				wordCount = LengthInWords;
+			int word_count = LengthInWords;
 
 			// NOTE: if the array is auto-aligned, this will end up setting alignment-only data
 			var fill_value = value
 				? kWordAllBitsSet
 				: kWordAllBitsClear;
-			for (int x = 0; x < wordCount; x++)
+			for (int x = 0; x < word_count; x++)
 				mArray[x] = fill_value;
 
 			if (value) // so if any exist, zero them out
-				ClearAlignmentOnlyBits(wordCount-1);
+				ClearAlignmentOnlyBits();
 
 			// intentionally don't update Cardinality or mVersion here
 		}
@@ -554,14 +553,17 @@ namespace KSoft.Collections
 			{
 				Cardinality = 0;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
-				for (int x = 0; x < length_in_words; x++)
+				int word_index;
+				for (word_index = 0; word_index < length_in_words; word_index++)
 				{
-					mArray[x] &= value.mArray[x];
-					RecalculateCardinalityRound(x);
+					mArray[word_index] &= value.mArray[word_index];
+					RecalculateCardinalityRound(word_index);
 				}
 
 				// NOTE: we don't do ClearAlignmentOnlyBitsForBitOperation here as a larger BitSet won't introduce
 				// new TRUE-bits in a And() operation
+
+				RecalculateCardinalityFinishRounds(word_index);
 
 				mVersion++;
 			}
@@ -585,13 +587,16 @@ namespace KSoft.Collections
 			{
 				Cardinality = 0;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
-				for (int x = 0; x < length_in_words; x++)
+				int word_index;
+				for (word_index = 0; word_index < length_in_words; word_index++)
 				{
-					mArray[x] &= ~value.mArray[x];
-					RecalculateCardinalityRound(x);
+					mArray[word_index] &= ~value.mArray[word_index];
+					RecalculateCardinalityRound(word_index);
 				}
 
 				ClearAlignmentOnlyBitsForBitOperation(value);
+
+				RecalculateCardinalityFinishRounds(word_index);
 
 				mVersion++;
 			}
@@ -611,13 +616,16 @@ namespace KSoft.Collections
 			{
 				Cardinality = 0;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
-				for (int x = 0; x < length_in_words; x++)
+				int word_index;
+				for (word_index = 0; word_index < length_in_words; word_index++)
 				{
-					mArray[x] |= value.mArray[x];
-					RecalculateCardinalityRound(x);
+					mArray[word_index] |= value.mArray[word_index];
+					RecalculateCardinalityRound(word_index);
 				}
 
 				ClearAlignmentOnlyBitsForBitOperation(value);
+
+				RecalculateCardinalityFinishRounds(word_index);
 
 				mVersion++;
 			}
@@ -641,13 +649,16 @@ namespace KSoft.Collections
 			{
 				Cardinality = 0;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
-				for (int x = 0; x < length_in_words; x++)
+				int word_index;
+				for (word_index = 0; word_index < length_in_words; word_index++)
 				{
-					mArray[x] ^= value.mArray[x];
-					RecalculateCardinalityRound(x);
+					mArray[word_index] ^= value.mArray[word_index];
+					RecalculateCardinalityRound(word_index);
 				}
 
 				ClearAlignmentOnlyBitsForBitOperation(value);
+
+				RecalculateCardinalityFinishRounds(word_index);
 
 				mVersion++;
 			}

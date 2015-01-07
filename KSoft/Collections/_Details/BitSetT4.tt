@@ -33,75 +33,80 @@ namespace KSoft.Collections
 <# for (var op = BitOperation.kFirst; op <= BitOperation.kLast; op++) { #>
 		public <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
 		{
+<#	if (op != BitOperation.Test) { /* Contract specified in IReadOnlyBitSet */ #>
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
 			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
 
+<#	} #>
 			if (bitCount <= 0)
 				return <#= op.ResultDefault() #>;
 			
+			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
+			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
+
 			int last_bit_index = (startBitIndex+bitCount) - 1;
 			var from_word_index = kVectorIndexInT(startBitIndex);
 			var last_word_index = kVectorIndexInT(last_bit_index);
 
-			var from_word_mask = kVectorElementSectionBitMask(from_word_index);
-			var last_word_mask = GetCabooseRetainedBitsMask(last_word_index);
-
+			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
 				var mask = from_word_mask & last_word_mask;
-<# if (op.IsNotPure()) { #>
+<#	if (op.IsNotPure()) { #>
 				RecalculateCardinalityUndoRound(from_word_index);
 				<#= op.FlagsMethod() #>(ref mArray[from_word_index], mask);
 <#		if (op.RequiresCardinalityReUpdate()) { #>
 				RecalculateCardinalityRound(from_word_index);
 <#		} #>
-<# } else if (op == BitOperation.Test) { #>
+<#	} else if (op == BitOperation.Test) { #>
 				return <#= op.FlagsMethod() #>(mArray[from_word_index], mask);
-<# } #>
+<#	} #>
 			}
-			else
-			{
-<# if (op.IsNotPure()) { #>
-				RecalculateCardinalityUndoRound(from_word_index);
-				<#= op.FlagsMethod() #>(ref mArray[from_word_index], from_word_mask);
-<#		if (op.RequiresCardinalityReUpdate()) { #>
-				RecalculateCardinalityRound(from_word_index);
-<#		} #>
-<# } else if (op == BitOperation.Test) { #>
-				if (<#= op.FlagsMethod() #>(mArray[from_word_index], from_word_mask))
-					return true;
-<# } #>
+			// or the target bits are in multiple words...
 
-				for (int x = from_word_index+1; x < last_word_index; x++)
-				{
-<# if (op.IsNotPure()) { #>
-					RecalculateCardinalityUndoRound(x);
+			// handle the first word
+<#	if (op.IsNotPure()) { #>
+			RecalculateCardinalityUndoRound(from_word_index);
+			<#= op.FlagsMethod() #>(ref mArray[from_word_index], from_word_mask);
+<#		if (op.RequiresCardinalityReUpdate()) { #>
+			RecalculateCardinalityRound(from_word_index);
+<#		} #>
+<#	} else if (op == BitOperation.Test) { #>
+			if (<#= op.FlagsMethod() #>(mArray[from_word_index], from_word_mask))
+				return true;
+<#	} #>
+
+			// handle any words in between
+			for (int x = from_word_index+1; x < last_word_index; x++)
+			{
+<#	if (op.IsNotPure()) { /* Clear WON'T need to re-update cardinality when changing filler words*/ #>
+				RecalculateCardinalityUndoRound(x);
 <#		if (op == BitOperation.Toggle) { #>
-					<#= op.FlagsMethod() #>(ref mArray[x], mArray[x]);
+				<#= op.FlagsMethod() #>(ref mArray[x], mArray[x]);
 <#		} else { #>
-					mArray[x] = <#= op == BitOperation.Set ? "kWordAllBitsSet" : "kWordAllBitsClear" #>;
+				mArray[x] = <#= op == BitOperation.Set ? "kWordAllBitsSet" : "kWordAllBitsClear" #>;
 <#		} #>
 <#		if (op == BitOperation.Set) { #>
-					Cardinality += kWordBitCount;
+				Cardinality += kWordBitCount;
 <#		} else if (op == BitOperation.Toggle) { #>
-					RecalculateCardinalityRound(x);
+				RecalculateCardinalityRound(x);
 <#		} #>
-<# } else if (op == BitOperation.Test) { #>
-					if (mArray[x] > kWordAllBitsClear)
-						return true;
-<# } #>
-				}
-
-<# if (op.IsNotPure()) { #>
-				RecalculateCardinalityUndoRound(last_word_index);
-				<#= op.FlagsMethod() #>(ref mArray[last_word_index], last_word_mask);
-<#		if (op.RequiresCardinalityReUpdate()) { #>
-				RecalculateCardinalityRound(last_word_index);
-<#		} #>
-<# } else if (op == BitOperation.Test) { #>
-				return <#= op.FlagsMethod() #>(mArray[last_word_index], last_word_mask);
-<# } #>
+<#	} else if (op == BitOperation.Test) { #>
+				if (mArray[x] > kWordAllBitsClear)
+					return true;
+<#	} #>
 			}
+
+			// handle the last word
+<#	if (op.IsNotPure()) { #>
+			RecalculateCardinalityUndoRound(last_word_index);
+			<#= op.FlagsMethod() #>(ref mArray[last_word_index], last_word_mask);
+<#		if (op.RequiresCardinalityReUpdate()) { #>
+			RecalculateCardinalityRound(last_word_index);
+<#		} #>
+<#	} else if (op == BitOperation.Test) { #>
+			return <#= op.FlagsMethod() #>(mArray[last_word_index], last_word_mask);
+<#	} #>
 		}
 
 <# } #>
