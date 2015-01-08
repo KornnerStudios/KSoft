@@ -46,7 +46,7 @@ namespace KSoft.Bitwise
 		public void Encode<#= bittable_type.SizeOfInBits #><TEnum>(TEnum value, EnumBitEncoder<#= bittable_type.SizeOfInBits #><TEnum> encoder)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			Contract.Requires<System.ArgumentNullException>(encoder != null);
+			Contract.Requires<ArgumentNullException>(encoder != null);
 
 			encoder.BitEncode(value, ref mBits.u64, ref mBitIndex);
 		}
@@ -60,7 +60,7 @@ namespace KSoft.Bitwise
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void Encode<#= bittable_type.SizeOfInBits #>(<#= bittable_type.Keyword #> value, <#= bittable_type.Keyword #> bitMask)
 		{
-			Contract.Requires<System.ArgumentException>(bitMask != 0);
+			Contract.Requires<ArgumentException>(bitMask != 0);
 
 			Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, bitMask);
 		}
@@ -70,8 +70,8 @@ namespace KSoft.Bitwise
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void EncodeNoneable<#= bittable_type.SizeOfInBits #>(<#= bittable_type.SignedKeyword #> value, <#= bittable_type.Keyword #> bitMask)
 		{
-			Contract.Requires<System.ArgumentException>(bitMask != 0);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
+			Contract.Requires<ArgumentException>(bitMask != 0);
+			Contract.Requires<ArgumentOutOfRangeException>(value.IsNoneOrPositive());
 
 			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, bitMask);
 		}
@@ -81,7 +81,7 @@ namespace KSoft.Bitwise
 		/// <param name="traits"></param>
 		public void Encode<#= bittable_type.SizeOfInBits #>(<#= bittable_type.Keyword #> value, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<ArgumentException>(!traits.IsEmpty);
 
 			Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, traits.Bitmask<#= bittable_type.SizeOfInBits #>);
 		}
@@ -90,8 +90,8 @@ namespace KSoft.Bitwise
 		/// <param name="traits"></param>
 		public void EncodeNoneable<#= bittable_type.SizeOfInBits #>(<#= bittable_type.SignedKeyword #> value, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value.IsNoneOrPositive());
+			Contract.Requires<ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<ArgumentOutOfRangeException>(value.IsNoneOrPositive());
 
 			Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, traits.Bitmask<#= bittable_type.SizeOfInBits #>);
 		}
@@ -110,7 +110,7 @@ namespace KSoft.Bitwise
 		public void Decode<#= bittable_type.SizeOfInBits #><TEnum>(out TEnum value, EnumBitEncoder<#= bittable_type.SizeOfInBits #><TEnum> decoder)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			Contract.Requires<System.ArgumentNullException>(decoder != null);
+			Contract.Requires<ArgumentNullException>(decoder != null);
 
 			value = decoder.BitDecode(mBits.u64, ref mBitIndex);
 		}
@@ -124,7 +124,7 @@ namespace KSoft.Bitwise
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void Decode<#= bittable_type.SizeOfInBits #>(out <#= bittable_type.Keyword #> value, <#= bittable_type.Keyword #> bitMask)
 		{
-			Contract.Requires<System.ArgumentException>(bitMask != 0);
+			Contract.Requires<ArgumentException>(bitMask != 0);
 
 			value = (<#= bittable_type.Keyword #>)Bits.BitDecode(mBits.u64, ref mBitIndex, bitMask);
 		}
@@ -133,7 +133,7 @@ namespace KSoft.Bitwise
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		public void DecodeNoneable<#= bittable_type.SizeOfInBits #>(out <#= bittable_type.SignedKeyword #> value, <#= bittable_type.Keyword #> bitMask)
 		{
-			Contract.Requires<System.ArgumentException>(bitMask != 0);
+			Contract.Requires<ArgumentException>(bitMask != 0);
 
 			value = (<#= bittable_type.SignedKeyword #>)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, bitMask);
 		}
@@ -143,7 +143,7 @@ namespace KSoft.Bitwise
 		/// <param name="traits"></param>
 		public void Decode<#= bittable_type.SizeOfInBits #>(out <#= bittable_type.Keyword #> value, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<ArgumentException>(!traits.IsEmpty);
 
 			value = (<#= bittable_type.Keyword #>)Bits.BitDecode(mBits.u64, ref mBitIndex, traits.Bitmask<#= bittable_type.SizeOfInBits #>);
 		}
@@ -152,7 +152,7 @@ namespace KSoft.Bitwise
 		/// <param name="traits"></param>
 		public void DecodeNoneable<#= bittable_type.SizeOfInBits #>(out <#= bittable_type.SignedKeyword #> value, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires<System.ArgumentException>(!traits.IsEmpty);
+			Contract.Requires<ArgumentException>(!traits.IsEmpty);
 
 			value = (<#= bittable_type.SignedKeyword #>)Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, traits.Bitmask<#= bittable_type.SizeOfInBits #>);
 		}

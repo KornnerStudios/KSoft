@@ -24,6 +24,7 @@
     <Compile Include="Collections\CollectionsT4.cs" />
     <Compile Include="IO\EndianStreamsT4.cs" />
     <Compile Include="IO\TagElementStreamsT4.cs" />
+    <Compile Include="Math\MathT4.cs" />
     <Compile Include="PrimitiveDefinitions\NumberCodeDefinition.cs" />
     <Compile Include="PrimitiveDefinitions\PrimitiveCodeDefinition.cs" />
     <Compile Include="PrimitiveDefinitions\PrimitiveDefinitions.cs" />
@@ -34,6 +35,7 @@
     <Compile Include="Utilities.cs" />
     <Compile Include="Values\BittableHandleGenerator.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
