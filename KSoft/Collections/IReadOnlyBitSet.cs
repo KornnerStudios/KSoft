@@ -23,7 +23,7 @@ namespace KSoft.Collections
 		/// <summary>Number of bits set to false</summary>
 		int CardinalityZeros { get; }
 
-		bool IsAllZeros { get; }
+		bool IsAllClear { get; }
 
 		/// <summary>Versioning id used to sanity check enumerators</summary>
 		int Version { get; }
@@ -119,7 +119,7 @@ namespace KSoft.Collections
 			throw new NotImplementedException();
 		} }
 
-		public bool IsAllZeros { get { throw new NotImplementedException(); } }
+		public bool IsAllClear { get { throw new NotImplementedException(); } }
 
 		public int Version { get { throw new NotImplementedException(); } }
 
@@ -131,7 +131,7 @@ namespace KSoft.Collections
 		} }
 		public bool this[int frombitIndex, int toBitIndex] { get {
 			Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && (frombitIndex+toBitIndex) <= Length);
+			Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
 
 			throw new NotImplementedException();
 		} }

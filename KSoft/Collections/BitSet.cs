@@ -188,7 +188,7 @@ namespace KSoft.Collections
 		public int CardinalityZeros { get { return Length - Cardinality; } }
 
 		/// <summary>Are all the bits in this set currently false?</summary>
-		public bool IsAllZeros { get { return Cardinality == 0; } }
+		public bool IsAllClear { get { return Cardinality == 0; } }
 
 		int IReadOnlyBitSet.Version { get { return mVersion; } }
 
@@ -368,6 +368,11 @@ namespace KSoft.Collections
 				SetInternal(bitIndex, value);
 			}
 		}
+		/// <summary>Tests the states of a range of bits</summary>
+		/// <param name="frombitIndex">bit index to start reading from (inclusive)</param>
+		/// <param name="toBitIndex">bit index to stop reading at (exclusive)</param>
+		/// <returns>True if any bits are set, false if they're all clear</returns>
+		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
 		public bool this[int frombitIndex, int toBitIndex] {
 			get {
 				// REMINDER: Contracts already specified by IReadOnlyBitSet's contract
@@ -377,7 +382,7 @@ namespace KSoft.Collections
 			}
 			set {
 				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && (frombitIndex+toBitIndex) <= Length);
+				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
 
 				// handle the cases of the set already being all 1's or 0's
 				if (value && Cardinality == Length)
@@ -570,7 +575,7 @@ namespace KSoft.Collections
 			return this;
 		}
 		/// <summary>Clears all of the bits in this set whose corresponding bit is set in the specified BitSet</summary>
-		/// <param name="value">set the BitSet with which to mask this BitSet</param>
+		/// <param name="value">BitSet with which to mask this BitSet</param>
 		/// <returns>Returns the current instance</returns>
 		public BitSet AndNot(BitSet value)
 		{

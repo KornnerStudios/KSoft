@@ -13,6 +13,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
+		[Contracts.Pure]
 		public int NextClearBitIndex(int startBitIndex = 0)
 		{
 			return NextBitIndex(startBitIndex, false);
@@ -25,6 +26,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next set bit index, or -1 if one isn't found</returns>
+		[Contracts.Pure]
 		public int NextSetBitIndex(int startBitIndex = 0)
 		{
 			return NextBitIndex(startBitIndex, true);
@@ -166,6 +168,7 @@ namespace KSoft.Collections
 			RecalculateCardinalityRound(last_word_index);
 		}
 
+		[Contracts.Pure]
 		public bool TestBits(int startBitIndex, int bitCount)
 		{
 			if (bitCount <= 0)

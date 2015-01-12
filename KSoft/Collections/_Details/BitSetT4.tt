@@ -19,6 +19,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is <#= state_def.DocNameVerbose #></summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next <#= state_def.DocName #> bit index, or -1 if one isn't found</returns>
+		[Contracts.Pure]
 		public int Next<#= state_def.ApiName #>BitIndex(int startBitIndex = 0)
 		{
 			return NextBitIndex(startBitIndex, <#= state_def.ValueKeyword #>);
@@ -31,6 +32,9 @@ namespace KSoft.Collections
 <# } #>
 
 <# for (var op = BitOperation.kFirst; op <= BitOperation.kLast; op++) { #>
+<#	if (op.IsNotPure()==false) { #>
+		[Contracts.Pure]
+<#	} #>
 		public <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
 		{
 <#	if (op != BitOperation.Test) { /* Contract specified in IReadOnlyBitSet */ #>

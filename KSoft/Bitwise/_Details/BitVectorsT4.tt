@@ -1,0 +1,354 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
+<#@ import namespace="KSoft.T4" #>
+<#@ import namespace="KSoft.T4.Bitwise" #>
+using System;
+using System.Collections.Generic;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
+namespace KSoft.Collections
+{
+<# foreach (var bittable_type in BitwiseT4.BittableTypes_MajorWords) { #>
+<#	var prim_keyword = bittable_type.Keyword;
+	var const_keyword= bittable_type.GetConstantKeyword();
+	var sign_keyword = bittable_type.SignedKeyword;
+	var typename = "BitVector" + bittable_type.SizeOfInBits;
+#>
+	[System.Diagnostics.DebuggerDisplay("Data = {mWord}, Cardinality = {Cardinality}")]
+	public struct <#= typename #>
+		: IComparable<<#= typename #>>
+		, IEquatable<<#= typename #>>
+	{
+		const int kNumberOfBits = Bits.k<#= const_keyword #>BitCount;
+		// for Enumerators impl
+		const int kLastIndex = kNumberOfBits - 1;
+		const Shell.EndianFormat kVectorWordFormat = Shell.EndianFormat.Little;
+
+		<#= prim_keyword #> mWord;
+
+		public <#= typename #>(<#= prim_keyword #> bits)
+		{
+			mWord = bits;
+		}
+		public <#= typename #>(<#= sign_keyword #> bits)
+		{
+			mWord = (<#= prim_keyword #>)bits;
+		}
+
+		public <#= sign_keyword #> Data { get { return (<#= sign_keyword #>)mWord; } }
+
+		/// <summary>Length in bits. Always returns <#= bittable_type.SizeOfInBits #></summary>
+		public int Length			{ get { return kNumberOfBits; } }
+		/// <summary>Number of bits set to true</summary>
+		public int Cardinality		{ get { return Bits.BitCount(mWord); } }
+		/// <summary>Number of bits set to false</summary>
+		public int CardinalityZeros	{ get { return Length - Cardinality; } }
+
+		/// <summary>Are all the bits in this set currently false?</summary>
+		public bool IsAllClear	{ get { return mWord == <#= prim_keyword #>.MinValue; } }
+		/// <summary>Are all the bits in this set currently true?</summary>
+		public bool IsAllSet	{ get { return mWord == <#= prim_keyword #>.MaxValue; } }
+
+		public int TrailingZerosCount	{ get { return Bits.TrailingZerosCount(mWord); } }
+		public int IndexOfHighestBitSet	{ get { return Bits.IndexOfHighestBitSet(mWord); } }
+
+		#region Overrides
+		public bool Equals(<#= typename #> other)
+		{
+			return mWord == other.mWord;
+		}
+		public override bool Equals(object o)
+		{
+			if (!(o is <#= typename #>))
+				return false;
+
+			return Equals((<#= typename #>)o);
+		}
+		public static bool operator ==(<#= typename #> x, <#= typename #> y)
+		{
+			return x.Equals(y);
+		}
+		public static bool operator !=(<#= typename #> x, <#= typename #> y)
+		{
+			return !x.Equals(y);
+		}
+
+		public override int GetHashCode()
+		{
+			return mWord.GetHashCode();
+		}
+
+		public static string ToString(<#= typename #> value)
+		{
+			const <#= sign_keyword #> k_msb = 1 << (kNumberOfBits-1);
+
+			var sb = new System.Text.StringBuilder(/*"<#= typename #>{".Length*/12 + kNumberOfBits + /*"}".Length"*/1);
+			sb.Append("<#= typename #>{");
+			var word = value.Data;
+			for (int i = 0; i < kNumberOfBits; i++)
+			{
+				sb.Append((word & k_msb) != 0
+					? "1"
+					: "0");
+
+				word <<= 1;
+			}
+			sb.Append("}");
+			return sb.ToString();
+		}
+		public override string ToString()
+		{
+			return <#= typename #>.ToString(this);
+		}
+		#endregion
+
+		#region Access
+		public bool this[int bitIndex]
+		{
+			get
+			{
+				Contract.Requires(bitIndex >= 0 && bitIndex < Bits.k<#= const_keyword #>BitCount);
+
+				return Bitwise.Flags.Test(mWord, ((<#= prim_keyword #>)1) << bitIndex);
+			}
+			set
+			{
+				Contract.Requires(bitIndex >= 0 && bitIndex < Bits.k<#= const_keyword #>BitCount);
+
+				var flag = ((<#= prim_keyword #>)1) << bitIndex;
+
+				Bitwise.Flags.Modify(value, ref mWord, flag);
+			}
+		}
+		/// <summary>Tests the states of a range of bits</summary>
+		/// <param name="frombitIndex">bit index to start reading from (inclusive)</param>
+		/// <param name="toBitIndex">bit index to stop reading at (exclusive)</param>
+		/// <returns>True if any bits are set, false if they're all clear</returns>
+		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
+		public bool this[int frombitIndex, int toBitIndex] {
+			get {
+				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
+				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+
+				int bitCount = toBitIndex - frombitIndex;
+				return bitCount > 0 && TestBits(frombitIndex, bitCount);
+			}
+			set {
+				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
+				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+
+				// handle the cases of the set already being all 1's or 0's
+				if (value && Cardinality == Length)
+					return;
+				if (!value && CardinalityZeros == Length)
+					return;
+
+				int bitCount = toBitIndex - frombitIndex;
+				if (bitCount == 0)
+					return;
+
+				if (value)
+					SetBits(frombitIndex, bitCount);
+				else
+					ClearBits(frombitIndex, bitCount);
+			}
+		}
+
+		[Contracts.Pure]
+		public int NextBitIndex(
+			int prevBitIndex = TypeExtensions.kNone, bool stateFilter = true)
+		{
+			Contract.Requires(prevBitIndex.IsNoneOrPositive() && prevBitIndex < Bits.k<#= const_keyword #>BitCount);
+
+			for (int bit_index = prevBitIndex+1; bit_index < kNumberOfBits; bit_index++)
+			{
+				if (this[bit_index] == stateFilter)
+					return bit_index;
+			}
+
+			return TypeExtensions.kNone;
+		}
+		#endregion
+
+		#region Access (ranged)
+<#	for (var op = BitOperation.kFirst; op <= BitOperation.kLast; op++) { #>
+<#		if (op.IsNotPure()==false) { #>
+		[Contracts.Pure]
+<#		} #>
+		public <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
+			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+
+			if (bitCount <= 0)
+				return <#= op.ResultDefault() #>;
+			
+			var from_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex, kVectorWordFormat);
+			var last_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex+bitCount, kVectorWordFormat);
+			// create a mask for all bits below the given length in a caboose word
+			last_word_mask -= 1;
+
+			var mask = from_word_mask & last_word_mask;
+<#		if (op.IsNotPure()) { #>
+			<#= op.FlagsMethod() #>(ref mWord, mask);
+<#		} else if (op == BitOperation.Test) { #>
+			return <#= op.FlagsMethod() #>(mWord, mask);
+<#		} #>
+		}
+
+<#	} #>
+		#endregion
+
+		#region Bit Operations
+		/// <summary>Bit AND this vector with another</summary>
+		/// <param name="vector">Vector with the bits to AND with</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public <#= typename #> And(<#= typename #> vector)
+		{
+			return new <#= typename #>(mWord & vector.mWord);
+		}
+		/// <summary>Clears all of the bits in this vector whose corresponding bit is set in the specified vector</summary>
+		/// <param name="vector">vector with which to mask this vector</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public <#= typename #> AndNot(<#= typename #> vector)
+		{
+			return new <#= typename #>(Bitwise.Flags.Remove(mWord, vector.mWord));
+		}
+		/// <summary>Bit OR this set with another</summary>
+		/// <param name="vector">Vector with the bits to OR with</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public <#= typename #> Or(<#= typename #> vector)
+		{
+			return new <#= typename #>(mWord | vector.mWord);
+		}
+		/// <summary>Bit XOR this vector with another</summary>
+		/// <param name="vector">Vector with the bits to XOR with</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public <#= typename #> Xor(<#= typename #> vector)
+		{
+			return new <#= typename #>(Bitwise.Flags.Toggle(mWord, vector.mWord));
+		}
+
+		/// <summary>Inverts all bits in this vector</summary>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public <#= typename #> Not()
+		{
+			return new <#= typename #>(~mWord);
+		}
+		#endregion
+
+		public int CompareTo(<#= typename #> other)
+		{
+			return mWord.CompareTo(other.mWord);
+		}
+
+		#region Enumerators
+<#	foreach (var state_def in CollectionsT4.BitStateDefs) { #>
+		/// <summary>Get the bit index of the next bit which is <#= state_def.DocNameVerbose #></summary>
+		/// <param name="startBitIndex">Bit index to start at</param>
+		/// <returns>The next <#= state_def.DocName #> bit index, or -1 if one isn't found</returns>
+		public int Next<#= state_def.ApiName #>BitIndex(int startBitIndex = 0)
+		{
+			return NextBitIndex(startBitIndex, <#= state_def.ValueKeyword #>);
+		}
+		/// <summary>Enumeration of bit indexes in this vector which are <#= state_def.DocNameVerbose #></summary>
+		public EnumeratorWrapper<int, StateFilterEnumerator> <#= state_def.ApiName #>BitIndices { get {
+			return new EnumeratorWrapper<int, StateFilterEnumerator>(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>));
+		} }
+
+<#	} #>
+		#endregion
+
+		#region Enumerators impls
+<#	foreach (var enum_def in CollectionsT4.BitSetEnumeratorDefs) { #>
+<#		var enum_type_name = enum_def.Name + "Enumerator";
+		var enum_result_keyword = enum_def.ResultCodeDef.Keyword;
+#>
+		[Serializable]
+		public struct <#= enum_type_name #>
+			: IEnumerator< <#= enum_result_keyword #> >
+		{
+			readonly <#= typename #> mVector;
+			int mBitIndex;
+			<#= enum_result_keyword #> mCurrent;
+<#		if (enum_def.Name == "StateFilter") { #>
+			readonly bool mStateFilter;
+			readonly int mStartBitIndex;
+<#		} #>
+
+			public <#= enum_type_name #>(<#= typename #> vector
+<#		if (enum_def.Name == "StateFilter") { #>
+				, bool stateFilter, int startBitIndex = 0
+<#		} #>
+				)
+			{
+<#		if (enum_def.Name == "StateFilter") { #>
+				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < vector.Length);
+
+				mStateFilter = stateFilter;
+				mStartBitIndex = startBitIndex-1;
+<#		} #>
+				mVector = vector;
+				mBitIndex = TypeExtensions.kNone;
+				mCurrent = default(<#= enum_result_keyword #>);
+			}
+
+			public <#= enum_result_keyword #> Current { get {
+				if (mBitIndex.IsNone())			throw new InvalidOperationException("Enumeration has not started");
+				if (mBitIndex > kLastIndex)		throw new InvalidOperationException("Enumeration already finished");
+
+				return mCurrent;
+			} }
+			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+
+			public void Reset()
+			{
+				mBitIndex = TypeExtensions.kNone;
+			}
+
+			public void Dispose()	{ }
+
+			public bool MoveNext()
+			{
+<#		if (enum_def.Name == "State") { #>
+				if (mBitIndex < kLastIndex)
+				{
+					mCurrent = mVector[++mBitIndex];
+					return true;
+				}
+
+<#		} else if (enum_def.Name == "StateFilter") { #>
+				if (mBitIndex.IsNone())
+					mBitIndex = mStartBitIndex;
+
+				if (mBitIndex < kLastIndex)
+				{
+					mCurrent = mVector.NextBitIndex(++mBitIndex, mStateFilter);
+
+					if (mCurrent >= 0)
+					{
+						mBitIndex = mCurrent;
+						return true;
+					}
+				}
+
+<#		} #>
+				mBitIndex = kNumberOfBits;
+				return false;
+			}
+		};
+
+<# } #>
+		#endregion
+	};
+
+<# } #>
+}

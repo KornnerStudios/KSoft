@@ -81,6 +81,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BitsT4.tt</DependentUpon>
     </Compile>
+    <Compile Include="Bitwise\_Details\BitVectorsT4.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BitVectorsT4.tt</DependentUpon>
+    </Compile>
     <Compile Include="Bitwise\_Details\ByteSwapT4.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -338,6 +343,10 @@
     <None Include="Bitwise\_Details\BitsT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BitsT4.cs</LastGenOutput>
+    </None>
+    <None Include="Bitwise\_Details\BitVectorsT4.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BitVectorsT4.cs</LastGenOutput>
     </None>
     <None Include="Bitwise\_Details\ByteSwapT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
