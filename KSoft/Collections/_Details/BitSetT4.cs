@@ -59,6 +59,7 @@ namespace KSoft.Collections
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Remove(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
+				return;
 			}
 			// or the target bits are in multiple words...
 
@@ -102,6 +103,7 @@ namespace KSoft.Collections
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Add(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
+				return;
 			}
 			// or the target bits are in multiple words...
 
@@ -146,6 +148,7 @@ namespace KSoft.Collections
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Toggle(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
+				return;
 			}
 			// or the target bits are in multiple words...
 
@@ -185,12 +188,12 @@ namespace KSoft.Collections
 			if (from_word_index == last_word_index)
 			{
 				var mask = from_word_mask & last_word_mask;
-				return Bitwise.Flags.Test(mArray[from_word_index], mask);
+				return Bitwise.Flags.TestAny(mArray[from_word_index], mask);
 			}
 			// or the target bits are in multiple words...
 
 			// handle the first word
-			if (Bitwise.Flags.Test(mArray[from_word_index], from_word_mask))
+			if (Bitwise.Flags.TestAny(mArray[from_word_index], from_word_mask))
 				return true;
 
 			// handle any words in between
@@ -201,7 +204,7 @@ namespace KSoft.Collections
 			}
 
 			// handle the last word
-			return Bitwise.Flags.Test(mArray[last_word_index], last_word_mask);
+			return Bitwise.Flags.TestAny(mArray[last_word_index], last_word_mask);
 		}
 
 	};

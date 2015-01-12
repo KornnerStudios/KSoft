@@ -228,7 +228,7 @@ namespace KSoft.Collections
 			last_word_mask -= 1;
 
 			var mask = from_word_mask & last_word_mask;
-			return Bitwise.Flags.Test(mWord, mask);
+			return Bitwise.Flags.TestAny(mWord, mask);
 		}
 
 		#endregion
@@ -639,7 +639,7 @@ namespace KSoft.Collections
 			last_word_mask -= 1;
 
 			var mask = from_word_mask & last_word_mask;
-			return Bitwise.Flags.Test(mWord, mask);
+			return Bitwise.Flags.TestAny(mWord, mask);
 		}
 
 		#endregion

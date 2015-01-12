@@ -26,6 +26,15 @@ namespace KSoft.Bitwise
 		{
 			return (value & flag) == flag;
 		}
+		/// <summary>Returns true if any bits in <paramref name="flag"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
+		[Contracts.Pure]
+		public static bool TestAny(byte value, byte flag)
+		{
+			return (value & flag) != 0;
+		}
 
 		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
 		/// <param name="value">Value to test in</param>
@@ -77,6 +86,15 @@ namespace KSoft.Bitwise
 		public static bool Test(short value, short flag)
 		{
 			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if any bits in <paramref name="flag"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
+		[Contracts.Pure]
+		public static bool TestAny(ushort value, ushort flag)
+		{
+			return (value & flag) != 0;
 		}
 
 		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
@@ -130,6 +148,15 @@ namespace KSoft.Bitwise
 		{
 			return (value & flag) == flag;
 		}
+		/// <summary>Returns true if any bits in <paramref name="flag"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
+		[Contracts.Pure]
+		public static bool TestAny(uint value, uint flag)
+		{
+			return (value & flag) != 0;
+		}
 
 		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
 		/// <param name="value">Value to test in</param>
@@ -181,6 +208,15 @@ namespace KSoft.Bitwise
 		public static bool Test(long value, long flag)
 		{
 			return (value & flag) == flag;
+		}
+		/// <summary>Returns true if any bits in <paramref name="flag"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
+		[Contracts.Pure]
+		public static bool TestAny(ulong value, ulong flag)
+		{
+			return (value & flag) != 0;
 		}
 
 		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>

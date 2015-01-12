@@ -82,7 +82,7 @@ namespace KSoft.T4.Bitwise
 			case BitOperation.Clear:	return "Bitwise.Flags.Remove";
 			case BitOperation.Set:		return "Bitwise.Flags.Add";
 			case BitOperation.Toggle:	return "Bitwise.Flags.Toggle";
-			case BitOperation.Test:		return "Bitwise.Flags.Test";
+			case BitOperation.Test:		return "Bitwise.Flags.TestAny";
 
 			default: throw new InvalidOperationException(op.ToString());
 			}

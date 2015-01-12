@@ -61,6 +61,7 @@ namespace KSoft.Collections
 				<#= op.FlagsMethod() #>(ref mArray[from_word_index], mask);
 <#		if (op.RequiresCardinalityReUpdate()) { #>
 				RecalculateCardinalityRound(from_word_index);
+				return;
 <#		} #>
 <#	} else if (op == BitOperation.Test) { #>
 				return <#= op.FlagsMethod() #>(mArray[from_word_index], mask);

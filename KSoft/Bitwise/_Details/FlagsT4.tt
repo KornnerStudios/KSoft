@@ -34,6 +34,15 @@ namespace KSoft.Bitwise
 		{
 			return (value & flag) == flag;
 		}
+		/// <summary>Returns true if any bits in <paramref name="flag"/> are active in <paramref name="value"/></summary>
+		/// <param name="value">Value to test in</param>
+		/// <param name="flag">Value to test for</param>
+		/// <returns>(<paramref name="value"/> &amp; <paramref name="flag"/>) != 0</returns>
+		[Contracts.Pure]
+		public static bool TestAny(<#= bittable_type.Keyword #> value, <#= bittable_type.Keyword #> flag)
+		{
+			return (value & flag) != 0;
+		}
 
 		/// <summary>Returns true if all the flags in <paramref name="flags"/> are active in <paramref name="value"/></summary>
 		/// <param name="value">Value to test in</param>
