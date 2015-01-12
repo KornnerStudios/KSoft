@@ -36,4 +36,12 @@ namespace KSoft
 		///</summary>
 		public TestContext TestContext { get; set; }
 	};
+
+	static class TestExtentions
+	{
+		public static bool NextBoolean(this Random rand)
+		{
+			return rand.Next(1) == 1;
+		}
+	};
 }

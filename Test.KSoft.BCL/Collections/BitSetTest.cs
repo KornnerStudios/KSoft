@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using BitArray = System.Collections.BitArray;
 
 namespace KSoft.Collections.Test
 {
@@ -213,6 +214,127 @@ namespace KSoft.Collections.Test
 
 			bs.SetBits(31, 2);
 			Assert.IsTrue(bs.TestBits(0, bs.Length));
+		}
+
+		static KeyValuePair<BitArray, BitSet> NewBitSetAndArray(Random rand, int length)
+		{
+			var bitarray = new BitArray(length);
+			var bitset = new BitSet(length);
+			for (int x = 0; x < length; x++)
+			{
+				bool bit = rand.NextBoolean();
+				bitarray[x] = bit;
+				bitset[x] = bit;
+			}
+
+			return new KeyValuePair<BitArray, BitSet>(bitarray, bitset);
+		}
+		static void CompareBitArrayAndSet(BitArray bitarray, BitSet bitset)
+		{
+			Assert.AreEqual(bitarray.Length, bitset.Length);
+
+			#region Compare via indexing
+			for (int x = 0; x < bitarray.Length; x++)
+			{
+				Assert.AreEqual(bitarray[x], bitset[x]);
+			}
+			#endregion
+
+			#region Compare via BitSet's indices enumerators
+			int cardinality_zeros = 0;
+			foreach (int idx in bitset.ClearBitIndices)
+			{
+				Assert.IsFalse(bitarray[idx]);
+				cardinality_zeros++;
+			}
+
+			int cardinality = 0;
+			foreach (int idx in bitset.SetBitIndices)
+			{
+				Assert.IsTrue(bitarray[idx]);
+				cardinality++;
+			}
+
+			Assert.AreEqual(cardinality, bitset.Cardinality);
+			Assert.AreEqual(cardinality_zeros, bitset.CardinalityZeros);
+			#endregion
+
+			#region Compare via GetEnumerator
+			var bitarray_iter = bitarray.GetEnumerator();
+			var bitset_iter = bitset.GetEnumerator();
+			while(bitarray_iter.MoveNext() && bitset_iter.MoveNext())
+			{
+				Assert.AreEqual((bool)bitarray_iter.Current, bitset_iter.Current);
+			}
+			#endregion
+		}
+		[TestMethod]
+		public void Collections_BitSetValidateWithBitArrayTest()
+		{
+			const int k_max_random_length = 10000;
+
+			var rand = new Random();
+			int length = rand.Next(k_max_random_length);
+			Console.WriteLine("Bit vector length: {0}", length);
+
+			var pair = NewBitSetAndArray(rand, length);
+			var bitarray = pair.Key;
+			var bitset = pair.Value;
+			for (int x = 0; x < length; x++)
+			{
+				bool bit = rand.NextBoolean();
+				bitarray[x] = bit;
+				bitset[x] = bit;
+			}
+
+			CompareBitArrayAndSet(bitarray, bitset);
+
+			#region And
+			pair = NewBitSetAndArray(rand, length);
+			var bitarray_mod = pair.Key;
+			var bitset_mod = pair.Value;
+
+			bitarray.And(bitarray_mod);
+			bitset.And(bitset_mod);
+			CompareBitArrayAndSet(bitarray, bitset);
+			#endregion
+
+			// BitArray has no AndNot operation
+
+			#region Or
+			pair = NewBitSetAndArray(rand, length);
+			bitarray_mod = pair.Key;
+			bitset_mod = pair.Value;
+
+			bitarray.Or(bitarray_mod);
+			bitset.Or(bitset_mod);
+			CompareBitArrayAndSet(bitarray, bitset);
+			#endregion
+
+			#region Xor
+			pair = NewBitSetAndArray(rand, length);
+			bitarray_mod = pair.Key;
+			bitset_mod = pair.Value;
+
+			bitarray.Xor(bitarray_mod);
+			bitset.Xor(bitset_mod);
+			CompareBitArrayAndSet(bitarray, bitset);
+			#endregion
+
+			#region Not
+			CompareBitArrayAndSet(bitarray.Not(), bitset.Not());
+			#endregion
+
+			#region SetAll(true)
+			bitarray.SetAll(true);
+			bitset.SetAll(true);
+			CompareBitArrayAndSet(bitarray, bitset);
+			#endregion
+			#region SetAll(false)
+			bitarray.SetAll(false);
+			bitset.SetAll(false);
+			CompareBitArrayAndSet(bitarray, bitset);
+			#endregion
 		}
 	};
 }
