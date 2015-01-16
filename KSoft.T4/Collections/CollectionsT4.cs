@@ -55,5 +55,18 @@ namespace KSoft.T4
 			yield return new BitStateDef("Clear", false);
 			yield return new BitStateDef("Set", true);
 		} }
+
+		public static IEnumerable<string> BitVectorMathBinaryOperatorOverloads { get {
+			yield return "&";
+			yield return "|";
+			yield return "^";
+		} }
+		public static IEnumerable<string> BitVectorMathUnaryOperatorOverloads { get {
+			yield return "~";
+		} }
+		public static IEnumerable<string> BitVectorBooleanOperatorOverloads { get {
+			yield return "==";
+			yield return "!=";
+		} }
 	};
 }

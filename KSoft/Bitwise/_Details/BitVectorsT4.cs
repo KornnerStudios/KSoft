@@ -281,6 +281,26 @@ namespace KSoft.Collections
 			return mWord.CompareTo(other.mWord);
 		}
 
+		#region Math operators
+		public static BitVector32 operator &(BitVector32 lhs, BitVector32 rhs)
+		{
+			return new BitVector32(lhs.mWord & rhs.mWord);
+		}
+		public static BitVector32 operator |(BitVector32 lhs, BitVector32 rhs)
+		{
+			return new BitVector32(lhs.mWord | rhs.mWord);
+		}
+		public static BitVector32 operator ^(BitVector32 lhs, BitVector32 rhs)
+		{
+			return new BitVector32(lhs.mWord ^ rhs.mWord);
+		}
+
+		public static BitVector32 operator ~(BitVector32 value)
+		{
+			return new BitVector32(~value.mWord);
+		}
+		#endregion
+
 		#region Enumerators
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
@@ -691,6 +711,26 @@ namespace KSoft.Collections
 		{
 			return mWord.CompareTo(other.mWord);
 		}
+
+		#region Math operators
+		public static BitVector64 operator &(BitVector64 lhs, BitVector64 rhs)
+		{
+			return new BitVector64(lhs.mWord & rhs.mWord);
+		}
+		public static BitVector64 operator |(BitVector64 lhs, BitVector64 rhs)
+		{
+			return new BitVector64(lhs.mWord | rhs.mWord);
+		}
+		public static BitVector64 operator ^(BitVector64 lhs, BitVector64 rhs)
+		{
+			return new BitVector64(lhs.mWord ^ rhs.mWord);
+		}
+
+		public static BitVector64 operator ~(BitVector64 value)
+		{
+			return new BitVector64(~value.mWord);
+		}
+		#endregion
 
 		#region Enumerators
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>

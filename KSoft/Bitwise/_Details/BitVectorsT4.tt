@@ -249,6 +249,22 @@ namespace KSoft.Collections
 			return mWord.CompareTo(other.mWord);
 		}
 
+		#region Math operators
+<#	foreach (var op in CollectionsT4.BitVectorMathBinaryOperatorOverloads) { #>
+		public static <#= typename #> operator <#= op #>(<#= typename #> lhs, <#= typename #> rhs)
+		{
+			return new <#= typename #>(lhs.mWord <#= op #> rhs.mWord);
+		}
+<#	} #>
+
+<#	foreach (var op in CollectionsT4.BitVectorMathUnaryOperatorOverloads) { #>
+		public static <#= typename #> operator <#= op #>(<#= typename #> value)
+		{
+			return new <#= typename #>(<#= op #>value.mWord);
+		}
+<#	} #>
+		#endregion
+
 		#region Enumerators
 <#	foreach (var state_def in CollectionsT4.BitStateDefs) { #>
 		/// <summary>Get the bit index of the next bit which is <#= state_def.DocNameVerbose #></summary>

@@ -468,15 +468,19 @@ namespace KSoft.Collections
 
 		/// <summary>Flip the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
-		public void Toggle(int bitIndex)
+		/// <returns>The bit's new value</returns>
+		public bool Toggle(int bitIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
 
 			int index;
 			TWord bitmask;
 			bool old_value = GetInternal(bitIndex, out index, out bitmask);
+			bool new_value = !old_value;
 
-			SetInternal(index, bitmask, !old_value);
+			SetInternal(index, bitmask, new_value);
+
+			return new_value;
 		}
 
 		void SetAllInternal(bool value)
