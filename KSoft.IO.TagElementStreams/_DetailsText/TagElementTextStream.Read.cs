@@ -129,11 +129,13 @@ namespace KSoft.IO
 
 		protected override void ReadElementEnum<TEnum>(TCursor n, ref TEnum enumValue)
 		{
-			ParseEnum<TEnum>(GetInnerText(n), out enumValue);
+			TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+				GetInnerText(n), out enumValue);
 		}
 		protected override void ReadElementEnum<TEnum>(TCursor n, ref int enumValue)
 		{
-			ParseEnum<TEnum>(GetInnerText(n), out enumValue);
+			TagElementStreamParseEnumUtil.Parse<TEnum>(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+				GetInnerText(n), out enumValue);
 		}
 
 		protected override void ReadElement(TCursor n, ref Values.KGuid value)
@@ -147,7 +149,8 @@ namespace KSoft.IO
 		/// <param name="enumValue">value to receive the data</param>
 		public override void ReadCursorName<TEnum>(ref TEnum enumValue)
 		{
-			ParseEnum<TEnum>(CursorName, out enumValue);
+			TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+				CursorName, out enumValue);
 		}
 
 		#region ReadAttribute
@@ -158,11 +161,13 @@ namespace KSoft.IO
 
 		public override void ReadAttributeEnum<TEnum>(string name, ref TEnum enumValue)
 		{
-			ParseEnum(ReadAttribute(name), out enumValue);
+			TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+				ReadAttribute(name), out enumValue);
 		}
 		public override void ReadAttributeEnum<TEnum>(string name, ref int enumValue)
 		{
-			ParseEnum(ReadAttribute(name), out enumValue);
+			TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+				ReadAttribute(name), out enumValue);
 		}
 
 		public override void ReadAttribute(string name, ref Values.KGuid value)
@@ -180,27 +185,23 @@ namespace KSoft.IO
 		public override bool ReadElementEnumOpt<TEnum>(string name, ref TEnum enumValue)
 		{
 			string str = ReadElementOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return ParseEnumOpt(str, out enumValue);
+			return !string.IsNullOrEmpty(str) && 
+				TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+					str, out enumValue);
 		}
 		public override bool ReadElementEnumOpt<TEnum>(string name, ref int enumValue)
 		{
 			string str = ReadElementOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return ParseEnumOpt(str, out enumValue);
+			return !string.IsNullOrEmpty(str) &&
+				TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+					str, out enumValue);
 		}
 
 		public override bool ReadElementOpt(string name, ref Values.KGuid value)
 		{
 			string str = ReadElementOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return Values.KGuid.TryParseExactHyphenated(str, out value);
+			return !string.IsNullOrEmpty(str) &&
+				Values.KGuid.TryParseExactHyphenated(str, out value);
 		}
 		#endregion
 
@@ -213,27 +214,23 @@ namespace KSoft.IO
 		public override bool ReadAttributeEnumOpt<TEnum>(string name, ref TEnum enumValue)
 		{
 			string str = ReadAttributeOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return ParseEnumOpt(str, out enumValue);
+			return !string.IsNullOrEmpty(str) &&
+				TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+					str, out enumValue);
 		}
 		public override bool ReadAttributeEnumOpt<TEnum>(string name, ref int enumValue)
 		{
 			string str = ReadAttributeOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return ParseEnumOpt(str, out enumValue);
+			return !string.IsNullOrEmpty(str) &&
+				TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums, ExceptionOnEnumParseFail,
+					str, out enumValue);
 		}
 
 		public override bool ReadAttributeOpt(string name, ref Values.KGuid value)
 		{
 			string str = ReadAttributeOpt(name);
-			if (string.IsNullOrEmpty(str))
-				return false;
-
-			return Values.KGuid.TryParseExactHyphenated(str, out value);
+			return !string.IsNullOrEmpty(str) &&
+				Values.KGuid.TryParseExactHyphenated(str, out value);
 		}
 		#endregion
 	};

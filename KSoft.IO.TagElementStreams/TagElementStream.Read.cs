@@ -7,7 +7,7 @@ namespace KSoft.IO
 {
 	internal static class TagElementStreamParseEnumUtil
 	{
-		static int EnumToInt<TEnum>(TEnum value)
+		public static int EnumToInt<TEnum>(TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			// Note: Enum's convertible implementation isn't efficient. Uses 'GetValue' which returns the value in a boxed object
@@ -16,19 +16,18 @@ namespace KSoft.IO
 			return Reflection.EnumValue<TEnum>.ToInt32(value);
 		}
 
-		static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
+		public static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
 			string str, out TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			bool result = Enum.TryParse<TEnum>(str, ignoreCase, out value);
+			bool result = Enum.TryParse(str, ignoreCase, out value);
 
 			if (!result && exceptionOnParseFail)
 				throw new ArgumentException("Parameter is not a member of " + typeof(TEnum), str);
 
 			return result;
 		}
-
-		static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
+		public static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
 			string str, out int intValue)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -43,15 +42,16 @@ namespace KSoft.IO
 			return result;
 		}
 
-		static bool ParseOpt<TEnum>(bool ignoreCase, 
+#if false // currently unused. probably obsolete
+		public static bool ParseOpt<TEnum>(bool ignoreCase, 
 			string str, out TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			bool result = Enum.TryParse<TEnum>(str, ignoreCase, out value);
+			bool result = Enum.TryParse(str, ignoreCase, out value);
 
 			return result;
 		}
-		static bool ParseOpt<TEnum>(bool ignoreCase, 
+		public static bool ParseOpt<TEnum>(bool ignoreCase, 
 			string str, out int intValue)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -65,6 +65,7 @@ namespace KSoft.IO
 
 			return result;
 		}
+#endif
 	};
 
 	partial class TagElementStream<TDoc, TCursor, TName>
@@ -75,55 +76,6 @@ namespace KSoft.IO
 		public bool IgnoreCaseOnEnums { get; set; }
 
 		public bool ExceptionOnEnumParseFail { get; set; }
-
-		static int EnumToInt<TEnum>(TEnum value)
-			where TEnum : struct, IConvertible
-		{
-			// Note: Enum's convertible implementation isn't efficient. Uses 'GetValue' which returns the value in a boxed object
-			return value.ToInt32(null);
-		}
-
-		protected bool ParseEnum<TEnum>(string str, out TEnum value)
-			where TEnum : struct
-		{
-			bool result = Enum.TryParse<TEnum>(str, IgnoreCaseOnEnums, out value);
-
-			if (!result && ExceptionOnEnumParseFail)
-				throw new ArgumentException("Parameter is not a member of " + typeof(TEnum), str);
-
-			return result;
-		}
-		protected bool ParseEnum<TEnum>(string str, out int intValue)
-			where TEnum : struct, IConvertible
-		{
-			intValue = 0;
-
-			TEnum value;
-			bool result = ParseEnum(str, out value);
-
-			if (result) intValue = EnumToInt(value);
-
-			return result;
-		}
-		protected bool ParseEnumOpt<TEnum>(string str, out TEnum value)
-			where TEnum : struct
-		{
-			bool result = Enum.TryParse<TEnum>(str, IgnoreCaseOnEnums, out value);
-
-			return result;
-		}
-		protected bool ParseEnumOpt<TEnum>(string str, out int intValue)
-			where TEnum : struct, IConvertible
-		{
-			intValue = 0;
-
-			TEnum value;
-			bool result = ParseEnumOpt(str, out value);
-
-			if (result) intValue = EnumToInt(value);
-
-			return result;
-		}
 		#endregion
 
 		/// <summary>Throws a suitable exception to detail the position information of the last read</summary>
@@ -150,7 +102,7 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadCursor
-		/// <summary>Stream out the Value of <see cref="Cursor"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the Value of <see cref="Cursor"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadCursorEnum<TEnum>(ref TEnum enumValue)
@@ -158,7 +110,7 @@ namespace KSoft.IO
 		{
 			ReadElementEnum(Cursor, ref enumValue);
 		}
-		/// <summary>Stream out the Value of <see cref="Cursor"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the Value of <see cref="Cursor"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadCursorEnum<TEnum>(ref int enumValue)

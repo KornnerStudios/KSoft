@@ -220,7 +220,7 @@ namespace KSoft.IO
 
 		#region WriteElements (ICollection)
 		public void WriteElements<T, TContext>(TName elementName,
-			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
+			IEnumerable<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
 			Contract.Requires<ArgumentNullException>(coll != null);
@@ -235,7 +235,7 @@ namespace KSoft.IO
 		}
 
 		public void WriteStreamableElements<T>(TName elementName,
-			ICollection<T> coll,
+			IEnumerable<T> coll,
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
