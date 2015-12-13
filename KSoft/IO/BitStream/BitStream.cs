@@ -279,7 +279,7 @@ namespace KSoft.IO
 		{
 			// There are going to be issues if we try to read back a willy nilly char array string
 			if (s.Type == Memory.Strings.StringStorageType.CharArray && !s.IsFixedLength && length <= 0)
-				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}",
+				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}, {1}",
 					s.ToString(), length.ToString()));
 		}
 

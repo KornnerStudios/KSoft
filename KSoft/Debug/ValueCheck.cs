@@ -20,7 +20,7 @@ namespace KSoft.Debug
 				if (actualDisplayValue == null)
 					actualDisplayValue = actual.ToString();
 
-				throw new InvalidDataException(string.Format("{0}. Expected '{0}' but got '{1}'",
+				throw new InvalidDataException(string.Format("{0}. Expected '{1}' but got '{2}'",
 					description, expectedDisplayValue, actualDisplayValue));
 			}
 		}
