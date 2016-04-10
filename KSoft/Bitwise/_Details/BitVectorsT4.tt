@@ -185,12 +185,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return <#= op.ResultDefault() #>;
 			
-			var from_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskIn<#= const_keyword #>(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 <#		if (op.IsNotPure()) { #>
 			<#= op.FlagsMethod() #>(ref mWord, mask);
 <#		} else if (op == BitOperation.Test) { #>
@@ -243,6 +243,12 @@ namespace KSoft.Collections
 			return new <#= typename #>(~mWord);
 		}
 		#endregion
+
+		/// <summary>Set all the bits to zero</summary>
+		public void Clear()
+		{
+			mWord = 0;
+		}
 
 		public int CompareTo(<#= typename #> other)
 		{

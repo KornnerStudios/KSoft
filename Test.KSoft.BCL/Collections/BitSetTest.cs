@@ -212,7 +212,7 @@ namespace KSoft.Collections.Test
 
 			Assert.IsFalse(bs.TestBits(0, bs.Length));
 
-			bs.SetBits(31, 2);
+			bs.SetBits(k_initial_size-2, 2);
 			Assert.IsTrue(bs.TestBits(0, bs.Length));
 		}
 

@@ -170,12 +170,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Remove(ref mWord, mask);
 		}
 
@@ -187,12 +187,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Add(ref mWord, mask);
 		}
 
@@ -204,12 +204,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Toggle(ref mWord, mask);
 		}
 
@@ -222,12 +222,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return false;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			return Bitwise.Flags.TestAny(mWord, mask);
 		}
 
@@ -275,6 +275,12 @@ namespace KSoft.Collections
 			return new BitVector32(~mWord);
 		}
 		#endregion
+
+		/// <summary>Set all the bits to zero</summary>
+		public void Clear()
+		{
+			mWord = 0;
+		}
 
 		public int CompareTo(BitVector32 other)
 		{
@@ -601,12 +607,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Remove(ref mWord, mask);
 		}
 
@@ -618,12 +624,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Add(ref mWord, mask);
 		}
 
@@ -635,12 +641,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return ;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			Bitwise.Flags.Toggle(ref mWord, mask);
 		}
 
@@ -653,12 +659,12 @@ namespace KSoft.Collections
 			if (bitCount <= 0)
 				return false;
 			
-			var from_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex, kVectorWordFormat);
-			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
+			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
+//			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
-			last_word_mask -= 1;
+//			last_word_mask -= 1;
 
-			var mask = from_word_mask & last_word_mask;
+			var mask = from_word_mask;// & last_word_mask;
 			return Bitwise.Flags.TestAny(mWord, mask);
 		}
 
@@ -706,6 +712,12 @@ namespace KSoft.Collections
 			return new BitVector64(~mWord);
 		}
 		#endregion
+
+		/// <summary>Set all the bits to zero</summary>
+		public void Clear()
+		{
+			mWord = 0;
+		}
 
 		public int CompareTo(BitVector64 other)
 		{

@@ -55,7 +55,7 @@ namespace KSoft.Collections
 			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
-				var mask = from_word_mask & last_word_mask;
+				var mask = from_word_mask;// & last_word_mask;
 <#	if (op.IsNotPure()) { #>
 				RecalculateCardinalityUndoRound(from_word_index);
 				<#= op.FlagsMethod() #>(ref mArray[from_word_index], mask);

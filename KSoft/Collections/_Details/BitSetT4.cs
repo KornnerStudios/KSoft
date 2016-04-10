@@ -55,7 +55,7 @@ namespace KSoft.Collections
 			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
-				var mask = from_word_mask & last_word_mask;
+				var mask = from_word_mask;// & last_word_mask;
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Remove(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
@@ -99,7 +99,7 @@ namespace KSoft.Collections
 			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
-				var mask = from_word_mask & last_word_mask;
+				var mask = from_word_mask;// & last_word_mask;
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Add(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
@@ -144,7 +144,7 @@ namespace KSoft.Collections
 			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
-				var mask = from_word_mask & last_word_mask;
+				var mask = from_word_mask;// & last_word_mask;
 				RecalculateCardinalityUndoRound(from_word_index);
 				Bitwise.Flags.Toggle(ref mArray[from_word_index], mask);
 				RecalculateCardinalityRound(from_word_index);
@@ -187,7 +187,7 @@ namespace KSoft.Collections
 			// target bits are only in one word...
 			if (from_word_index == last_word_index)
 			{
-				var mask = from_word_mask & last_word_mask;
+				var mask = from_word_mask;// & last_word_mask;
 				return Bitwise.Flags.TestAny(mArray[from_word_index], mask);
 			}
 			// or the target bits are in multiple words...

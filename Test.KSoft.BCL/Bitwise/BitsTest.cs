@@ -389,5 +389,37 @@ namespace KSoft.Bitwise.Test
 			Bits.GetNoneableEncodingTraits(int.MaxValue, out bit_count);
 		}
 		#endregion
+
+		class TestUnionData1
+		{
+			public string Str;
+			public bool Bool;
+		};
+		class TestUnionData2
+		{
+			public int Index;
+		};
+		[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+		struct TestUnion
+		{
+			[System.Runtime.InteropServices.FieldOffset(0)]
+			public TestUnionData1 Data1;
+			[System.Runtime.InteropServices.FieldOffset(0)]
+			public TestUnionData2 Data2;
+		};
+		[TestMethod]
+		public void Union_Test()
+		{
+			var t = new TestUnion();
+
+			t.Data1 = new TestUnionData1();
+			t.Data1.Str = "";
+			Console.WriteLine(t.Data2.Index);
+
+			var t2 = new TestUnion();
+			t2.Data2 = new TestUnionData2();
+			t2.Data2.Index = -1;
+			Console.WriteLine(t2.Data1);
+		}
 	};
 }
