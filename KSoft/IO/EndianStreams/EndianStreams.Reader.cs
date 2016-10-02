@@ -27,7 +27,7 @@ namespace KSoft.IO
 		/// <param name="byteOrder">Endian format for how we interpret the stream's bytes</param>
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
-		public EndianReader(Stream input, Encoding encoding, 
+		public EndianReader(Stream input, Encoding encoding,
 			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null) : base(input, encoding)
 		{
 			Contract.Requires<ArgumentNullException>(input != null);
@@ -42,7 +42,7 @@ namespace KSoft.IO
 
 			StreamName = name ?? "(unnamed)";
 
-			// If the stream is a different endian than the runtime, data will 
+			// If the stream is a different endian than the runtime, data will
 			// be byte swapped of course
 			//this.mRequiresByteSwap = Shell.Platform.Environment.ProcessorType.ByteOrder != byteOrder;
 			mRequiresByteSwap = !byteOrder.IsSameAsRuntime();
@@ -54,7 +54,7 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		/// <remarks>Defaults to <see cref="System.Text.UTF8Encoding"/> for the string encoding</remarks>
-		public EndianReader(Stream input, Shell.EndianFormat byteOrder, 
+		public EndianReader(Stream input, Shell.EndianFormat byteOrder,
 			object streamOwner = null, string name = null) : this(input, new UTF8Encoding(), byteOrder, streamOwner, name)
 		{
 		}
@@ -64,12 +64,37 @@ namespace KSoft.IO
 		/// Default endian format is set from <see cref="Shell.Platform.Environment"/>.
 		/// <see cref="Owner"/> is set to <c>null</c>
 		/// </remarks>
-		public EndianReader(Stream input) : this(input, new UTF8Encoding(), 
+		public EndianReader(Stream input) : this(input, new UTF8Encoding(),
 			Shell.Platform.Environment.ProcessorType.ByteOrder)
 		{
 			Contract.Requires<ArgumentNullException>(input != null);
 		}
 		#endregion
+
+		public IDisposable ReadSignatureWithByteSwapSupport(uint expectedSignature, out uint actualSignature)
+		{
+			var signature = this.ReadUInt32();
+			if (signature != expectedSignature)
+			{
+				var signatureInverted = Bitwise.ByteSwap.SwapUInt32(signature);
+				if (signatureInverted == expectedSignature)
+				{
+					actualSignature = signatureInverted;
+					return this.BeginEndianSwitch();
+				}
+
+				throw new SignatureMismatchException(this.BaseStream, expectedSignature, signature);
+			}
+
+			actualSignature = signature;
+			return Util.NullDisposable;
+		}
+
+		public IDisposable ReadSignatureWithByteSwapSupport(uint expectedSignature)
+		{
+			uint actualSignature;
+			return ReadSignatureWithByteSwapSupport(expectedSignature, out actualSignature);
+		}
 
 		#region Pad
 		public void Pad(int byteCount)
@@ -161,7 +186,7 @@ namespace KSoft.IO
 			tag[2] = (char)base.ReadByte();
 			tag[3] = (char)base.ReadByte();
 
-			// Explicitly check for Little endian since this is 
+			// Explicitly check for Little endian since this is
 			// a character array and not a primitive integer
 			if (ByteOrder == Shell.EndianFormat.Little)
 			{
@@ -200,7 +225,7 @@ namespace KSoft.IO
 			tag[4+2] = (char)base.ReadByte();
 			tag[4+3] = (char)base.ReadByte();
 
-			// Explicitly check for Little endian since this is 
+			// Explicitly check for Little endian since this is
 			// a character array and not a primitive integer
 			if (ByteOrder == Shell.EndianFormat.Little)
 			{
@@ -271,7 +296,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public ulong ReadUInt40()
 		{
-			var value = 
+			var value =
 				((ulong)base.ReadByte()) |
 				((ulong)base.ReadByte() << 8) |
 				((ulong)base.ReadByte() << 16) |
@@ -290,7 +315,7 @@ namespace KSoft.IO
 		{
 			// There are going to be issues if we try to read back a willy nilly char array string
 			if (s.Type == Memory.Strings.StringStorageType.CharArray && !s.IsFixedLength && length <= 0)
-				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}, {1}", 
+				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}, {1}",
 					s.ToString(), length.ToString()));
 		}
 		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
@@ -298,8 +323,8 @@ namespace KSoft.IO
 		/// <param name="length">Length, in characters, of the string.</param>
 		/// <returns></returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or 
-		/// doesn't require an explicit character length. If you do provide the 
+		/// Length can be non-positive if <paramref name="storage"/> defines or
+		/// doesn't require an explicit character length. If you do provide the
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
 		public string ReadString(Memory.Strings.StringStorage storage, int length)
@@ -326,8 +351,8 @@ namespace KSoft.IO
 		/// <param name="length">Length, in characters, of the string.</param>
 		/// <returns></returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="encoding"/>'s storage defines 
-		/// or doesn't require an explicit character length. If you do provide the 
+		/// Length can be non-positive if <paramref name="encoding"/>'s storage defines
+		/// or doesn't require an explicit character length. If you do provide the
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
 		public string ReadString(Text.StringStorageEncoding encoding, int length)
@@ -338,7 +363,7 @@ namespace KSoft.IO
 			return encoding.ReadString(this, length);
 		}
 		/// <summary>
-		/// Read a string using a <see cref="Data.Strings.StringStorage"/> encoding. 
+		/// Read a string using a <see cref="Data.Strings.StringStorage"/> encoding.
 		/// String length defaults to <see cref="Data.Strings.StringStorage.FixedLegnth"/>
 		/// </summary>
 		/// <param name="encoding">The encoding to use for character streaming</param>
@@ -375,12 +400,12 @@ namespace KSoft.IO
 		/// <summary>Read a pointer value from the stream</summary>
 		/// <param name="addressSize">Size of the pointer we're to read</param>
 		/// <returns>
-		/// A handle that encapsulates the pointer value and its size. After the value 
+		/// A handle that encapsulates the pointer value and its size. After the value
 		/// is read from the stream, <see cref="BaseAddress"/> is subtracted.
 		/// </returns>
 		/// <remarks>
-		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get 
-		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/> 
+		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get
+		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
 		public Values.PtrHandle ReadPointer(Shell.ProcessorSize addressSize)
@@ -408,9 +433,9 @@ namespace KSoft.IO
 		/// <param name="ptr">Handle to stream the value into</param>
 		/// <remarks>
 		/// After the value is read from the stream, <see cref="BaseAddress"/> is subtracted.
-		/// 
-		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get 
-		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/> 
+		///
+		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get
+		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
 		public void ReadPointer(ref Values.PtrHandle ptr)
@@ -433,12 +458,12 @@ namespace KSoft.IO
 
 		/// <summary>Read a pointer value from the stream (size inherited from <see cref="BaseAddress"/>)</summary>
 		/// <returns>
-		/// A handle that encapsulates the pointer value and its size. After the value 
+		/// A handle that encapsulates the pointer value and its size. After the value
 		/// is read from the stream, <see cref="BaseAddress"/> is subtracted.
 		/// </returns>
 		/// <remarks>
-		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get 
-		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/> 
+		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get
+		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
 		public Values.PtrHandle ReadPointerViaBaseAddress()
@@ -449,9 +474,9 @@ namespace KSoft.IO
 		/// <param name="ptr">Handle to initialize and stream the value into</param>
 		/// <remarks>
 		/// After the value is read from the stream, <see cref="BaseAddress"/> is subtracted.
-		/// 
-		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get 
-		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/> 
+		///
+		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you get
+		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
 		public void ReadPointerViaBaseAddress(out Values.PtrHandle ptr)

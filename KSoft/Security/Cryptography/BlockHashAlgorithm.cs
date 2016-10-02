@@ -72,7 +72,9 @@ namespace KSoft.Security.Cryptography
 					Array.Copy(array, startIndex, mBlockBuffer, BlockBytesRemaining, i);
 					ProcessBlock(mBlockBuffer, 0, 1);
 					mTotalBytesProcessed += BlockSize;
-					BlockBytesRemaining = 0; startIndex += i; count -= i;
+					BlockBytesRemaining = 0;
+					startIndex += i;
+					count -= i;
 				}
 			}
 
