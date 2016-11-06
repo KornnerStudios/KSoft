@@ -169,7 +169,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -186,7 +186,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -203,7 +203,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -221,7 +221,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return false;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt32(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt32(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -311,7 +311,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
-		public int NextClearBitIndex(int startBitIndex = 0)
+		public int NextClearBitIndex(int startBitIndex = -1)
 		{
 			return NextBitIndex(startBitIndex, false);
 		}
@@ -323,7 +323,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next set bit index, or -1 if one isn't found</returns>
-		public int NextSetBitIndex(int startBitIndex = 0)
+		public int NextSetBitIndex(int startBitIndex = -1)
 		{
 			return NextBitIndex(startBitIndex, true);
 		}
@@ -606,7 +606,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -623,7 +623,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -640,7 +640,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -658,7 +658,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return false;
-			
+
 			var from_word_mask = Bits.VectorElementSectionBitMaskInInt64(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskInInt64(startBitIndex+bitCount, kVectorWordFormat);
 			// create a mask for all bits below the given length in a caboose word
@@ -748,7 +748,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
-		public int NextClearBitIndex(int startBitIndex = 0)
+		public int NextClearBitIndex(int startBitIndex = -1)
 		{
 			return NextBitIndex(startBitIndex, false);
 		}
@@ -760,7 +760,7 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next set bit index, or -1 if one isn't found</returns>
-		public int NextSetBitIndex(int startBitIndex = 0)
+		public int NextSetBitIndex(int startBitIndex = -1)
 		{
 			return NextBitIndex(startBitIndex, true);
 		}
