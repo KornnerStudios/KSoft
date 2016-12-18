@@ -22,6 +22,41 @@ namespace KSoft.Security.Cryptography
 				return Adler32.ComputeFinish(s1, s2);
 			}
 
+			public void Compute(byte[] buffer, int offset, int length)
+			{
+				Contract.Requires<ArgumentNullException>(buffer != null);
+				Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
+				Contract.Requires<ArgumentOutOfRangeException>(offset + length <= buffer.Length);
+
+				int buflen = length;
+				for (int blocklen; buflen > 0; buflen -= blocklen)
+				{
+					blocklen = buflen < kBlockMax
+						? buflen
+						: kBlockMax;
+
+					int x;
+					for (x = 0; x + 7 < blocklen; x += 8, offset += 8)
+					{
+						s1 += buffer[offset + 0]; s2 += s1;
+						s1 += buffer[offset + 1]; s2 += s1;
+						s1 += buffer[offset + 2]; s2 += s1;
+						s1 += buffer[offset + 3]; s2 += s1;
+						s1 += buffer[offset + 4]; s2 += s1;
+						s1 += buffer[offset + 5]; s2 += s1;
+						s1 += buffer[offset + 6]; s2 += s1;
+						s1 += buffer[offset + 7]; s2 += s1;
+					}
+
+					for (; x < blocklen; x++, offset++)
+					{
+						s1 += buffer[offset]; s2 += s1;
+					}
+
+					s1 %= kAdlerMod; s2 %= kAdlerMod;
+				}
+			}
+
 			#region Compute 16-bits
 			public void ComputeLE(ushort value)
 			{

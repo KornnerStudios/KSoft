@@ -314,6 +314,8 @@ namespace KSoft
 				buffer_size = buffer.Length;
 			}
 
+			algo.Initialize();
+
 			long orig_pos = inputStream.Position;
 			if (offset.IsNotNone() && offset != orig_pos)
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
@@ -357,6 +359,8 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>((offset+count) <= inputStream.Length);
+
+			algo.Initialize();
 
 			int buffer_size = algo.BlockSize;
 			byte[] buffer = algo.InternalBlockBuffer;
