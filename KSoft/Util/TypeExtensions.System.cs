@@ -20,7 +20,8 @@ namespace KSoft
 				case TypeCode.Int64:
 					return true;
 
-				default: return false;
+				default:
+					return false;
 			}
 		}
 
@@ -289,34 +290,106 @@ namespace KSoft
 		#endregion
 
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,
-			System.IO.Stream inputStream, long offset, long count, bool restorePosition = false)
+			System.IO.Stream inputStream, long offset, int count,
+			bool restorePosition = false,
+			byte[] preallocatedBuffer = null)
 		{
 			Contract.Requires<ArgumentNullException>(inputStream != null);
 			Contract.Requires<ArgumentException>(inputStream.CanSeek);
-			Contract.Requires<ArgumentOutOfRangeException>(offset >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>((offset+count) <= inputStream.Length);
 
-			int buffer_size = (int)System.Math.Min(count, 0x1000);
-			byte[] buffer = new byte[buffer_size];
+			int buffer_size;
+			byte[] buffer;
+
+			if (preallocatedBuffer == null)
+			{
+				buffer_size = System.Math.Min(count, 0x1000);
+				buffer = new byte[buffer_size];
+			}
+			else
+			{
+				buffer = preallocatedBuffer;
+				buffer_size = buffer.Length;
+			}
 
 			long orig_pos = inputStream.Position;
-			if (offset != orig_pos)
+			if (offset.IsNotNone() && offset != orig_pos)
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
 
+			for (int bytes_remaining = count; bytes_remaining > 0; )
+			{
+				int num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
+				int num_bytes_read = 0;
+				do
+				{
+					int n = inputStream.Read(buffer, num_bytes_read, num_bytes_to_read);
+					if (n == 0)
+						break;
 
-			int read_count = 0;
-			do {
-				read_count = inputStream.Read(buffer, 0, System.Math.Min((int)count, buffer_size));
-				if (read_count > 0)
-					algo.TransformBlock(buffer, 0, read_count, null, 0);
+					num_bytes_read += n;
+					num_bytes_to_read -= n;
+				} while (num_bytes_to_read > 0);
 
-				count -= read_count;
-			} while(read_count > 0);
+				if (num_bytes_read > 0)
+					algo.TransformBlock(buffer, 0, num_bytes_read, null, 0);
+				else
+					break;
+
+				bytes_remaining -= num_bytes_read;
+			}
 
 			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
 
-			if(restorePosition)
+			if (restorePosition)
+				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
+
+			return algo.Hash;
+		}
+
+		public static byte[] ComputeHash(this Security.Cryptography.BlockHashAlgorithm algo,
+			System.IO.Stream inputStream, long offset, int count,
+			bool restorePosition = false)
+		{
+			Contract.Requires<ArgumentNullException>(inputStream != null);
+			Contract.Requires<ArgumentException>(inputStream.CanSeek);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
+			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>((offset+count) <= inputStream.Length);
+
+			int buffer_size = algo.BlockSize;
+			byte[] buffer = algo.InternalBlockBuffer;
+
+			long orig_pos = inputStream.Position;
+			if (offset.IsNotNone() && offset != orig_pos)
+				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
+
+			for (int bytes_remaining = count; bytes_remaining > 0; )
+			{
+				int num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
+				int num_bytes_read = 0;
+				do
+				{
+					int n = inputStream.Read(buffer, num_bytes_read, num_bytes_to_read);
+					if (n == 0)
+						break;
+
+					num_bytes_read += n;
+					num_bytes_to_read -= n;
+				} while (num_bytes_to_read > 0);
+
+				if (num_bytes_read > 0)
+					algo.TransformBlock(buffer, 0, num_bytes_read, null, 0);
+				else
+					break;
+
+				bytes_remaining -= num_bytes_read;
+			}
+
+			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
+
+			if (restorePosition)
 				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
 
 			return algo.Hash;

@@ -12,10 +12,13 @@ namespace KSoft.Text
 		/// <param name="buffer">Buffer containing the BOMs</param>
 		/// <param name="index">Start index of the BOMs</param>
 		/// <returns>The respected <see cref="Encoding"/> to use or <see cref="Encoding.Default"/> if this was unable to determine</returns>
-		public static Encoding DetermineStringEncoding(byte[] buffer, int index = 0)
+		public static Encoding DetermineStringEncoding(byte[] buffer
+			, int index = 0)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
+
+			Contract.Ensures(Contract.Result<Encoding>() != null);
 
 			Encoding enc = null;
 			int length = buffer.Length - index;
@@ -51,10 +54,13 @@ namespace KSoft.Text
 			{
 				byte b0 = buffer[index+0], b1 = buffer[index+1];
 
-					 if (b0 == 0xFF && b1 == 0xFE)	enc = Encoding.Unicode;
-				else if (b0 == 0xFE && b1 == 0xFF)	enc = Encoding.BigEndianUnicode;
+				if		(b0 == 0xFF && b1 == 0xFE)
+						 enc = Encoding.Unicode;
+				else if	(b0 == 0xFE && b1 == 0xFF)
+						 enc = Encoding.BigEndianUnicode;
 			}
-			if (enc == null) enc = Encoding.Default;
+			if (enc == null)
+				enc = Encoding.Default;
 
 			return enc;
 		}
@@ -78,6 +84,8 @@ namespace KSoft.Text
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(count > 0);
 			Contract.Requires((startIndex+count) <= data.Length);
+
+			Contract.Ensures(Contract.Result<string>() != null);
 
 			StringBuilder sb = new StringBuilder(count * 2);
 			for (int x = startIndex; x < (startIndex+count); x++)
@@ -108,11 +116,14 @@ namespace KSoft.Text
 		/// <param name="startIndex">Index in <paramref name="data"/> to start the conversion</param>
 		/// <example>"1337BEEF"</example>
 		/// <returns></returns>
-		public static string ByteArrayToString(byte[] data, int startIndex = 0)
+		public static string ByteArrayToString(byte[] data
+			, int startIndex = 0)
 		{
 			Contract.Requires<ArgumentNullException>(data != null);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
+
+			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ByteArrayToString(data, startIndex, data.Length-startIndex);
 		}
@@ -121,7 +132,8 @@ namespace KSoft.Text
 		/// <param name="startIndex">Index in <paramref name="data"/> to start the conversion</param>
 		/// <example>"1337BEEF"</example>
 		/// <returns></returns>
-		public static void ByteArrayToStream(byte[] data, TextWriter stream, int startIndex = 0)
+		public static void ByteArrayToStream(byte[] data, TextWriter stream
+			, int startIndex = 0)
 		{
 			Contract.Requires<ArgumentNullException>(data != null);
 			Contract.Requires<ArgumentNullException>(stream != null);
@@ -133,6 +145,52 @@ namespace KSoft.Text
 		#endregion
 
 		#region ByteStringToArray (string to byte[])
+		public static byte[] ByteStringToArray(byte[] bytes, string data, int startIndex, int count)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(startIndex < data.Length);
+			Contract.Requires(count > 0);
+			Contract.Requires((startIndex+count) <= data.Length);
+			Contract.Requires(
+				( ((data.Length-startIndex)-count) % 2) == 0,
+				"Can't byte-ify a string that's not even!"
+			);
+			Contract.Requires<ArgumentNullException>(bytes != null);
+			Contract.Requires(bytes.Length >= (count/2));
+
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			Array.Clear(bytes, 0, bytes.Length);
+
+			for ( int x = startIndex, index = 0
+				; x < (startIndex+count)
+				; x+=2, index++)
+			{
+				bytes[index] = (byte)CharsToByte(NumeralBase.Hex, data, x);
+			}
+
+			return bytes;
+		}
+
+		public static byte[] ByteStringToArray(byte[] bytes, string data
+			, int startIndex = 0)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(startIndex < data.Length);
+			Contract.Requires(
+				((data.Length-startIndex) % 2) == 0,
+				"Can't byte-ify a string that's not even!"
+			);
+			Contract.Requires<ArgumentNullException>(bytes != null);
+			Contract.Requires(bytes.Length >= (data.Length/2));
+
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			return ByteStringToArray(bytes, data, startIndex, data.Length-startIndex);
+		}
+
 		/// <summary>Converts a string containing hex values into a byte array</summary>
 		/// <param name="data">String of hex digits to convert</param>
 		/// <param name="startIndex">Character index in <paramref name="data"/> to start the conversion at</param>
@@ -146,29 +204,31 @@ namespace KSoft.Text
 			Contract.Requires(count > 0);
 			Contract.Requires((startIndex+count) <= data.Length);
 			Contract.Requires(
-				( ((data.Length-startIndex)-count) % 2) == 0, 
+				( ((data.Length-startIndex)-count) % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
 
-			byte[] ret = new byte[count / 2];
-			char[] chars = data.ToCharArray();
-			for (int x = startIndex, index = 0; x < (startIndex+count); x+=2, index++)
-				ret[index] = (byte)CharsToByte(NumeralBase.Hex, chars, x);
-			return ret;
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			byte[] bytes = new byte[count / 2];
+			return ByteStringToArray(bytes, data, startIndex, count);
 		}
 		/// <summary>Converts a string containing hex values into a byte array</summary>
 		/// <param name="data">String of hex digits to convert</param>
 		/// <param name="startIndex">Character index in <paramref name="data"/> to start the conversion at</param>
 		/// <returns></returns>
-		public static byte[] ByteStringToArray(string data, int startIndex = 0)
+		public static byte[] ByteStringToArray(string data
+			, int startIndex = 0)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(
-				((data.Length-startIndex) % 2) == 0, 
+				((data.Length-startIndex) % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
+
+			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			return ByteStringToArray(data, startIndex, data.Length-startIndex);
 		}
@@ -180,12 +240,16 @@ namespace KSoft.Text
 		/// <param name="digitsPerLine">Number of hex characters per line</param>
 		/// <returns></returns>
 		/// <remarks>Uses <see cref="System.Environment.NewLine"/> for line termination</remarks>
-		public static string ByteArrayToAlignedString(byte[] data, string padding = "", int digitsPerLine = kDefaultHexDigitsPerLine)
+		public static string ByteArrayToAlignedString(byte[] data
+			, string padding = ""
+			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
 			Contract.Requires<ArgumentNullException>(data != null);
 			Contract.Requires<ArgumentNullException>(padding != null);
 			Contract.Requires(digitsPerLine >= 2);
 			Contract.Requires((digitsPerLine % 2) == 0);
+
+			Contract.Ensures(Contract.Result<string>() != null);
 
 			string new_line = Environment.NewLine;
 
@@ -201,7 +265,7 @@ namespace KSoft.Text
 			int index = 0;
 			for (int b = 0; b < blocks; b++, index+=digitsPerLine)
 				sb.AppendFormat("{0}{1}{2}", padding, ByteArrayToString(data, index, digitsPerLine), new_line);
-			
+
 			if (leftovers > 0)
 				sb.AppendFormat("{0}{1}{2}", padding, ByteArrayToString(data, index), new_line);
 
@@ -212,7 +276,9 @@ namespace KSoft.Text
 		/// <param name="output">Stream to output the hex strings to</param>
 		/// <param name="padding">Padding string to appear before each line of hex characters. Can be null.</param>
 		/// <param name="digitsPerLine">Number of hex characters per line</param>
-		public static void ByteArrayToAlignedOutput(byte[] data, TextWriter output, string padding = null, int digitsPerLine = kDefaultHexDigitsPerLine)
+		public static void ByteArrayToAlignedOutput(byte[] data, TextWriter output
+			, string padding = null
+			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
 			Contract.Requires<ArgumentNullException>(data != null);
 			Contract.Requires(digitsPerLine >= 2);
@@ -309,7 +375,7 @@ namespace KSoft.Text
 
 			return digit * multiplier;
 		}
-		
+
 		/// <summary>Convert a byte digit character pair to the byte they represent</summary>
 		/// <param name="radix">The base we're converting from</param>
 		/// <param name="c2">Character in the 2nd position (when reading right to left)</param>

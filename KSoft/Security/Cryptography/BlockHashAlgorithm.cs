@@ -16,6 +16,7 @@ namespace KSoft.Security.Cryptography
 		public int BlockSize { get { return mBlockBuffer.Length; } }
 		/// <summary>The number of bytes currently in the buffer waiting to be processed.</summary>
 		public int BlockBytesRemaining { get; private set; }
+		internal byte[] InternalBlockBuffer { get { return mBlockBuffer; } }
 
 		/// <summary>Initializes a new instance of the BlockHashAlgorithm class.</summary>
 		/// <param name="blockSize">The size in bytes of an individual block.</param>

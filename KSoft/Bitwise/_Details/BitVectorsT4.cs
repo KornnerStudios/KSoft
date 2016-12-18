@@ -440,6 +440,41 @@ namespace KSoft.Collections
 		};
 
 		#endregion
+
+		#region Access via Enum
+		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (bitIndex < 0 || bitIndex >= this.Length)
+			{
+				throw new ArgumentOutOfRangeException("bit", bit,
+					"Enum member is out of range for indexing");
+			}
+		}
+
+		public bool Test<TEnum>(TEnum bit)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((uint)1) << bitIndex;
+
+			return Bitwise.Flags.Test(mWord, flag);
+		}
+
+		public BitVector32 Set<TEnum>(TEnum bit, bool value = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((uint)1) << bitIndex;
+
+			Bitwise.Flags.Modify(value, ref mWord, flag);
+			return this;
+		}
+		#endregion
 	};
 
 	[System.Diagnostics.DebuggerDisplay("Data = {mWord}, Cardinality = {Cardinality}")]
@@ -876,6 +911,41 @@ namespace KSoft.Collections
 			}
 		};
 
+		#endregion
+
+		#region Access via Enum
+		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (bitIndex < 0 || bitIndex >= this.Length)
+			{
+				throw new ArgumentOutOfRangeException("bit", bit,
+					"Enum member is out of range for indexing");
+			}
+		}
+
+		public bool Test<TEnum>(TEnum bit)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((ulong)1) << bitIndex;
+
+			return Bitwise.Flags.Test(mWord, flag);
+		}
+
+		public BitVector64 Set<TEnum>(TEnum bit, bool value = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((ulong)1) << bitIndex;
+
+			Bitwise.Flags.Modify(value, ref mWord, flag);
+			return this;
+		}
 		#endregion
 	};
 

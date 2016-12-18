@@ -12,6 +12,10 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Compute(byte[] buffer, int offset, int length, uint adler32 = 1)
 		{
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(offset+length <= buffer.Length);
+
 			uint s1 = adler32 & 0xFFFF, s2 = adler32 >> 16;
 
 			int buflen = length;
@@ -43,7 +47,34 @@ namespace KSoft.Security.Cryptography
 		}
 		public static uint Compute(byte[] buffer, uint adler32 = 1)
 		{
+			Contract.Requires<ArgumentNullException>(buffer != null);
+
 			return Compute(buffer, 0, buffer.Length, adler32);
+		}
+
+		public static uint Compute(System.IO.Stream stream, int length, uint adler32 = 1)
+		{
+			Contract.Requires<ArgumentNullException>(stream != null);
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			Contract.Requires<InvalidOperationException>(stream.CanRead);
+
+			long prev_position = stream.CanSeek
+				? stream.Position
+				: -1;
+
+			// #TODO inefficient, support buffering
+			byte[] stream_bytes = new byte[length];
+			for (int bytes_read = 0; bytes_read < length; )
+			{
+				bytes_read += stream.Read(stream_bytes, bytes_read, length - bytes_read);
+			}
+
+			if (prev_position != -1)
+				stream.Seek(prev_position, System.IO.SeekOrigin.Begin);
+
+			adler32 = Compute(stream_bytes, 0, stream_bytes.Length, adler32);
+
+			return adler32;
 		}
 
 

@@ -5,13 +5,13 @@ namespace KSoft.Shell
 	/// <summary>The ordering which bytes are interpreted on the processor</summary>
 	/// <remarks>
 	/// See http://en.wikipedia.org/wiki/Endian for more information.
-	/// 
+	///
 	/// "Middle-endian" is unsupported.
-	/// 
-	/// Most people do not realize that the terms 'big-endian' and 'little-endian' come 
-	/// from <a href="http://www.jaffebros.com/lee/gulliver/index.html">Gulliver's Travels</a>. 
-	/// The nations of <a href="http://www.jaffebros.com/lee/gulliver/bk1/chap1-4.html">Lilliput 
-	/// and Blefuscu</a> were waging a terrible and bloody war over which end one should cut 
+	///
+	/// Most people do not realize that the terms 'big-endian' and 'little-endian' come
+	/// from <a href="http://www.jaffebros.com/lee/gulliver/index.html">Gulliver's Travels</a>.
+	/// The nations of <a href="http://www.jaffebros.com/lee/gulliver/bk1/chap1-4.html">Lilliput
+	/// and Blefuscu</a> were waging a terrible and bloody war over which end one should cut
 	/// open on a boiled egg - the little end or the big end.
 	/// </remarks>
 	[System.Reflection.Obfuscation(Exclude=true)]
@@ -131,7 +131,7 @@ namespace KSoft.Shell
 
 		/// <summary>Microsoft Windows</summary>
 		Windows,
-		
+
 		/// <summary>Linux based</summary>
 		Linux,
 		Android,
@@ -145,11 +145,11 @@ namespace KSoft.Shell
 		/// <summary>Nintendo non-hand held (e.g., Wii)</summary>
 		/// <remarks>Currently unsupported</remarks>
 		NintendoConsole,
-		
+
 		/// <summary>Sony's Playstation</summary>
 		/// <remarks>Currently unsupported</remarks>
 		Playstation,
-		
+
 		/// <summary>Microsoft's Xbox (Original, 360, Durango)</summary>
 		Xbox,
 

@@ -153,6 +153,24 @@ namespace KSoft.Security.Cryptography
 			return false;
 		}
 
+		public bool TryGetAsTiger192(byte[] buffer, int offset = 0)
+		{
+			if (buffer == null)
+				return false;
+
+			if ((buffer.Length-offset) < (kHashSize/Bits.kByteBitCount))
+				return false;
+
+			// This would only ever happen if Initialize wasn't called
+			if (mRegs != null && mRegs.Length >= 3)
+			{
+				Bits.ArrayCopy(mRegs, 0, buffer, offset, mRegs.Length);
+				return true;
+			}
+
+			return false;
+		}
+
 		protected TigerHashBase() : base(kBlockSize, kHashSize)
 		{
 			Initialize();
@@ -162,7 +180,11 @@ namespace KSoft.Security.Cryptography
 		{
 			base.Initialize();
 
-			mRegs = new ulong[] { kRegister0, kRegister1, kRegister2 };
+			if (mRegs == null)
+				mRegs = new ulong[3];
+			mRegs[0] = kRegister0;
+			mRegs[1] = kRegister1;
+			mRegs[2] = kRegister2;
 
 			if (mX == null)
 			{
@@ -178,97 +200,113 @@ namespace KSoft.Security.Cryptography
 				"TigerHash version is not recognized");
 		}
 
+		private void ProcessWords()
+		{
+			int i = -1;
+			ulong a = mRegs[0], b = mRegs[1], c = mRegs[2];
+			ulong x0=mX[++i], x1=mX[++i], x2=mX[++i], x3=mX[++i];
+			ulong x4=mX[++i], x5=mX[++i], x6=mX[++i], x7=mX[++i];
+
+			// rounds and schedule
+			c^=x0; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
+			a^=x1; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
+			b^=x2; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=5;
+			c^=x3; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
+			a^=x4; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
+			b^=x5; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=5;
+			c^=x6; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
+			a^=x7; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
+
+			KeySchedule(ref x0, ref x1, ref x2, ref x3, ref x4, ref x5, ref x6, ref x7);
+
+			b^=x0; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
+			c^=x1; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
+			a^=x2; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=7;
+			b^=x3; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
+			c^=x4; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
+			a^=x5; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=7;
+			b^=x6; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
+			c^=x7; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
+
+			KeySchedule(ref x0,ref x1,ref x2,ref x3,ref x4,ref x5,ref x6,ref x7);
+
+			a^=x0; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
+			b^=x1; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
+			c^=x2; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=9;
+			a^=x3; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
+			b^=x4; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
+			c^=x5; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=9;
+			a^=x6; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
+			b^=x7; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
+
+			// feed forward
+			mRegs[0] ^= a;
+			b -= mRegs[1];
+			mRegs[1] = b;
+			mRegs[2] += c;
+		}
+
+		void CopyBlock(byte[] inputBuffer, int inputOffset, int blockIndex)
+		{
+			int remaining_bytes = inputBuffer.Length - inputOffset;
+			int input_count = System.Math.Min(BlockSize, remaining_bytes);
+			if (input_count != BlockSize)
+			{
+				Array.Clear(mX, 0, mX.Length);
+			}
+			Bits.ArrayCopy(inputBuffer, inputOffset, mX, 0, input_count);
+		}
+
+		void ProcessBlockOfWords(byte[] inputBuffer, int inputOffset, int blockCount)
+		{
+			for (int block_index = 0, block_offset_in_input = inputOffset; block_index < blockCount; block_index++, block_offset_in_input += BlockSize)
+			{
+				CopyBlock(inputBuffer, block_offset_in_input, block_index);
+
+				ProcessWords();
+			}
+		}
+
 		protected override void ProcessBlock(byte[] inputBuffer, int inputOffset, int blockCount)
 		{
-			ulong a = mRegs[0], b = mRegs[1], c = mRegs[2],
-				  x0, x1, x2, x3, x4, x5, x6, x7;
-
-			int space_needed = blockCount * kWordCount;
-			if (mX.Length < space_needed)
-			{
-				Array.Resize(ref mX, space_needed);
-			}
-			Bits.ArrayCopy(inputBuffer, inputOffset, mX, 0, blockCount * BlockSize);
-
-			for (int i = -1; blockCount > 0; --blockCount, inputOffset += BlockSize)
-			{
-				x0=mX[++i]; x1=mX[++i]; x2=mX[++i]; x3=mX[++i];
-				x4=mX[++i]; x5=mX[++i]; x6=mX[++i]; x7=mX[++i];
-
-				// rounds and schedule
-				c^=x0; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
-				a^=x1; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
-				b^=x2; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=5;
-				c^=x3; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
-				a^=x4; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
-				b^=x5; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=5;
-				c^=x6; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=5;
-				a^=x7; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=5;
-
-				KeySchedule(ref x0, ref x1, ref x2, ref x3, ref x4, ref x5, ref x6, ref x7);
-
-				b^=x0; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
-				c^=x1; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
-				a^=x2; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=7;
-				b^=x3; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
-				c^=x4; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
-				a^=x5; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=7;
-				b^=x6; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=7;
-				c^=x7; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=7;
-
-				KeySchedule(ref x0,ref x1,ref x2,ref x3,ref x4,ref x5,ref x6,ref x7);
-
-				a^=x0; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
-				b^=x1; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
-				c^=x2; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=9;
-				a^=x3; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
-				b^=x4; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
-				c^=x5; Round(ref a,ref b,(uint)(c>>32),(uint)c); b*=9;
-				a^=x6; Round(ref b,ref c,(uint)(a>>32),(uint)a); c*=9;
-				b^=x7; Round(ref c,ref a,(uint)(b>>32),(uint)b); a*=9;
-
-				// feed forward
-				a = mRegs[0] ^= a; b -= mRegs[1]; mRegs[1] = b; c = mRegs[2] += c;
-			}
+			ProcessBlockOfWords(inputBuffer, inputOffset, blockCount);
 		}
 
 		protected override byte[] ProcessFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
 		{
-			int paddingSize;
-			// Figure out how much padding is needed between the last byte and the size.
-			paddingSize = (int)(((ulong)inputCount + (ulong)mTotalBytesProcessed) % (ulong)BlockSize);
-			paddingSize = (BlockSize - kWordCount) - paddingSize;
-			if (paddingSize < 1)
-			{
-				paddingSize += BlockSize;
-			}
+			// it's okay to modify inputBuffer here since it's the final block and it's actually BlockHashAlgorithm's internal buffer
 
-			// Create the final, padded block(s).
+			ulong msg_bit_length = ((ulong)mTotalBytesProcessed + (ulong)inputCount) << 3;
+
 			if (inputOffset > 0 && inputCount > 0)
 			{
+				// memmove the bytes starting at inputOffset to the start of the buffer
 				Array.Copy(inputBuffer, inputOffset, inputBuffer, 0, inputCount);
 			}
 
 			inputOffset = 0;
 
 			Array.Clear(inputBuffer, inputCount, BlockSize-inputCount);
-			inputBuffer[inputCount] = (byte)Version; // padding byte
-			ulong msg_bit_length = ((ulong)mTotalBytesProcessed + (ulong)inputCount) << 3;
 
-			if (inputCount+kWordCount >= BlockSize)
+			// write the padding byte then align up to the next word boundary (proceeding bytes are already zero due to above Clear)
+			int input_offset = inputCount;
+			inputBuffer[input_offset++] = (byte)Version; // padding byte
+			input_offset = IntegerMath.Align(IntegerMath.kInt64AlignmentBit, input_offset);
+
+			// if we don't have enough space to encode the length, process what we have now as a block.
+			// remaining bytes are still all zero, due to above Clear.
+			if (input_offset > (BlockSize-sizeof(ulong)))
 			{
-				if (inputBuffer.Length < 2*BlockSize)
-				{
-					Array.Resize(ref inputBuffer, 2*BlockSize);
-				}
 				ProcessBlock(inputBuffer, inputOffset, 1);
-				inputOffset += BlockSize;
-				inputCount -= BlockSize;
+
+				input_offset = 0;
+				Array.Clear(inputBuffer, 0, BlockSize);
 			}
 
-			for ( inputCount = inputOffset + BlockSize - sizeof(ulong)
+			// write out the number of bytes that were processed before finalization
+			for ( input_offset = BlockSize - sizeof(ulong)
 				; msg_bit_length != 0
-				; inputBuffer[inputCount] = (byte)msg_bit_length, msg_bit_length >>= 8, ++inputCount)
+				; inputBuffer[input_offset] = (byte)msg_bit_length, msg_bit_length >>= 8, ++input_offset)
 			{
 			}
 			ProcessBlock(inputBuffer, inputOffset, 1);
@@ -553,8 +591,8 @@ namespace KSoft.Security.Cryptography
 
 		static void Round(ref ulong x, ref ulong y, uint zh, uint zl)
 		{
-			x -=   kSbox1[(int)(byte)zl] ^ kSbox2[(int)(byte)(zl>>16)]
-				 ^ kSbox3[(int)(byte)zh] ^ kSbox4[(int)(byte)(zh>>16)];
+			x -=   kSbox1[(int)(byte) zl    ] ^ kSbox2[(int)(byte)(zl>>16)]
+				 ^ kSbox3[(int)(byte) zh    ] ^ kSbox4[(int)(byte)(zh>>16)];
 			y +=   kSbox4[(int)(byte)(zl>>8)] ^ kSbox3[(int)(byte)(zl>>24)]
 				 ^ kSbox2[(int)(byte)(zh>>8)] ^ kSbox1[(int)(byte)(zh>>24)];
 		}

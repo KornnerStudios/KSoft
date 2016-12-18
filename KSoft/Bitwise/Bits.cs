@@ -58,7 +58,7 @@ namespace KSoft
 
 			kMultiplyDeBruijnBitPositionTrailingZeros32 = new byte[kInt32BitCount]
 			{
-				0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 
+				0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
 				31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
 			};
 			#endregion
@@ -156,20 +156,37 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool ArrayCopyFromBytesBoundsValidate(byte[] src, int srcOffset, Array dst, int dstOffset, int count, int elementSize)
 		{
+			if (count < 0)
+				return false;
+
 			int src_index_end = srcOffset + count;
 			int dst_index_end = dstOffset + (count / elementSize);
-			int copy_leftovers = count % elementSize;
+			//int copy_leftovers = count % elementSize;
 
-			return src_index_end <= src.Length && dst_index_end <= dst.Length && copy_leftovers == 0;
+			if (src_index_end > src.Length ||
+				dst_index_end > dst.Length)
+				return false;
+
+			//if (copy_leftovers != 0)
+			//	return false;
+
+			return true;
 		}
 		/// <remarks>Declared as public as it's used in code contracts. Caller responsible for null and index-positive checks</remarks>
 		[Contracts.Pure]
 		public static bool ArrayCopyToBytesBoundsValidate(Array src, int srcOffset, byte[] dst, int dstOffset, int count, int elementSize)
 		{
+			if (count < 0)
+				return false;
+
 			int src_index_end = srcOffset + count;
 			int dst_index_end = dstOffset + (count * elementSize);
 
-			return src_index_end <= src.Length && dst_index_end <= dst.Length;
+			if (src_index_end > src.Length ||
+				dst_index_end > dst.Length)
+				return false;
+
+			return true;
 		}
 #if false // TODO
 		/// <summary>
@@ -198,8 +215,8 @@ namespace KSoft
 			Contract.Requires<ArgumentException>(typeof(TDst).IsPrimitive, "TDst" + k_type_not_primitive_msg_postfix);
 
 			// LowLevel's Memcpy takes destinationArray first, then sourceArray, like C's memcpy
-			return LowLevel.Util.ValueTypeBitConverter.Memcpy(	destinationArray, destinationIndex, 
-																sourceArray, sourceIndex, length, 
+			return LowLevel.Util.ValueTypeBitConverter.Memcpy(	destinationArray, destinationIndex,
+																sourceArray, sourceIndex, length,
 																true); // check that array types are primitives
 		}
 #endif
@@ -235,7 +252,7 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<byte>() < kInt32BitCount);
 
-			value |= value >> 1; // first round down to one less than a power of 2 
+			value |= value >> 1; // first round down to one less than a power of 2
 			value |= value >> 2;
 			value |= value >> 4;
 			value |= value >> 8;
@@ -290,7 +307,7 @@ namespace KSoft
 			if (value == 0)
 				return kInt32BitCount;
 
-			value |= value >> 1; // first round down to one less than a power of 2 
+			value |= value >> 1; // first round down to one less than a power of 2
 			value |= value >> 2;
 			value |= value >> 4;
 			value |= value >> 8;

@@ -370,6 +370,41 @@ namespace KSoft.Collections
 
 <# } #>
 		#endregion
+
+		#region Access via Enum
+		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (bitIndex < 0 || bitIndex >= this.Length)
+			{
+				throw new ArgumentOutOfRangeException("bit", bit,
+					"Enum member is out of range for indexing");
+			}
+		}
+
+		public bool Test<TEnum>(TEnum bit)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((<#= prim_keyword #>)1) << bitIndex;
+
+			return Bitwise.Flags.Test(mWord, flag);
+		}
+
+		public <#= typename #> Set<TEnum>(TEnum bit, bool value = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			var flag = ((<#= prim_keyword #>)1) << bitIndex;
+
+			Bitwise.Flags.Modify(value, ref mWord, flag);
+			return this;
+		}
+		#endregion
 	};
 
 <# } #>
