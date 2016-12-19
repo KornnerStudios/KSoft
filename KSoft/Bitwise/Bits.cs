@@ -244,6 +244,17 @@ namespace KSoft
 		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
 		public static uint GetLowBits(ulong value)	{ return (uint)(value & 0xFFFFFFFF); }
+
+		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static int GetHighBitsSigned(ulong value)	{ return (int)((value >> 32) & 0xFFFFFFFF); }
+		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
+		/// <param name="value"></param>
+		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
+		[Contracts.Pure]
+		public static int GetLowBitsSigned(ulong value)	{ return (int)(value & 0xFFFFFFFF); }
 		#endregion
 
 		#region HighestBitSetIndex
