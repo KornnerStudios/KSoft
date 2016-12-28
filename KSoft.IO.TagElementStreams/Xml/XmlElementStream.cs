@@ -108,7 +108,7 @@ namespace KSoft.IO
 		/// <param name="sourceStream">Stream we're to load the XML from</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
-		public XmlElementStream(System.IO.Stream sourceStream, 
+		public XmlElementStream(System.IO.Stream sourceStream,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
 			Contract.Requires<ArgumentNullException>(sourceStream != null);
@@ -119,7 +119,7 @@ namespace KSoft.IO
 			Document = new Xml.XmlDocumentWithLocation();
 			Document.Load(sourceStream);
 
-			StreamPermissions = permissions;
+			StreamMode = StreamPermissions = permissions;
 
 			this.Owner = owner;
 		}
@@ -128,7 +128,7 @@ namespace KSoft.IO
 		/// <param name="filename">Name of the XML file we're to load</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
-		public XmlElementStream(string filename, 
+		public XmlElementStream(string filename,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
 			Contract.Requires<ArgumentNullException>(filename != null);
@@ -139,20 +139,20 @@ namespace KSoft.IO
 			Document = new Xml.XmlDocumentWithLocation();
 			Document.Load(this.StreamName = filename);
 
-			StreamPermissions = permissions;
+			StreamMode = StreamPermissions = permissions;
 
 			this.Owner = owner;
 		}
 
 		/// <summary>
-		/// Initialize an element stream from the XML nodes <paramref name="document"/> 
+		/// Initialize an element stream from the XML nodes <paramref name="document"/>
 		/// and <paramref name="cursor"/> with <paramref name="owner"/> as the initial owner object
 		/// </summary>
 		/// <param name="document"><paramref name="cursor"/>'s owner document</param>
 		/// <param name="cursor">Starting element cursor</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
-		public XmlElementStream(XmlDocument document, XmlElement cursor, 
+		public XmlElementStream(XmlDocument document, XmlElement cursor,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
 			Contract.Requires<ArgumentNullException>(document != null);
@@ -163,7 +163,7 @@ namespace KSoft.IO
 
 			this.StreamName = string.Format("XmlDocument:{0}", document.Name);
 
-			StreamPermissions = permissions;
+			StreamMode = StreamPermissions = permissions;
 
 			this.Owner = owner;
 		}

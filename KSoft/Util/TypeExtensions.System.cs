@@ -242,6 +242,40 @@ namespace KSoft
 
 			return FindIndex(list, 0, list.Count, match);
 		}
+
+		/// <summary>
+		/// Grows the collection, using the default value of <typeparamref name="T"/>, if it is less than <paramref name="requiredCount"/>
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="collection"></param>
+		/// <param name="requiredCount"></param>
+		public static void EnsureCount<T>(this ICollection<T> collection, int requiredCount)
+		{
+			Contract.Requires<ArgumentNullException>(collection != null);
+			Contract.Requires<InvalidOperationException>(!collection.IsReadOnly);
+			Contract.Requires<ArgumentOutOfRangeException>(requiredCount >= 0);
+
+			if (collection.Count < requiredCount)
+			{
+				var default_value = default(T);
+				int add_count = requiredCount - collection.Count;
+
+				// arbitrary add threshold for List optimization
+				if (add_count > 16)
+				{
+					var list = collection as List<T>;
+					if (list != null && list.Capacity < requiredCount)
+					{
+						list.Capacity += add_count;
+					}
+				}
+
+				for (int x = 0; x < add_count; x++)
+				{
+					collection.Add(default_value);
+				}
+			}
+		}
 		#endregion
 
 		#region IO

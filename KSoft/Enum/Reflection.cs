@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 using Expr = System.Linq.Expressions.Expression;
@@ -7,7 +9,7 @@ using ExprParam = System.Linq.Expressions.ParameterExpression;
 namespace KSoft.Reflection
 {
 	// TODO: check out http://damieng.com/blog/2010/10/17/enums-better-syntax-improved-performance-and-tryparse-in-net-3-5
-	
+
 	internal static class EnumUtils
 	{
 		/// <summary>Name of the internal member used to represent an enum's integral value</summary>
@@ -101,6 +103,24 @@ namespace KSoft.Reflection
 			var message = string.Format("The Enum type parameter {0} is not annotated as being a Flags Enum (via FlagsAttribute).",
 							  theType);
 			throw new NotSupportedException(message);
+		}
+
+		public static List<FieldInfo> GetEnumFields(Type enumType)
+		{
+			Contract.Requires<ArgumentNullException>(enumType != null);
+			Contract.Requires<ArgumentException>(enumType.IsEnum);
+
+			var fields = enumType.GetFields();
+			var results = new List<FieldInfo>(fields.Length - 1);
+			foreach (var field in fields)
+			{
+				if (field.Name == kMemberName)
+					continue;
+
+				results.Add(field);
+			}
+
+			return results;
 		}
 	};
 

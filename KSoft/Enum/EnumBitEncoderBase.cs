@@ -12,9 +12,9 @@ namespace KSoft
 		/// </summary>
 		public const string kObsoleteMsg = "For 'KSoft.IO.EnumBitEncoderBase' use only!";
 
-		protected const string kEnumMaxMemberName = "kMax";
-		protected const string kEnumNumberOfMemberName = "kNumberOf";
-		protected const string kFlagsMaxMemberName = "kAll";
+		public const string kEnumMaxMemberName = "kMax";
+		public const string kEnumNumberOfMemberName = "kNumberOf";
+		public const string kFlagsMaxMemberName = "kAll";
 
 		protected static bool ValidateTypeIsNotEncoderDisabled(Type t)
 		{

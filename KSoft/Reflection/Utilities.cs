@@ -11,6 +11,35 @@ namespace KSoft.Reflection
 {
 	public static partial class Util
 	{
+		public static bool IsEnumType(object maybeType)
+		{
+			var type = maybeType as Type;
+			if (type == null)
+				return false;
+
+			return type.IsEnum;
+		}
+
+		public static bool IsEnumTypeOrNull(object maybeType)
+		{
+			if (maybeType == null)
+				return true;
+
+			var type = maybeType as Type;
+			if (type == null)
+				return false;
+
+			return type.IsEnum;
+		}
+
+		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
+		{
+			Contract.Requires<ArgumentNullException>(enumType != null);
+			Contract.Requires<ArgumentException>(enumType.IsEnum);
+
+			return EnumUtils.GetEnumFields(enumType);
+		}
+
 		const string kDelegateInvokeMethodName = "Invoke";
 		// http://www.codeproject.com/Tips/441743/A-look-at-marshalling-delegates-in-NET
 		public static T GetDelegateForFunctionPointer<T>(IntPtr ptr, Interop.CallingConvention callConv)
