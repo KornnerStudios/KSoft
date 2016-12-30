@@ -28,10 +28,46 @@ namespace KSoft
 		/// <summary>DebuggerDisplay value to use to display the object's {DebuggerDisplay} value without any quotes</summary>
 		public const string DebuggerDisplayPropNameSansQuotes = "{DebuggerDisplay,nq}";
 
+		#region static EmptyArray
+		private static object[] gEmptyArray;
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
-		public static readonly object[] EmptyArray = new object[] { };
+		public static object[] EmptyArray { get {
+			if (gEmptyArray == null)
+				gEmptyArray = new object[] { };
 
-		internal static readonly Func<Exception> GetNullException = () => null;
+			return gEmptyArray;
+		} }
+		#endregion
+
+		#region static GetNullException function ptr
+		private static Func<Exception> gGetNullException;
+		internal static Func<Exception> GetNullException { get {
+			if (gGetNullException == null)
+				gGetNullException = () => null;
+
+			return gGetNullException;
+		} }
+		#endregion
+
+		#region static pre-boxed boolean values
+		private static object gFalseObject;
+		/// <summary>false boolean pre-boxed to an object</summary>
+		public static object FalseObject { get {
+			if (gFalseObject == null)
+				gFalseObject = (object)false;
+
+			return gFalseObject;
+		} }
+
+		public static object gTrueObject;
+		/// <summary>true boolean pre-boxed to an object</summary>
+		public static object TrueObject { get {
+			if (gTrueObject == null)
+				gTrueObject = (object)true;
+
+			return gTrueObject;
+		} }
+		#endregion
 
 		#region IDisposable
 		sealed class NullDisposableImpl
@@ -70,8 +106,18 @@ namespace KSoft
 		}
 
 		#region Unix Time
+		private static long kUnixTimeEpochInTicks;
+		private static DateTime kUnixTimeEpoch;
 		/// <summary>The UTC of the <b>time_t</b> C++ construct</summary>
-		public static readonly DateTime kUnixTimeEpoch = new DateTime(1970, 1, 1, 0,0,0, DateTimeKind.Utc);
+		public static DateTime UnixTimeEpoch { get {
+			if (kUnixTimeEpochInTicks == 0)
+			{
+				kUnixTimeEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+				kUnixTimeEpochInTicks = kUnixTimeEpoch.Ticks;
+			}
+
+			return kUnixTimeEpoch;
+		} }
 
 		/// <summary>Convert a <b>time_t</b> or <b>time64_t</b> value to a <see cref="System.DateTime"/></summary>
 		/// <param name="time_t">The <b>time_t</b> numerical value</param>
@@ -81,7 +127,7 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(time_t >= 0);
 
-			return kUnixTimeEpoch.AddSeconds(time_t);
+			return UnixTimeEpoch.AddSeconds(time_t);
 		}
 
 		/// <summary>Convert a <see cref="System.DateTime"/> to a <b>time64_t</b> value</summary>
@@ -90,12 +136,12 @@ namespace KSoft
 		[Contracts.Pure]
 		public static long ConvertDateTimeToUnixTime(DateTime value)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(value >= kUnixTimeEpoch);
+			Contract.Requires<ArgumentOutOfRangeException>(value >= UnixTimeEpoch);
 
 			long time_t = 0;
 
 			// Subtract unix's epoch then rebase back into seconds
-			time_t = (value.ToFileTimeUtc() - kUnixTimeEpoch.ToFileTimeUtc()) / 10000000;
+			time_t = (value.ToFileTimeUtc() - UnixTimeEpoch.ToFileTimeUtc()) / 10000000;
 
 			return time_t;
 		}
@@ -105,7 +151,7 @@ namespace KSoft
 		sealed class ComparerFactory<T>
 			: IComparer<T>
 		{
-			readonly Func<T, T, int> mComparer;
+			Func<T, T, int> mComparer;
 
 			ComparerFactory(Func<T, T, int> comparer)
 			{

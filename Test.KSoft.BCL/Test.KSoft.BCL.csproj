@@ -67,14 +67,17 @@
     <ProjectReference Include="..\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
       <Project>{18f32228-8351-4f99-992f-78e9d1ce83d9}</Project>
       <Name>KSoft.IO.TagElementStreams</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\KSoft.Security\KSoft.Security.csproj">
       <Project>{0632a00b-de9e-4350-a3f8-3a82f9c780af}</Project>
       <Name>KSoft.Security</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\KSoft\KSoft.csproj">
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

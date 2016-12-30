@@ -82,7 +82,7 @@ namespace KSoft
 			// KSoft
 
 			// KSoft.Memory.Strings
-			public static readonly EnumBitEncoder32<MS.StringStorageWidthType> 
+			public static readonly EnumBitEncoder32<MS.StringStorageWidthType>
 				StringStorageWidthType = new EnumBitEncoder32<MS.StringStorageWidthType>();
 			public static readonly EnumBitEncoder32<MS.StringStorageType>
 				StringStorageType = new EnumBitEncoder32<MS.StringStorageType>();
@@ -122,7 +122,7 @@ namespace KSoft
 		#endregion
 
 		#region IO
-		public static /*IDisposable*/IO.IKSoftStreamOwnerBookmark EnterOwnerBookmark(this IO.IKSoftStream stream, 
+		public static /*IDisposable*/IO.IKSoftStreamOwnerBookmark EnterOwnerBookmark(this IO.IKSoftStream stream,
 			object newOwner = null)
 		{
 			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner);
@@ -304,7 +304,7 @@ namespace KSoft
 		}
 
 		/// <summary>
-		/// Get the <see cref="StringStorageWidthType"/> from a <see cref="System.Text.Encoding"/> 
+		/// Get the <see cref="StringStorageWidthType"/> from a <see cref="System.Text.Encoding"/>
 		/// implementation
 		/// </summary>
 		/// <param name="enc">Instance of an encoding whose type we'll use to determine the storage type</param>
@@ -331,7 +331,7 @@ namespace KSoft
 		{
 			return type == MS.StringStorageType.Pascal;
 		}
-		
+
 		/// <summary>Does this width type support variable length characters (code points)?</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>

@@ -11,6 +11,7 @@ namespace KSoft.Reflection
 {
 	public static partial class Util
 	{
+		[Contracts.Pure]
 		public static bool IsEnumType(object maybeType)
 		{
 			var type = maybeType as Type;
@@ -20,6 +21,7 @@ namespace KSoft.Reflection
 			return type.IsEnum;
 		}
 
+		[Contracts.Pure]
 		public static bool IsEnumTypeOrNull(object maybeType)
 		{
 			if (maybeType == null)
@@ -32,10 +34,12 @@ namespace KSoft.Reflection
 			return type.IsEnum;
 		}
 
+		[Contracts.Pure]
 		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
 		{
 			Contract.Requires<ArgumentNullException>(enumType != null);
 			Contract.Requires<ArgumentException>(enumType.IsEnum);
+			Contract.Ensures(Contract.Result<List<Reflect.FieldInfo>>() != null);
 
 			return EnumUtils.GetEnumFields(enumType);
 		}

@@ -105,10 +105,12 @@ namespace KSoft.Reflection
 			throw new NotSupportedException(message);
 		}
 
+		[Contracts.Pure]
 		public static List<FieldInfo> GetEnumFields(Type enumType)
 		{
 			Contract.Requires<ArgumentNullException>(enumType != null);
 			Contract.Requires<ArgumentException>(enumType.IsEnum);
+			Contract.Ensures(Contract.Result<List<FieldInfo>>() != null);
 
 			var fields = enumType.GetFields();
 			var results = new List<FieldInfo>(fields.Length - 1);

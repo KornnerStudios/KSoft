@@ -28,8 +28,8 @@ namespace KSoft.WPF.Controls
 			get { return (ObservableCollection<BitItemModel>)GetValue(BitItemsProperty); }
 			set { SetValue(BitItemsProperty, value); }
 		}
-		public static readonly DependencyProperty BitItemsProperty =
-			DependencyProperty.Register("BitItems", typeof(ObservableCollection<BitItemModel>), typeof(BitVectorControl),
+		public static readonly DependencyProperty BitItemsProperty = DependencyProperty.Register(
+			"BitItems", typeof(ObservableCollection<BitItemModel>), typeof(BitVectorControl),
 			new PropertyMetadata(new ObservableCollection<BitItemModel>()));
 		#endregion
 
@@ -39,8 +39,8 @@ namespace KSoft.WPF.Controls
 			get { return (Type)GetValue(BitsEnumTypeProperty); }
 			set { SetValue(BitsEnumTypeProperty, value); }
 		}
-		public static readonly DependencyProperty BitsEnumTypeProperty =
-			DependencyProperty.Register("BitsEnumType", typeof(Type), typeof(BitVectorControl),
+		public static readonly DependencyProperty BitsEnumTypeProperty = DependencyProperty.Register(
+			"BitsEnumType", typeof(Type), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -51,8 +51,8 @@ namespace KSoft.WPF.Controls
 			get { return (Type)GetValue(FlagsEnumTypeProperty); }
 			set { SetValue(FlagsEnumTypeProperty, value); }
 		}
-		public static readonly DependencyProperty FlagsEnumTypeProperty =
-			DependencyProperty.Register("FlagsEnumType", typeof(Type), typeof(BitVectorControl),
+		public static readonly DependencyProperty FlagsEnumTypeProperty = DependencyProperty.Register(
+			"FlagsEnumType", typeof(Type), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -63,8 +63,8 @@ namespace KSoft.WPF.Controls
 			get { return (BitVectorUserInterfaceData)GetValue(BitsUserInterfaceSourceProperty); }
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
 		}
-		public static readonly DependencyProperty BitsUserInterfaceSourceProperty =
-			DependencyProperty.Register("BitsUserInterfaceSource", typeof(BitVectorUserInterfaceData), typeof(BitVectorControl),
+		public static readonly DependencyProperty BitsUserInterfaceSourceProperty = DependencyProperty.Register(
+			"BitsUserInterfaceSource", typeof(BitVectorUserInterfaceData), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitsUserInterfaceSourcePropertyChanged)));
 		#endregion
 
@@ -74,9 +74,9 @@ namespace KSoft.WPF.Controls
 			get { return GetValue(BitVectorProperty); }
 			set { SetValue(BitVectorProperty, value); }
 		}
-		public static readonly DependencyProperty BitVectorProperty =
-			DependencyProperty.Register("BitVector", typeof(object), typeof(BitVectorControl),
-			new PropertyMetadata(new Collections.BitVector32(), OnVectorPropertyChanged),
+		public static readonly DependencyProperty BitVectorProperty = DependencyProperty.Register(
+			"BitVector", typeof(object), typeof(BitVectorControl),
+			new FrameworkPropertyMetadata(new Collections.BitVector32(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnVectorPropertyChanged),
 			IsValidBitVectorValue);
 
 		static bool IsValidBitVectorValue(object obj)
@@ -276,8 +276,8 @@ namespace KSoft.WPF.Controls
 				get { return (int)GetValue(BitIndexProperty); }
 				set { SetValue(BitIndexProperty, value); }
 			}
-			public static readonly DependencyProperty BitIndexProperty =
-				DependencyProperty.Register("BitIndex", typeof(int), typeof(BitItemModel),
+			public static readonly DependencyProperty BitIndexProperty = DependencyProperty.Register(
+				"BitIndex", typeof(int), typeof(BitItemModel),
 				new PropertyMetadata(defaultValue: TypeExtensions.kNone));
 
 			public bool IsValid
@@ -285,41 +285,42 @@ namespace KSoft.WPF.Controls
 				get { return (bool)GetValue(IsVisibleProperty); }
 				set { SetValue(IsVisibleProperty, value); }
 			}
-			public static readonly DependencyProperty IsValidProperty =
-				DependencyProperty.Register("IsValid", typeof(bool), typeof(BitItemModel));
+			public static readonly DependencyProperty IsValidProperty = DependencyProperty.Register(
+				"IsValid", typeof(bool), typeof(BitItemModel));
 
 			public string DisplayName
 			{
 				get { return (string)GetValue(DisplayNameProperty); }
 				set { SetValue(DisplayNameProperty, value); }
 			}
-			public static readonly DependencyProperty DisplayNameProperty =
-				DependencyProperty.Register("DisplayName", typeof(string), typeof(BitItemModel));
+			public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register(
+				"DisplayName", typeof(string), typeof(BitItemModel));
 
 			public string ToolTip
 			{
 				get { return (string)GetValue(ToolTipProperty); }
 				set { SetValue(ToolTipProperty, value); }
 			}
-			public static readonly DependencyProperty ToolTipProperty =
-				DependencyProperty.Register("ToolTip", typeof(string), typeof(BitItemModel));
+			public static readonly DependencyProperty ToolTipProperty = DependencyProperty.Register(
+				"ToolTip", typeof(string), typeof(BitItemModel));
 
 			public bool IsVisible
 			{
 				get { return (bool)GetValue(IsVisibleProperty); }
 				set { SetValue(IsVisibleProperty, value); }
 			}
-			public static readonly DependencyProperty IsVisibleProperty =
-				DependencyProperty.Register("IsVisible", typeof(bool), typeof(BitItemModel),
-				new PropertyMetadata(defaultValue: true));
+			public static readonly DependencyProperty IsVisibleProperty = DependencyProperty.Register(
+				"IsVisible", typeof(bool), typeof(BitItemModel),
+				new PropertyMetadata(defaultValue: Util.TrueObject));
 
 			public bool IsSet
 			{
 				get { return (bool)GetValue(IsSetProperty); }
 				set { SetValue(IsSetProperty, value); }
 			}
-			public static readonly DependencyProperty IsSetProperty =
-				DependencyProperty.Register("IsSet", typeof(bool), typeof(BitItemModel));
+			public static readonly DependencyProperty IsSetProperty = DependencyProperty.Register(
+				"IsSet", typeof(bool), typeof(BitItemModel),
+				new FrameworkPropertyMetadata(Util.FalseObject, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 		};
 	};
 }

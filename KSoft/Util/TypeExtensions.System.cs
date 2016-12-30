@@ -447,8 +447,13 @@ namespace KSoft
 			Contract.Requires(startIndex >= 0 && startIndex < argsList.Length);
 
 			if (handler != null)
-				foreach (var args in argsList)
+			{
+				for (int x = startIndex; x < argsList.Length; x++)
+				{
+					var args = argsList[x];
 					handler(sender, args);
+				}
+			}
 		}
 		public static void SafeNotify(this System.Collections.Specialized.NotifyCollectionChangedEventHandler handler,
 			object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)

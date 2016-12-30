@@ -10,7 +10,7 @@
     <ListBox SelectionMode="Multiple" ItemsSource="{Binding BitItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type KSoftWpfControls:BitVectorControl}}}" >
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <CheckBox Content="{Binding DisplayName}" ToolTip="{Binding ToolTip}" IsChecked="{Binding IsSet, Mode=TwoWay}"
+                <CheckBox Content="{Binding DisplayName}" ToolTip="{Binding ToolTip}" IsChecked="{Binding IsSet}"
                           Visibility="{Binding IsVisible, Converter={x:Static local:BoolToVisiblityConverter.VisibleOrCollapsed}}"
                           Checked="OnCheckBoxChecked" Unchecked="OnCheckBoxUnchecked" />
             </DataTemplate>
