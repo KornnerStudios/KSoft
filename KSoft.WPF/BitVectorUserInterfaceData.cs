@@ -14,17 +14,20 @@ namespace KSoft.WPF
 			public string Description;
 			public bool Visible;
 
-			public static bool CanNotBeRendered(BitUserInterfaceData data)
-			{
-				if (data == null)
-					return true;
-
-				if (data.Visible)
-					return string.IsNullOrWhiteSpace(data.DisplayName);
+			public bool CanNotBeRendered { get {
+				if (Visible)
+					return string.IsNullOrWhiteSpace(DisplayName);
 
 				return false;
-			}
+			} }
 		};
+		public static bool CanNotBeRendered(BitUserInterfaceData data)
+		{
+			if (data == null)
+				return true;
+
+			return data.CanNotBeRendered;
+		}
 
 		private BitUserInterfaceData[] mBitInfo;
 
@@ -53,11 +56,11 @@ namespace KSoft.WPF
 
 		private void SetInfoFromFactoryData(List<BitUserInterfaceData> bitInfos)
 		{
-			if (bitInfos.Count > 0 && !bitInfos.TrueForAll(BitUserInterfaceData.CanNotBeRendered))
+			if (bitInfos.Count > 0 && !bitInfos.TrueForAll(CanNotBeRendered))
 			{
 				for (int x = bitInfos.Count - 1; x >= 0; x--)
 				{
-					if (BitUserInterfaceData.CanNotBeRendered(bitInfos[x]))
+					if (CanNotBeRendered(bitInfos[x]))
 					{
 						bitInfos.RemoveAt(x);
 					}
@@ -111,7 +114,7 @@ namespace KSoft.WPF
 			foreach (var bit_field_info in bit_field_infos)
 			{
 				int bit_index = Convert.ToInt32(bit_field_info.GetRawConstantValue());
-				if (bit_index < 0 || bit_index >= Bits.kInt64BitCount)
+				if (bit_index < 0)
 					continue;
 
 				if (find_highest_index)
@@ -136,7 +139,7 @@ namespace KSoft.WPF
 				var bit_ui_info = new BitUserInterfaceData();
 				SetBitInfoFromFieldInfo(bit_ui_info, bit_field_info);
 
-				if (BitUserInterfaceData.CanNotBeRendered(bit_ui_info))
+				if (bit_ui_info.CanNotBeRendered)
 					continue;
 
 				bit_ui_infos[bit_index] = bit_ui_info;
@@ -188,7 +191,7 @@ namespace KSoft.WPF
 				var bit_ui_info = new BitUserInterfaceData();
 				SetBitInfoFromFieldInfo(bit_ui_info, bit_field_info);
 
-				if (BitUserInterfaceData.CanNotBeRendered(bit_ui_info))
+				if (bit_ui_info.CanNotBeRendered)
 					continue;
 
 				bit_ui_infos[bit_index] = bit_ui_info;
@@ -207,8 +210,36 @@ namespace KSoft.WPF
 			if (bitInfos != null)
 			{
 				info.mBitInfo = bitInfos.ToArray();
-				if (info.mBitInfo.Length == 0 || Array.TrueForAll(info.mBitInfo, BitUserInterfaceData.CanNotBeRendered))
+				if (info.mBitInfo.Length == 0 || Array.TrueForAll(info.mBitInfo, CanNotBeRendered))
 					info.mBitInfo = null;
+			}
+			return info;
+		}
+
+		public static BitVectorUserInterfaceData ForStrings(IEnumerable<string> bitStrings)
+		{
+			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
+
+			var info = new BitVectorUserInterfaceData();
+			if (bitStrings != null)
+			{
+				int bit_index = 0;
+				var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
+				foreach (var str in bitStrings)
+				{
+					var bit_ui_info = new BitUserInterfaceData();
+					bit_ui_info.DisplayName = str;
+					bit_ui_info.Visible = true;
+
+					if (bit_ui_info.CanNotBeRendered)
+						bit_ui_infos.Add(null);
+					else
+						bit_ui_infos.Add(bit_ui_info);
+
+					bit_index++;
+				}
+
+				info.SetInfoFromFactoryData(bit_ui_infos);
 			}
 			return info;
 		}

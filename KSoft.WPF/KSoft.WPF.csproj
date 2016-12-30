@@ -32,6 +32,9 @@
   <ItemGroup>
     <Compile Include="BitVectorUserInterfaceData.cs" />
     <Compile Include="BoolToVisiblityConverter.cs" />
+    <Compile Include="Controls\BitSetControl.xaml.cs">
+      <DependentUpon>BitSetControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\BitVectorControl.xaml.cs">
       <DependentUpon>BitVectorControl.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\BitSetControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\BitVectorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

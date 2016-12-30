@@ -57,14 +57,14 @@ namespace KSoft.WPF.Controls
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
 
-		#region FlagsEnumType
-		public BitVectorUserInterfaceData BitsUserInterfaceSource
+		#region BitsUserInterfaceSource
+		public IBitVectorUserInterfaceData BitsUserInterfaceSource
 		{
-			get { return (BitVectorUserInterfaceData)GetValue(BitsUserInterfaceSourceProperty); }
+			get { return (IBitVectorUserInterfaceData)GetValue(BitsUserInterfaceSourceProperty); }
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
 		}
 		public static readonly DependencyProperty BitsUserInterfaceSourceProperty = DependencyProperty.Register(
-			"BitsUserInterfaceSource", typeof(BitVectorUserInterfaceData), typeof(BitVectorControl),
+			"BitsUserInterfaceSource", typeof(IBitVectorUserInterfaceData), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitsUserInterfaceSourcePropertyChanged)));
 		#endregion
 
@@ -138,13 +138,26 @@ namespace KSoft.WPF.Controls
 		}
 		#endregion
 
+		public void ForceVisibilityRefreshOfAllBitItems()
+		{
+			var source = this.BitsUserInterfaceSource;
+			if (source == null)
+				return;
+
+			foreach (var bit_model in BitItems)
+			{
+				int bit_index = bit_model.BitIndex;
+				bit_model.IsVisible = source.IsVisible(bit_index);
+			}
+		}
+
 		private static void OnBitEnumTypePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var ctrl = (BitVectorControl)d;
 
 			var bit_enum_type = (Type)e.NewValue;
 
-			BitVectorUserInterfaceData ui_source = null;
+			IBitVectorUserInterfaceData ui_source = null;
 			if (bit_enum_type != null)
 			{
 				if (e.Property == BitsEnumTypeProperty)
@@ -159,7 +172,7 @@ namespace KSoft.WPF.Controls
 		private static void OnBitsUserInterfaceSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var ctrl = (BitVectorControl)d;
-			var source = (BitVectorUserInterfaceData)e.NewValue;
+			var source = (IBitVectorUserInterfaceData)e.NewValue;
 
 			ctrl.BitItems.Clear();
 			if (source != null)
@@ -173,21 +186,6 @@ namespace KSoft.WPF.Controls
 					model.IsVisible = source.IsVisible(bit_index);
 					ctrl.BitItems.Add(model);
 				}
-			}
-		}
-
-		private void ResetBitItemsToEmpty(int numberOfBits = Bits.kInt64BitCount)
-		{
-			BitItems.Clear();
-			for (int x = 0; x < numberOfBits; x++)
-			{
-				var model = new BitItemModel()
-				{
-					BitIndex = x,
-					IsVisible = false,
-					DisplayName = "",
-				};
-				BitItems.Add(model);
 			}
 		}
 
