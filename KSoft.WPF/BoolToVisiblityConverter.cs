@@ -11,7 +11,6 @@ namespace KSoft.WPF
 			if (gVisibleOrHidden == null)
 				gVisibleOrHidden = new BoolToVisiblityConverter
 				{
-					Collapse = true,
 				};
 
 			return gVisibleOrHidden;
@@ -21,7 +20,6 @@ namespace KSoft.WPF
 			if (gVisibleOrHiddenInverted == null)
 				gVisibleOrHiddenInverted = new BoolToVisiblityConverter
 				{
-					Collapse = true,
 					VisibleFlag = false,
 				};
 

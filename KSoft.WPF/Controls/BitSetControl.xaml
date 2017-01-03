@@ -8,10 +8,16 @@
              xmlns:KSoftWpfControls="clr-namespace:KSoft.WPF.Controls"
              d:DesignHeight="300" d:DesignWidth="300">
     <ListBox SelectionMode="Multiple" ItemsSource="{Binding BitItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type KSoftWpfControls:BitSetControl}}}" >
+        <!-- actually collapses the damn things, since the CheckBox is wrapped in a ListBoxItem -->
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+                <Setter Property="Visibility" Value="{Binding IsVisible, Converter={x:Static local:BoolToVisiblityConverter.VisibleOrCollapsed}}" />
+            </Style>
+        </ListBox.ItemContainerStyle>
+
         <ListBox.ItemTemplate>
             <DataTemplate>
                 <CheckBox Content="{Binding DisplayName}" ToolTip="{Binding ToolTip}" IsChecked="{Binding IsSet}"
-                          Visibility="{Binding IsVisible, Converter={x:Static local:BoolToVisiblityConverter.VisibleOrCollapsed}}"
                           Checked="OnCheckBoxChecked" Unchecked="OnCheckBoxUnchecked" />
             </DataTemplate>
         </ListBox.ItemTemplate>
