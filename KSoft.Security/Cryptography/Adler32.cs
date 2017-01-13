@@ -29,13 +29,15 @@ namespace KSoft.Security.Cryptography
 			return Compute(buffer, 0, buffer.Length, adler32);
 		}
 
-		public static uint Compute(System.IO.Stream stream, int length, uint adler32 = 1)
+		public static uint Compute(System.IO.Stream stream, int length, uint adler32 = 1,
+			bool restorePosition = false)
 		{
 			Contract.Requires<ArgumentNullException>(stream != null);
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			Contract.Requires<InvalidOperationException>(stream.CanRead);
+			Contract.Requires(!restorePosition || stream.CanSeek);
 
-			long prev_position = stream.CanSeek
+			long prev_position = restorePosition
 				? stream.Position
 				: -1;
 
