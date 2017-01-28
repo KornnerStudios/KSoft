@@ -12,9 +12,9 @@ namespace KSoft.Collections
 	using StateEnumerator = IReadOnlyBitSetEnumerators.StateEnumerator;
 
 	// http://docs.oracle.com/javase/7/docs/api/java/util/BitSet.html
-	
+
 	// NOTE: there are multiple places in this implementation where it ignores specially handling alignment-only bits.
-	// Eg, if a BitSet has 33 bits in it, it would be aligned to 64 bits. If you then called SetAll(true) on it, it 
+	// Eg, if a BitSet has 33 bits in it, it would be aligned to 64 bits. If you then called SetAll(true) on it, it
 	// would end up setting 64 bits to true. If you then set the Length to be 64, those previously alignment-only bits
 	// would then retain their true state.
 	// ...however, as of 2015, Length and all other places should now be void of this problem (with alignment only bits)
@@ -119,7 +119,7 @@ namespace KSoft.Collections
 		/// <summary>Returns the "logical size" of the BitSet</summary>
 		/// <remarks>
 		/// IE, the index of the highest addressable bit plus one
-		/// 
+		///
 		/// Note: when downsizing, the underlying storage's size stays the same, but the old bits will be zeroed and
 		/// unaddressable. Call <see cref="TrimExcess"/> to optimize the underlying storage to the minimal size
 		/// </remarks>
@@ -234,7 +234,7 @@ namespace KSoft.Collections
 		/// <summary>Creates an empty, growable bit-set</summary>
 		public BitSet()
 			: this(0, defaultValue:false, fixedLength:false)
-		{	
+		{
 		}
 
 		public BitSet(int length, bool defaultValue = false, bool fixedLength = true)
@@ -525,7 +525,7 @@ namespace KSoft.Collections
 					word =  stateFilter == false ? ~mArray[index] : mArray[index])
  			{
 				// word will be 0 if it contains bits that are NOT stateFilter, thus we want to ignore such elements.
-				// count the number of zeros (representing bits in the undesired state) leading up to the bit with 
+				// count the number of zeros (representing bits in the undesired state) leading up to the bit with
 				// the desired state, then add the the index in which it appears at within the overall BitSet
 				if (word != 0)
 					result_bit_index = kCountZerosForNextBit(word) + (index * kWordBitCount);
@@ -537,7 +537,7 @@ namespace KSoft.Collections
 
 			// If we didn't find a next bit, result will be -1 and thus less than Length, which is desired behavior
 			// else, the result is a valid index of the next bit with the desired state
-			return result_bit_index < Length 
+			return result_bit_index < Length
 				? result_bit_index
 				: TypeExtensions.kNone;
 		}
@@ -715,8 +715,8 @@ namespace KSoft.Collections
 
 			var last_word_mask = GetCabooseRetainedBitsMask(bitsCount);
 
-			return 
-				( this.mArray[word_index] & last_word_mask) == 
+			return
+				( this.mArray[word_index] & last_word_mask) ==
 				(other.mArray[word_index] & last_word_mask);
 		}
 		#region ISet-like interfaces
@@ -784,7 +784,7 @@ namespace KSoft.Collections
 
 			if (object.ReferenceEquals(other, this))
 				return true;
-			
+
 			if (Length != 0)
 			{
 				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
@@ -924,5 +924,158 @@ namespace KSoft.Collections
 			if (s.IsReading)
 				RecalculateCardinality();
 		}
+
+		#region Enum interfaces
+		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (bitIndex < 0 || bitIndex >= this.Length)
+			{
+				throw new ArgumentOutOfRangeException("bit", bit,
+					"Enum member is out of range for indexing");
+			}
+		}
+
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public bool Test<TEnum>(TEnum bit)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			return this[bitIndex];
+		}
+
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public BitSet Set<TEnum>(TEnum bit, bool value = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			int bitIndex = bit.ToInt32(null);
+			ValidateBit(bit, bitIndex);
+
+			this.Set(bitIndex, value);
+			return this;
+		}
+
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public string ToString<TEnum>(TEnum maxCount
+			, string valueSeperator = ","
+			, bool stateFilter = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (Cardinality == 0)
+				return "";
+
+			int maxCountValue = maxCount.ToInt32(null);
+			if (maxCountValue < 0 || maxCountValue >= Length)
+			{
+				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+					maxCount, maxCountValue));
+			}
+
+			if (valueSeperator == null)
+				valueSeperator = "";
+
+			var enumType = typeof(TEnum);
+			var enumMembers = (TEnum[])Enum.GetValues(enumType);
+
+			// Find the member which represents bit-0
+			int memberIndex = 0;
+			while (memberIndex < enumMembers.Length && memberIndex < maxCountValue && enumMembers[memberIndex].ToInt32(null) != 0)
+				memberIndex++;
+
+			var sb = new System.Text.StringBuilder();
+			var bitsInDesiredState = stateFilter
+				? SetBitIndices
+				: ClearBitIndices;
+			foreach (int bitIndex in bitsInDesiredState)
+			{
+				if (bitIndex >= maxCountValue)
+					break;
+
+				if (sb.Length > 0)
+					sb.Append(valueSeperator);
+
+				sb.Append(enumMembers[memberIndex+bitIndex].ToString());
+			}
+
+			return sb.ToString();
+		}
+
+		/// <summary>Interprets the provided separated strings as Enum members and sets their corresponding bits</summary>
+		/// <returns>True if all strings were parsed successfully, false if there were some strings that failed to parse</returns>
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public bool TryParseFlags<TEnum>(string line
+			, string valueSeperator = ","
+			, ICollection<string> errorsOutput = null)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			// LINQ stmt allows there to be whitespace around the commas
+			return TryParseFlags<TEnum>(
+				KSoft.Util.Trim(System.Text.RegularExpressions.Regex.Split(line, valueSeperator)),
+				errorsOutput);
+		}
+
+		/// <summary>Interprets the provided strings as Enum members and sets their corresponding bits</summary>
+		/// <returns>True if all strings were parsed successfully, false if there were some strings that failed to parse</returns>
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public bool TryParseFlags<TEnum>(IEnumerable<string> collection
+			, ICollection<string> errorsOutput = null)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (collection == null)
+			{
+				return false;
+			}
+
+			bool success = true;
+			foreach (string flagStr in collection)
+			{
+				var parsed = TryParseFlag<TEnum>(flagStr, errorsOutput);
+				if (parsed.HasValue == false)
+					continue;
+				else if (parsed.Value == false)
+					success = false;
+			}
+
+			return success;
+		}
+
+		private bool? TryParseFlag<TEnum>(string flagStr
+			, ICollection<string> errorsOutput = null)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			const bool ignore_case = true;
+
+			// Enum.TryParse will call Trim on the value anyway, so don't add yet another allocation when we can check for whitespace
+			if (string.IsNullOrWhiteSpace(flagStr))
+				return null;
+
+			TEnum flag;
+			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out flag))
+			{
+				if (errorsOutput != null)
+				{
+					errorsOutput.AddFormat("Couldn't parse '{0}' as a {1} flag",
+						flagStr, typeof(TEnum));
+				}
+				return false;
+			}
+
+			int bitIndex = flag.ToInt32(null);
+			if (bitIndex < 0 || bitIndex > Length)
+			{
+				if (errorsOutput != null)
+				{
+					errorsOutput.AddFormat("Member '{0}'={1} in enum {2} can't be used as a bit index",
+						flag, bitIndex, typeof(TEnum));
+				}
+				return false;
+			}
+
+			this.Set(bitIndex, true);
+			return true;
+		}
+		#endregion
 	};
 }

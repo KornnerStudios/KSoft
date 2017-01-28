@@ -25,6 +25,7 @@ namespace KSoft
 			}
 		}
 
+		#region String
 		public static string Format(this string format, params object[] args)
 		{
 			return string.Format(format, args);
@@ -35,6 +36,74 @@ namespace KSoft
 
 			return string.Format(provider, format, args);
 		}
+
+		public static bool IsNullOrEmpty(this string str)
+		{
+			return string.IsNullOrEmpty(str);
+		}
+
+		public static bool StartsWith(this string str, char character)
+		{
+			return str != null && str.Length > 0 && str[0] == character;
+		}
+
+		public static bool EndsWith(this string str, char character)
+		{
+			return str != null && str.Length > 0 && str[str.Length-1] == character;
+		}
+
+		public static bool Contains(this string str, char c)
+		{
+			return !string.IsNullOrEmpty(str) && str.IndexOf(c) != -1;
+		}
+
+		public static int GetDeterministicHashCode(this string str)
+		{
+			Contract.Ensures(!string.IsNullOrEmpty(str) || Contract.Result<int>() == 0);
+
+			if (string.IsNullOrEmpty(str))
+				return 0;
+
+			int h = 0;
+			int x;
+			int end = str.Length - 1;
+			for (x = 0; x < end; x += 2)
+			{
+				h = (h << 5) - h + str[x];
+				h = (h << 5) - h + str[x+1];
+			}
+			++end;
+			if (x < end)
+				h = (h << 5) - h + str[x];
+			return h;
+		}
+
+		/// <remarks>Handles the case where no args are provided, for whatever reason, so there's no hidden object[] allocation</remarks>
+		public static string AddFormat(this ICollection<string> collection, string value)
+		{
+			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
+
+			if (collection != null && !collection.IsReadOnly)
+			{
+				collection.Add(value);
+				return value;
+			}
+			return null;
+		}
+
+		public static string AddFormat(this ICollection<string> collection, string format, params object[] args)
+		{
+			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
+
+			if (collection != null && !collection.IsReadOnly)
+			{
+				string value = string.Format(format, args);
+				collection.Add(value);
+				return value;
+			}
+			return null;
+		}
+		#endregion
 
 		#region Array
 		[Contracts.Pure]
@@ -101,6 +170,87 @@ namespace KSoft
 
 			return false;
 		}
+
+		#region FastFill
+		// currently based on http://stackoverflow.com/a/33865267/444977
+		public const int kDefaultFastMemSetLoopThreshold = 100;
+		public const int kFastMemSetBlockSize = 32;
+
+		public static void FastClear<T>(this T[] array
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			FastClear(array, array.Length, loopThreshold);
+		}
+		public static void FastClear<T>(this T[] array, int length
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			if (length <= loopThreshold)
+			{
+				var zero = default(T);
+				for (int x = 0; x < array.Length; x++)
+					array[x] = zero;
+			}
+			else
+			{
+				Array.Clear(array, 0, length);
+			}
+		}
+
+		public static void FastFill<T>(this T[] array, T fillValue, int sizeOfT
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			FastFill(array, array.Length, fillValue, sizeOfT, loopThreshold);
+		}
+		public static void FastFill<T>(this T[] array, int length, T fillValue, int sizeOfT
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			if (length <= loopThreshold)
+			{
+				for (int x = 0; x < array.Length; x++)
+					array[x] = fillValue;
+			}
+			else
+			{
+				int block_size = kFastMemSetBlockSize;
+
+				// fill the starting block in the array
+				int index = 0;
+				for (int initializeLength = System.Math.Min(block_size, length); index < initializeLength; index++)
+				{
+					array[index] = fillValue;
+				}
+
+				// use the starting block to fill the rest, increasing the block size by however much we've filled so far or what's left
+				for (; index < length; index += block_size, block_size *= 2)
+				{
+					int copy_length = System.Math.Min(block_size, length-index) * sizeOfT;
+					// Array.Copy is not the same as BlockCopy. We want BlockCopy.
+					Buffer.BlockCopy(
+						array, 0,
+						array, index*sizeOfT,
+						copy_length);
+				}
+			}
+		}
+
+		public static void FastFillOrClear<T>(this T[] array, bool fillOrClear, T fillValue, int sizeOfT
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			FastFillOrClear(array, array.Length, fillOrClear, fillValue, sizeOfT, loopThreshold);
+		}
+		public static void FastFillOrClear<T>(this T[] array, int length, bool fillOrClear, T fillValue, int sizeOfT
+			, int loopThreshold = kDefaultFastMemSetLoopThreshold)
+		{
+			if (fillOrClear)
+			{
+				FastFill(array, length, fillValue, sizeOfT, loopThreshold);
+			}
+			else
+			{
+				FastClear(array, length, loopThreshold);
+			}
+		}
+		#endregion
 		#endregion
 
 		#region Type
@@ -323,6 +473,7 @@ namespace KSoft
 		}
 		#endregion
 
+		#region HashAlgorithm
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,
 			System.IO.Stream inputStream, long offset, int count,
 			bool restorePosition = false,
@@ -432,6 +583,7 @@ namespace KSoft
 
 			return algo.Hash;
 		}
+		#endregion
 
 		#region Event handlers
 		public static void SafeNotify(this System.ComponentModel.PropertyChangedEventHandler handler,
@@ -463,8 +615,16 @@ namespace KSoft
 		}
 
 		// Based on http://www.codeproject.com/KB/cs/EventSafeTrigger.aspx
+		public static void SafeTrigger(this EventHandler eventToTrigger,
+			object sender, EventArgs eventArgs)
+		{
+			if (eventToTrigger != null)
+				eventToTrigger(sender, eventArgs);
+		}
+
 		public static void SafeTrigger<TEventArgs>(this EventHandler<TEventArgs> eventToTrigger,
-			object sender, TEventArgs eventArgs) where TEventArgs : EventArgs
+			object sender, TEventArgs eventArgs)
+			where TEventArgs : EventArgs
 		{
 			if (eventToTrigger != null)
 				eventToTrigger(sender, eventArgs);

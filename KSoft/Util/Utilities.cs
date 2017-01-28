@@ -295,5 +295,163 @@ namespace KSoft
 			var comparer = Collections.ValueTypeEquatableComparer<T>.Default;
 			comparer = null;
 		}
+
+		#region CountNumberOfFormatArguments
+		private static int CountNumberOfFormatArgumentsFormatError(int position)
+		{
+			return -position;
+		}
+		// Based on AppendFormatHelper in https://referencesource.microsoft.com/#mscorlib/system/text/stringbuilder.cs
+		/// <summary>Returns the number of expected arguments to successfully call string.Format, or a negative number representing the offset at which there is an error</summary>
+		public static int CountNumberOfFormatArguments(string format)
+		{
+			if (string.IsNullOrEmpty(format))
+				return 0;
+
+			int highestAddressedIndex = -1;
+
+			int pos = 0;
+			int len = format.Length;
+			char ch = '\x0';
+
+			while (true)
+			{
+				while (pos < len)
+				{
+					ch = format[pos];
+
+					pos++;
+					if (ch == '}')
+					{
+						if (pos < len && format[pos] == '}') // Treat as escape character for }}
+							pos++;
+						else
+							return CountNumberOfFormatArgumentsFormatError(pos);
+					}
+
+					if (ch == '{')
+					{
+						if (pos < len && format[pos] == '{') // Treat as escape character for {{
+							pos++;
+						else
+						{
+							pos--;
+							break;
+						}
+					}
+				}
+
+				if (pos == len)
+					break;
+
+				pos++;
+				if (pos == len || (ch = format[pos]) < '0' || ch > '9')
+					return CountNumberOfFormatArgumentsFormatError(pos);
+
+				int index = 0;
+				do
+				{
+					index = index * 10 + ch - '0';
+					pos++;
+					if (pos == len)
+						return CountNumberOfFormatArgumentsFormatError(pos);
+
+					ch = format[pos];
+				} while (ch >= '0' && ch <= '9' && index < 1000000);
+
+				highestAddressedIndex = System.Math.Max(highestAddressedIndex, index);
+
+				//if (index >= args.Length)
+				//	throw new FormatException(Environment.GetResourceString("Format_IndexOutOfRange"));
+
+				while (pos < len && (ch = format[pos]) == ' ')
+					pos++;
+
+				int width = 0;
+
+				if (ch == ',')
+				{
+					pos++;
+					while (pos < len && format[pos] == ' ')
+						pos++;
+
+					if (pos == len)
+						return CountNumberOfFormatArgumentsFormatError(pos);
+
+					ch = format[pos];
+					if (ch == '-')
+					{
+						pos++;
+						if (pos == len)
+							return CountNumberOfFormatArgumentsFormatError(pos);
+
+						ch = format[pos];
+					}
+					if (ch < '0' || ch > '9')
+						return CountNumberOfFormatArgumentsFormatError(pos);
+					do
+					{
+						width = width * 10 + ch - '0';
+						pos++;
+						if (pos == len)
+							return CountNumberOfFormatArgumentsFormatError(pos);
+						ch = format[pos];
+					} while (ch >= '0' && ch <= '9' && width < 1000000);
+				}
+
+				while (pos < len && (ch = format[pos]) == ' ')
+					pos++;
+
+				if (ch == ':')
+				{
+					pos++;
+					while (true)
+					{
+						if (pos == len)
+							return CountNumberOfFormatArgumentsFormatError(pos);
+						ch = format[pos];
+						pos++;
+						if (ch == '{')
+						{
+							if (pos < len && format[pos] == '{')  // Treat as escape character for {{
+								pos++;
+							else
+								return CountNumberOfFormatArgumentsFormatError(pos);
+						}
+						else if (ch == '}')
+						{
+							if (pos < len && format[pos] == '}')  // Treat as escape character for }}
+								pos++;
+							else
+							{
+								pos--;
+								break;
+							}
+						}
+					}
+				}
+
+				if (ch != '}')
+					return CountNumberOfFormatArgumentsFormatError(pos);
+
+				pos++;
+			}
+
+			return highestAddressedIndex + 1;
+		}
+		#endregion
+
+		public static string[] Trim(string[] array)
+		{
+			if (array == null || array.Length == 0)
+				return array;
+
+			var trimmed = new string[array.Length];
+
+			for (int x = 0; x < array.Length; x++)
+				trimmed[x] = array[x].Trim();
+
+			return trimmed;
+		}
 	};
 }

@@ -5,14 +5,40 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Let the user say when they want this info spewed out, else just don't even -->
+    <PhxCppDumpVectorizerInfo Condition=" '$(PhxCppDumpVectorizerInfo)' == '' ">false</PhxCppDumpVectorizerInfo>
+    <!-- Force this off in X360, was added in VS2012+ -->
+    <PhxCppDumpVectorizerInfo Condition=" '$(Platform)'=='Xbox 360' ">false</PhxCppDumpVectorizerInfo>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition=" '$(VitaCurrentProjectKind)' == 'DynamicLibrary' OR '$(VitaCurrentProjectKind)' == 'Application'">
+      <PropertyGroup>
+        <OutDir>$(VitaBinPath)</OutDir>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(VitaCurrentProjectKind)' == 'StaticLibrary' ">
+      <PropertyGroup>
+        <OutDir>$(VitaLibPath)</OutDir>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+      <OutDir>$(VitaBinPath)</OutDir>
+    </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <PropertyGroup Label="Configuration">
     <IntDir>$(VitaObjPath)</IntDir>
     <LinkIncremental Condition=" '$(Configuration.Contains(Release))' ">false</LinkIncremental>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <!--<IncludePath>;$(IncludePath)</IncludePath>-->
+    <!-- fix intellisense being dumb, thinking it can't resolve a project include -->
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
     <LibraryPath>$(VitaPlatformCppLibDir);$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis Condition=" '$(Configuration.Contains(CodeAnalysis))' ">true</RunCodeAnalysis>
-	<PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaRequiresDirectX)' != '' " Label="Configuration">
@@ -38,6 +64,18 @@
     <OutDir>$(VitaSolutionFamilyBinPath)</OutDir>
   </PropertyGroup>
 
+  <ItemDefinitionGroup Condition=" '$(VitaRequiresDirectX)' == 'true' ">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(LocalDirectXDir)Include\;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalIncludeDirectories);$(LocalDirectXDir)Lib\$(PhxPlatformType)\;</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalIncludeDirectories);$(LocalDirectXDir)Lib\$(PhxPlatformType)\;</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(VitaRootDir)shared\source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -52,7 +90,6 @@
     <Link>
       <AdditionalDependencies>user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AssemblyDebug>true</AssemblyDebug>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
@@ -74,8 +111,10 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
-	<Link>
-      <AdditionalOptions> /verbose:incr %(AdditionalOptions)</AdditionalOptions>
+    <Link>
+      <!-- INCR wasn't added until VS2012 and VS2010 was the first IDE that used msbuild for C++ -->
+      <AdditionalOptions Condition=" '$(PlatformToolset)' != 'v100'"> /verbose:incr %(AdditionalOptions)</AdditionalOptions>
+      <AssemblyDebug Condition=" '$(CLRSupport)'=='true' " >true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition=" '$(Configuration.Contains(Release))' ">
@@ -84,13 +123,13 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
 
-	  <!-- http://randomascii.wordpress.com/2013/09/11/debugging-optimized-codenew-in-visual-studio-2012/ -->
-	  <AdditionalOptions> /d2Zi+ %(AdditionalOptions)</AdditionalOptions>
+      <!-- http://randomascii.wordpress.com/2013/09/11/debugging-optimized-codenew-in-visual-studio-2012/ -->
+      <AdditionalOptions> /d2Zi+ %(AdditionalOptions)</AdditionalOptions>
 
-	  <!-- http://visualstudiogallery.msdn.microsoft.com/2f679f81-5154-4bd7-9907-adafde05a428 -->
-	  <AdditionalOptions> /Qvec-report:2 %(AdditionalOptions)</AdditionalOptions>
+      <!-- http://visualstudiogallery.msdn.microsoft.com/2f679f81-5154-4bd7-9907-adafde05a428 -->
+      <AdditionalOptions Condition="'$(VitaCppDumpVectorizerInfo)'=='true'"> /Qvec-report:2 %(AdditionalOptions)</AdditionalOptions>
 
-	  <MultiProcessorCompilation>true</MultiProcessorCompilation> <!--release only, not compat with minimal rebuild (enabled in debug)-->
+      <MultiProcessorCompilation>true</MultiProcessorCompilation> <!--release only, not compat with minimal rebuild (enabled in debug)-->
     </ClCompile>
   </ItemDefinitionGroup>
 
@@ -109,7 +148,7 @@
     <Link>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
-	<Midl>
+    <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
   </ItemDefinitionGroup>
