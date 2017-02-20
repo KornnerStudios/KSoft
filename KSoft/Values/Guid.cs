@@ -45,10 +45,11 @@ namespace KSoft.Values
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]
-	public struct KGuid : IO.IEndianStreamable,
-		IComparable, IComparable<KGuid>, IComparable<Guid>,
-		System.Collections.IComparer, IComparer<KGuid>,
-		IEquatable<KGuid>, IEqualityComparer<KGuid>, IEquatable<Guid>
+	public struct KGuid
+		: IO.IEndianStreamable, IO.IEndianStreamSerializable
+		, IComparable, IComparable<KGuid>, IComparable<Guid>
+		, System.Collections.IComparer, IComparer<KGuid>
+		, IEquatable<KGuid>, IEqualityComparer<KGuid>, IEquatable<Guid>
 	{
 		#region Constants
 		public const int kSizeOf = sizeof(int) + (sizeof(short) * 2) + (sizeof(byte) * 8);
@@ -116,7 +117,7 @@ namespace KSoft.Values
 		public int Data3 { get { return SysGuid.GetData3(mData); } }
 		public long Data4 { get {
 			byte	d = SysGuid.GetData4[0](mData), e = SysGuid.GetData4[1](mData),
-					f = SysGuid.GetData4[2](mData), g = SysGuid.GetData4[3](mData), 
+					f = SysGuid.GetData4[2](mData), g = SysGuid.GetData4[3](mData),
 					h = SysGuid.GetData4[4](mData), i = SysGuid.GetData4[5](mData),
 					j = SysGuid.GetData4[6](mData), k = SysGuid.GetData4[7](mData);
 			long result;
@@ -181,7 +182,7 @@ namespace KSoft.Values
 
 		#region TimeBased properties
 		public long Timestamp { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased, 
+			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the Timestamp of a non-time-based GUID");
 
 			ulong msb = (ulong)MostSignificantBits;
@@ -193,7 +194,7 @@ namespace KSoft.Values
 		} }
 
 		public int ClockSequence { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased, 
+			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the ClockSequence of a non-time-based GUID");
 
 			// NOTE: While the Variant field is 3-bits, both the Java and RFC implementations
@@ -205,7 +206,7 @@ namespace KSoft.Values
 		} }
 
 		public long Node { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased, 
+			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the Node of a non-time-based GUID");
 
 			long result = 0;
@@ -289,14 +290,25 @@ namespace KSoft.Values
 			foreach (var data4 in SysGuid.GetData4)
 				s.Write(data4(mData));
 		}
+
+		public void Serialize(IO.EndianStream s)
+		{
+			if (s.IsReading)
+				Read(s.Reader);
+			else if (s.IsWriting)
+				Write(s.Writer);
+		}
 		#endregion
 
 		#region IComparable Members
 		public int CompareTo(object obj)
 		{
-				 if (obj == null)	return 1;
-			else if (obj is KGuid)	return CompareTo((KGuid)obj);
-			else if (obj is Guid)	return CompareTo((Guid)obj);
+			if (obj == null)
+				return 1;
+			else if (obj is KGuid)
+				return CompareTo((KGuid)obj);
+			else if (obj is Guid)
+				return CompareTo((Guid)obj);
 
 			throw new InvalidCastException(obj.GetType().ToString());
 		}
@@ -307,8 +319,10 @@ namespace KSoft.Values
 		#region IEquatable Members
 		public override bool Equals(object obj)
 		{
-				 if (obj is KGuid)	return Equals(this, (KGuid)obj);
-			else if (obj is Guid)	return Equals((Guid)obj);
+			if (obj is KGuid)
+				return Equals(this, (KGuid)obj);
+			else if (obj is Guid)
+				return Equals((Guid)obj);
 
 			return false;
 		}
@@ -316,7 +330,7 @@ namespace KSoft.Values
 		public bool Equals(KGuid x, KGuid y)
 		{
 			// We don't compare using mData. System.Guid's Equals implementation compares each individual A...K field
-			
+
 			return
 				x.mDataHi == y.mDataHi &&
 				x.mDataLo == y.mDataLo;
@@ -330,7 +344,7 @@ namespace KSoft.Values
 		public static bool operator ==(KGuid a, KGuid b)
 		{
 			// We don't compare using mData. System.Guid's Equals implementation compares each individual A...K field
-			
+
 			return
 				a.mDataHi == b.mDataHi &&
 				a.mDataLo == b.mDataLo;
@@ -344,9 +358,12 @@ namespace KSoft.Values
 		#region IComparer<KGuid> Members
 		int System.Collections.IComparer.Compare(object x, object y)
 		{
-			if (x == y)		return 0;
-			if (x == null)	return -1;
-			if (y == null)	return 1;
+			if (x == y)
+				return 0;
+			if (x == null)
+				return -1;
+			if (y == null)
+				return 1;
 
 			if (x is KGuid)
 			{
@@ -355,11 +372,11 @@ namespace KSoft.Values
 				if (y is Guid)
 					return ((KGuid)x).CompareTo((Guid)y);
 			}
-			else if(x is Guid && y is KGuid)
+			else if (x is Guid && y is KGuid)
 				return -((KGuid)y).CompareTo((Guid)x);
 
 			throw new InvalidCastException(x.GetType().ToString());
-		}		
+		}
 
 		public int Compare(KGuid x, KGuid y)
 		{
@@ -367,7 +384,7 @@ namespace KSoft.Values
 		}
 		#endregion
 
-		public static readonly KGuid Empty = new KGuid();
+		public static KGuid Empty { get { return new KGuid(); } }
 
 		public static KGuid NewGuid()
 		{
@@ -375,20 +392,32 @@ namespace KSoft.Values
 		}
 
 		#region Parse
-		public static KGuid Parse(string input)						{ return new KGuid(Guid.Parse(input)); }
-		public static KGuid ParseExact(string input, string format)	{ return new KGuid(Guid.ParseExact(input, format)); }
+		public static KGuid Parse(string input)
+		{
+			return new KGuid(Guid.Parse(input));
+		}
+		public static KGuid ParseExact(string input, string format)
+		{
+			return new KGuid(Guid.ParseExact(input, format));
+		}
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactNoStyle(string input)		{ return new KGuid(Guid.ParseExact(input, kFormatNoStyle)); }
+		internal static KGuid ParseExactNoStyle(string input)
+		{
+			return new KGuid(Guid.ParseExact(input, kFormatNoStyle));
+		}
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactHyphenated(string input)	{ return new KGuid(Guid.ParseExact(input, kFormatHyphenated)); }
+		internal static KGuid ParseExactHyphenated(string input)
+		{
+			return new KGuid(Guid.ParseExact(input, kFormatHyphenated));
+		}
 
 		public static bool TryParse(string input, out KGuid result)
 		{
@@ -425,7 +454,10 @@ namespace KSoft.Values
 		#endregion
 
 		#region Byte Utils
-		public byte[] ToByteArray()	{ return mData.ToByteArray(); }
+		public byte[] ToByteArray()
+		{
+			return mData.ToByteArray();
+		}
 
 		public void ToByteBuffer(byte[] buffer, int index = 0)
 		{

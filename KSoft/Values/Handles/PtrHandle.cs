@@ -22,14 +22,15 @@ namespace KSoft.Values
 	/// <remarks>If you use the parameterless ctor, the pointer will be implicitly 32-bit</remarks>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size = PtrHandle.kSizeOf)]
 //	[System.ComponentModel.TypeConverter(typeof(PtrHandleConverter))]
-	public struct PtrHandle : IO.IEndianStreamable,
-		IComparer<PtrHandle>, IComparable<PtrHandle>,
-		IEquatable<PtrHandle>, IEqualityComparer<PtrHandle>,
-		System.Collections.IComparer, IComparable
+	public struct PtrHandle
+		: IO.IEndianStreamable
+		, IComparer<PtrHandle>, IComparable<PtrHandle>
+		, IEquatable<PtrHandle>, IEqualityComparer<PtrHandle>
+		, System.Collections.IComparer, IComparable
 	{
 		#region Constants
 		/// <summary>Size needed for extra pointer info, padded to the nearest 64-bits</summary>
-		const int kSizeOfInfo = sizeof(bool) + sizeof(byte) + 
+		const int kSizeOfInfo = sizeof(bool) + sizeof(byte) +
 			sizeof(short) + // unused
 			sizeof(uint);
 
@@ -37,17 +38,17 @@ namespace KSoft.Values
 		public const int kSizeOf = sizeof(ulong) + kSizeOfInfo;
 
 		/// <summary>Constant value representing a null 32-bit address</summary>
-		public static readonly PtrHandle Null32 = new PtrHandle(uint.MinValue);
+		public static PtrHandle Null32 { get { return new PtrHandle(uint.MinValue); } }
 		/// <summary>Constant value representing a null 64-bit address</summary>
-		public static readonly PtrHandle Null64 = new PtrHandle(ulong.MinValue);
+		public static PtrHandle Null64 { get { return new PtrHandle(ulong.MinValue); } }
 
 		/// <summary>Constant value representing a 32-bit INVALID_HANDLE (-1)?</summary>
-		public static readonly PtrHandle InvalidHandle32 = new PtrHandle(uint.MaxValue);
+		public static PtrHandle InvalidHandle32 { get { return new PtrHandle(uint.MaxValue); } }
 		/// <summary>Constant value representing a 64-bit INVALID_HANDLE (-1)?</summary>
-		public static readonly PtrHandle InvalidHandle64 = new PtrHandle(ulong.MaxValue);
+		public static PtrHandle InvalidHandle64 { get { return new PtrHandle(ulong.MaxValue); } }
 
 		/// <summary>
-		/// Result returned from a Comparison operation when the 'lhs' field 
+		/// Result returned from a Comparison operation when the 'lhs' field
 		/// doesn't match the 'rhs' field's address size
 		/// </summary>
 		public const int kComparisonDifferentSize = -2;
@@ -58,7 +59,6 @@ namespace KSoft.Values
 		/// <summary>Result returned from a comparison operation when 'lhs &gt; rhs'</summary>
 		public const int kComparisonGreater = 1;
 		#endregion
-
 
 		#region Fields
 		/// <summary>Address as a 64-bit integer</summary>
@@ -266,12 +266,11 @@ namespace KSoft.Values
 		/// <returns>"[0x<see cref="Handle"/>]u32]" or "[0x<see cref="Handle"/>]u64"]</returns>
 		public override string ToString()
 		{
-			return string.Format("[0x{0}{1}]", 
-				!Is64bit ? u32.ToString("X8") : u64.ToString("X16"), 
+			return string.Format("[0x{0}{1}]",
+				!Is64bit ? u32.ToString("X8") : u64.ToString("X16"),
 				!Is64bit ? "u32" : "u64");
 		}
 		#endregion
-
 
 		#region Operators
 		#region Conversions
@@ -303,7 +302,7 @@ namespace KSoft.Values
 		/// <summary>Convert this address to a <see cref="UIntPtr"/></summary>
 		/// <returns></returns>
 		/// <exception cref="OverflowException">
-		/// On a 32-bit platform, <see cref="Handle"/> is too large to represent as 
+		/// On a 32-bit platform, <see cref="Handle"/> is too large to represent as
 		/// an <see cref="UIntPtr"/>.
 		/// </exception>
 		public System.UIntPtr ToUIntPtr() { return new System.UIntPtr(this.Handle); }
