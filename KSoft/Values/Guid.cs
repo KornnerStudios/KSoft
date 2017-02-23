@@ -385,6 +385,8 @@ namespace KSoft.Values
 		#endregion
 
 		public static KGuid Empty { get { return new KGuid(); } }
+		public bool IsEmpty { get { return mDataHi == 0 && mDataLo == 0; } }
+		public bool IsNotEmpty { get { return mDataHi != 0 || mDataLo != 0; } }
 
 		public static KGuid NewGuid()
 		{

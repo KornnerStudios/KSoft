@@ -475,7 +475,7 @@ namespace KSoft
 
 		#region HashAlgorithm
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,
-			System.IO.Stream inputStream, long offset, int count,
+			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false,
 			byte[] preallocatedBuffer = null)
 		{
@@ -490,7 +490,7 @@ namespace KSoft
 
 			if (preallocatedBuffer == null)
 			{
-				buffer_size = System.Math.Min(count, 0x1000);
+				buffer_size = System.Math.Min((int)count, 0x1000);
 				buffer = new byte[buffer_size];
 			}
 			else
@@ -505,13 +505,13 @@ namespace KSoft
 			if (offset.IsNotNone() && offset != orig_pos)
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
 
-			for (int bytes_remaining = count; bytes_remaining > 0; )
+			for (long bytes_remaining = count; bytes_remaining > 0; )
 			{
-				int num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
+				long num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
 				int num_bytes_read = 0;
 				do
 				{
-					int n = inputStream.Read(buffer, num_bytes_read, num_bytes_to_read);
+					int n = inputStream.Read(buffer, num_bytes_read, (int)num_bytes_to_read);
 					if (n == 0)
 						break;
 
@@ -536,7 +536,7 @@ namespace KSoft
 		}
 
 		public static byte[] ComputeHash(this Security.Cryptography.BlockHashAlgorithm algo,
-			System.IO.Stream inputStream, long offset, int count,
+			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false)
 		{
 			Contract.Requires<ArgumentNullException>(inputStream != null);
@@ -554,13 +554,13 @@ namespace KSoft
 			if (offset.IsNotNone() && offset != orig_pos)
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
 
-			for (int bytes_remaining = count; bytes_remaining > 0; )
+			for (long bytes_remaining = count; bytes_remaining > 0; )
 			{
-				int num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
+				long num_bytes_to_read = System.Math.Min(bytes_remaining, buffer_size);
 				int num_bytes_read = 0;
 				do
 				{
-					int n = inputStream.Read(buffer, num_bytes_read, num_bytes_to_read);
+					int n = inputStream.Read(buffer, num_bytes_read, (int)num_bytes_to_read);
 					if (n == 0)
 						break;
 

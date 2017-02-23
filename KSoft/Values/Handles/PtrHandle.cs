@@ -95,8 +95,10 @@ namespace KSoft.Values
 		public Shell.ProcessorSize Size { get { return !Is64bit ? Shell.ProcessorSize.x32 : Shell.ProcessorSize.x64; } }
 		/// <summary>Is this pointer not referencing anything?</summary>
 		public bool IsNull { get { return this.Handle == 0; } }
+		public bool IsNotNull { get { return this.Handle != 0; } }
 		/// <summary>Is this pointer the same as the Win32 API INVALID_HANDLE (or -1) value?</summary>
 		public bool IsInvalidHandle { get { return this.Handle == ulong.MaxValue || this.u32 == uint.MaxValue; } }
+		public bool IsNotInvalidHandle { get { return this.Handle != ulong.MaxValue || this.u32 != uint.MaxValue; } }
 
 		#region Ctor
 		PtrHandle(bool is64bit, ulong handle)

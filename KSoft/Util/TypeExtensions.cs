@@ -343,6 +343,56 @@ namespace KSoft
 		}
 		#endregion
 
+		#region Shell
+		public static int GetBitCount(Shell.ProcessorSize value)
+		{
+			Contract.Ensures(Contract.Result<int>() >= -1);
+
+			switch (value)
+			{
+			case Shell.ProcessorSize.x32:
+				return Bits.kInt32BitCount;
+			case Shell.ProcessorSize.x64:
+				return Bits.kInt64BitCount;
+
+			default:
+				return -1;
+			}
+		}
+
+		public static int GetByteCount(Shell.ProcessorSize value)
+		{
+			Contract.Ensures(Contract.Result<int>() >= -1);
+
+			switch (value)
+			{
+			case Shell.ProcessorSize.x32:
+				return sizeof(int);
+			case Shell.ProcessorSize.x64:
+				return sizeof(long);
+
+			default:
+				return -1;
+			}
+		}
+
+		public static int GetBitCount(Shell.ProcessorWordSize value)
+		{
+			Contract.Ensures(Contract.Result<int>() > 0);
+
+			int shift = (int)value;
+			return 8 << shift;
+		}
+
+		public static int GetByteCount(Shell.ProcessorWordSize value)
+		{
+			Contract.Ensures(Contract.Result<int>() > 0);
+
+			int mul = (int)value + 1;
+			return 8 * mul;
+		}
+		#endregion
+
 		#region Shell.EndianFormat
 		/// <summary>Is the byte order the same as the current runtime?</summary>
 		/// <param name="ef"></param>
