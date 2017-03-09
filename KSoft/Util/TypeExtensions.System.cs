@@ -37,26 +37,31 @@ namespace KSoft
 			return string.Format(provider, format, args);
 		}
 
+		[Contracts.Pure]
 		public static bool IsNullOrEmpty(this string str)
 		{
 			return string.IsNullOrEmpty(str);
 		}
 
+		[Contracts.Pure]
 		public static bool StartsWith(this string str, char character)
 		{
 			return str != null && str.Length > 0 && str[0] == character;
 		}
 
+		[Contracts.Pure]
 		public static bool EndsWith(this string str, char character)
 		{
 			return str != null && str.Length > 0 && str[str.Length-1] == character;
 		}
 
+		[Contracts.Pure]
 		public static bool Contains(this string str, char c)
 		{
 			return !string.IsNullOrEmpty(str) && str.IndexOf(c) != -1;
 		}
 
+		[Contracts.Pure]
 		public static int GetDeterministicHashCode(this string str)
 		{
 			Contract.Ensures(!string.IsNullOrEmpty(str) || Contract.Result<int>() == 0);
@@ -146,6 +151,7 @@ namespace KSoft
 			where T : IEquatable<T>
 		{
 			Contract.Requires(lhs != null && rhs != null);
+			Contract.Requires(lhsOffset < lhs.Length);
 
 			if (lhs == rhs)
 				return true;
@@ -159,6 +165,7 @@ namespace KSoft
 			return true;
 		}
 
+		[Contracts.Pure]
 		public static bool TrueForAny<T>(this T[] array, Predicate<T> match)
 		{
 			Contract.Requires<ArgumentNullException>(array != null);
@@ -425,6 +432,25 @@ namespace KSoft
 					collection.Add(default_value);
 				}
 			}
+		}
+
+		[Contracts.Pure]
+		public static bool EqualsList<T>(this IList<T> lhs, IList<T> rhs, int lhsOffset = 0)
+			where T : IEquatable<T>
+		{
+			Contract.Requires(lhs != null && rhs != null);
+			Contract.Requires(lhsOffset < lhs.Count);
+
+			if (lhs == rhs)
+				return true;
+			else if (rhs.Count < (lhs.Count - lhsOffset))
+				return false;
+
+			for (int x = lhsOffset; x < (lhs.Count - lhsOffset); x++)
+				if (!rhs[x].Equals(lhs[x]))
+					return false;
+
+			return true;
 		}
 		#endregion
 

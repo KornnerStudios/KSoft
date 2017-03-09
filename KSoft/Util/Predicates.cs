@@ -37,7 +37,7 @@ namespace KSoft
 		#endregion
 
 		#region HasItems/Bits
-		public static Predicate<System.Collections.ICollection> gHasItems;
+		private static Predicate<System.Collections.ICollection> gHasItems;
 		public static Predicate<System.Collections.ICollection> HasItems { get {
 			if (gHasItems == null)
 				gHasItems = coll => coll != null && coll.Count > 0;
@@ -45,7 +45,7 @@ namespace KSoft
 			return gHasItems;
 		} }
 
-		public static Predicate<Collections.IReadOnlyBitSet> gHasBits;
+		private static Predicate<Collections.IReadOnlyBitSet> gHasBits;
 		public static Predicate<Collections.IReadOnlyBitSet> HasBits { get {
 			if (gHasBits == null)
 				gHasBits = set => set != null && set.Cardinality > 0;
