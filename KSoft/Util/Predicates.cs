@@ -17,7 +17,7 @@ namespace KSoft
 			return gIsFalse;
 		} }
 
-		private static Predicate<bool> gIsTrue = b => !b;
+		private static Predicate<bool> gIsTrue;
 		public static Predicate<bool> IsTrue { get {
 			if (gIsTrue == null)
 				gIsTrue = b => b;
