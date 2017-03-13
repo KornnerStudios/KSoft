@@ -16,6 +16,10 @@ namespace KSoft
 			int end = startIndex+length;
 			bool success = true;
 
+			if (radix == 16)
+				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+					pos += 2;
+
 			// Skip any starting whitespace, avoids s.Trim() allocations
 			while(pos < end && char.IsWhiteSpace(s[pos]))
 				++pos;
@@ -50,7 +54,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out uint result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -60,7 +64,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out uint result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -71,7 +75,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -81,6 +85,10 @@ namespace KSoft
 			int pos = startIndex;
 			int end = startIndex+length;
 			bool success = true;
+
+			if (radix == 16)
+				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+					pos += 2;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
 			while(pos < end && char.IsWhiteSpace(s[pos]))
@@ -117,7 +125,7 @@ namespace KSoft
 				}
 			}
 
-			// Negate the result if anything was processed 
+			// Negate the result if anything was processed
 			if (negate)
 				result = -result;
 
@@ -130,7 +138,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out int result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -140,7 +148,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out int result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -151,7 +159,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -161,6 +169,10 @@ namespace KSoft
 			int pos = startIndex;
 			int end = startIndex+length;
 			bool success = true;
+
+			if (radix == 16)
+				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+					pos += 2;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
 			while(pos < end && char.IsWhiteSpace(s[pos]))
@@ -196,7 +208,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out ulong result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -206,7 +218,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out ulong result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -217,7 +229,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -227,6 +239,10 @@ namespace KSoft
 			int pos = startIndex;
 			int end = startIndex+length;
 			bool success = true;
+
+			if (radix == 16)
+				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+					pos += 2;
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
 			while(pos < end && char.IsWhiteSpace(s[pos]))
@@ -263,7 +279,7 @@ namespace KSoft
 				}
 			}
 
-			// Negate the result if anything was processed 
+			// Negate the result if anything was processed
 			if (negate)
 				result = -result;
 
@@ -276,7 +292,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out long result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -286,7 +302,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out long result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -297,7 +313,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -323,7 +339,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out byte result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -333,7 +349,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out byte result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -344,7 +360,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -369,7 +385,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out sbyte result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -379,7 +395,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out sbyte result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -390,7 +406,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -415,7 +431,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out ushort result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -425,7 +441,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out ushort result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -436,7 +452,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -461,7 +477,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out short result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -471,7 +487,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out short result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -482,7 +498,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -491,16 +507,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref byte value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -520,16 +536,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref sbyte value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -549,16 +565,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref ushort value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -578,16 +594,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref short value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -607,16 +623,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref uint value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -636,16 +652,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref int value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -665,16 +681,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref ulong value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -694,16 +710,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref long value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -732,7 +748,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<byte?[]> kEmptyResult = 
+			static readonly Lazy<byte?[]> kEmptyResult =
 				new Lazy<byte?[]>(() => new byte?[0]);
 
 			protected override IEnumerable<byte?> EmptyResult { get {
@@ -773,7 +789,7 @@ namespace KSoft
 
 			protected override IEnumerable<byte?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -818,7 +834,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<sbyte?[]> kEmptyResult = 
+			static readonly Lazy<sbyte?[]> kEmptyResult =
 				new Lazy<sbyte?[]>(() => new sbyte?[0]);
 
 			protected override IEnumerable<sbyte?> EmptyResult { get {
@@ -859,7 +875,7 @@ namespace KSoft
 
 			protected override IEnumerable<sbyte?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -904,7 +920,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<ushort?[]> kEmptyResult = 
+			static readonly Lazy<ushort?[]> kEmptyResult =
 				new Lazy<ushort?[]>(() => new ushort?[0]);
 
 			protected override IEnumerable<ushort?> EmptyResult { get {
@@ -945,7 +961,7 @@ namespace KSoft
 
 			protected override IEnumerable<ushort?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -990,7 +1006,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<short?[]> kEmptyResult = 
+			static readonly Lazy<short?[]> kEmptyResult =
 				new Lazy<short?[]>(() => new short?[0]);
 
 			protected override IEnumerable<short?> EmptyResult { get {
@@ -1031,7 +1047,7 @@ namespace KSoft
 
 			protected override IEnumerable<short?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -1076,7 +1092,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<uint?[]> kEmptyResult = 
+			static readonly Lazy<uint?[]> kEmptyResult =
 				new Lazy<uint?[]>(() => new uint?[0]);
 
 			protected override IEnumerable<uint?> EmptyResult { get {
@@ -1117,7 +1133,7 @@ namespace KSoft
 
 			protected override IEnumerable<uint?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -1162,7 +1178,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<int?[]> kEmptyResult = 
+			static readonly Lazy<int?[]> kEmptyResult =
 				new Lazy<int?[]>(() => new int?[0]);
 
 			protected override IEnumerable<int?> EmptyResult { get {
@@ -1203,7 +1219,7 @@ namespace KSoft
 
 			protected override IEnumerable<int?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -1248,7 +1264,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<ulong?[]> kEmptyResult = 
+			static readonly Lazy<ulong?[]> kEmptyResult =
 				new Lazy<ulong?[]>(() => new ulong?[0]);
 
 			protected override IEnumerable<ulong?> EmptyResult { get {
@@ -1289,7 +1305,7 @@ namespace KSoft
 
 			protected override IEnumerable<ulong?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
@@ -1334,7 +1350,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<long?[]> kEmptyResult = 
+			static readonly Lazy<long?[]> kEmptyResult =
 				new Lazy<long?[]>(() => new long?[0]);
 
 			protected override IEnumerable<long?> EmptyResult { get {
@@ -1375,7 +1391,7 @@ namespace KSoft
 
 			protected override IEnumerable<long?> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}

@@ -42,6 +42,11 @@ namespace KSoft
 		{
 			return string.IsNullOrEmpty(str);
 		}
+		[Contracts.Pure]
+		public static bool IsNotNullOrEmpty(this string str)
+		{
+			return !string.IsNullOrEmpty(str);
+		}
 
 		[Contracts.Pure]
 		public static bool StartsWith(this string str, char character)

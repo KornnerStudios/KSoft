@@ -5,6 +5,11 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
+	internal enum TagElementStreamParseEnumResult
+	{
+		Success,
+		FailedMemberNotFound,
+	};
 	internal static class TagElementStreamParseEnumUtil
 	{
 		public static int EnumToInt<TEnum>(TEnum value)
@@ -16,34 +21,37 @@ namespace KSoft.IO
 			return Reflection.EnumValue<TEnum>.ToInt32(value);
 		}
 
-		public static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
-			string str, out TEnum value)
+		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
+			string str, ref TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			bool result = Enum.TryParse(str, ignoreCase, out value);
+			TEnum temp;
+			bool result = Enum.TryParse(str, ignoreCase, out temp);
 
-			if (!result && exceptionOnParseFail)
-				throw new ArgumentException("Parameter is not a member of " + typeof(TEnum), str);
+			if (!result)
+				return TagElementStreamParseEnumResult.FailedMemberNotFound;
+			else
+				value = temp;
 
-			return result;
+			return TagElementStreamParseEnumResult.Success;
 		}
-		public static bool Parse<TEnum>(bool ignoreCase, bool exceptionOnParseFail, 
-			string str, out int intValue)
+		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
+			string str, ref int intValue)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			intValue = 0;
 
-			TEnum value;
-			bool result = Parse(ignoreCase, exceptionOnParseFail, str, out value);
+			TEnum value = default(TEnum);
+			var result = Parse(ignoreCase, str, ref value);
 
-			if (result)
+			if (result == TagElementStreamParseEnumResult.Success)
 				intValue = EnumToInt(value);
 
 			return result;
 		}
 
 #if false // currently unused. probably obsolete
-		public static bool ParseOpt<TEnum>(bool ignoreCase, 
+		public static bool ParseOpt<TEnum>(bool ignoreCase,
 			string str, out TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -51,7 +59,7 @@ namespace KSoft.IO
 
 			return result;
 		}
-		public static bool ParseOpt<TEnum>(bool ignoreCase, 
+		public static bool ParseOpt<TEnum>(bool ignoreCase,
 			string str, out int intValue)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{

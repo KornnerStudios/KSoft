@@ -11,6 +11,9 @@ namespace KSoft
 	/// <summary>Extension methods for types in this assembly</summary>
 	public static partial class TypeExtensions
 	{
+		public const double kRadiansPerDegree = Math.PI / 180.0;
+		public const double kDegreesPerRadian = 180 / Math.PI;
+
 		#region NONE extensions
 		public const int kNone = -1;
 		/// <summary>The default string representation of a value which has a 'None' state</summary>

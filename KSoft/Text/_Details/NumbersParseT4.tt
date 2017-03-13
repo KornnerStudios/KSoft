@@ -25,6 +25,10 @@ namespace KSoft
 			int end = startIndex+length;
 			bool success = true;
 
+			if (radix == 16)
+				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+					pos += 2;
+
 <#		if (NumbersT4.ParseShouldAllowLeadingWhite) { #>
 			// Skip any starting whitespace, avoids s.Trim() allocations
 			while(pos < end && char.IsWhiteSpace(s[pos]))
@@ -71,7 +75,7 @@ namespace KSoft
 			}
 
 <#		if (is_signed) { #>
-			// Negate the result if anything was processed 
+			// Negate the result if anything was processed
 			if (negate)
 				result = -result;
 <#		} #>
@@ -85,7 +89,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out <#= prim_keyword #> result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -95,7 +99,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return s != null && startIndex < s.Length && 
+			return s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out <#= prim_keyword #> result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -106,7 +110,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -136,7 +140,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParse(string s, out <#= prim_keyword #> result, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0, string digits = kBase64Digits)
@@ -146,7 +150,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 			result = 0;
 
-			return  s != null && startIndex < s.Length && 
+			return  s != null && startIndex < s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);
 		}
 		public static bool TryParseRange(string s, out <#= prim_keyword #> result, int startIndex, int length, NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)
@@ -157,7 +161,7 @@ namespace KSoft
 			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
 			result = 0;
 
-			return s != null && startIndex+length <= s.Length && 
+			return s != null && startIndex+length <= s.Length &&
 				TryParseImpl(s, ref result, (int)radix, startIndex, length, digits);
 		}
 		#endregion
@@ -171,16 +175,16 @@ namespace KSoft
 		static bool ParseStringImpl(string s, ref <#= prim_keyword #> value, bool noThrow, int radix, int startIndex,
 			Func<Exception> getInnerException)
 		{
-			var result = string.IsNullOrEmpty(s) 
-				? ParseErrorType.NoInput 
+			var result = string.IsNullOrEmpty(s)
+				? ParseErrorType.NoInput
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
 				result = ParseErrorType.InvalidStartIndex;
 
 			if (result == ParseErrorType.None)
-				result = TryParse(s, out value, radix, startIndex, kBase64Digits) 
-					? ParseErrorType.None 
+				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
+					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
 			if (noThrow)
@@ -218,7 +222,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<<#= prim_keyword_nullable #>[]> kEmptyResult = 
+			static readonly Lazy<<#= prim_keyword_nullable #>[]> kEmptyResult =
 				new Lazy<<#= prim_keyword_nullable #>[]>(() => new <#= prim_keyword_nullable #>[0]);
 
 			protected override IEnumerable<<#= prim_keyword_nullable #>> EmptyResult { get {
@@ -259,7 +263,7 @@ namespace KSoft
 
 			protected override IEnumerable<<#= prim_keyword_nullable #>> CreateResult()
 			{
-				return 
+				return
 					from task in mList
 					select task.Result;
 			}
