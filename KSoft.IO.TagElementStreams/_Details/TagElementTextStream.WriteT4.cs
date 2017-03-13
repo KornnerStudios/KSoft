@@ -13,7 +13,7 @@ namespace KSoft.IO
 		}
 		protected override void WriteElement(TCursor n, bool value)
 		{
-			WriteElement(n, value.ToString());
+			WriteElement(n, value ? "true" : "false");
 		}
 		protected override void WriteElement(TCursor n, float value)
 		{
@@ -69,7 +69,7 @@ namespace KSoft.IO
 		}
 		public override void WriteAttribute(string name, bool value)
 		{
-			CursorWriteAttribute(name, value.ToString());
+			CursorWriteAttribute(name, value ? "true" : "false");
 		}
 		public override void WriteAttribute(string name, float value)
 		{

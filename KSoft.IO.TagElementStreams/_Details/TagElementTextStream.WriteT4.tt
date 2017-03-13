@@ -19,6 +19,8 @@ namespace KSoft.IO
 			WriteElement(n, new string(value, 1));
 <# } else if(type.Code==TypeCode.Single || type.Code==TypeCode.Double) { #>
 			WriteElement(n, value.ToString("r"));
+<# } else if (type.Code==TypeCode.Boolean) { #>
+			WriteElement(n, value ? "true" : "false");
 <# } else { #>
 			WriteElement(n, value.ToString());
 <# } #>
@@ -43,6 +45,8 @@ namespace KSoft.IO
 			CursorWriteAttribute(name, new string(value, 1));
 <# } else if(type.Code==TypeCode.Single || type.Code==TypeCode.Double) { #>
 			CursorWriteAttribute(name, value.ToString("r"));
+<# } else if (type.Code==TypeCode.Boolean) { #>
+			CursorWriteAttribute(name, value ? "true" : "false");
 <# } else { #>
 			CursorWriteAttribute(name, value.ToString());
 <# } #>
