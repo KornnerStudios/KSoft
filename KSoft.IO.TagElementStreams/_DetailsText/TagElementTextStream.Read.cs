@@ -41,7 +41,7 @@ namespace KSoft.IO
 			{
 			case ParseErrorType.NoInput:
 				if (noThrow)
-					return true;
+					return false;
 
 				detailsException = new ArgumentException
 					("Input null or empty", "input");
