@@ -4,10 +4,11 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
-	internal struct TextStreamReadErrorState
+	internal sealed class TextStreamReadErrorState
 	{
 		readonly IKSoftStream mStream;
 		Text.ITextLineInfo mReadLineInfo;
+		public Func<Exception> GetLineInfoException { get; private set; }
 
 		public TextStreamReadErrorState(IKSoftStream textStream)
 		{
@@ -15,6 +16,7 @@ namespace KSoft.IO
 
 			mStream = textStream;
 			mReadLineInfo = null;
+			GetLineInfoException = GetLineInfoExceptionInternal;
 		}
 
 		/// <summary>Line info of the last read that took place</summary>
@@ -25,15 +27,20 @@ namespace KSoft.IO
 			set { mReadLineInfo = value; }
 		}
 
-		const string kReadLineInfoIsNullMsg = 
+		const string kReadLineInfoIsNullMsg =
 			"A Text stream reader implementation failed to set the LastReadLineInfo before a read took place. " +
 			"Guess what? Said read just failed";
 
-		public Exception GetLineInfoException()
+		private Exception GetLineInfoExceptionInternal()
 		{
 			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
 
 			return new Text.TextLineInfoException(mReadLineInfo, mStream.StreamName);
+		}
+
+		private Text.TextLineInfoException GetReadException(Exception detailsException)
+		{
+			return new Text.TextLineInfoException(detailsException, mReadLineInfo, mStream.StreamName);
 		}
 
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/> using <see cref="LastReadLineInfo"/></summary>
@@ -42,7 +49,16 @@ namespace KSoft.IO
 		{
 			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
 
-			throw new Text.TextLineInfoException(detailsException, mReadLineInfo, mStream.StreamName);
+			throw GetReadException(detailsException);
+		}
+
+		public void LogReadExceptionWarning(Exception detailsException)
+		{
+			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
+
+			Debug.Trace.IO.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+				"Failed to property parse tag value: {0}",
+				GetReadException(detailsException));
 		}
 	};
 }

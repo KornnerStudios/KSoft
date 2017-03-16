@@ -26,67 +26,87 @@ namespace KSoft.IO
 				? ParseErrorType.None
 				: ParseErrorType.InvalidValue;
 		}
+
 		/// <summary></summary>
 		/// <param name="type"></param>
 		/// <param name="noThrow">Does the caller want exceptions to be thrown on errors?</param>
 		/// <param name="input"></param>
-		/// <param name="getLineInfoException">Functor to get the inner exception (should be a <see cref="Text.TextLineInfoException"/>) of the exception that is thrown</param>
+		/// <param name="errorState"></param>
 		/// <returns>True if no error handling was needed. Else, an exception is throw (if allowed)</returns>
-		static bool ParseHandleError(ParseErrorType type, bool noThrow, string input,
-			Func<Exception> getLineInfoException)
+		static bool ParseHandleError(ParseErrorType type, bool noThrow, string input
+			, TextStreamReadErrorState errorState)
 		{
-			// If no exceptions are wanted, return whether parsing ran without error
-			if (noThrow)
-				return type == ParseErrorType.None;
-
+			Exception detailsException = null;
 			switch (type)
 			{
-			case ParseErrorType.NoInput: throw new ArgumentException
-				("Input null or empty", "input", getLineInfoException());
-			case ParseErrorType.InvalidValue: throw new ArgumentException(string.Format
-				("Couldn't parse \"{0}\"", input), "input", getLineInfoException());
+			case ParseErrorType.NoInput:
+				if (noThrow)
+					return true;
 
-			default: return true;
+				detailsException = new ArgumentException
+					("Input null or empty", "input");
+				break;
+
+			case ParseErrorType.InvalidValue:
+				detailsException = new ArgumentException(string.Format
+					("Couldn't parse \"{0}\"", input), "input");
+				break;
+
+			default:
+				return true;
 			}
+
+			if (noThrow == false)
+				errorState.ThrowReadExeception(detailsException);
+
+			errorState.LogReadExceptionWarning(detailsException);
+			return true;
 		}
 
-		public static bool ParseString(string input, ref char value, bool noThrow,
-			Func<Exception> getLineInfoException)
+		public static bool ParseString(string input, ref char value, bool noThrow
+			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				value = input[0];
 
-			return ParseHandleError(result, noThrow, input, getLineInfoException);
+			return ParseHandleError(result, noThrow, input, errorState);
 		}
-		public static bool ParseString(string input, ref bool value, bool noThrow,
-			Func<Exception> getLineInfoException)
+		public static bool ParseString(string input, ref bool value, bool noThrow
+			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				value = Text.Util.ParseBooleanLazy(input);
 
-			return ParseHandleError(result, noThrow, input, getLineInfoException);
+			return ParseHandleError(result, noThrow, input, errorState);
 		}
 
 		#region Real
-		public static bool ParseString(string input, ref float value, bool noThrow,
-			Func<Exception> getLineInfoException)
+		public static bool ParseString(string input, ref float value, bool noThrow
+			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
-				result = ParseVerifyResult(result, float.TryParse(input, out value));
+			{
+				// #HACK Fucking HaloWars data has floats with C-based 'f' suffix
+				char last_char = input[input.Length - 1];
+				if (last_char == 'f' || last_char == 'F')
+					input = input.Substring(0, input.Length - 1);
 
-			return ParseHandleError(result, noThrow, input, getLineInfoException);
+				result = ParseVerifyResult(result, float.TryParse(input, out value));
+			}
+
+			return ParseHandleError(result, noThrow, input, errorState);
 		}
-		public static bool ParseString(string input, ref double value, bool noThrow,
-			Func<Exception> getLineInfoException)
+		public static bool ParseString(string input, ref double value, bool noThrow
+			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 				result = ParseVerifyResult(result, double.TryParse(input, out value));
 
-			return ParseHandleError(result, noThrow, input, getLineInfoException);
+			return ParseHandleError(result, noThrow, input, errorState);
 		}
 		#endregion
 	};

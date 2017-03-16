@@ -14,22 +14,22 @@ namespace KSoft.IO
 		protected override void ReadElement(TCursor n, ref char value)
 		{
 			TagElementTextStreamUtils.ParseString(GetInnerText(n), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		protected override void ReadElement(TCursor n, ref bool value)
 		{
 			TagElementTextStreamUtils.ParseString(GetInnerText(n), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		protected override void ReadElement(TCursor n, ref float value)
 		{
 			TagElementTextStreamUtils.ParseString(GetInnerText(n), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		protected override void ReadElement(TCursor n, ref double value)
 		{
 			TagElementTextStreamUtils.ParseString(GetInnerText(n), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 
 		protected override void ReadElement(TCursor n, ref byte value, NumeralBase fromBase)
@@ -74,7 +74,6 @@ namespace KSoft.IO
 		}
 		#endregion
 
-
 		#region ReadAttribute
 		public override void ReadAttribute(string name, ref string value)
 		{
@@ -83,22 +82,22 @@ namespace KSoft.IO
 		public override void ReadAttribute(string name, ref char value)
 		{
 			TagElementTextStreamUtils.ParseString(ReadAttribute(name), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override void ReadAttribute(string name, ref bool value)
 		{
 			TagElementTextStreamUtils.ParseString(ReadAttribute(name), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override void ReadAttribute(string name, ref float value)
 		{
 			TagElementTextStreamUtils.ParseString(ReadAttribute(name), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override void ReadAttribute(string name, ref double value)
 		{
 			TagElementTextStreamUtils.ParseString(ReadAttribute(name), ref value, kThrowExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 
 		public override void ReadAttribute(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
@@ -143,7 +142,6 @@ namespace KSoft.IO
 		}
 		#endregion
 
-
 		#region ReadElementOpt
 		public override bool ReadElementOpt(string name, ref string value)
 		{
@@ -152,22 +150,22 @@ namespace KSoft.IO
 		public override bool ReadElementOpt(string name, ref char value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadElementOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadElementOpt(string name, ref bool value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadElementOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadElementOpt(string name, ref float value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadElementOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadElementOpt(string name, ref double value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadElementOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 
 		public override bool ReadElementOpt(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
@@ -212,7 +210,6 @@ namespace KSoft.IO
 		}
 		#endregion
 
-
 		#region ReadAttributeOpt
 		public override bool ReadAttributeOpt(string name, ref string value)
 		{
@@ -221,22 +218,22 @@ namespace KSoft.IO
 		public override bool ReadAttributeOpt(string name, ref char value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadAttributeOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadAttributeOpt(string name, ref bool value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadAttributeOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadAttributeOpt(string name, ref float value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadAttributeOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 		public override bool ReadAttributeOpt(string name, ref double value)
 		{
 			return TagElementTextStreamUtils.ParseString(ReadAttributeOpt(name), ref value, kNoExcept,
-				mReadErrorState.GetLineInfoException);
+				mReadErrorState);
 		}
 
 		public override bool ReadAttributeOpt(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
