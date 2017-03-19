@@ -166,7 +166,7 @@ namespace KSoft.IO
 		/// When reading, implicitly checks if <see cref="ElementsExists"/> with <paramref name="elementName"/> for entering a bookmark.
 		/// When writing, works entirely on <see cref="writeShouldEnterBookmark"/> for entering a bookmark.
 		/// </remarks>
-		public /*IDisposable*/TagElementStreamBookmark<TDoc, TCursor, TName> EnterCursorBookmarkOpt<T>(TName elementName, 
+		public /*IDisposable*/TagElementStreamBookmark<TDoc, TCursor, TName> EnterCursorBookmarkOpt<T>(TName elementName,
 			T obj, Predicate<T> writeShouldEnterBookmark)
 		{
 			if ((IsReading && ElementsExists(elementName)) ||
@@ -228,6 +228,8 @@ namespace KSoft.IO
 		public abstract IEnumerable<TCursor> Elements { get; }
 
 		public abstract IEnumerable<TCursor> ElementsByName(TName localName);
+
+		public abstract TName GetElementName(TCursor element);
 
 		protected abstract int PredictElementCount(TCursor cursor);
 		#endregion

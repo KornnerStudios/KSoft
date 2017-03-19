@@ -91,6 +91,14 @@ namespace KSoft.IO
 #endif
 		}
 
+		public override string GetElementName(XmlElement element)
+		{
+			if (element == null)
+				return null;
+
+			return element.Name;
+		}
+
 		/// <see cref="XmlElement.ChildNodes.Count"/>
 		protected override int PredictElementCount(XmlElement cursor)
 		{
