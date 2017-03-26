@@ -34,43 +34,35 @@ namespace KSoft.IO
 
 		protected override void ReadElement(TCursor n, ref byte value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref sbyte value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref ushort value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref short value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref uint value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref int value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref ulong value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		protected override void ReadElement(TCursor n, ref long value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		#endregion
 
@@ -102,43 +94,35 @@ namespace KSoft.IO
 
 		public override void ReadAttribute(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref sbyte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref ushort value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref short value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref uint value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref int value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref ulong value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		public override void ReadAttribute(string name, ref long value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 		#endregion
 
@@ -170,43 +154,35 @@ namespace KSoft.IO
 
 		public override bool ReadElementOpt(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref sbyte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref ushort value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref short value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref uint value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref int value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref ulong value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadElementOpt(string name, ref long value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		#endregion
 
@@ -238,43 +214,35 @@ namespace KSoft.IO
 
 		public override bool ReadAttributeOpt(string name, ref byte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref sbyte value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref ushort value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref short value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref uint value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref int value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref ulong value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		public override bool ReadAttributeOpt(string name, ref long value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 		#endregion
 	};

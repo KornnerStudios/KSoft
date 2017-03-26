@@ -18,7 +18,7 @@ namespace KSoft.Text
 		/// <returns></returns>
 		public static bool ParseBooleanLazy(string str)
 		{
-			if (str == "1" || 
+			if (str == "1" ||
 				string.Compare(str, "true", true)==0 ||
 				string.Compare(str, "on", true)==0 )
 				return true;
@@ -37,7 +37,7 @@ namespace KSoft.Text
 		}
 		/// <summary>
 		/// Takes an enum value (whose type is assumed to be attributed with
-		/// <see cref="FlagsAttribute"/>) and return its string representation 
+		/// <see cref="FlagsAttribute"/>) and return its string representation
 		/// using commas to separate each flag name that is set
 		/// </summary>
 		/// <param name="value">Enum value to convert to a string</param>
@@ -56,5 +56,13 @@ namespace KSoft.Text
 			return value.ToString("X", null);
 		}
 		#endregion
+
+		static DefaultTextParseErrorHandler gDefaultTextParseErrorHandler;
+		public static IHandleTextParseError DefaultTextParseErrorHandler { get {
+			if (gDefaultTextParseErrorHandler == null)
+				gDefaultTextParseErrorHandler = new DefaultTextParseErrorHandler();
+
+			return gDefaultTextParseErrorHandler;
+		} }
 	};
 }

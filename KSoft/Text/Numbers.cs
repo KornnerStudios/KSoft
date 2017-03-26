@@ -30,23 +30,43 @@ namespace KSoft
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 		[Contracts.Pure]
-		static bool HandleParseError(ParseErrorType errorType, string s, int startIndex,
-			Func<Exception> getInnerException)
+		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string s, int startIndex
+			, Text.IHandleTextParseError handler = null)
 		{
-			if (getInnerException == null)
-				getInnerException = Util.GetNullException;
+			Exception detailsException = null;
 
 			switch (errorType)
 			{
-			case ParseErrorType.NoInput: throw new ArgumentException
-				("Input null or empty", "s", getInnerException());
-			case ParseErrorType.InvalidValue: throw new ArgumentException(string.Format
-				("Couldn't parse '{0}'", s), "s", getInnerException());
-			case ParseErrorType.InvalidStartIndex: throw new ArgumentOutOfRangeException(string.Format
-				("'{0}' is out of range of the input length of '{1}'", startIndex, s.Length), getInnerException());
+			case ParseErrorType.NoInput:
+				if (noThrow)
+					return false;
 
-			default: return true;
+				detailsException = new ArgumentException
+					("Input null or empty", "s");
+				break;
+
+			case ParseErrorType.InvalidValue:
+				detailsException = new ArgumentException(string.Format
+					("Couldn't parse '{0}'", s), "s");
+				break;
+
+			case ParseErrorType.InvalidStartIndex:
+				detailsException = new ArgumentOutOfRangeException(string.Format
+					("'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
+				break;
+
+			default:
+				return true;
 			}
+
+			if (handler == null)
+				handler = Text.Util.DefaultTextParseErrorHandler;
+
+			if (noThrow == false)
+				handler.ThrowReadExeception(detailsException);
+
+			handler.LogReadExceptionWarning(detailsException);
+			return true;
 		}
 
 		[Contracts.Pure]
@@ -65,7 +85,7 @@ namespace KSoft
 		{
 			public const char kDefaultSeparator = ',';
 			public const char kDefaultTerminator = ';';
-			public static StringListDesc Default { get { 
+			public static StringListDesc Default { get {
 				return new StringListDesc(kDefaultSeparator);
 			} }
 
@@ -115,7 +135,7 @@ namespace KSoft
 		// TODO: IsWhiteSpace can be rather expensive, and it is used in TryParseImpl. Perhaps we can make a variant
 		// that can safely assume all characters are non-ws, and have TryParseList impls call it instead?
 		// The TryParse() below would need to be updated to catch trailing ws
-		
+
 		// TODO: add an option to just flat out skip unsuccessful items?
 
 		abstract class TryParseNumberListBase<T, TListItem>
@@ -179,7 +199,7 @@ namespace KSoft
 
 					start = end + 1;
 				}
-				
+
 				// TODO: should we add support for throwing an exception or such when a terminator isn't encountered?
 
 				return mList.Count == 0

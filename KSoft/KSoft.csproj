@@ -246,6 +246,7 @@
     <Compile Include="Shell\Enums.cs" />
     <Compile Include="Shell\Platform.cs" />
     <Compile Include="Shell\Processor.cs" />
+    <Compile Include="Text\IHandleTextParseError.cs" />
     <Compile Include="Text\Numbers.cs" />
     <Compile Include="Text\RadixEncoding.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.cs" />

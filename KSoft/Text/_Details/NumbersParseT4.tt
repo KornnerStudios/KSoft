@@ -172,8 +172,8 @@ namespace KSoft
 	var prim_keyword = num_type.Keyword;
 #>
 		#region ParseString <#= num_type.Code #>
-		static bool ParseStringImpl(string s, ref <#= prim_keyword #> value, bool noThrow, int radix, int startIndex,
-			Func<Exception> getInnerException)
+		static bool ParseStringImpl(string s, ref <#= prim_keyword #> value, bool noThrow, int radix, int startIndex
+			, Text.IHandleTextParseError parseErrorHandler)
 		{
 			var result = string.IsNullOrEmpty(s)
 				? ParseErrorType.NoInput
@@ -187,17 +187,14 @@ namespace KSoft
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
 
-			if (noThrow)
-				return result == ParseErrorType.None;
-
-			return HandleParseError(result, s, startIndex, getInnerException);
+			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
-		public static bool ParseString(string s, ref <#= prim_keyword #> result, bool noThrow, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0,
-			Func<Exception> getInnerException = null)
+		public static bool ParseString(string s, ref <#= prim_keyword #> result, bool noThrow
+			, Text.IHandleTextParseError parseErrorHandler = null, NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)
 		{
 			Contract.Requires(IsValidLookupTable(radix, kBase64Digits));
 
-			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, getInnerException);
+			return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, parseErrorHandler);
 		}
 		#endregion
 <# } #>

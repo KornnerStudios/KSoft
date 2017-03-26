@@ -26,8 +26,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		protected override void ReadElement(TCursor n, ref <#= type.Keyword #> value, NumeralBase fromBase)
 		{
-			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(GetInnerText(n), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 <# } #>
 		#endregion
@@ -48,8 +47,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		public override void ReadAttribute(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
-			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			Numbers.ParseString(ReadAttribute(name), ref value, kThrowExcept, mReadErrorState, fromBase);
 		}
 <# } #>
 		#endregion
@@ -70,8 +68,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		public override bool ReadElementOpt(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadElementOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 <# } #>
 		#endregion
@@ -92,8 +89,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		public override bool ReadAttributeOpt(string name, ref <#= type.Keyword #> value, NumeralBase fromBase=kDefaultRadix)
 		{
-			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, fromBase,
-				getInnerException: mReadErrorState.GetLineInfoException);
+			return Numbers.ParseString(ReadAttributeOpt(name), ref value, kNoExcept, mReadErrorState, fromBase);
 		}
 <# } #>
 		#endregion

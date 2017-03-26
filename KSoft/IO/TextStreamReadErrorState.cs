@@ -5,6 +5,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 namespace KSoft.IO
 {
 	internal sealed class TextStreamReadErrorState
+		: Text.IHandleTextParseError
 	{
 		readonly IKSoftStream mStream;
 		Text.ITextLineInfo mReadLineInfo;
@@ -57,7 +58,7 @@ namespace KSoft.IO
 			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
 
 			Debug.Trace.IO.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
-				"Failed to property parse tag value: {0}",
+				"Failed to parse tag value: {0}",
 				GetReadException(detailsException));
 		}
 	};
