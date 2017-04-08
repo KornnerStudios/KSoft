@@ -234,6 +234,7 @@
     <Compile Include="Memory\Strings\StringStorageMarkupAttribute.cs" />
     <Compile Include="Memory\VirtualAddressTranslationStack.cs" />
     <Compile Include="NumbersRadix.cs" />
+    <Compile Include="ObjectModel\BasicViewModel.cs" />
     <Compile Include="ObjectModel\PropertyChangedEventArgsCollection.cs" />
     <Compile Include="ObjectModel\Utilities.cs" />
     <Compile Include="Program.cs" />

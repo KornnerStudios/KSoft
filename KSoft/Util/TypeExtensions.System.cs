@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
@@ -617,14 +618,14 @@ namespace KSoft
 		#endregion
 
 		#region Event handlers
-		public static void SafeNotify(this System.ComponentModel.PropertyChangedEventHandler handler,
-			object sender, System.ComponentModel.PropertyChangedEventArgs args)
+		public static void SafeNotify(this PropertyChangedEventHandler handler,
+			object sender, PropertyChangedEventArgs args)
 		{
 			if (handler != null)
 				handler(sender, args);
 		}
-		public static void SafeNotify(this System.ComponentModel.PropertyChangedEventHandler handler,
-			object sender, System.ComponentModel.PropertyChangedEventArgs[] argsList, int startIndex = 0)
+		public static void SafeNotify(this PropertyChangedEventHandler handler,
+			object sender, PropertyChangedEventArgs[] argsList, int startIndex = 0)
 		{
 			Contract.Requires(argsList != null);
 			Contract.Requires(startIndex >= 0 && startIndex < argsList.Length);
@@ -744,5 +745,95 @@ namespace KSoft
 			return src.OrderByDescending(keySelector, comparer);
 		}
 		#endregion
+
+		public static bool SetFieldVal<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+			, ref T field, T value
+			, bool overrideChecks = false
+			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+			where T : struct, IEquatable<T>
+		{
+			if (obj == null)
+				return false;
+
+			if (!overrideChecks)
+				if (field.Equals(value))
+					return false;
+
+			field = value;
+
+			if (handler != null)
+				handler(obj, new PropertyChangedEventArgs(propertyName));
+
+			return true;
+		}
+
+		public static bool SetFieldEnum<TEnum>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+			, ref TEnum field, TEnum value
+			, bool overrideChecks = false
+			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (obj == null)
+				return false;
+
+			if (!overrideChecks)
+				if (field.ToInt64(null) == value.ToInt64(null))
+					return false;
+
+			field = value;
+
+			if (handler != null)
+				handler(obj, new PropertyChangedEventArgs(propertyName));
+
+			return true;
+		}
+
+		public static bool SetFieldObj<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+			, ref T field, T value
+			, bool overrideChecks = false
+			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+			where T : class, IEquatable<T>
+		{
+			if (obj == null)
+				return false;
+
+			if (!overrideChecks)
+			{
+				if (field == null)
+				{
+					if (value == null)
+						return false;
+				}
+				else if (field.Equals(value))
+					return false;
+			}
+
+			field = value;
+
+			if (handler != null)
+				handler(obj, new PropertyChangedEventArgs(propertyName));
+
+			return true;
+		}
+
+		public static bool SetField<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+			, ref T field, T value
+			, bool overrideChecks = false
+			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+		{
+			if (obj == null)
+				return false;
+
+			if (!overrideChecks)
+				if (EqualityComparer<T>.Default.Equals(field, value))
+					return false;
+
+			field = value;
+
+			if (handler != null)
+				handler(obj, new PropertyChangedEventArgs(propertyName));
+
+			return true;
+		}
 	};
 }

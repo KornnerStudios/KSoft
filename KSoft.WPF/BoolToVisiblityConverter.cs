@@ -4,6 +4,7 @@ using System.Windows.Data;
 
 namespace KSoft.WPF
 {
+	[ValueConversion(typeof(bool), typeof(Visibility))]
 	public sealed class BoolToVisiblityConverter : IValueConverter
 	{
 		private static BoolToVisiblityConverter gVisibleOrHidden;
@@ -48,8 +49,8 @@ namespace KSoft.WPF
 			return gVisibleOrCollapsedInverted;
 		} }
 
-		public bool Collapse { get; set; }
-		public bool VisibleFlag { get; set; }
+		public bool Collapse { get; private set; }
+		public bool VisibleFlag { get; private set; }
 
 		private BoolToVisiblityConverter()
 		{

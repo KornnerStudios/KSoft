@@ -20,6 +20,8 @@ namespace KSoft
 			return 1 + wordBitSize;
 		}
 
+		// https://en.wikipedia.org/wiki/De_Bruijn_sequence
+
 		#region MultiplyDeBruijnBitPosition
 		static readonly byte[]	kMultiplyDeBruijnBitPositionHighestBitSet32,
 								kMultiplyDeBruijnBitPositionLeadingZeros32,
