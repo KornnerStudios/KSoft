@@ -122,6 +122,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IReadOnlyBitSet.EnumeratorsT4.tt</DependentUpon>
     </Compile>
+    <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />

@@ -32,5 +32,7 @@ namespace KSoft
 		public static void Dispose()
 		{
 		}
+
+		public static Type DebugTraceClass { get { return typeof(Debug.Trace); } }
 	};
 }
