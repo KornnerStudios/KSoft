@@ -142,14 +142,13 @@ namespace KSoft.Values
 		public Guid ToGuid() { return mData; }
 
 		public long MostSignificantBits { get {
-			long result = SysGuid.GetData1(mData);
+			ulong result = (uint)SysGuid.GetData1(mData);
 			result <<= Bits.kInt32BitCount;
 
+			result |= (ushort)SysGuid.GetData2(mData);
 			result <<= Bits.kInt16BitCount;
-			result |= (uint)SysGuid.GetData2(mData);
 
-			result <<= Bits.kInt16BitCount;
-			result |= (uint)SysGuid.GetData3(mData);
+			result |= (ushort)SysGuid.GetData3(mData);
 
 			return (long)result;
 		} }
