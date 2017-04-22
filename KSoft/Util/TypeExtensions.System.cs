@@ -335,6 +335,13 @@ namespace KSoft
 
 		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
+		public static bool IsNotNullOrEmpty<T>(this ICollection<T> coll)
+		{
+			return coll != null && coll.Count != 0;
+		}
+
+		[Contracts.Pure]
+		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> seq)
 		{
 			return seq ?? Enumerable.Empty<T>();

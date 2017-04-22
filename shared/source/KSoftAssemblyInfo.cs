@@ -8,9 +8,9 @@ using System.Runtime.CompilerServices;
 	"Release"
 #endif
 )]
-[assembly: AssemblyCompany("Kornner Studios ©  2005 - 2014")]
+[assembly: AssemblyCompany("KornnerStudios")]
 
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

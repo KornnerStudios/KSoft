@@ -1,19 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace KSoft.WPF.Controls
 {
@@ -29,7 +17,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitItemsProperty, value); }
 		}
 		public static readonly DependencyProperty BitItemsProperty = DependencyProperty.Register(
-			"BitItems", typeof(ObservableCollection<BitItemModel>), typeof(BitVectorControl),
+			nameof(BitItems), typeof(ObservableCollection<BitItemModel>), typeof(BitVectorControl),
 			new PropertyMetadata(new ObservableCollection<BitItemModel>()));
 		#endregion
 
@@ -40,7 +28,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitsEnumTypeProperty, value); }
 		}
 		public static readonly DependencyProperty BitsEnumTypeProperty = DependencyProperty.Register(
-			"BitsEnumType", typeof(Type), typeof(BitVectorControl),
+			nameof(BitsEnumType), typeof(Type), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -52,7 +40,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(FlagsEnumTypeProperty, value); }
 		}
 		public static readonly DependencyProperty FlagsEnumTypeProperty = DependencyProperty.Register(
-			"FlagsEnumType", typeof(Type), typeof(BitVectorControl),
+			nameof(FlagsEnumType), typeof(Type), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -64,7 +52,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
 		}
 		public static readonly DependencyProperty BitsUserInterfaceSourceProperty = DependencyProperty.Register(
-			"BitsUserInterfaceSource", typeof(IBitVectorUserInterfaceData), typeof(BitVectorControl),
+			nameof(BitsUserInterfaceSource), typeof(IBitVectorUserInterfaceData), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitsUserInterfaceSourcePropertyChanged)));
 		#endregion
 
@@ -75,7 +63,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitVectorProperty, value); }
 		}
 		public static readonly DependencyProperty BitVectorProperty = DependencyProperty.Register(
-			"BitVector", typeof(object), typeof(BitVectorControl),
+			nameof(BitVector), typeof(object), typeof(BitVectorControl),
 			new FrameworkPropertyMetadata(new Collections.BitVector32(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnVectorPropertyChanged),
 			IsValidBitVectorValue);
 
@@ -275,7 +263,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(BitIndexProperty, value); }
 			}
 			public static readonly DependencyProperty BitIndexProperty = DependencyProperty.Register(
-				"BitIndex", typeof(int), typeof(BitItemModel),
+				nameof(BitIndex), typeof(int), typeof(BitItemModel),
 				new PropertyMetadata(defaultValue: TypeExtensions.kNone));
 
 			public bool IsValid
@@ -284,7 +272,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(IsVisibleProperty, value); }
 			}
 			public static readonly DependencyProperty IsValidProperty = DependencyProperty.Register(
-				"IsValid", typeof(bool), typeof(BitItemModel));
+				nameof(IsValid), typeof(bool), typeof(BitItemModel));
 
 			public string DisplayName
 			{
@@ -292,7 +280,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(DisplayNameProperty, value); }
 			}
 			public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register(
-				"DisplayName", typeof(string), typeof(BitItemModel));
+				nameof(DisplayName), typeof(string), typeof(BitItemModel));
 
 			public string ToolTip
 			{
@@ -300,7 +288,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(ToolTipProperty, value); }
 			}
 			public static readonly DependencyProperty ToolTipProperty = DependencyProperty.Register(
-				"ToolTip", typeof(string), typeof(BitItemModel));
+				nameof(ToolTip), typeof(string), typeof(BitItemModel));
 
 			public bool IsVisible
 			{
@@ -308,7 +296,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(IsVisibleProperty, value); }
 			}
 			public static readonly DependencyProperty IsVisibleProperty = DependencyProperty.Register(
-				"IsVisible", typeof(bool), typeof(BitItemModel),
+				nameof(IsVisible), typeof(bool), typeof(BitItemModel),
 				new PropertyMetadata(defaultValue: Util.TrueObject));
 
 			public bool IsSet
@@ -317,7 +305,7 @@ namespace KSoft.WPF.Controls
 				set { SetValue(IsSetProperty, value); }
 			}
 			public static readonly DependencyProperty IsSetProperty = DependencyProperty.Register(
-				"IsSet", typeof(bool), typeof(BitItemModel),
+				nameof(IsSet), typeof(bool), typeof(BitItemModel),
 				new FrameworkPropertyMetadata(Util.FalseObject, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 		};
 	};

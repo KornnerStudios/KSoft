@@ -10,14 +10,34 @@ namespace KSoft.IO
 		#region ReadElement impl
 		protected override string GetInnerText(XmlElement n)
 		{
-			//return n.InnerText;
-
-			var text_node = n.LastChild;
+			var text_node = GetInnerTextNode(n);
 			if (text_node != null)
 			{
 				ReadErrorNode = text_node; // TODO: which is more informative, using the element (n) or text_node?
 				// TextNode's actual text
 				return text_node.Value;
+			}
+
+			return null;
+		}
+
+		private XmlNode GetInnerTextNode(XmlElement n)
+		{
+			if (!n.HasChildNodes)
+				return null;
+
+			var text_node = n.LastChild;
+			if (text_node.NodeType == XmlNodeType.Text)
+				return text_node;
+
+			text_node = n.FirstChild;
+			if (text_node.NodeType == XmlNodeType.Text)
+				return text_node;
+
+			foreach (XmlNode node in n.ChildNodes)
+			{
+				if (node.NodeType == XmlNodeType.Text)
+					return node;
 			}
 
 			return null;

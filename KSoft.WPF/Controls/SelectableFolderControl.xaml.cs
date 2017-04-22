@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WinForms = System.Windows.Forms;
 
 namespace KSoft.WPF.Controls
@@ -28,7 +17,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(TextProperty, value); }
 		}
 		public static DependencyProperty TextProperty = DependencyProperty.Register(
-			"Text",
+			nameof(Text),
 			typeof(string), typeof(SelectableFolderControl),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 		#endregion
@@ -40,7 +29,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(DescriptionProperty, value); }
 		}
 		public static DependencyProperty DescriptionProperty = DependencyProperty.Register(
-			"Description",
+			nameof(Description),
 			typeof(string), typeof(SelectableFolderControl));
 		#endregion
 

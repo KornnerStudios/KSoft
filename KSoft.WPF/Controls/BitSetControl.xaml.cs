@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace KSoft.WPF.Controls
 {
@@ -30,7 +19,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitItemsProperty, value); }
 		}
 		public static readonly DependencyProperty BitItemsProperty = DependencyProperty.Register(
-			"BitItems", typeof(ObservableCollection<BitItemModel>), typeof(BitSetControl),
+			nameof(BitItems), typeof(ObservableCollection<BitItemModel>), typeof(BitSetControl),
 			new PropertyMetadata(new ObservableCollection<BitItemModel>()));
 		#endregion
 
@@ -41,7 +30,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitsEnumTypeProperty, value); }
 		}
 		public static readonly DependencyProperty BitsEnumTypeProperty = DependencyProperty.Register(
-			"BitsEnumType", typeof(Type), typeof(BitSetControl),
+			nameof(BitsEnumType), typeof(Type), typeof(BitSetControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -53,7 +42,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
 		}
 		public static readonly DependencyProperty BitsUserInterfaceSourceProperty = DependencyProperty.Register(
-			"BitsUserInterfaceSource", typeof(IBitVectorUserInterfaceData), typeof(BitSetControl),
+			nameof(BitsUserInterfaceSource), typeof(IBitVectorUserInterfaceData), typeof(BitSetControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitsUserInterfaceSourcePropertyChanged)));
 		#endregion
 
@@ -64,7 +53,7 @@ namespace KSoft.WPF.Controls
 			set { SetValue(BitVectorProperty, value); }
 		}
 		public static readonly DependencyProperty BitVectorProperty = DependencyProperty.Register(
-			"BitVector", typeof(Collections.BitSet), typeof(BitSetControl),
+			nameof(BitVector), typeof(Collections.BitSet), typeof(BitSetControl),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnVectorPropertyChanged));
 		#endregion
 
