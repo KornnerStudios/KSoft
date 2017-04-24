@@ -22,6 +22,15 @@ namespace KSoft.Collections
 		public StateFilterEnumeratorWrapper ClearBitIndices { get {
 			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, false));
 		} }
+		/// <summary>Enumeration of bit indexes in this BitSet which are 0 (clear)</summary>
+		/// <param name="startBitIndex">Bit index to start at</param>
+		public StateFilterEnumeratorWrapper ClearBitIndicesStartingAt(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+
+			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, false, startBitIndex));
+		}
 
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
@@ -35,6 +44,15 @@ namespace KSoft.Collections
 		public StateFilterEnumeratorWrapper SetBitIndices { get {
 			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, true));
 		} }
+		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
+		/// <param name="startBitIndex">Bit index to start at</param>
+		public StateFilterEnumeratorWrapper SetBitIndicesStartingAt(int startBitIndex)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+
+			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, true, startBitIndex));
+		}
 
 
 		public void ClearBits(int startBitIndex, int bitCount)
@@ -44,7 +62,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
 
@@ -88,7 +106,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
 
@@ -133,7 +151,7 @@ namespace KSoft.Collections
 
 			if (bitCount <= 0)
 				return ;
-			
+
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
 
@@ -176,7 +194,7 @@ namespace KSoft.Collections
 		{
 			if (bitCount <= 0)
 				return false;
-			
+
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
 

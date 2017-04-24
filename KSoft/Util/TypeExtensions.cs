@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -68,14 +67,6 @@ namespace KSoft
 			Contract.Requires/*<ArgumentNullException>*/(func != null);
 
 			return obj != null ? func(obj) : elseValue;
-		}
-
-		[Contracts.Pure]
-		[System.Diagnostics.DebuggerStepThrough]
-		public static T To<T>(this T obj)
-			where T : class
-		{
-			return (T)obj;
 		}
 		#endregion
 

@@ -523,7 +523,7 @@ namespace KSoft.Collections
 			for (	word = (stateFilter == false ? ~word : word) & bitmask;
 					result_bit_index.IsNone();
 					word =  stateFilter == false ? ~mArray[index] : mArray[index])
- 			{
+			{
 				// word will be 0 if it contains bits that are NOT stateFilter, thus we want to ignore such elements.
 				// count the number of zeros (representing bits in the undesired state) leading up to the bit with
 				// the desired state, then add the the index in which it appears at within the overall BitSet
@@ -533,7 +533,7 @@ namespace KSoft.Collections
 				// I perform the increment and loop condition here to keep the for() statement simple
 				if (++index == mArray.Length)
 					break;
- 			}
+			}
 
 			// If we didn't find a next bit, result will be -1 and thus less than Length, which is desired behavior
 			// else, the result is a valid index of the next bit with the desired state

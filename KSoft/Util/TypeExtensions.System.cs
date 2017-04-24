@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -753,6 +755,7 @@ namespace KSoft
 		}
 		#endregion
 
+		#region ObjectModel
 		public static bool SetFieldVal<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
 			, ref T field, T value
 			, bool overrideChecks = false
@@ -842,5 +845,126 @@ namespace KSoft
 
 			return true;
 		}
+
+		private sealed class ObservableCollectionHacks<T>
+		{
+			private delegate void OnPropertyChangedDelegate(PropertyChangedEventArgs e);
+			public delegate void OnPropertyChangedDelegateWithThis(ObservableCollection<T> @this, PropertyChangedEventArgs e);
+
+			private delegate void OnCollectionChangedDelegate(NotifyCollectionChangedEventArgs e);
+			public delegate void OnCollectionChangedWithThis(ObservableCollection<T> @this, NotifyCollectionChangedEventArgs e);
+
+			private static Func<ObservableCollection<T>, IList<T>> gGetItems;
+			public static Func<ObservableCollection<T>, IList<T>> GetItems { get {
+				if (gGetItems == null)
+					gGetItems = Reflection.Util.GenerateMemberGetter<ObservableCollection<T>, IList<T>>("Items");
+
+				return gGetItems;
+			} }
+
+			private static OnPropertyChangedDelegateWithThis gOnPropertyChangedFunc;
+			public static OnPropertyChangedDelegateWithThis OnPropertyChangedFunc { get {
+				if (gOnPropertyChangedFunc == null)
+					gOnPropertyChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnPropertyChangedDelegateWithThis, OnPropertyChangedDelegate>
+						("OnPropertyChanged");
+
+				return gOnPropertyChangedFunc;
+			} }
+
+			private static OnCollectionChangedWithThis gOnCollectionChangedFunc;
+			public static OnCollectionChangedWithThis OnCollectionChangedFunc { get {
+				if (gOnCollectionChangedFunc == null)
+					gOnCollectionChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnCollectionChangedWithThis, OnCollectionChangedDelegate>
+						("OnCollectionChanged");
+
+				return gOnCollectionChangedFunc;
+			} }
+		}
+
+		[Contracts.Pure]
+		public static bool ItemsIsGenericList<T>(this ObservableCollection<T> list)
+		{
+			if (list == null)
+				return false;
+
+			var items = ObservableCollectionHacks<T>.GetItems(list);
+
+			return items is List<T>;
+		}
+
+		public static void TriggerAllItemsChanged<T>(this ObservableCollection<T> list)
+		{
+			var on_prop_changed = ObservableCollectionHacks<T>.OnPropertyChangedFunc;
+			var on_coll_changed = ObservableCollectionHacks<T>.OnCollectionChangedFunc;
+			on_prop_changed(list, new PropertyChangedEventArgs(ObjectModel.Util.kIndexerPropertyName));
+			on_coll_changed(list, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1));
+		}
+
+		public static void AddRange<T>(this ObservableCollection<T> list, IEnumerable<T> collection)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(collection != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			items.AddRange(collection);
+			list.TriggerAllItemsChanged();
+		}
+
+		public static int BinarySearch<T>(this ObservableCollection<T> list, T value, IComparer<T> comparer)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			return items.BinarySearch(value, comparer);
+		}
+
+		public static void Sort<T>(this ObservableCollection<T> list)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			items.Sort();
+			list.TriggerAllItemsChanged();
+		}
+
+		public static void Sort<T>(this ObservableCollection<T> list, IComparer<T> comparer)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			items.Sort(comparer);
+			list.TriggerAllItemsChanged();
+		}
+
+		public static void Sort<T>(this ObservableCollection<T> list, Comparison<T> comparison)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			items.Sort(comparison);
+			list.TriggerAllItemsChanged();
+		}
+
+		public static void Reverse<T>(this ObservableCollection<T> list)
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(list.ItemsIsGenericList());
+
+			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+
+			items.Reverse();
+			list.TriggerAllItemsChanged();
+		}
+		#endregion
 	};
 }

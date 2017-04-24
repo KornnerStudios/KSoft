@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 using Exprs = System.Linq.Expressions;
@@ -16,7 +14,7 @@ namespace KSoft.Reflection
 
 		#region Generate Field Accessor Utils
 		// ALT: http://forums.asp.net/post/5109977.aspx
-		
+
 		// NOTE: for properties, it's possible they're write only. I'm not going to validate that extreme edge case.
 		// If you're trying to wrap such a property then you don't deserve to be using these APIs :P
 
@@ -138,7 +136,7 @@ namespace KSoft.Reflection
 
 			var prop_info = (Reflect.PropertyInfo)member;
 			if (!prop_info.CanWrite)
-				throw new MemberAccessException("Tried to generate setter for get-only property " + 
+				throw new MemberAccessException("Tried to generate setter for get-only property " +
 					member.Name + " in " + member.ReflectedType);
 		}
 		static void ValidateMemberForGenerateSetter(Reflect.MemberInfo member)
@@ -343,10 +341,10 @@ namespace KSoft.Reflection
 
 		static string PropertyNameFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
-				 if (expr.Body is Exprs.MemberExpression)
-															return PropertyNameFromMemberExpr(expr.Body as Exprs.MemberExpression);
+			if (expr.Body is Exprs.MemberExpression)
+				return PropertyNameFromMemberExpr(expr.Body as Exprs.MemberExpression);
 			else if (expr.Body is Exprs.UnaryExpression)
-															return PropertyNameFromUnaryExpr(expr.Body as Exprs.UnaryExpression);
+				return PropertyNameFromUnaryExpr(expr.Body as Exprs.UnaryExpression);
 
 			throw new NotSupportedException();
 		}
@@ -386,10 +384,10 @@ namespace KSoft.Reflection
 		}
 		static Reflect.MemberInfo MemberFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
-				 if (expr.Body is Exprs.MemberExpression)
-															return MemberFromExprMemberExpr(expr.Body as Exprs.MemberExpression);
+			if (expr.Body is Exprs.MemberExpression)
+				return MemberFromExprMemberExpr(expr.Body as Exprs.MemberExpression);
 			else if (expr.Body is Exprs.UnaryExpression)
-															return MemberFromExprUnaryExpr(expr.Body as Exprs.UnaryExpression);
+				return MemberFromExprUnaryExpr(expr.Body as Exprs.UnaryExpression);
 
 			throw new NotSupportedException(expr.ToString());
 		}

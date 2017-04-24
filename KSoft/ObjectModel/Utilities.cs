@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 using Exprs = System.Linq.Expressions;
-using Expr = System.Linq.Expressions.Expression;
-using Reflect = System.Reflection;
 
 namespace KSoft.ObjectModel
 {
 	public static class Util
 	{
 		// based on System.Windows.Data.Binding.IndexerName in PresentationFramework.dll
-		const string kIndexerPropertyName = "Item[]";
+		public const string kIndexerPropertyName = "Item[]";
 		public static readonly PropertyChangedEventArgs kIndexerPropertyChanged =
 			new PropertyChangedEventArgs(kIndexerPropertyName);
 

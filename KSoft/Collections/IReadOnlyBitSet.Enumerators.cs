@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -22,7 +21,7 @@ namespace KSoft.Collections
 					mCurrent = mSet.Get(++mBitIndex);
 					return true;
 				}
-				
+
 				mBitIndex = mSet.Length;
 				return false;
 			}
@@ -35,7 +34,7 @@ namespace KSoft.Collections
 			{
 				Contract.Requires<ArgumentNullException>(bitset != null);
 				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < bitset.Length);
+				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < bitset.Length || bitset.Length == 0);
 
 				mStateFilter = stateFilter;
 				mStartBitIndex = startBitIndex-1;
@@ -56,7 +55,7 @@ namespace KSoft.Collections
 						return true;
 					}
 				}
-				
+
 				mBitIndex = mSet.Length;
 				return false;
 			}
