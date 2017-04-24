@@ -45,6 +45,7 @@
     <Compile Include="Controls\SelectableFolderControl.xaml.cs">
       <DependentUpon>SelectableFolderControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BooleanToTrueOrFalseStringConverter.cs" />
     <Compile Include="IBitVectorUserInterfaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

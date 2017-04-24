@@ -28,6 +28,196 @@ namespace KSoft
 			}
 		}
 
+		#region Exception
+		public static Exception GetOnlyExceptionOrAll(this AggregateException e)
+		{
+			if (e == null)
+				return null;
+
+			e = e.ReallyFlatten();
+
+			if (e.InnerExceptions.Count == 1)
+			{
+				var inner = e.InnerExceptions[0];
+				return inner;
+			}
+
+			return e;
+		}
+
+		// based on MS reference source for Flatten(). Handles the case when a non-AggregateException
+		// has an InnerException which IS an AggregateException
+		public static AggregateException ReallyFlatten(this AggregateException e)
+		{
+			// Initialize a collection to contain the flattened exceptions.
+			var flattenedExceptions = new List<Exception>();
+
+			// Create a list to remember all aggregates to be flattened, this will be accessed like a FIFO queue
+			var exceptionsToFlatten = new List<AggregateException>();
+			exceptionsToFlatten.Add(e);
+			int nDequeueIndex = 0;
+
+			// Continue removing and recursively flattening exceptions, until there are no more.
+			while (exceptionsToFlatten.Count > nDequeueIndex)
+			{
+				// dequeue one from exceptionsToFlatten
+				var currentInnerExceptions = exceptionsToFlatten[nDequeueIndex++].InnerExceptions;
+
+				for (int i = 0; i < currentInnerExceptions.Count; i++)
+				{
+					Exception currentInnerException = currentInnerExceptions[i];
+
+					if (currentInnerException == null)
+					{
+						continue;
+					}
+
+					var currentInnerAsAggregate = currentInnerException as AggregateException;
+
+					// If this exception is an aggregate, keep it around for later.  Otherwise,
+					// simply add it to the list of flattened exceptions to be returned.
+					if (currentInnerAsAggregate != null)
+					{
+						exceptionsToFlatten.Add(currentInnerAsAggregate);
+					}
+					else
+					{
+						flattenedExceptions.Add(currentInnerException);
+					}
+
+					currentInnerAsAggregate = currentInnerException.InnerException as AggregateException;
+					if (currentInnerAsAggregate != null)
+					{
+						exceptionsToFlatten.Add(currentInnerAsAggregate);
+					}
+				}
+			}
+
+			return new AggregateException(e.Message, flattenedExceptions);
+		}
+
+		public static string ToBasicString(this Exception e)
+		{
+			if (e == null)
+				return null;
+
+			var ae = e as AggregateException;
+			if (ae == null)
+				return e.Message;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var inner in ae.InnerExceptions)
+			{
+				if (inner.TargetSite == null)
+					continue;
+
+				sb.AppendLine(inner.Message);
+			}
+
+			return sb.ToString();
+		}
+		public static string ToVerboseString(this Exception e)
+		{
+			if (e == null)
+				return null;
+
+			var ae = e as AggregateException;
+			if (ae == null)
+				return e.ToString();
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var inner in ae.InnerExceptions)
+			{
+				if (inner.TargetSite == null)
+					continue;
+
+				sb.AppendLine(inner.Message);
+				var trace = inner.GetKSoftStackTrace();
+				sb.AppendLine(trace);
+				sb.AppendLine();
+			}
+
+			return sb.ToString();
+		}
+
+		public static string GetKSoftStackTrace(this Exception e)
+		{
+			var trace = new System.Diagnostics.StackTrace(e, fNeedFileInfo: true);
+			if (trace.FrameCount == 0)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder(512);
+			for (int x = 0; x < trace.FrameCount; x++)
+			{
+				if (x > 0)
+					sb.AppendLine();
+
+				var frame = trace.GetFrame(x);
+
+				var mb = frame.GetMethod();
+				if (mb == null)
+					continue;
+
+				Type classType = mb.DeclaringType;
+				if (classType == null)
+					continue;
+
+				// Add namespace.classname:MethodName
+				string ns = classType.Namespace;
+				if (!string.IsNullOrEmpty(ns))
+				{
+					sb.Append(ns);
+					sb.Append(".");
+				}
+
+				sb.Append(classType.Name);
+				sb.Append(":");
+				sb.Append(mb.Name);
+				sb.Append("(");
+
+				bool firstParam = true;
+				foreach (var param in mb.GetParameters())
+				{
+					if (firstParam)
+						firstParam = false;
+					else
+						sb.Append(", ");
+
+					sb.Append(param.ParameterType.Name);
+				}
+
+				sb.Append(")");
+
+				string path = frame.GetFileName();
+				if (path.IsNotNullOrEmpty())
+				{
+					// Unify path names to unix style
+					//path = path.Replace('\\', '/');
+
+					const string kBasePath = @"KStudio\Vita\";
+					int base_path_index = path.IndexOf(kBasePath);
+					if (base_path_index >= 0)
+					{
+						path = path.Substring(base_path_index + kBasePath.Length);
+					}
+
+					sb.Append(" (");
+					sb.Append(path);
+
+					int lineNum = frame.GetFileLineNumber();
+					if (lineNum > 0)
+					{
+						sb.Append(":");
+						sb.Append(lineNum);
+					}
+					sb.Append(")");
+				}
+			}
+
+			return sb.ToString();
+		}
+		#endregion
+
 		#region String
 		public static string Format(this string format, params object[] args)
 		{
