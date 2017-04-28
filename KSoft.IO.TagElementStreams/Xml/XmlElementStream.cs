@@ -117,12 +117,15 @@ namespace KSoft.IO
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
 		public XmlElementStream(System.IO.Stream sourceStream,
-			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
+			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null, string streamNameOverride = null)
 		{
 			Contract.Requires<ArgumentNullException>(sourceStream != null);
 			Contract.Requires<ArgumentException>(sourceStream.HasPermissions(permissions));
 
-			SetStreamName(sourceStream);
+			if (streamNameOverride.IsNullOrEmpty())
+				SetStreamName(sourceStream);
+			else
+				base.StreamName = streamNameOverride;
 
 			Document = new Xml.XmlDocumentWithLocation();
 			Document.Load(sourceStream);

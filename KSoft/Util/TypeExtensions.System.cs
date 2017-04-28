@@ -29,6 +29,16 @@ namespace KSoft
 		}
 
 		#region Exception
+		public static void UnusedExceptionVar(this Exception e)
+		{
+		}
+
+		public static Exception GetOnlyExceptionOrAllWhenAggregate(this Exception e)
+		{
+			var ae = e as AggregateException;
+			return ae.GetOnlyExceptionOrAll() ?? e;
+		}
+
 		public static Exception GetOnlyExceptionOrAll(this AggregateException e)
 		{
 			if (e == null)
@@ -93,7 +103,11 @@ namespace KSoft
 				}
 			}
 
-			return new AggregateException(e.Message, flattenedExceptions);
+			var inner = flattenedExceptions.Count > 0
+				? flattenedExceptions.Distinct()
+				: null;
+
+			return new AggregateException(e.Message, inner);
 		}
 
 		public static string ToBasicString(this Exception e)
