@@ -9,7 +9,7 @@ namespace KSoft.Xml
 	{
 		IXmlLineInfo mLoadReader;
 
-		public string Filename { get; set; }
+		public string FileName { get; set; }
 
 		internal Text.TextLineInfo CurrentLineInfo { get {
 			if (mLoadReader != null && mLoadReader.HasLineInfo())
@@ -20,7 +20,7 @@ namespace KSoft.Xml
 
 		public override void Load(string filename)
 		{
-			Filename = filename;
+			FileName = filename;
 
 			base.Load(filename);
 		}
@@ -57,12 +57,12 @@ namespace KSoft.Xml
 		string GetFileLocationStringWithLineOnly(Text.ITextLineInfo lineInfo, bool verboseString)
 		{
 			return string.Format("{0} ({1})",
-				Filename, Text.TextLineInfo.ToStringLineOnly(lineInfo, verboseString));
+				FileName, Text.TextLineInfo.ToStringLineOnly(lineInfo, verboseString));
 		}
 		string GetFileLocationStringWithColumn(Text.ITextLineInfo lineInfo, bool verboseString)
 		{
 			return string.Format("{0} ({1})",
-				Filename, Text.TextLineInfo.ToString(lineInfo, verboseString));
+				FileName, Text.TextLineInfo.ToString(lineInfo, verboseString));
 		}
 		public string GetFileLocationString(XmlNode node, bool verboseString = false)
 		{
@@ -74,7 +74,7 @@ namespace KSoft.Xml
 			var loc_info = (Text.ITextLineInfo)node;
 
 			if (!loc_info.HasLineInfo)
-				return Filename;
+				return FileName;
 			else if (loc_info.LinePosition != 0)
 				return GetFileLocationStringWithColumn(loc_info, verboseString);
 			else

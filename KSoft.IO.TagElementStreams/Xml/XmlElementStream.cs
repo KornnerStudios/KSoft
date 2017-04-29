@@ -127,8 +127,16 @@ namespace KSoft.IO
 			else
 				base.StreamName = streamNameOverride;
 
-			Document = new Xml.XmlDocumentWithLocation();
-			Document.Load(sourceStream);
+			var doc = new Xml.XmlDocumentWithLocation();
+			doc.FileName = base.StreamName;
+			Document = doc;
+			try
+			{
+				Document.Load(sourceStream);
+			} catch (Exception ex)
+			{
+				throw new System.IO.InvalidDataException("Failed to load " + StreamName, ex);
+			}
 
 			StreamMode = StreamPermissions = permissions;
 
@@ -148,7 +156,14 @@ namespace KSoft.IO
 				throw new System.IO.FileNotFoundException("XmlElementStream: Load", filename);
 
 			Document = new Xml.XmlDocumentWithLocation();
-			Document.Load(this.StreamName = filename);
+			try
+			{
+				Document.Load(this.StreamName = filename);
+			}
+			catch (Exception ex)
+			{
+				throw new System.IO.InvalidDataException("Failed to load " + StreamName, ex);
+			}
 
 			StreamMode = StreamPermissions = permissions;
 
