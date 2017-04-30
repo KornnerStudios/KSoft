@@ -13,9 +13,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\KSoft.BCL.props" />
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +125,7 @@
       <DependentUpon>IReadOnlyBitSet.EnumeratorsT4.tt</DependentUpon>
     </Compile>
     <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
+    <Compile Include="Debug\KSoftFileLogTraceListener.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />
     <Compile Include="Debug\UnreachableException.cs" />

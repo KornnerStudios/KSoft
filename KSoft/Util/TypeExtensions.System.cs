@@ -44,7 +44,7 @@ namespace KSoft
 			if (e == null)
 				return null;
 
-			e = e.ReallyFlatten();
+			//e = e.ReallyFlatten();
 
 			if (e.InnerExceptions.Count == 1)
 			{
@@ -93,12 +93,12 @@ namespace KSoft
 					else
 					{
 						flattenedExceptions.Add(currentInnerException);
-					}
 
-					currentInnerAsAggregate = currentInnerException.InnerException as AggregateException;
-					if (currentInnerAsAggregate != null)
-					{
-						exceptionsToFlatten.Add(currentInnerAsAggregate);
+						currentInnerAsAggregate = currentInnerException.InnerException as AggregateException;
+						if (currentInnerAsAggregate != null)
+						{
+							exceptionsToFlatten.Add(currentInnerAsAggregate);
+						}
 					}
 				}
 			}
@@ -154,18 +154,16 @@ namespace KSoft
 			return sb.ToString();
 		}
 
-		public static string GetKSoftStackTrace(this Exception e)
+		public static List<string> GetKSoftStackTraceList(this Exception e, bool needFileInfo = true)
 		{
-			var trace = new System.Diagnostics.StackTrace(e, fNeedFileInfo: true);
+			var list = new List<string>();
+			var trace = new System.Diagnostics.StackTrace(e, needFileInfo);
 			if (trace.FrameCount == 0)
-				return string.Empty;
+				return list;
 
-			var sb = new System.Text.StringBuilder(512);
+			var sb = new System.Text.StringBuilder(128);
 			for (int x = 0; x < trace.FrameCount; x++)
 			{
-				if (x > 0)
-					sb.AppendLine();
-
 				var frame = trace.GetFrame(x);
 
 				var mb = frame.GetMethod();
@@ -226,6 +224,24 @@ namespace KSoft
 					}
 					sb.Append(")");
 				}
+
+				list.Add(sb.ToString());
+				sb.Clear();
+			}
+
+			return list;
+		}
+
+		public static string GetKSoftStackTrace(this Exception e, bool needFileInfo = true)
+		{
+			var list = GetKSoftStackTraceList(e, needFileInfo);
+			if (list.IsNullOrEmpty())
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder(512);
+			foreach (var line in list)
+			{
+				sb.AppendLine(line);
 			}
 
 			return sb.ToString();
