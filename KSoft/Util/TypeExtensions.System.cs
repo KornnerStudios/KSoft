@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
@@ -686,6 +687,22 @@ namespace KSoft
 					return false;
 
 			return true;
+		}
+		#endregion
+
+		#region Diagnostics
+		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, params object[] data)
+		{
+			Contract.Requires(source != null);
+
+			source.TraceData(eventType, TypeExtensions.kNone, data);
+		}
+
+		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, object data)
+		{
+			Contract.Requires(source != null);
+
+			source.TraceData(eventType, TypeExtensions.kNone, data);
 		}
 		#endregion
 

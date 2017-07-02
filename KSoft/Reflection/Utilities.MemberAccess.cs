@@ -105,6 +105,7 @@ namespace KSoft.Reflection
 		public static Func<object, R> GenerateMemberGetter<R>(Type type, string memberName)
 		{
 			Contract.Requires<ArgumentNullException>(type != null);
+			Contract.Requires<ArgumentException>(!type.IsGenericTypeDefinition);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(memberName));
 			Contract.Ensures(Contract.Result<Func<object, R>>() != null);
 
@@ -244,6 +245,7 @@ namespace KSoft.Reflection
 		public static ReferenceTypeMemberSetterDelegate<object, V> GenerateReferenceTypeMemberSetter<V>(Type type, string memberName)
 		{
 			Contract.Requires<ArgumentNullException>(type != null);
+			Contract.Requires<ArgumentException>(!type.IsGenericTypeDefinition);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(memberName));
 			Contract.Requires<ArgumentException>(!type.IsValueType, "Type must be a reference type");
 			Contract.Ensures(Contract.Result<ReferenceTypeMemberSetterDelegate<object, V>>() != null);
@@ -346,7 +348,7 @@ namespace KSoft.Reflection
 			else if (expr.Body is Exprs.UnaryExpression)
 				return PropertyNameFromUnaryExpr(expr.Body as Exprs.UnaryExpression);
 
-			throw new NotSupportedException();
+			throw new NotSupportedException(expr.ToString());
 		}
 
 		public static string PropertyNameFromExpr<TProp>(Exprs.Expression<Func<TProp>> expr)
