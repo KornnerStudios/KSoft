@@ -600,7 +600,7 @@ namespace KSoft
 			int startIndex, int count, Predicate<T> match)
 		{
 			Contract.Requires<ArgumentNullException>(list != null);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex < list.Count);
+			Contract.Requires<ArgumentOutOfRangeException>(list.Count == 0 || startIndex < list.Count);
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0 && startIndex <= list.Count-count);
 			Contract.Requires<ArgumentNullException>(match != null);
 			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
