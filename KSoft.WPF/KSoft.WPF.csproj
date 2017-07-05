@@ -16,6 +16,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,12 +40,14 @@
     <Compile Include="Controls\BitVectorControl.xaml.cs">
       <DependentUpon>BitVectorControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NumericTextBox.cs" />
     <Compile Include="Controls\SelectableFileControl.xaml.cs">
       <DependentUpon>SelectableFileControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SelectableFolderControl.xaml.cs">
       <DependentUpon>SelectableFolderControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SliderEx.cs" />
     <Compile Include="Converters\BooleanToTrueOrFalseStringConverter.cs" />
     <Compile Include="IBitVectorUserInterfaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -61,6 +64,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RelayCommand.cs" />
+    <Compile Include="ScreenShotUtility.cs" />
     <Compile Include="ViewModels\DockManagerViewModel.cs" />
     <Compile Include="ViewModels\DockWindowViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
