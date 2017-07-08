@@ -169,6 +169,7 @@
     <Compile Include="IO\IKSoftStreamModeable.cs" />
     <Compile Include="IO\IKSoftStreamWithVirtualBuffer.cs" />
     <Compile Include="IO\IKSoftStreamWithVirtualBufferBookmarks.cs" />
+    <Compile Include="IO\MiniJSON.cs" />
     <Compile Include="IO\SignatureMismatchException.cs" />
     <Compile Include="IO\IKSoftStreamBookmarks.cs" />
     <Compile Include="IO\StreamPositionContext.cs" />
