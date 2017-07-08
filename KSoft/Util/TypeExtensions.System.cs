@@ -337,6 +337,32 @@ namespace KSoft
 			}
 			return null;
 		}
+
+		public static string Join(this IList<string> list
+			, string valueSeperator = ",")
+		{
+			if (list.IsNullOrEmpty() || valueSeperator.IsNullOrEmpty())
+				return "";
+
+			return string.Join(valueSeperator, list.ToArray());
+		}
+
+		public static string TransformToString(this IEnumerable<string> list
+			, string valueSeperator = ",")
+		{
+			Contract.Requires(list != null);
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var str in list)
+			{
+				if (sb.Length > 0)
+					sb.Append(valueSeperator);
+
+				sb.Append(str);
+			}
+
+			return sb.ToString();
+		}
 		#endregion
 
 		#region Array

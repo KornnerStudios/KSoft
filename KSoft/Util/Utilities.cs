@@ -453,5 +453,88 @@ namespace KSoft
 
 			return trimmed;
 		}
+
+		/// <summary>
+		/// Emulate .NET's Enum.TryParse. Only real difference is we by default IGNORE CASE, and they don't
+		/// </summary>
+		public static bool TryParseEnum<TEnum>(string str, out TEnum value
+			, bool ignoreCase = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			value = default(TEnum);
+			return TryParseEnumOpt(str, ref value, ignoreCase);
+		}
+		/// <summary>
+		/// Emulate .NET's Enum.TryParse. Only real difference is we by default IGNORE CASE, and they don't
+		/// </summary>
+		/// <remarks>Opt = Optional, as it we won't overwrite 'value' on failure (can't overload based on ref/out alone)</remarks>
+		public static bool TryParseEnumOpt<TEnum>(string str, ref TEnum value
+			, bool ignoreCase = true)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (string.IsNullOrEmpty(str))
+				return false;
+
+#if false // #NOTE Unity implementation
+			try
+			{
+				value = (TEnum)Enum.Parse(typeof(TEnum), str, ignoreCase);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+			return true;
+#else
+			return Enum.TryParse(str, ignoreCase, out value);
+#endif
+		}
+
+		public static bool ParseStringList(string line, List<string> list,
+			bool sort = false, string valueSeperator = ",")
+		{
+			if (line == null)
+			{
+				return false;
+			}
+			if (list == null)
+			{
+				return false;
+			}
+
+			// LINQ stmt below allows there to be whitespace around the commas
+			string[] values = System.Text.RegularExpressions.Regex.Split(line, valueSeperator);
+			list.Clear();
+
+			ParseStringList(Trim(values), list, sort);
+
+			// handles cases where there's extra valueSeperator values
+			list.RemoveAll(string.IsNullOrEmpty);
+
+			if (sort)
+				list.Sort();
+
+			return true;
+		}
+		public static bool ParseStringList(IEnumerable<string> collection, List<string> list,
+			bool sort = false)
+		{
+			if (collection == null)
+			{
+				return false;
+			}
+			if (list == null)
+			{
+				return false;
+			}
+
+			list.AddRange(collection);
+
+			if (sort)
+				list.Sort();
+
+			return true;
+		}
 	};
 }

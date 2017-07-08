@@ -417,6 +417,51 @@ namespace KSoft.Collections
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		public List<string> ToStrings<TEnum>(TEnum maxCount
+			, string valueSeperator = ","
+			, bool stateFilter = true
+			, List<string> results = null)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (results == null)
+				results = new List<string>(Cardinality);
+
+			if (Cardinality == 0)
+				return results;
+
+			int maxCountValue = maxCount.ToInt32(null);
+			if (maxCountValue < 0 || maxCountValue >= Length)
+			{
+				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+					maxCount, maxCountValue));
+			}
+
+			if (valueSeperator == null)
+				valueSeperator = "";
+
+			var enumType = typeof(TEnum);
+			var enumMembers = (TEnum[])Enum.GetValues(enumType);
+
+			// Find the member which represents bit-0
+			int memberIndex = 0;
+			while (memberIndex < enumMembers.Length && memberIndex < maxCountValue && enumMembers[memberIndex].ToInt32(null) != 0)
+				memberIndex++;
+
+			var bitsInDesiredState = stateFilter
+				? SetBitIndices
+				: ClearBitIndices;
+			foreach (int bitIndex in bitsInDesiredState)
+			{
+				if (bitIndex >= maxCountValue)
+					break;
+
+				results.Add(enumMembers[memberIndex+bitIndex].ToString());
+			}
+
+			return results;
+		}
+
+		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public string ToString<TEnum>(TEnum maxCount
 			, string valueSeperator = ","
 			, bool stateFilter = true)

@@ -38,7 +38,7 @@
     <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
     <LibraryPath>$(VitaPlatformCppLibDir);$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis Condition=" '$(Configuration.Contains(CodeAnalysis))' ">true</RunCodeAnalysis>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaRequiresDirectX)' != '' " Label="Configuration">
