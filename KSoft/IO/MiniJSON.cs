@@ -76,6 +76,8 @@ namespace MiniJSON {
     /// All numbers are parsed to doubles.
     /// </summary>
     public static class Json {
+        public static string PrettyPrintSpace = "\t";
+
         /// <summary>
         /// Parses the string json into a value
         /// </summary>
@@ -166,7 +168,14 @@ namespace MiniJSON {
             }
 
             List<object> ParseArray() {
-                List<object> array = new List<object>();
+                // KM00: changed this method to handle invalid arrays
+                // see: https://gist.github.com/darktable/1411710/16b47b4865745c4f6278e2e60d2cda53b84447d3
+                // "MiniJSON causes an OutOfMemoryException..."
+                // but also had to change the way 'array' is allocated
+
+                // KM00 start
+                List<object> array = null;// = new List<object>();
+                // KM00 end
 
                 // ditch opening bracket
                 json.Read();
@@ -184,13 +193,29 @@ namespace MiniJSON {
                     case TOKEN.SQUARED_CLOSE:
                         parsing = false;
                         break;
+                    // KM00 start
+                    case TOKEN.COLON:
+                        json.Read(); //invalid array: consume colon to prevent infinite loop
+                        break;
+                    // KM00 end
                     default:
                         object value = ParseByToken(nextToken);
+
+                        // KM00 start
+                        if (array == null)
+                            array = new List<object>();
+                        // KM00 end
+
 
                         array.Add(value);
                         break;
                     }
                 }
+
+                // KM00 start
+                if (array == null)
+                    array = new List<object>();
+                // KM00 end
 
                 return array;
             }
@@ -221,8 +246,19 @@ namespace MiniJSON {
                 }
             }
 
+            // KM00 start
+            private StringBuilder mParseStringBuffer;
+            private char[] mParseStringHexBuffer;
+            // KM00 end
             string ParseString() {
-                StringBuilder s = new StringBuilder();
+                // KM00 start
+                if (mParseStringBuffer == null)
+                    mParseStringBuffer = new StringBuilder();
+                else
+                    mParseStringBuffer.Length = 0;
+
+                StringBuilder s = mParseStringBuffer;
+                // KM00 end
                 char c;
 
                 // ditch opening quote
@@ -270,7 +306,12 @@ namespace MiniJSON {
                             s.Append('\t');
                             break;
                         case 'u':
-                            var hex = new char[4];
+                            // KM00 start
+                            if (mParseStringHexBuffer == null)
+                                mParseStringHexBuffer = new char[4];
+
+                            var hex = mParseStringHexBuffer;
+                            // KM00 end
 
                             for (int i=0; i< 4; i++) {
                                 hex[i] = NextChar;
@@ -304,6 +345,11 @@ namespace MiniJSON {
             }
 
             void EatWhitespace() {
+                // KM00 start
+                if (json.Peek () == -1)
+                    return;
+                // KM00 end
+
                 while (Char.IsWhiteSpace(PeekChar)) {
                     json.Read();
 
@@ -325,9 +371,19 @@ namespace MiniJSON {
                 }
             }
 
+            // KM00 start
+            private StringBuilder mNextWordStringBuffer;
+            // KM00 end
             string NextWord {
                 get {
-                    StringBuilder word = new StringBuilder();
+                    // KM00 start
+                    if (mNextWordStringBuffer == null)
+                        mNextWordStringBuffer = new StringBuilder();
+                    else
+                        mNextWordStringBuffer.Length = 0;
+
+                    StringBuilder word = mNextWordStringBuffer;
+                    // KM00 end
 
                     while (!IsWordBreak(PeekChar)) {
                         word.Append(NextChar);
@@ -400,26 +456,30 @@ namespace MiniJSON {
         /// </summary>
         /// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        public static string Serialize(object obj) {
+        public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
             return Serializer.Serialize(obj);
         }
 
         sealed class Serializer {
             StringBuilder builder;
+            bool prettyPrint;
+            int numPrettyPrintLevels;
 
             Serializer() {
                 builder = new StringBuilder();
             }
 
-            public static string Serialize(object obj) {
+            public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
                 var instance = new Serializer();
 
+                instance.prettyPrint = prettyPrint;
+                instance.numPrettyPrintLevels = numPrettyPrintLevels;
                 instance.SerializeValue(obj);
 
                 return instance.builder.ToString();
             }
 
-            void SerializeValue(object value) {
+            void SerializeValue(object value, int level = 0) {
                 IList asList;
                 IDictionary asDict;
                 string asStr;
@@ -431,9 +491,9 @@ namespace MiniJSON {
                 } else if (value is bool) {
                     builder.Append((bool) value ? "true" : "false");
                 } else if ((asList = value as IList) != null) {
-                    SerializeArray(asList);
+                    SerializeArray(asList, level);
                 } else if ((asDict = value as IDictionary) != null) {
-                    SerializeObject(asDict);
+                    SerializeObject(asDict, level);
                 } else if (value is char) {
                     SerializeString(new string((char) value, 1));
                 } else {
@@ -441,7 +501,7 @@ namespace MiniJSON {
                 }
             }
 
-            void SerializeObject(IDictionary obj) {
+            void SerializeObject(IDictionary obj, int level = 0) {
                 bool first = true;
 
                 builder.Append('{');
@@ -451,18 +511,28 @@ namespace MiniJSON {
                         builder.Append(',');
                     }
 
+                    if (numPrettyPrintLevels <= 0 || (level + 1) <= numPrettyPrintLevels)
+                    {
+                        PrettyPrintNewLine(level + 1);
+                    }
+
                     SerializeString(e.ToString());
                     builder.Append(':');
 
-                    SerializeValue(obj[e]);
+                    SerializeValue(obj[e], level + 1);
 
                     first = false;
+                }
+
+                if (!first && (numPrettyPrintLevels <= 0 || level < numPrettyPrintLevels))
+                {
+                    PrettyPrintNewLine(level);
                 }
 
                 builder.Append('}');
             }
 
-            void SerializeArray(IList anArray) {
+            void SerializeArray(IList anArray, int level = 0) {
                 builder.Append('[');
 
                 bool first = true;
@@ -472,9 +542,19 @@ namespace MiniJSON {
                         builder.Append(',');
                     }
 
-                    SerializeValue(obj);
+                    if (numPrettyPrintLevels <= 0 || (level + 1) <= numPrettyPrintLevels)
+                    {
+                        PrettyPrintNewLine(level + 1);
+                    }
+
+                    SerializeValue(obj, level + 1);
 
                     first = false;
+                }
+
+                if (!first && (numPrettyPrintLevels <= 0 || level < numPrettyPrintLevels))
+                {
+                    PrettyPrintNewLine(level);
                 }
 
                 builder.Append(']');
@@ -483,8 +563,7 @@ namespace MiniJSON {
             void SerializeString(string str) {
                 builder.Append('\"');
 
-                char[] charArray = str.ToCharArray();
-                foreach (var c in charArray) {
+                foreach (var c in str) {
                     switch (c) {
                     case '"':
                         builder.Append("\\\"");
@@ -542,6 +621,18 @@ namespace MiniJSON {
                     builder.Append(Convert.ToDouble(value).ToString("R"));
                 } else {
                     SerializeString(value.ToString());
+                }
+            }
+
+            void PrettyPrintNewLine(int numSpaces)
+            {
+                if (!prettyPrint)
+                    return;
+
+                builder.Append('\n');
+                for (int i = 0; i < numSpaces; i++)
+                {
+                    builder.Append(Json.PrettyPrintSpace);
                 }
             }
         }
