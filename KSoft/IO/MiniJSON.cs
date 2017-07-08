@@ -78,6 +78,186 @@ namespace MiniJSON {
     public static class Json {
         public static string PrettyPrintSpace = "\t";
 
+        private static object ConvertInt64(Type returnType, long number)
+        {
+            switch (Type.GetTypeCode(returnType))
+            {
+                case TypeCode.Char:
+                    return (char)number;
+                case TypeCode.SByte:
+                    return (sbyte)number;
+                case TypeCode.Byte:
+                    return (byte)number;
+                case TypeCode.Int16:
+                    return (short)number;
+                case TypeCode.UInt16:
+                    return (ushort)number;
+                case TypeCode.Int32:
+                    return (int)number;
+                case TypeCode.UInt32:
+                    return (uint)number;
+                case TypeCode.Int64:
+                    return number;
+                case TypeCode.UInt64:
+                    return (ulong)number;
+                case TypeCode.Single:
+                    return (float)number;
+                case TypeCode.Double:
+                    return (double)number;
+
+                default:
+                    return null;
+            }
+        }
+
+        private static object ConvertDouble(Type returnType, double number)
+        {
+            switch (Type.GetTypeCode(returnType))
+            {
+                case TypeCode.Char:
+                    return (char)number;
+                case TypeCode.SByte:
+                    return (sbyte)number;
+                case TypeCode.Byte:
+                    return (byte)number;
+                case TypeCode.Int16:
+                    return (short)number;
+                case TypeCode.UInt16:
+                    return (ushort)number;
+                case TypeCode.Int32:
+                    return (int)number;
+                case TypeCode.UInt32:
+                    return (uint)number;
+                case TypeCode.Int64:
+                    return (long)number;
+                case TypeCode.UInt64:
+                    return (ulong)number;
+                case TypeCode.Single:
+                    return (float)number;
+                case TypeCode.Double:
+                    return number;
+
+                default:
+                    return null;
+            }
+        }
+
+        private static bool IsNumericType(Type returnType)
+        {
+            if (returnType == null)
+                return false;
+
+            var typeCode = Type.GetTypeCode(returnType);
+
+            return typeCode >= TypeCode.SByte && typeCode <= TypeCode.Double;
+        }
+
+        #region GetValue
+        public static T GetValue<T>(object jsonObject, string[] keyPath, T defaultValue = default(T))
+        {
+            if (keyPath.Length == 0)
+            {
+                return defaultValue;
+            }
+
+            for (var i = 0; i < keyPath.Length - 1; i++)
+            {
+                jsonObject = GetValue<object>(jsonObject, keyPath[i]);
+            }
+
+            return GetValue<T>(jsonObject, keyPath[keyPath.Length - 1], defaultValue);
+        }
+
+        public static object GetValue(object jsonObject, string key, object defaultValue = null)
+        {
+            return GetValue<object>(jsonObject, key, defaultValue);
+        }
+
+        public static T GetValue<T>(object jsonObject, string key, T defaultValue = default(T))
+        {
+            var dict = jsonObject as Dictionary<string, object>;
+            if (dict == null)
+            {
+                return defaultValue;
+            }
+
+            object result;
+            if (!dict.TryGetValue(key, out result))
+            {
+                return defaultValue;
+            }
+
+            var returnType = typeof(T);
+
+            if (IsNumericType(returnType))
+            {
+                if (result is double)
+                {
+                    var obj = ConvertDouble(returnType, (double)result);
+                    if (obj == null)
+                        return defaultValue;
+
+                    return (T)obj;
+                }
+                else if (result is long)
+                {
+                    var obj = ConvertInt64(returnType, (long)result);
+                    if (obj == null)
+                        return defaultValue;
+
+                    return (T)obj;
+                }
+
+                return default(T);
+            }
+
+            if (returnType == typeof(string) && !(result is string))
+            {
+                var canConvertToString = IsNumericType(result.GetType());
+                if (canConvertToString)
+                {
+                    result = result.ToString();
+                }
+            }
+
+            return (T)result;
+        }
+        #endregion
+
+        #region SetValue
+        public static void SetValue(object jsonObject, string[] keyPath, object value)
+        {
+            for (int i = 0; i < keyPath.Length - 1; i++)
+            {
+                var next = Json.GetValue(jsonObject, keyPath[i]);
+                if (next == null)
+                {
+                    next = new Dictionary<string, object>();
+                    Json.SetValue(jsonObject, keyPath[i], next);
+                }
+                jsonObject = next;
+            }
+
+            Json.SetValue(jsonObject, keyPath[keyPath.Length - 1], value);
+        }
+
+        public static void SetValue(object jsonObject, string key, object value)
+        {
+            var dict = jsonObject as Dictionary<string, object>;
+            if (dict == null)
+                return;
+
+            if (key.IndexOf('.') != -1)
+            {
+                Json.SetValue(dict, key.Split('.'), value);
+            }
+            else
+            {
+                dict[key] = value;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Parses the string json into a value
         /// </summary>
@@ -146,7 +326,7 @@ namespace MiniJSON {
                         continue;
                     case TOKEN.CURLY_CLOSE:
                         return table;
-                    default:
+                    case TOKEN.STRING:
                         // name
                         string name = ParseString();
                         if (name == null) {
@@ -161,8 +341,14 @@ namespace MiniJSON {
                         json.Read();
 
                         // value
-                        table[name] = ParseValue();
+                        TOKEN valueToken = NextToken;
+                         object value = ParseByToken(valueToken);
+                         if (value == null && valueToken != TOKEN.NULL)
+                             return null;
+                         table[name] = value;
                         break;
+                    default:
+                        return null;
                     }
                 }
             }
@@ -200,9 +386,11 @@ namespace MiniJSON {
                     // KM00 end
                     default:
                         object value = ParseByToken(nextToken);
+                        if (value == null && nextToken != TOKEN.NULL)
+                            return null;
 
-                        // KM00 start
-                        if (array == null)
+                            // KM00 start
+                            if (array == null)
                             array = new List<object>();
                         // KM00 end
 
@@ -249,6 +437,14 @@ namespace MiniJSON {
             // KM00 start
             private StringBuilder mParseStringBuffer;
             private char[] mParseStringHexBuffer;
+            private bool IsHexDigit(char c)
+            {
+                return
+                    (c >= '0' && c <= '9') ||
+                    (c >= 'A' && c <= 'F') ||
+                    (c >= 'a' && c <= 'f')
+                    ;
+            }
             // KM00 end
             string ParseString() {
                 // KM00 start
@@ -315,6 +511,8 @@ namespace MiniJSON {
 
                             for (int i=0; i< 4; i++) {
                                 hex[i] = NextChar;
+                                if (!IsHexDigit(hex[i]))
+                                    return null;
                             }
 
                             s.Append((char) Convert.ToInt32(new string(hex), 16));
@@ -333,7 +531,9 @@ namespace MiniJSON {
             object ParseNumber() {
                 string number = NextWord;
 
-                if (number.IndexOf('.') == -1) {
+                // Allow scientific notation in floating point numbers by @shiwano
+                // https://github.com/Jackyjjc/MiniJSON.cs/commit/6de00beb134bbab9d873033a48b32e4067ed0c25
+                if (number.IndexOf('.') == -1 && number.IndexOf('E') == -1 && number.IndexOf('e') == -1) {
                     long parsedInt;
                     Int64.TryParse(number, out parsedInt);
                     return parsedInt;
