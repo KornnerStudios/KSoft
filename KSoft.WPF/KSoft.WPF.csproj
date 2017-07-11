@@ -49,6 +49,7 @@
     </Compile>
     <Compile Include="Controls\SliderEx.cs" />
     <Compile Include="Converters\BooleanToTrueOrFalseStringConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="IBitVectorUserInterfaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
