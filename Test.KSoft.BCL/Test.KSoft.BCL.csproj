@@ -50,6 +50,7 @@
     <Compile Include="Enum\EnumFlagsTest.cs" />
     <Compile Include="Enum\EnumValueTest.cs" />
     <Compile Include="IO\BitStreamTest.cs" />
+    <Compile Include="IO\JsonNodeTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Reflection\UtilitiesTest.cs" />
     <Compile Include="Security\Cryptography\JenkinsHashTest.cs" />

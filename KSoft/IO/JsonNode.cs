@@ -905,6 +905,96 @@ namespace KSoft.IO
 
 			return true;
 		}
+
+		public bool GetRangeValues(string valueName, ref int min, ref int max)
+		{
+			object value = TryGetValueForName(valueName);
+			if (value == null)
+				return false;
+
+			switch (Type.GetTypeCode(value.GetType()))
+			{
+				case TypeCode.Object:
+				{
+					var objList = value as List<object>;
+					if (objList == null)
+						return false;
+
+					if (objList.Count == 1)
+					{
+						bool success = ParseValue(objList[0], ref min, valueName);
+						if (success)
+							max = min;
+
+						return success;
+					}
+
+					int tempMin = 0, tempMax = 0;
+					if (objList.Count < 2 ||
+						!ParseValue(objList[0], ref tempMin, valueName) ||
+						!ParseValue(objList[1], ref tempMax, valueName))
+						return false;
+
+					min = tempMin;
+					max = tempMax;
+					return true;
+				}
+
+				default:
+				{
+					bool success = ParseValue(value, ref min, valueName);
+					if (success)
+						max = min;
+
+					return success;
+				}
+			}
+		}
+
+		public bool GetRangeValues(string valueName, ref float min, ref float max)
+		{
+			object value = TryGetValueForName(valueName);
+			if (value == null)
+				return false;
+
+			switch (Type.GetTypeCode(value.GetType()))
+			{
+				case TypeCode.Object:
+				{
+					var objList = value as List<object>;
+					if (objList == null)
+						return false;
+
+					if (objList.Count == 1)
+					{
+						bool success = ParseValue(objList[0], ref min, valueName);
+						if (success)
+							max = min;
+
+						return success;
+					}
+
+					float tempMin = 0, tempMax = 0;
+					if (objList.Count < 2 ||
+						!ParseValue(objList[0], ref tempMin, valueName) ||
+						!ParseValue(objList[1], ref tempMax, valueName))
+						return false;
+
+					min = tempMin;
+					max = tempMax;
+					return true;
+				}
+
+				default:
+				{
+					bool success = ParseValue(value, ref min, valueName);
+					if (success)
+						max = min;
+
+					return success;
+				}
+			}
+		}
 		#endregion
 	};
 }
