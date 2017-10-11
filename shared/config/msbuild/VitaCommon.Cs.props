@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <OutputPath>$(OutDir)</OutputPath>
-	<!--<DocumentationFile Condition=" '$(Configuration)' == 'Release' ">$(VitaRootDir)_lib\$(Configuration)\$(Platform)\$(AssemblyName)\$(AssemblyName).XML</DocumentationFile>-->
+    <!--<DocumentationFile Condition=" '$(Configuration)' == 'Release' ">$(VitaRootDir)_lib\$(Configuration)\$(Platform)\$(AssemblyName)\$(AssemblyName).XML</DocumentationFile>-->
   </PropertyGroup>
 
   <PropertyGroup>
@@ -58,13 +58,15 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration.Contains(Release))' ">
     <Optimize>true</Optimize>
-	<DebugType>pdbonly</DebugType>
+    <DebugType>pdbonly</DebugType>
 
     <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">
     <PlatformTarget>AnyCpu</PlatformTarget>
+    <!--Just don't do this shit because AnyCPU on x64 will be ran as 32-bit https://stackoverflow.com/a/39724213/444977-->
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>

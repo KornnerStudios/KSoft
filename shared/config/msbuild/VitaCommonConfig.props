@@ -15,8 +15,8 @@
 
   <PropertyGroup>
     <VitaPlatformLibDir		Condition=" '$(VitaPlatformLibDir)' == '' "
-	  >$(VitaRootDir)shared\external_libraries\_$(VitaPlatformType)\$(Configuration)\</VitaPlatformLibDir>
+    >$(VitaRootDir)shared\external_libraries\_$(VitaPlatformType)\$(Configuration)\</VitaPlatformLibDir>
     <VitaPlatformCppLibDir	Condition=" '$(VitaPlatformCppLibDir)' == '' "
-	  >$(VitaPlatformLibDir)vc$(PlatformToolsetVersion)\</VitaPlatformCppLibDir>
+    >$(VitaPlatformLibDir)vc$(PlatformToolsetVersion)\</VitaPlatformCppLibDir>
   </PropertyGroup>
 </Project>
