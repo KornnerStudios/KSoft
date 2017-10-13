@@ -9,7 +9,7 @@ namespace KSoft.Values
 	/// <summary>Base interface for Group Tag identifier definitions</summary>
 	[Contracts.ContractClass(typeof(GroupTagDataContract))]
 //	[System.ComponentModel.TypeConverter(typeof(GroupTagDataConverter))]
-	public abstract class GroupTagData : IO.IEndianStreamable, 
+	public abstract class GroupTagData : IO.IEndianStreamable,
 		IComparer<GroupTagData>, IComparable<GroupTagData>,
 		IEquatable<GroupTagData>, IEqualityComparer<GroupTagData>,
 		System.Collections.IComparer, IComparable
@@ -117,7 +117,7 @@ namespace KSoft.Values
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name)
 		{
 #if false
- 			Contract.Requires(maj != null && maj != GroupTagData32.Null);
+			Contract.Requires(maj != null && maj != GroupTagData32.Null);
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 #endif
@@ -150,7 +150,7 @@ namespace KSoft.Values
 		#region Overrides
 		public override string ToString()
 		{
-			return string.Format("['{0," + (this is GroupTagData32 ? "4" : "8") + "}'  {1}]", 
+			return string.Format("['{0," + (this is GroupTagData32 ? "4" : "8") + "}'  {1}]",
 				TagString, Name);
 		}
 		#endregion
@@ -211,7 +211,7 @@ namespace KSoft.Values
 			Contract.Assume(x != null);
 			Contract.Assume(y != null);
 
-			return string.Compare(x.mName, y.mName, true);
+			return string.Compare(x.mName, y.mName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>Does a comparison based on the group tag's names</summary>
@@ -222,7 +222,7 @@ namespace KSoft.Values
 		{
 			Contract.Assume(other != null);
 
-			return string.Compare(this.mName, other.mName, true);
+			return string.Compare(this.mName, other.mName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>Does a comparison based on the tag group's names</summary>

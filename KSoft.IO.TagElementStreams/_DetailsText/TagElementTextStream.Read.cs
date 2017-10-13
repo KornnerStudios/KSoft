@@ -94,7 +94,7 @@ namespace KSoft.IO
 				if (last_char == 'f' || last_char == 'F')
 					input = input.Substring(0, input.Length - 1);
 
-				result = ParseVerifyResult(result, float.TryParse(input, out value));
+				result = ParseVerifyResult(result, Numbers.FloatTryParseInvariant(input, out value));
 			}
 
 			return ParseHandleError(result, noThrow, input, errorState);
@@ -104,7 +104,7 @@ namespace KSoft.IO
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
-				result = ParseVerifyResult(result, double.TryParse(input, out value));
+				result = ParseVerifyResult(result, Numbers.DoubleTryParseInvariant(input, out value));
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}

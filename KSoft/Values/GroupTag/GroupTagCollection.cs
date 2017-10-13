@@ -27,7 +27,7 @@ namespace KSoft.Values
 				Contract.Assume(x != null);
 				Contract.Assume(y != null);
 
-				return string.Compare(x.Name, y.Name);
+				return string.CompareOrdinal(x.Name, y.Name);
 			}
 		};
 

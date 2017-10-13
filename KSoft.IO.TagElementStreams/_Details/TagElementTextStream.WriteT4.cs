@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -17,11 +18,11 @@ namespace KSoft.IO
 		}
 		protected override void WriteElement(TCursor n, float value)
 		{
-			WriteElement(n, value.ToString("r"));
+			WriteElement(n, value.ToString("r", CultureInfo.InvariantCulture));
 		}
 		protected override void WriteElement(TCursor n, double value)
 		{
-			WriteElement(n, value.ToString("r"));
+			WriteElement(n, value.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		protected override void WriteElement(TCursor n, byte value, NumeralBase toBase)
@@ -73,11 +74,11 @@ namespace KSoft.IO
 		}
 		public override void WriteAttribute(string name, float value)
 		{
-			CursorWriteAttribute(name, value.ToString("r"));
+			CursorWriteAttribute(name, value.ToString("r", CultureInfo.InvariantCulture));
 		}
 		public override void WriteAttribute(string name, double value)
 		{
-			CursorWriteAttribute(name, value.ToString("r"));
+			CursorWriteAttribute(name, value.ToString("r", CultureInfo.InvariantCulture));
 		}
 
 		public override void WriteAttribute(string name, byte value, NumeralBase toBase)

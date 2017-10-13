@@ -31,6 +31,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -540,7 +541,9 @@ namespace MiniJSON {
                 }
 
                 double parsedDouble;
-                Double.TryParse(number, out parsedDouble);
+                // KM00 start
+                KSoft.Numbers.DoubleTryParseInvariant(number, out parsedDouble);
+                // KM00 end
                 return parsedDouble;
             }
 
@@ -806,7 +809,8 @@ namespace MiniJSON {
                 // They always have, I'm just letting you know.
                 // Previously floats and doubles lost precision too.
                 if (value is float) {
-                    builder.Append(((float) value).ToString("R"));
+                    // KM00 added CultureInfo.InvariantCulture
+                    builder.Append(((float) value).ToString("R", CultureInfo.InvariantCulture));
                 } else if (value is int
                     || value is uint
                     || value is long
@@ -818,7 +822,8 @@ namespace MiniJSON {
                     builder.Append(value);
                 } else if (value is double
                     || value is decimal) {
-                    builder.Append(Convert.ToDouble(value).ToString("R"));
+                    // KM00 added CultureInfo.InvariantCulture
+                    builder.Append(Convert.ToDouble(value).ToString("R", CultureInfo.InvariantCulture));
                 } else {
                     SerializeString(value.ToString());
                 }

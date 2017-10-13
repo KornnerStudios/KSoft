@@ -661,7 +661,7 @@ namespace KSoft.IO
 				case TypeCode.String:
 				{
 					double tryValue;
-					if (!double.TryParse((string)value, out tryValue) && valueName != null)
+					if (!Numbers.DoubleTryParseInvariant((string)value, out tryValue) && valueName != null)
 					{
 						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
 							"Failed parsing {0} value '{1}' as an {2}",

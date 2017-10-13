@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -19,8 +18,8 @@ namespace KSoft.Text
 		public static bool ParseBooleanLazy(string str)
 		{
 			if (str == "1" ||
-				string.Compare(str, "true", true)==0 ||
-				string.Compare(str, "on", true)==0 )
+				string.Compare(str, "true", StringComparison.OrdinalIgnoreCase)==0 ||
+				string.Compare(str, "on", StringComparison.OrdinalIgnoreCase)==0 )
 				return true;
 
 			return false;

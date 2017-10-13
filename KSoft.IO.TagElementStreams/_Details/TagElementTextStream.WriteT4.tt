@@ -3,6 +3,7 @@
 <#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
 <#@ import namespace="KSoft.T4" #>
 using System;
+using System.Globalization;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -18,7 +19,7 @@ namespace KSoft.IO
 <# if(type.Code==TypeCode.Char) { #>
 			WriteElement(n, new string(value, 1));
 <# } else if(type.Code==TypeCode.Single || type.Code==TypeCode.Double) { #>
-			WriteElement(n, value.ToString("r"));
+			WriteElement(n, value.ToString("r", CultureInfo.InvariantCulture));
 <# } else if (type.Code==TypeCode.Boolean) { #>
 			WriteElement(n, value ? "true" : "false");
 <# } else { #>
@@ -44,7 +45,7 @@ namespace KSoft.IO
 <# } else if(type.Code==TypeCode.Char) { #>
 			CursorWriteAttribute(name, new string(value, 1));
 <# } else if(type.Code==TypeCode.Single || type.Code==TypeCode.Double) { #>
-			CursorWriteAttribute(name, value.ToString("r"));
+			CursorWriteAttribute(name, value.ToString("r", CultureInfo.InvariantCulture));
 <# } else if (type.Code==TypeCode.Boolean) { #>
 			CursorWriteAttribute(name, value ? "true" : "false");
 <# } else { #>

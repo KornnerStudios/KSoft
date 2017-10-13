@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -207,5 +208,21 @@ namespace KSoft
 					: CreateResult();
 			}
 		};
+
+		// based on the reference source, this is what the default number styles are
+		public const NumberStyles kFloatTryParseNumberStyles = 0
+			| NumberStyles.Float
+			| NumberStyles.AllowThousands;
+		public static bool FloatTryParseInvariant(string s, out float result)
+		{
+			return float.TryParse(s, kFloatTryParseNumberStyles, CultureInfo.InvariantCulture, out result);
+		}
+
+		// based on the reference source, this is what the default number styles are
+		public const NumberStyles kDoubleTryParseNumberStyles = kFloatTryParseNumberStyles;
+		public static bool DoubleTryParseInvariant(string s, out double result)
+		{
+			return double.TryParse(s, kFloatTryParseNumberStyles, CultureInfo.InvariantCulture, out result);
+		}
 	};
 };
