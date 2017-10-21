@@ -40,13 +40,14 @@ namespace KSoft.Bitwise
 		public static void Swap<#= overload_suffix_for_uint #>(
 			ref <#= prim_keyword #> value)
 		{
-			value = 
+			value =
 <# byte_swap_gen.Generate(); #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		public static void SwapU<#= const_keyword #>(byte[] buffer, int offset)
+		/// <returns>offset + <#= bittable_type.SizeOfInBytes #></returns>
+		public static int SwapU<#= const_keyword #>(byte[] buffer, int offset)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
 			Contract.Requires<ArgumentOutOfRangeException>(
@@ -58,17 +59,20 @@ namespace KSoft.Bitwise
 <# byte_access_gen.GenerateBytesFromBuffer(); #>
 
 <# byte_access_gen.GenerateWriteBytesToBuffer(); #>
+
+			return offset + <#= bittable_type.SizeOfCode #>;
 		}
 		/// <summary>Replaces <#= bittable_type.SizeOfInBytes #> bytes in an array with a integer value</summary>
 		/// <param name="buffer">byte buffer</param>
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
+		/// <returns>offset + <#= bittable_type.SizeOfInBytes #></returns>
 		/// <remarks>
 		/// <paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment.
 		/// Uses <see cref="BitConverter.IsLittleEndian" /> to determine <paramref name="value"/>'s byte ordering
 		/// when written to the buffer
 		/// </remarks>
-		public static void ReplaceBytes<#= overload_suffix_for_uint #>(byte[] buffer, int offset,
+		public static int ReplaceBytes<#= overload_suffix_for_uint #>(byte[] buffer, int offset,
 			<#= prim_keyword #> value)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
@@ -78,13 +82,15 @@ namespace KSoft.Bitwise
 				offset+<#= bittable_type.SizeOfCode #> <= buffer.Length);
 
 <# byte_access_gen.GenerateByteDeclarations(); #>
-			if(BitConverter.IsLittleEndian) {
+			if (BitConverter.IsLittleEndian) {
 <# byte_access_gen.GenerateBytesFromValue("value"); #>
 			} else {
 <# byte_access_gen.GenerateBytesFromValue("value", littleEndian: false); #>
 			}
 
 <# byte_access_gen.GenerateWriteBytesToBuffer(useSwapFormat: false); #>
+
+			return offset;
 		}
 		#endregion
 
@@ -99,7 +105,7 @@ namespace KSoft.Bitwise
 		public static <#= bittable_type.SignedKeyword #> Swap<#= const_keyword #>(
 			<#= bittable_type.SignedKeyword #> value)
 		{
-			return 
+			return
 <# byte_swap_gen.Generate(signed: true); #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
@@ -107,25 +113,27 @@ namespace KSoft.Bitwise
 		public static void Swap<#= overload_suffix_for_int #>(
 			ref <#= bittable_type.SignedKeyword #> value)
 		{
-			value = 
+			value =
 <# byte_swap_gen.Generate(signed: true); #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
 		/// <param name="offset">offset at which to perform the byte swap</param>
-		public static void Swap<#= const_keyword #>(byte[] buffer, int offset)
+		/// <returns>offset + <#= bittable_type.SizeOfInBytes #></returns>
+		public static int Swap<#= const_keyword #>(byte[] buffer, int offset)
 		{
-			SwapU<#= const_keyword #>(buffer, offset);
+			return SwapU<#= const_keyword #>(buffer, offset);
 		}
 		/// <summary>Replaces <#= bittable_type.SizeOfInBytes #> bytes in an array with a integer value</summary>
 		/// <param name="buffer">byte buffer</param>
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
+		/// <returns>offset + <#= bittable_type.SizeOfInBytes #></returns>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		public static void ReplaceBytes<#= overload_suffix_for_int #>(byte[] buffer, int offset,
+		public static int ReplaceBytes<#= overload_suffix_for_int #>(byte[] buffer, int offset,
 			<#= bittable_type.SignedKeyword #> value)
 		{
-			ReplaceBytes<#= overload_suffix_for_uint #>(buffer, offset, (<#= prim_keyword #>)value);
+			return ReplaceBytes<#= overload_suffix_for_uint #>(buffer, offset, (<#= prim_keyword #>)value);
 		}
 		#endregion
 

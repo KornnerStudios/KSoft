@@ -9,9 +9,6 @@ namespace KSoft.Bitwise
 		public struct Swapper
 		{
 			readonly short[] kCodes;
-			readonly int kSizeOf;
-
-			int mCodesIndex;
 
 			public Swapper(int sizeOf, params short[] codes)
 			{
@@ -19,57 +16,55 @@ namespace KSoft.Bitwise
 				Contract.Requires<ArgumentNullException>(codes != null);
 
 				kCodes = codes;
-				kSizeOf = sizeOf;
-
-				mCodesIndex = 0;
 			}
 			public Swapper(IByteSwappable definition)
 			{
 				Contract.Requires<ArgumentNullException>(definition != null);
 
 				kCodes = definition.ByteSwapCodes;
-				kSizeOf = definition.SizeOf;
-
-				mCodesIndex = 0;
 			}
 
-			public void SwapData(byte[] buffer, int startIndex = 0)
+			public int SwapData(byte[] buffer, int startIndex = 0)
 			{
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
 
 				int size_in_bytes, size_in_codes;
-				SwapData(buffer, startIndex, out size_in_bytes, out size_in_codes);
+				return SwapData(buffer, startIndex, out size_in_bytes, out size_in_codes);
 			}
-			public void SwapData(byte[] buffer, int startIndex,
+
+			public int SwapData(byte[] buffer, int startIndex,
 				out int sizeInBytes, out int sizeInCodes)
 			{
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
+				Contract.Requires<ArgumentOutOfRangeException>(buffer == null || startIndex <= buffer.Length);
 
-				sizeInBytes = 0;
-				sizeInCodes = 0;
+				return SwapDataImpl(buffer, startIndex, out sizeInBytes, out sizeInCodes, 0);
+			}
 
-				Contract.Assert(kCodes[mCodesIndex] == (int)BsCode.ArrayStart);
-				int array_count = kCodes[mCodesIndex + 1]; // array count comes after ArrayStart
-				int array_index = 0;
+			private int SwapDataImpl(byte[] buffer, int startIndex
+				, out int outSizeInBytes, out int outSizeInCodes
+				, int codesStartIndex)
+			{
+				outSizeInBytes = outSizeInCodes = 0;
+				int size_in_bytes = 0;
+				int size_in_codes = 0;
+
+				int codes_index = codesStartIndex;
+				Contract.Assert(kCodes[codes_index] == (int)BsCode.ArrayStart);
+
+				int array_count = kCodes[codes_index + 1]; // array count comes after ArrayStart
 
 				bool buffer_is_valid = buffer != null;
-				bool done;
-				for(int buffer_index = startIndex;
-					array_index < array_count; 
-					array_index++, buffer_index += kSizeOf)
+				int buffer_index = startIndex;
+				for (int elements_remaining = array_count; elements_remaining > 0; )
 				{
-					sizeInCodes = 2;
-					done = false;
-
-					while(!done)
+					size_in_codes = 2;
+					bool found_array_end = false;
+					for (codes_index = codesStartIndex + size_in_codes; !found_array_end; )
 					{
-						// We don't want to increment sizeInCodes just yet in case this is an ArrayStart. In which case we'll 
-						// just recurse into SwapData again and it'll start the chain over again at the ArrayStart's index
-						short code = kCodes[mCodesIndex + sizeInCodes];
-
-						switch(code)
+						var current_code = kCodes[codes_index];
+						switch (current_code)
 						{
 							#region Word
 							case (int)BsCode.Int16:
@@ -79,7 +74,9 @@ namespace KSoft.Bitwise
 									buffer_index += sizeof(short);
 								}
 
-								sizeInBytes += sizeof(short);
+								size_in_bytes += sizeof(short);
+								size_in_codes++;
+								codes_index++;
 								break;
 							#endregion
 
@@ -91,7 +88,9 @@ namespace KSoft.Bitwise
 									buffer_index += sizeof(int);
 								}
 
-								sizeInBytes += sizeof(int);
+								size_in_bytes += sizeof(int);
+								size_in_codes++;
+								codes_index++;
 								break;
 							#endregion
 
@@ -103,40 +102,56 @@ namespace KSoft.Bitwise
 									buffer_index += sizeof(long);
 								}
 
-								sizeInBytes += sizeof(long);
+								size_in_bytes += sizeof(long);
+								size_in_codes++;
+								codes_index++;
 								break;
 							#endregion
 
 							case (int)BsCode.ArrayStart:
 								int recursive_size_in_bytes, recursive_size_in_codes;
 
-								// This is why we didn't increment sizeInCodes before the 'switch'
-								mCodesIndex += sizeInCodes; // enter new byte code region
-								SwapData(buffer, startIndex,
-									out recursive_size_in_bytes, out recursive_size_in_codes);
-								mCodesIndex -= sizeInCodes; // exit new byte code region
+								SwapDataImpl(buffer, buffer_index,
+									out recursive_size_in_bytes, out recursive_size_in_codes,
+									codes_index);
 
-								sizeInCodes++; // increment over array count
+								if (buffer_is_valid)
+									buffer_index += recursive_size_in_bytes;
+
+								codes_index += recursive_size_in_codes;
+								size_in_codes += recursive_size_in_codes;
+								size_in_bytes += recursive_size_in_bytes;
 								break;
 
 							case (int)BsCode.ArrayEnd:
-								done = true;
+								codes_index++;
+								size_in_codes++;
+								elements_remaining--;
+								found_array_end = true;
 								break;
 
 							#region Skip (default)
 							default:
-								if (code < 0)
+								if (current_code < 0)
 									throw new Debug.UnreachableException();
 
-								sizeInBytes += code;
-								buffer_index += code;
+								if (buffer_is_valid)
+									buffer_index += current_code;
+
+								codes_index++;
+								size_in_codes++;
+								size_in_bytes += current_code;
 								break;
 							#endregion
 						}
-
-						sizeInCodes++;
 					}
 				}
+
+				outSizeInBytes = size_in_bytes;
+				outSizeInCodes = size_in_codes;
+				return buffer_is_valid
+					? buffer_index
+					: TypeExtensions.kNone;
 			}
 		};
 	};

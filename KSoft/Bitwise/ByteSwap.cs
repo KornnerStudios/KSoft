@@ -31,7 +31,8 @@ namespace KSoft.Bitwise
 		// ArrayStart, {Count}, {Elements}, ArrayEnd
 		internal const int kMinumumNumberOfDefinitionBsCodes = 4;
 
-		struct BsDefinition : IByteSwappable
+		public struct BsDefinition
+			: IByteSwappable
 		{
 			readonly string kName;
 			public override string ToString()	{ return kName; }
@@ -53,7 +54,13 @@ namespace KSoft.Bitwise
 			}
 		};
 
-		public static int SwapData(IByteSwappable definition, byte[] buffer, 
+		/// <summary>Byte swap a given structure a number of times over a range of bytes</summary>
+		/// <param name="definition">Structure definition in terms of byte swap codes</param>
+		/// <param name="buffer">Buffer containing the bytes of an instance of the definition</param>
+		/// <param name="startIndex">Where to start processing the definition in the buffer</param>
+		/// <param name="count">Number of times to process the definition on the buffer</param>
+		/// <returns>Offset in <paramref name="buffer"/> where processing ended</returns>
+		public static int SwapData(IByteSwappable definition, byte[] buffer,
 			int startIndex = 0, int count = 1)
 		{
 			Contract.Requires<ArgumentNullException>(definition != null);
@@ -66,22 +73,25 @@ namespace KSoft.Bitwise
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
 			if (count == 0)
-				return 0;
+				return startIndex;
 
 			var swap = new Swapper(definition);
-			swap.SwapData(buffer, 0);
+			int buffer_index = startIndex;
+			for (int elements_remaining = count; elements_remaining > 0; elements_remaining--)
+				buffer_index = swap.SwapData(buffer, buffer_index);
 
-			return definition.SizeOf;
+			Contract.Assert(buffer_index == (startIndex + (definition.SizeOf * count)));
+			return buffer_index;
 		}
 
 		#region Int byte swap definitions
 		/// <summary>Byte-swap definition for a 16-bit integer</summary>
-		public static readonly IByteSwappable kInt16Definition = new BsDefinition("Int16", sizeof(short), 
+		public static readonly IByteSwappable kInt16Definition = new BsDefinition("Int16", sizeof(short),
 			(short)BsCode.ArrayStart, 1,
 			(short)BsCode.Int16,
 			(short)BsCode.ArrayEnd);
 		/// <summary>Byte-swap definition for a 32-bit integer</summary>
-		public static readonly IByteSwappable kInt32Definition = new BsDefinition("Int32", sizeof(int), 
+		public static readonly IByteSwappable kInt32Definition = new BsDefinition("Int32", sizeof(int),
 			(short)BsCode.ArrayStart, 1,
 			(short)BsCode.Int32,
 			(short)BsCode.ArrayEnd);

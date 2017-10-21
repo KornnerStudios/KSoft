@@ -312,6 +312,47 @@ namespace KSoft
 			return h;
 		}
 
+		public static char[] ToWideCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
+		{
+			Contract.Requires(maxBufferSize >= 0);
+			Contract.Ensures(Contract.Result<char[]>() != null);
+
+			var buffer = new char[maxBufferSize];
+
+			int x;
+			for (x = 0; s != null && x < s.Length; x++)
+				buffer[x] = s[x];
+
+			if (s != null && x == maxBufferSize && nullTerminate)
+				buffer[x - 1] = '\0';
+
+			return buffer;
+		}
+
+		public static byte[] ToAsciiCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
+		{
+			Contract.Requires(maxBufferSize >= 0);
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			var buffer = new byte[maxBufferSize];
+
+			int x;
+			for (x = 0; s != null && x < s.Length; x++)
+			{
+				char c = s[x];
+				if (c < 0 || c > sbyte.MaxValue)
+					throw new System.IO.InvalidDataException(string.Format("0x{0:X4} does not look like ASCII. #{1} in '{2}'",
+						(int)c, x, s));
+
+				buffer[x] = (byte)c;
+			}
+
+			if (s != null && x == maxBufferSize && nullTerminate)
+				buffer[x - 1] = 0;
+
+			return buffer;
+		}
+
 		/// <remarks>Handles the case where no args are provided, for whatever reason, so there's no hidden object[] allocation</remarks>
 		public static string AddFormat(this ICollection<string> collection, string value)
 		{

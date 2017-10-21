@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Contracts = System.Diagnostics.Contracts;
@@ -121,8 +122,8 @@ namespace KSoft.IO
 		/// <returns>The VAT's current address value before this call</returns>
 		public Values.PtrHandle VirtualAddressTranslationPop()
 		{
-			var result = BaseAddress.Is64bit 
-				? Values.PtrHandle.InvalidHandle64 
+			var result = BaseAddress.Is64bit
+				? Values.PtrHandle.InvalidHandle64
 				: Values.PtrHandle.InvalidHandle32;
 
 			if (Reader != null) result = Reader.VirtualAddressTranslationPop();
@@ -209,7 +210,7 @@ namespace KSoft.IO
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
 		/// <remarks>
 		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.ByteOrder"/>
-		/// then no actual object state changes will happen. However, this construct 
+		/// then no actual object state changes will happen. However, this construct
 		/// will continue to be usable and will Dispose of properly with no error
 		/// </remarks>
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)
@@ -254,7 +255,7 @@ namespace KSoft.IO
 				Writer = new EndianWriter(baseStream);
 		}
 
-		public EndianStream(Stream baseStream, Encoding encoding, 
+		public EndianStream(Stream baseStream, Encoding encoding,
 			Shell.EndianFormat byteOrder,
 			object streamOwner = null, string name = null, FileAccess permissions = FileAccess.ReadWrite)
 		{
@@ -877,6 +878,36 @@ namespace KSoft.IO
 
 				 if (IsReading) read (Reader, ref array);
 			else if (IsWriting) write(Writer, array);
+
+			return this;
+		}
+		#endregion
+
+		#region Stream List
+		public EndianStream StreamListElementsWithClear<T>(IList<T> values, int readCount, Func<T> initializer)
+			where T : class, IO.IEndianStreamSerializable
+		{
+			Contract.Requires(values != null);
+			Contract.Requires(initializer != null);
+
+			bool reading = IsReading;
+
+			if (reading)
+				values.Clear();
+			else
+				readCount = values.Count;
+
+			for (int x = 0; x < readCount; x++)
+			{
+				T v = reading
+					? initializer()
+					: values[x];
+
+				Stream(v);
+
+				if (!reading)
+					values.Add(v);
+			}
 
 			return this;
 		}

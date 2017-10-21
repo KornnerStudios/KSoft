@@ -393,7 +393,7 @@ namespace KSoft.Bitwise.Test
 		class TestUnionData1
 		{
 			public string Str;
-			public bool Bool;
+			public bool Bool = false;
 		};
 		class TestUnionData2
 		{

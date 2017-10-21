@@ -8,6 +8,7 @@ namespace KSoft.Bitwise.Test
 	{
 		const ulong kBeforeValue = 0x1234123412341234;
 		const ulong kAfterValue = 0x3412341234123412;
+		const ulong kSkipValue = 0x012345678ABCDEF0;
 
 		const ulong kBeforeValueUInt40 = 0x123456789A;
 		const ulong kAfterValueUInt40 = 0x9A78563412;
@@ -140,6 +141,137 @@ namespace KSoft.Bitwise.Test
 			ByteSwap.SwapInt24(buffer, 0);
 			buffer_bc = BitConverter.GetBytes((uint)value_after);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+		}
+
+		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken
+		[TestMethod]
+		public void ByteSwap_SwapDataIntegersTest()
+		{
+			var buffer = new byte[sizeof(ulong) + sizeof(uint) + sizeof(ushort)];
+			int buffer_index;
+
+			buffer_index = 0;
+			{
+				ReplaceBytes(Bits.kInt64BitCount, kBeforeValue, buffer, ref buffer_index);
+				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+
+			buffer_index = 0;
+			{
+				buffer_index += ByteSwap.SwapData(ByteSwap.kInt64Definition, buffer, buffer_index);
+				buffer_index += ByteSwap.SwapData(ByteSwap.kInt32Definition, buffer, buffer_index);
+				buffer_index += ByteSwap.SwapData(ByteSwap.kInt16Definition, buffer, buffer_index);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+
+			buffer_index = 0;
+			{
+				AssertBytesAreEqual(Bits.kInt64BitCount, kAfterValue, buffer, ref buffer_index);
+				AssertBytesAreEqual(Bits.kInt32BitCount, kAfterValue, buffer, ref buffer_index);
+				AssertBytesAreEqual(Bits.kInt16BitCount, kAfterValue, buffer, ref buffer_index);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+		}
+
+		[TestMethod]
+		public void ByteSwap_SwapDataNestedArraysTest()
+		{
+			var bs_codes = new short[]
+			{
+				(int)BsCode.ArrayStart, 1,
+					(int)BsCode.ArrayStart, 2,
+						(int)BsCode.Int16,
+					(int)BsCode.ArrayEnd,
+					(int)BsCode.Int32,
+					(int)sizeof(ulong),
+					(int)BsCode.Int32,
+				(int)BsCode.ArrayEnd,
+			};
+			int structure_count = 2;
+			int structure_size =
+				(sizeof(ushort) * 2) +
+				sizeof(uint) +
+				sizeof(ulong) +
+				sizeof(uint);
+			var bs_definiton = new ByteSwap.BsDefinition("UnitTest", structure_size, bs_codes);
+
+			var buffer = new byte[structure_size * structure_count];
+			int buffer_index;
+
+			buffer_index = 0;
+			for (int x = 0; x < structure_count; x++)
+			{
+				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+
+				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+
+				ReplaceBytes(Bits.kInt64BitCount, kSkipValue, buffer, ref buffer_index);
+
+				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+
+			buffer_index = 0;
+			{
+				buffer_index += ByteSwap.SwapData(bs_definiton, buffer, buffer_index, structure_count);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+
+			buffer_index = 0;
+			for (int x = 0; x < structure_count; x++)
+			{
+				AssertBytesAreEqual(Bits.kInt16BitCount, kAfterValue, buffer, ref buffer_index);
+				AssertBytesAreEqual(Bits.kInt16BitCount, kAfterValue, buffer, ref buffer_index);
+
+				AssertBytesAreEqual(Bits.kInt32BitCount, kAfterValue, buffer, ref buffer_index);
+
+				AssertBytesAreEqual(Bits.kInt64BitCount, kSkipValue, buffer, ref buffer_index);
+
+				AssertBytesAreEqual(Bits.kInt32BitCount, kAfterValue, buffer, ref buffer_index);
+			}
+			Assert.AreEqual(buffer.Length, buffer_index);
+		}
+
+		private static void ReplaceBytes(int bitCount, ulong value, byte[] buffer, ref int bufferIndex)
+		{
+			switch (bitCount)
+			{
+				case Bits.kInt16BitCount:
+					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((ushort)value));
+					break;
+
+				case Bits.kInt32BitCount:
+					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((uint)value));
+					break;
+
+				case Bits.kInt64BitCount:
+					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((ulong)value));
+					break;
+			}
+		}
+
+		private void AssertBytesAreEqual(int bitCount, ulong expectedValue, byte[] buffer, ref int bufferIndex)
+		{
+			switch (bitCount)
+			{
+				case Bits.kInt16BitCount:
+					Assert.AreEqual(unchecked((ushort)expectedValue).ToString("X4"), BitConverter.ToUInt16(buffer, bufferIndex).ToString("X4"));
+					bufferIndex += sizeof(ushort);
+					break;
+
+				case Bits.kInt32BitCount:
+					Assert.AreEqual(unchecked((uint)expectedValue).ToString("X8"), BitConverter.ToUInt32(buffer, bufferIndex).ToString("X8"));
+					bufferIndex += sizeof(uint);
+					break;
+
+				case Bits.kInt64BitCount:
+					Assert.AreEqual(unchecked((ulong)expectedValue).ToString("X16"), BitConverter.ToUInt64(buffer, bufferIndex).ToString("X16"));
+					bufferIndex += sizeof(ulong);
+					break;
+			}
 		}
 	};
 }
