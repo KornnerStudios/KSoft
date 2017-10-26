@@ -71,14 +71,14 @@ namespace KSoft.Security.Cryptography
 			#endregion
 
 			#region Compute 32-bits
-			public void ComputeLE(uint value, uint adler32 = 1)
+			public void ComputeLE(uint value)
 			{
 				ComputeUpdate((value & 0x000000FFU) >> 0, ref s1, ref s2);
 				ComputeUpdate((value & 0x0000FF00U) >> 8, ref s1, ref s2);
 				ComputeUpdate((value & 0x00FF0000U) >> 16, ref s1, ref s2);
 				ComputeUpdate((value & 0xFF000000U) >> 24, ref s1, ref s2);
 			}
-			public void ComputeBE(uint value, uint adler32 = 1)
+			public void ComputeBE(uint value)
 			{
 				ComputeUpdate((value & 0xFF000000U) >> 24, ref s1, ref s2);
 				ComputeUpdate((value & 0x00FF0000U) >> 16, ref s1, ref s2);
@@ -95,16 +95,10 @@ namespace KSoft.Security.Cryptography
 				uint _value;
 
 				_value = lo;
-				ComputeUpdate((_value & 0x000000FFU) >> 0, ref s1, ref s2);
-				ComputeUpdate((_value & 0x0000FF00U) >> 8, ref s1, ref s2);
-				ComputeUpdate((_value & 0x00FF0000U) >> 16, ref s1, ref s2);
-				ComputeUpdate((_value & 0xFF000000U) >> 24, ref s1, ref s2);
+				ComputeLE(_value);
 
 				_value = hi;
-				ComputeUpdate((_value & 0x000000FFU) >> 0, ref s1, ref s2);
-				ComputeUpdate((_value & 0x0000FF00U) >> 8, ref s1, ref s2);
-				ComputeUpdate((_value & 0x00FF0000U) >> 16, ref s1, ref s2);
-				ComputeUpdate((_value & 0xFF000000U) >> 24, ref s1, ref s2);
+				ComputeLE(_value);
 			}
 			public void ComputeBE(ulong value)
 			{
@@ -113,16 +107,10 @@ namespace KSoft.Security.Cryptography
 				uint _value;
 
 				_value = hi;
-				ComputeUpdate((_value & 0xFF000000U) >> 24, ref s1, ref s2);
-				ComputeUpdate((_value & 0x00FF0000U) >> 16, ref s1, ref s2);
-				ComputeUpdate((_value & 0x0000FF00U) >> 8, ref s1, ref s2);
-				ComputeUpdate((_value & 0x000000FFU) >> 0, ref s1, ref s2);
+				ComputeBE(_value);
 
 				_value = lo;
-				ComputeUpdate((_value & 0xFF000000U) >> 24, ref s1, ref s2);
-				ComputeUpdate((_value & 0x00FF0000U) >> 16, ref s1, ref s2);
-				ComputeUpdate((_value & 0x0000FF00U) >> 8, ref s1, ref s2);
-				ComputeUpdate((_value & 0x000000FFU) >> 0, ref s1, ref s2);
+				ComputeBE(_value);
 			}
 			#endregion
 		};

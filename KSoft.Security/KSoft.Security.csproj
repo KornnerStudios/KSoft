@@ -19,6 +19,10 @@
   <ItemGroup>
     <Compile Include="Cryptography\Adler32.BitComputer.cs" />
     <Compile Include="Cryptography\Adler32.cs" />
+    <Compile Include="Cryptography\Crc16.BitComputer.cs" />
+    <Compile Include="Cryptography\Crc16.cs" />
+    <Compile Include="Cryptography\Crc16.Definition.cs" />
+    <Compile Include="Cryptography\Crc32.BitComputer.cs" />
     <Compile Include="Cryptography\Crc32.cs" />
     <Compile Include="Cryptography\Crc32.Definition.cs" />
     <Compile Include="Cryptography\JenkinsHash\JenkinsHash.cs" />

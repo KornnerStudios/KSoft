@@ -8,54 +8,53 @@ namespace KSoft.Security.Cryptography
 	// See also Karl Malbrain's compact CRC-32, with pre and post conditioning.
 	// See "A compact CCITT crc16 and crc32 C implementation that balances processor cache usage against speed":
 	// http://www.geocities.ws/malbrain/crc_c.html
-	// or https://github.com/richgel999/lzham_codec_devel/blob/master/lzhamdecomp/lzham_checksum.cpp#L47
 
-	public static partial class Crc32
+	public static partial class Crc16
 	{
 		public const int kCrcTableSize = 256;
-		public const uint kDefaultPolynomial = 0xEDB88320; // 0x04C11DB7 nets the same results
-		internal static readonly uint[] kDefaultTable = new Definition().CrcTable;
+		public const ushort kDefaultPolynomial = 0x1021;
+		internal static readonly ushort[] kDefaultTable = new Definition().CrcTable;
 	};
 
-	public sealed class CrcHash32
+	public sealed class CrcHash16
 		: HashAlgorithm
 	{
 		#region Registeration
-		public const string kAlgorithmName = "KSoft.Security.Cryptography.CrcHash32";
+		public const string kAlgorithmName = "KSoft.Security.Cryptography.CrcHash16";
 
-		public new static CrcHash32 Create(string algName)
+		public new static CrcHash16 Create(string algName)
 		{
-			return (CrcHash32)System.Security.Cryptography.CryptoConfig.CreateFromName(kAlgorithmName);
+			return (CrcHash16)System.Security.Cryptography.CryptoConfig.CreateFromName(kAlgorithmName);
 		}
-		public new static CrcHash32 Create()
+		public new static CrcHash16 Create()
 		{
 			return Create(kAlgorithmName);
 		}
 
-		static CrcHash32()
+		static CrcHash16()
 		{
-			System.Security.Cryptography.CryptoConfig.AddAlgorithm(typeof(CrcHash32), kAlgorithmName);
+			System.Security.Cryptography.CryptoConfig.AddAlgorithm(typeof(CrcHash16), kAlgorithmName);
 		}
 		#endregion
 
-		readonly Crc32.Definition mDefinition;
+		readonly Crc16.Definition mDefinition;
 		byte[] mHashBytes;
-		public uint Hash32 { get; private set; }
+		public ushort Hash16 { get; private set; }
 
-		public CrcHash32()
+		public CrcHash16()
 		{
-			base.HashSizeValue = Bits.kInt32BitCount;
+			base.HashSizeValue = Bits.kInt16BitCount;
 
-			mDefinition = new Crc32.Definition(crcTable: Crc32.kDefaultTable);
-			mHashBytes = new byte[sizeof(uint)];
+			mDefinition = new Crc16.Definition(crcTable: Crc16.kDefaultTable);
+			mHashBytes = new byte[sizeof(ushort)];
 		}
 
 		public override void Initialize()
 		{
 			Array.Clear(mHashBytes, 0, mHashBytes.Length);
-			Hash32 = mDefinition.InitialValue;
+			Hash16 = mDefinition.InitialValue;
 
-			Hash32 ^= mDefinition.XorIn;
+			Hash16 ^= mDefinition.XorIn;
 		}
 
 		/// <summary>Performs the hash algorithm on the data provided.</summary>
@@ -64,14 +63,14 @@ namespace KSoft.Security.Cryptography
 		/// <param name="count">How many bytes in the array to read.</param>
 		protected override void HashCore(byte[] array, int startIndex, int count)
 		{
-			Hash32 = mDefinition.HashCore(Hash32, array, startIndex, count);
+			Hash16 = mDefinition.HashCore(Hash16, array, startIndex, count);
 		}
 
 		/// <summary>Performs any final activities required by the hash algorithm.</summary>
 		/// <returns>The final hash value.</returns>
 		protected override byte[] HashFinal()
 		{
-			Bitwise.ByteSwap.ReplaceBytes(mHashBytes, 0, Hash32 ^ mDefinition.XorOut);
+			Bitwise.ByteSwap.ReplaceBytes(mHashBytes, 0, Hash16 ^ mDefinition.XorOut);
 			return mHashBytes;
 		}
 	};
