@@ -10,7 +10,7 @@ namespace KSoft.Bitwise
 		public const int kMaxBitCount = Bits.kInt64BitCount;
 
 		public static readonly BitFieldTraits Empty = new BitFieldTraits();
-		
+
 		#region Fields
 		readonly byte mBitCount;
 		readonly byte mBitIndex;
@@ -40,8 +40,14 @@ namespace KSoft.Bitwise
 		public IntegerUnion Bitmask { get {
 			if (Is32Bit)
 				return IntegerUnion.FromUInt32(Bits.BitCountToMask32(BitCount));
-			else 
+			else
 				return IntegerUnion.FromUInt64(Bits.BitCountToMask64(BitCount));
+		} }
+		public ushort Bitmask16 { get {
+			Contract.Assert(!Is64Bit, "Tried to access a 64-bit based BitField's bitmask as 16-bits");
+			Contract.Assert(Bitmask.u32 == (ushort)Bitmask.u32, "Tried to access 32-bit based BitField bitmask as 16-bits");
+
+			return (ushort)Bitmask.u32;
 		} }
 		public uint Bitmask32 { get {
 			Contract.Assert(!Is64Bit, "Tried to access a 64-bit based BitField's bitmask as 32-bits");
@@ -56,7 +62,7 @@ namespace KSoft.Bitwise
 		/// <summary>Are these traits invalid?</summary>
 		/// <remarks>This would be the case if the default constructor was called (as this is a value type)</remarks>
 		public bool IsEmpty { get { return BitCount == 0; } }
-		
+
 		public int NextFieldBitIndex { get {
 			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= kMaxBitCount);
 

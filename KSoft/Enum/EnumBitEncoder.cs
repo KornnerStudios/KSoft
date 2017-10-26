@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -13,7 +12,7 @@ namespace KSoft
 		/// <param name="bits">Bit data as an unsigned integer</param>
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and
 		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
 		/// </remarks>
 		[Contracts.Pure]
@@ -58,6 +57,15 @@ namespace KSoft
 
 			Contract.Assert(v <= kMaxValue || (kHasNone && v == ulong.MaxValue));
 			return Reflection.EnumValue<TEnum>.FromUInt64(v);
+		}
+
+		public ushort BitEncode(TEnum value, ushort bits, Bitwise.BitFieldTraits traits)
+		{
+			return (ushort)BitEncode(value, bits, traits.BitIndex);
+		}
+		public TEnum BitEncode(uint bits, Bitwise.BitFieldTraits traits)
+		{
+			return BitDecode(bits, traits.BitIndex);
 		}
 	};
 

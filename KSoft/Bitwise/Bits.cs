@@ -380,5 +380,43 @@ namespace KSoft
 			return count;
 		}
 		#endregion
+
+		#region BitDecode 16
+		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits"></param>
+		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public static ushort BitDecode(ushort bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex < kInt16BitCount);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex+traits.BitCount <= kInt16BitCount);
+
+			return (ushort)((bits >> traits.BitIndex) & traits.Bitmask16);
+		}
+		#endregion
+		#region BitEncode 16
+		/// <summary>Bit encode a value into an unsigned integer, removing the original data in the value's range</summary>
+		/// <param name="value">Value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="traits"></param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		/// <remarks>
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
+		/// so any existing values will be lost after <paramref name="value"/> is added
+		/// </remarks>
+		[Contracts.Pure]
+		public static ushort BitEncode(ushort value, ushort bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex < kInt16BitCount);
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex+traits.BitCount <= kInt16BitCount);
+
+			var bitmask = (uint)traits.Bitmask16;
+			// Use the bit mask's invert so we can get all of the non-value bits
+			return (ushort)BitEncodeFlags(value, bits & (~bitmask), traits.BitIndex, bitmask);
+		}
+		#endregion
 	};
 }

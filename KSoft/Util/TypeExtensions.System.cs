@@ -29,6 +29,76 @@ namespace KSoft
 			}
 		}
 
+		#region Boolean
+		public static sbyte SByte(this bool b)
+		{
+			return b == false ? (sbyte)0 : (sbyte)1;
+		}
+		public static byte ToByte(this bool b)
+		{
+			return b == false ? (byte)0U : (byte)1U;
+		}
+		public static bool ToBoolean(this sbyte v)
+		{
+			return v != 0;
+		}
+		public static bool ToBoolean(this byte v)
+		{
+			return v != 0;
+		}
+
+		public static short ToInt16(this bool b)
+		{
+			return b == false ? (short)0 : (short)1;
+		}
+		public static ushort ToUInt16(this bool b)
+		{
+			return b == false ? (ushort)0 : (ushort)1;
+		}
+		public static bool ToBoolean(this short v)
+		{
+			return v != 0;
+		}
+		public static bool ToBoolean(this ushort v)
+		{
+			return v != 0;
+		}
+
+		public static int ToInt32(this bool b)
+		{
+			return b == false ? 0 : 1;
+		}
+		public static uint ToUInt32(this bool b)
+		{
+			return b == false ? 0U : 1U;
+		}
+		public static bool ToBoolean(this int v)
+		{
+			return v != 0;
+		}
+		public static bool ToBoolean(this uint v)
+		{
+			return v != 0;
+		}
+
+		public static long ToInt64(this bool b)
+		{
+			return b == false ? 0L : 1L;
+		}
+		public static ulong ToUInt64(this bool b)
+		{
+			return b == false ? 0UL : 1UL;
+		}
+		public static bool ToBoolean(this long v)
+		{
+			return v != 0;
+		}
+		public static bool ToBoolean(this ulong v)
+		{
+			return v != 0;
+		}
+		#endregion
+
 		#region Exception
 		public static void UnusedExceptionVar(this Exception e)
 		{

@@ -10,14 +10,14 @@ namespace KSoft
 	/// <remarks>
 	/// Regular Enumerations should have a member called <b>kMax</b>. This value
 	/// must be the highest value and shouldn't actually be used.
-	/// If <b>kMax</b> doesn't exist, the highest value found, plus 1, is used as 
+	/// If <b>kMax</b> doesn't exist, the highest value found, plus 1, is used as
 	/// the assumed <b>kMax</b>
-	/// 
-	/// <see cref="FlagsAttribute"/> Enumerations should have a member called 
-	/// <b>kAll</b>. This value must be equal to all the usable bits in the type. 
-	/// If you want to leave a certain bit or bits out of the encoder, don't include 
+	///
+	/// <see cref="FlagsAttribute"/> Enumerations should have a member called
+	/// <b>kAll</b>. This value must be equal to all the usable bits in the type.
+	/// If you want to leave a certain bit or bits out of the encoder, don't include
 	/// them in <b>kAll</b>'s value.
-	/// If <b>kAll</b> doesn't exist, ALL members are OR'd together to create the 
+	/// If <b>kAll</b> doesn't exist, ALL members are OR'd together to create the
 	/// assumed <b>kAll</b> value.
 	/// </remarks>
 	[System.Diagnostics.DebuggerDisplay("MaxValue = {MaxValueTrait}, Bitmask = {BitmaskTrait}, BitCount = {BitCountTrait}")]
@@ -27,7 +27,7 @@ namespace KSoft
 		/// <remarks>Only made public for some Contracts in <see cref="Collections.EnumBitSet"/></remarks>
 		public static readonly bool kHasNone;
 		/// <summary>
-		/// The <see cref="kEnumMaxMemberName"/>\<see cref="kFlagsMaxMemberName"/> 
+		/// The <see cref="kEnumMaxMemberName"/>\<see cref="kFlagsMaxMemberName"/>
 		/// value or the member value whom this class assumed would be the max
 		/// </summary>
 		static readonly uint kMaxValue;
@@ -106,8 +106,8 @@ namespace KSoft
 			{
 				maxValue = greatest;
 
-				// NOTE: we add +1 because the [Bits.GetBitmaskEnum32] method assumes the parameter 
-				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we 
+				// NOTE: we add +1 because the [Bits.GetBitmaskEnum32] method assumes the parameter
+				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we
 				// fake it
 				if (!Reflection.EnumUtil<TEnum>.IsFlags)
 					maxValue += 1;
@@ -186,9 +186,21 @@ namespace KSoft
 		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="traits">Index in <paramref name="bits"/> to start encoding at</param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		[Contracts.Pure]
+		public uint BitEncode(TEnum value, uint bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires(!traits.IsEmpty);
+
+			return BitEncode(value, bits, traits.BitIndex);
+		}
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and
 		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
 		/// </remarks>
 		[Contracts.Pure]
@@ -240,6 +252,17 @@ namespace KSoft
 		}
 		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits">Index in <paramref name="bits"/> to start decoding at</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public TEnum BitDecode(uint bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires(!traits.IsEmpty);
+
+			return BitDecode(bits, traits.BitIndex);
+		}
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start decoding at</param>
 		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
 		/// <remarks>
@@ -268,7 +291,7 @@ namespace KSoft
 		/// <param name="s">Stream to read from</param>
 		/// <param name="value">Enum value read from the stream</param>
 		/// <remarks>
-		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to
 		/// decide how big of a numeric type to read from the stream.
 		/// </remarks>
 		public static void Read(IO.EndianReader s, out TEnum value)
@@ -298,7 +321,7 @@ namespace KSoft
 		/// <param name="s">Stream to write to</param>
 		/// <param name="value">Value to write to the stream</param>
 		/// <remarks>
-		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to
 		/// decide how big of a numeric type to write to the stream.
 		/// </remarks>
 		public static void Write(IO.EndianWriter s, TEnum value)
@@ -330,14 +353,14 @@ namespace KSoft
 	/// <remarks>
 	/// Regular Enumerations should have a member called <b>kMax</b>. This value
 	/// must be the highest value and shouldn't actually be used.
-	/// If <b>kMax</b> doesn't exist, the highest value found, plus 1, is used as 
+	/// If <b>kMax</b> doesn't exist, the highest value found, plus 1, is used as
 	/// the assumed <b>kMax</b>
-	/// 
-	/// <see cref="FlagsAttribute"/> Enumerations should have a member called 
-	/// <b>kAll</b>. This value must be equal to all the usable bits in the type. 
-	/// If you want to leave a certain bit or bits out of the encoder, don't include 
+	///
+	/// <see cref="FlagsAttribute"/> Enumerations should have a member called
+	/// <b>kAll</b>. This value must be equal to all the usable bits in the type.
+	/// If you want to leave a certain bit or bits out of the encoder, don't include
 	/// them in <b>kAll</b>'s value.
-	/// If <b>kAll</b> doesn't exist, ALL members are OR'd together to create the 
+	/// If <b>kAll</b> doesn't exist, ALL members are OR'd together to create the
 	/// assumed <b>kAll</b> value.
 	/// </remarks>
 	[System.Diagnostics.DebuggerDisplay("MaxValue = {MaxValueTrait}, Bitmask = {BitmaskTrait}, BitCount = {BitCountTrait}")]
@@ -347,7 +370,7 @@ namespace KSoft
 		/// <remarks>Only made public for some Contracts in <see cref="Collections.EnumBitSet"/></remarks>
 		public static readonly bool kHasNone;
 		/// <summary>
-		/// The <see cref="kEnumMaxMemberName"/>\<see cref="kFlagsMaxMemberName"/> 
+		/// The <see cref="kEnumMaxMemberName"/>\<see cref="kFlagsMaxMemberName"/>
 		/// value or the member value whom this class assumed would be the max
 		/// </summary>
 		static readonly ulong kMaxValue;
@@ -427,8 +450,8 @@ namespace KSoft
 			{
 				maxValue = greatest;
 
-				// NOTE: we add +1 because the [Bits.GetBitmaskEnum64] method assumes the parameter 
-				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we 
+				// NOTE: we add +1 because the [Bits.GetBitmaskEnum64] method assumes the parameter
+				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we
 				// fake it
 				if (!Reflection.EnumUtil<TEnum>.IsFlags)
 					maxValue += 1;
@@ -507,9 +530,21 @@ namespace KSoft
 		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="bits">Bit data as an unsigned integer</param>
+		/// <param name="traits">Index in <paramref name="bits"/> to start encoding at</param>
+		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
+		[Contracts.Pure]
+		public ulong BitEncode(TEnum value, ulong bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires(!traits.IsEmpty);
+
+			return BitEncode(value, bits, traits.BitIndex);
+		}
+		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
+		/// <param name="value">Enumeration value to encode</param>
+		/// <param name="bits">Bit data as an unsigned integer</param>
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and
 		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
 		/// </remarks>
 		[Contracts.Pure]
@@ -561,6 +596,17 @@ namespace KSoft
 		}
 		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
+		/// <param name="traits">Index in <paramref name="bits"/> to start decoding at</param>
+		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
+		[Contracts.Pure]
+		public TEnum BitDecode(ulong bits, Bitwise.BitFieldTraits traits)
+		{
+			Contract.Requires(!traits.IsEmpty);
+
+			return BitDecode(bits, traits.BitIndex);
+		}
+		/// <summary>Bit decode an enumeration value from an unsigned integer</summary>
+		/// <param name="bits">Unsigned integer to decode from</param>
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start decoding at</param>
 		/// <returns>The enumeration value as it stood before it was ever encoded into <paramref name="bits"/></returns>
 		/// <remarks>
@@ -589,7 +635,7 @@ namespace KSoft
 		/// <param name="s">Stream to read from</param>
 		/// <param name="value">Enum value read from the stream</param>
 		/// <remarks>
-		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to
 		/// decide how big of a numeric type to read from the stream.
 		/// </remarks>
 		public static void Read(IO.EndianReader s, out TEnum value)
@@ -622,7 +668,7 @@ namespace KSoft
 		/// <param name="s">Stream to write to</param>
 		/// <param name="value">Value to write to the stream</param>
 		/// <remarks>
-		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to 
+		/// Uses <typeparamref name="TEnum"/>'s underlying <see cref="TypeCode"/> to
 		/// decide how big of a numeric type to write to the stream.
 		/// </remarks>
 		public static void Write(IO.EndianWriter s, TEnum value)
