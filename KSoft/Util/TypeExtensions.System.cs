@@ -29,6 +29,21 @@ namespace KSoft
 			}
 		}
 
+		public static string ToStringInvariant(this float v, string format = null)
+		{
+			if (!string.IsNullOrEmpty(format))
+				return v.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+
+			return v.ToString(System.Globalization.CultureInfo.InvariantCulture);
+		}
+		public static string ToStringInvariant(this double v, string format = null)
+		{
+			if (!string.IsNullOrEmpty(format))
+				return v.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+
+			return v.ToString(System.Globalization.CultureInfo.InvariantCulture);
+		}
+
 		#region Boolean
 		public static sbyte SByte(this bool b)
 		{
@@ -889,6 +904,7 @@ namespace KSoft
 		#endregion
 
 		#region HashAlgorithm
+		//[Obsolete("Use StreamHashComputer instead")]
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,
 			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false,
@@ -898,7 +914,7 @@ namespace KSoft
 			Contract.Requires<ArgumentException>(inputStream.CanSeek);
 			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((offset+count) <= inputStream.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= inputStream.Length);
 
 			int buffer_size;
 			byte[] buffer;
@@ -950,6 +966,7 @@ namespace KSoft
 			return algo.Hash;
 		}
 
+		//[Obsolete("Use StreamBlockHashComputer instead")]
 		public static byte[] ComputeHash(this Security.Cryptography.BlockHashAlgorithm algo,
 			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false)
@@ -958,7 +975,7 @@ namespace KSoft
 			Contract.Requires<ArgumentException>(inputStream.CanSeek);
 			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((offset+count) <= inputStream.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= inputStream.Length);
 
 			algo.Initialize();
 

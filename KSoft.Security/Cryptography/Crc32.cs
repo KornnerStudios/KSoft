@@ -43,10 +43,17 @@ namespace KSoft.Security.Cryptography
 		public uint Hash32 { get; private set; }
 
 		public CrcHash32()
+			: this(new Crc32.Definition(crcTable: Crc32.kDefaultTable))
 		{
+		}
+
+		public CrcHash32(Crc32.Definition definition)
+		{
+			Contract.Requires(definition != null);
+
 			base.HashSizeValue = Bits.kInt32BitCount;
 
-			mDefinition = new Crc32.Definition(crcTable: Crc32.kDefaultTable);
+			mDefinition = definition;
 			mHashBytes = new byte[sizeof(uint)];
 		}
 

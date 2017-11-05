@@ -42,10 +42,17 @@ namespace KSoft.Security.Cryptography
 		public ushort Hash16 { get; private set; }
 
 		public CrcHash16()
+			: this(new Crc16.Definition(crcTable: Crc16.kDefaultTable))
 		{
+		}
+
+		public CrcHash16(Crc16.Definition definition)
+		{
+			Contract.Requires(definition != null);
+
 			base.HashSizeValue = Bits.kInt16BitCount;
 
-			mDefinition = new Crc16.Definition(crcTable: Crc16.kDefaultTable);
+			mDefinition = definition;
 			mHashBytes = new byte[sizeof(ushort)];
 		}
 

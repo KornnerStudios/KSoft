@@ -31,9 +31,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
+using KSoft; // KM00
 
 namespace MiniJSON {
     // Example usage:
@@ -809,8 +809,8 @@ namespace MiniJSON {
                 // They always have, I'm just letting you know.
                 // Previously floats and doubles lost precision too.
                 if (value is float) {
-                    // KM00 added CultureInfo.InvariantCulture
-                    builder.Append(((float) value).ToString("R", CultureInfo.InvariantCulture));
+                    // KM00 changed to ToStringInvariant with recommended round trip specifier
+                    builder.Append(((float) value).ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
                 } else if (value is int
                     || value is uint
                     || value is long
@@ -822,8 +822,8 @@ namespace MiniJSON {
                     builder.Append(value);
                 } else if (value is double
                     || value is decimal) {
-                    // KM00 added CultureInfo.InvariantCulture
-                    builder.Append(Convert.ToDouble(value).ToString("R", CultureInfo.InvariantCulture));
+                    // KM00 changed to ToStringInvariant with recommended round trip specifier
+                    builder.Append(Convert.ToDouble(value).ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
                 } else {
                     SerializeString(value.ToString());
                 }

@@ -209,6 +209,10 @@ namespace KSoft
 			}
 		};
 
+		public const string kFloatRoundTripFormatSpecifier = "G9";
+		public const string kSingleRoundTripFormatSpecifier = kFloatRoundTripFormatSpecifier;
+		public const string kDoubleRoundTripFormatSpecifier = "G17";
+
 		// based on the reference source, this is what the default number styles are
 		public const NumberStyles kFloatTryParseNumberStyles = 0
 			| NumberStyles.Float
