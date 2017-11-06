@@ -156,6 +156,12 @@ namespace KSoft.T4.Bitwise
 			yield return PrimitiveDefinitions.kUInt32;
 			yield return PrimitiveDefinitions.kInt32;
 		} }
+		public static IEnumerable<NumberCodeDefinition> BittableTypesInt32And64 { get {
+			yield return PrimitiveDefinitions.kUInt32;
+			yield return PrimitiveDefinitions.kInt32;
+			yield return PrimitiveDefinitions.kUInt64;
+			yield return PrimitiveDefinitions.kInt64;
+		} }
 		#endregion
 
 		public class IntegerByteAccessCodeGenerator

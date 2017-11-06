@@ -12,7 +12,7 @@ namespace KSoft
 	partial class IntegerMath
 	{
 		#region Align
-<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32) { #>
+<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32And64) { #>
 		/// <summary>Takes <paramref name="value"/> and returns what it would be if it were aligned to <paramref name="align_size"/> bytes</summary>
 		/// <param name="alignmentBit">Alignment size in log2 form</param>
 		/// <param name="value">Value to align</param>
@@ -34,7 +34,7 @@ namespace KSoft
 		#endregion
 
 		#region PaddingRequired
-<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32) { #>
+<# foreach (var bittable_type in BitwiseT4.BittableTypesInt32And64) { #>
 		/// <summary>Calculate the number of padding bytes, if any, needed to align a value</summary>
 		/// <param name="alignmentBit">Alignment size in log2 form</param>
 		/// <param name="value">Value to align</param>
@@ -45,7 +45,7 @@ namespace KSoft
 			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
 <#		if(bittable_type.IsSigned) { #>
 			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
-			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() >= 0);
+			Contract.Ensures(Contract.Result<int>() >= 0);
 <#		} #>
 
 			return (int)(Align(alignmentBit, value) - value);
@@ -62,7 +62,7 @@ namespace KSoft
 		/// <param name="n">Positive number's log2 to deduce</param>
 		/// <returns>
 		/// The floor form of log2(<paramref name="n"/>).
-		/// 
+		///
 		/// Or -1 if <paramref name="n"/> is 0.
 		/// </returns>
 		[Contracts.Pure]
@@ -108,15 +108,15 @@ namespace KSoft
 		public static <#= bittable_type.Keyword #> SetSignBit(<#= bittable_type.Keyword #> value)
 		{
 <#		if (bittable_type.BitOperatorsImplicitlyUpCast) { #>
-				return (<#= bittable_type.Keyword #>) (
+			return (<#= bittable_type.Keyword #>) (
 <#		} else { #>
-				return 
+			return
 <#		} #>
-					value | (<#= FixedWidthMostSignificantByteBitMask(bittable_type) #> << <#= FixedWidthMostSignificantByteBitShift(bittable_type) #>)
+				value | (<#= FixedWidthMostSignificantByteBitMask(bittable_type) #> << <#= FixedWidthMostSignificantByteBitShift(bittable_type) #>)
 <#		if (bittable_type.BitOperatorsImplicitlyUpCast) { #>
-				);
+			);
 <#		} else { #>
-				;
+			;
 <#		} #>
 		}
 

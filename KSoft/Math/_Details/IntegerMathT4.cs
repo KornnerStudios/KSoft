@@ -35,6 +35,34 @@ namespace KSoft
 			return (value + (align_size-1)) & ~(align_size-1);
 		}
 
+		/// <summary>Takes <paramref name="value"/> and returns what it would be if it were aligned to <paramref name="align_size"/> bytes</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns><paramref name="value"/> aligned to the next <paramref name="alignmentBit"/> boundary, if it isn't already</returns>
+		[Contracts.Pure]
+		public static ulong Align(int alignmentBit, ulong value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ulong align_size = 1UL << alignmentBit;
+
+			return (value + (align_size-1)) & ~(align_size-1);
+		}
+
+		/// <summary>Takes <paramref name="value"/> and returns what it would be if it were aligned to <paramref name="align_size"/> bytes</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns><paramref name="value"/> aligned to the next <paramref name="alignmentBit"/> boundary, if it isn't already</returns>
+		[Contracts.Pure]
+		public static long Align(int alignmentBit, long value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			Contract.Ensures(Contract.Result<long>() >= 0);
+			long align_size = 1L << alignmentBit;
+
+			return (value + (align_size-1)) & ~(align_size-1);
+		}
+
 		#endregion
 
 		#region PaddingRequired
@@ -64,6 +92,32 @@ namespace KSoft
 			return (int)(Align(alignmentBit, value) - value);
 		}
 
+		/// <summary>Calculate the number of padding bytes, if any, needed to align a value</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns>Bytes needed to align <paramref name="value"/> to the next <paramref name="alignmentBit"/> boundary, or zero if it is already aligned</returns>
+		[Contracts.Pure]
+		public static int PaddingRequired(int alignmentBit, ulong value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+
+			return (int)(Align(alignmentBit, value) - value);
+		}
+
+		/// <summary>Calculate the number of padding bytes, if any, needed to align a value</summary>
+		/// <param name="alignmentBit">Alignment size in log2 form</param>
+		/// <param name="value">Value to align</param>
+		/// <returns>Bytes needed to align <paramref name="value"/> to the next <paramref name="alignmentBit"/> boundary, or zero if it is already aligned</returns>
+		[Contracts.Pure]
+		public static int PaddingRequired(int alignmentBit, long value)
+		{
+			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			Contract.Ensures(Contract.Result<int>() >= 0);
+
+			return (int)(Align(alignmentBit, value) - value);
+		}
+
 		#endregion
 
 		#region FloorLog2 - Unsigned Integer
@@ -71,7 +125,7 @@ namespace KSoft
 		/// <param name="n">Positive number's log2 to deduce</param>
 		/// <returns>
 		/// The floor form of log2(<paramref name="n"/>).
-		/// 
+		///
 		/// Or -1 if <paramref name="n"/> is 0.
 		/// </returns>
 		[Contracts.Pure]
@@ -90,7 +144,7 @@ namespace KSoft
 		/// <param name="n">Positive number's log2 to deduce</param>
 		/// <returns>
 		/// The floor form of log2(<paramref name="n"/>).
-		/// 
+		///
 		/// Or -1 if <paramref name="n"/> is 0.
 		/// </returns>
 		[Contracts.Pure]
@@ -110,7 +164,7 @@ namespace KSoft
 		/// <param name="n">Positive number's log2 to deduce</param>
 		/// <returns>
 		/// The floor form of log2(<paramref name="n"/>).
-		/// 
+		///
 		/// Or -1 if <paramref name="n"/> is 0.
 		/// </returns>
 		[Contracts.Pure]
@@ -131,7 +185,7 @@ namespace KSoft
 		/// <param name="n">Positive number's log2 to deduce</param>
 		/// <returns>
 		/// The floor form of log2(<paramref name="n"/>).
-		/// 
+		///
 		/// Or -1 if <paramref name="n"/> is 0.
 		/// </returns>
 		[Contracts.Pure]
@@ -197,9 +251,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static byte SetSignBit(byte value)
 		{
-				return (byte) (
-					value | (0x80   <<  0)
-				);
+			return (byte) (
+				value | (0x80   <<  0)
+			);
 		}
 
 		/// <summary>Set the sign-bit in the value given</summary>
@@ -208,9 +262,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ushort SetSignBit(ushort value)
 		{
-				return (ushort) (
-					value | (0x80   <<  8)
-				);
+			return (ushort) (
+				value | (0x80   <<  8)
+			);
 		}
 
 		/// <summary>Set the sign-bit in the value given</summary>
@@ -219,9 +273,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static uint SetSignBit(uint value)
 		{
-				return 
-					value | (0x80U  << 24)
-				;
+			return
+				value | (0x80U  << 24)
+			;
 		}
 
 		/// <summary>Set the sign-bit in the value given</summary>
@@ -230,9 +284,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ulong SetSignBit(ulong value)
 		{
-				return 
-					value | (0x80UL << 56)
-				;
+			return
+				value | (0x80UL << 56)
+			;
 		}
 
 		#endregion

@@ -29,6 +29,8 @@
     <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup.cs" />
     <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup2.cs" />
     <Compile Include="Cryptography\JenkinsHash\JenkinsHashLookup3.cs" />
+    <Compile Include="Cryptography\StreamBlockHashComputer.cs" />
+    <Compile Include="Cryptography\StreamHashComputer.cs" />
     <Compile Include="Cryptography\TigerHash.cs" />
     <Compile Include="Cryptography\TinyEncryptionAlgorithm\TinyEncryptionAlgorithm.cs" />
     <Compile Include="Cryptography\TinyEncryptionAlgorithm\XTEA.Base.cs" />

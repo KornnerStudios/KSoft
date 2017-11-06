@@ -6,18 +6,20 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Security.Cryptography
 {
-	public struct StreamHashComputer
+	public struct StreamHashComputer<T>
+		where T : HashAlgorithm
 	{
 		/// <summary>Max size of the scratch buffer when we don't use a user specified preallocated buffer</summary>
 		const int kMaxScratchBufferSize = 0x1000;
 
-		private readonly HashAlgorithm mAlgo;
+		private readonly T mAlgo;
 		private readonly Stream mInputStream;
 		private byte[] mScratchBuffer;
 		private long mStartOffset;
 		private long mCount;
 		private bool mRestorePosition;
 
+		public Stream InputStream { get { return mInputStream; } }
 		public long StartOffset { get { return mStartOffset; } }
 		public long Count { get { return mCount; } }
 		/// <summary>
@@ -25,7 +27,8 @@ namespace KSoft.Security.Cryptography
 		/// </summary>
 		public bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
 
-		public StreamHashComputer(HashAlgorithm algo, Stream inputStream
+		public StreamHashComputer(T algo, Stream inputStream
+			, bool restorePosition = false
 			, byte[] preallocatedBuffer = null)
 		{
 			Contract.Requires<ArgumentNullException>(inputStream != null);
@@ -37,7 +40,7 @@ namespace KSoft.Security.Cryptography
 			mScratchBuffer = preallocatedBuffer;
 			mStartOffset = TypeExtensions.kNone;
 			mCount = TypeExtensions.kNone;
-			mRestorePosition = false;
+			mRestorePosition = restorePosition;
 
 			mAlgo.Initialize();
 		}
@@ -52,13 +55,13 @@ namespace KSoft.Security.Cryptography
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= mInputStream.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= InputStream.Length);
 
 			mStartOffset = offset;
 			mCount = count;
 		}
 
-		public byte[] Compute()
+		public T Compute()
 		{
 			Contract.Requires<InvalidOperationException>(StartOffset.IsNoneOrPositive(),
 				"You need to call SetRange before calling this");
@@ -120,7 +123,7 @@ namespace KSoft.Security.Cryptography
 			}
 			#endregion
 
-			return mAlgo.Hash;
+			return mAlgo;
 		}
 	};
 }

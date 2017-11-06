@@ -18,6 +18,10 @@ namespace KSoft
 		public const int kInt32AlignmentBit = 2;
 		/// <summary>64-bit alignment in log2</summary>
 		public const int kInt64AlignmentBit = 3;
+		/// <summary>128-bit alignment in log2</summary>
+		public const int k16ByteAlignmentBit = 4;
+		/// <summary>256-bit alignment in log2</summary>
+		public const int k32ByteAlignmentBit = 5;
 
 		/// <summary>1KB alignment in log2</summary>
 		public const int kKiloAlignmentBit = 10;

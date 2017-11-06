@@ -1,4 +1,5 @@
-﻿using Contracts = System.Diagnostics.Contracts;
+﻿using System;
+using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Security.Cryptography
@@ -34,6 +35,16 @@ namespace KSoft.Security.Cryptography
 			{
 				mCrc ^= mDefinition.XorOut;
 				return mCrc;
+			}
+
+			public void Compute(byte[] buffer, int offset, int length)
+			{
+				Contract.Requires<ArgumentNullException>(buffer != null);
+				Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
+				Contract.Requires<ArgumentOutOfRangeException>(offset+length <= buffer.Length);
+
+				for (int x = 0; x < length; x++)
+					mDefinition.ComputeUpdate(buffer[offset+x], ref mCrc);
 			}
 
 			public void Compute(byte value)

@@ -5,14 +5,16 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Security.Cryptography
 {
-	public struct StreamBlockHashComputer
+	public struct StreamBlockHashComputer<T>
+		where T : BlockHashAlgorithm
 	{
-		private readonly BlockHashAlgorithm mAlgo;
+		private readonly T mAlgo;
 		private readonly Stream mInputStream;
 		private long mStartOffset;
 		private long mCount;
 		private bool mRestorePosition;
 
+		public Stream InputStream { get { return mInputStream; } }
 		public long StartOffset { get { return mStartOffset; } }
 		public long Count { get { return mCount; } }
 		/// <summary>
@@ -20,7 +22,8 @@ namespace KSoft.Security.Cryptography
 		/// </summary>
 		public bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
 
-		public StreamBlockHashComputer(BlockHashAlgorithm algo, Stream inputStream)
+		public StreamBlockHashComputer(T algo, Stream inputStream
+			, bool restorePosition = false)
 		{
 			Contract.Requires<ArgumentNullException>(inputStream != null);
 			Contract.Requires<ArgumentException>(inputStream.CanSeek);
@@ -29,7 +32,7 @@ namespace KSoft.Security.Cryptography
 			mInputStream = inputStream;
 			mStartOffset = TypeExtensions.kNone;
 			mCount = TypeExtensions.kNone;
-			mRestorePosition = false;
+			mRestorePosition = restorePosition;
 
 			mAlgo.Initialize();
 		}
@@ -44,13 +47,13 @@ namespace KSoft.Security.Cryptography
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset + count) <= mInputStream.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset + count) <= InputStream.Length);
 
 			mStartOffset = offset;
 			mCount = count;
 		}
 
-		public byte[] Compute()
+		public T Compute()
 		{
 			Contract.Requires<InvalidOperationException>(StartOffset.IsNoneOrPositive(),
 				"You need to call SetRange before calling this");
@@ -97,7 +100,7 @@ namespace KSoft.Security.Cryptography
 				mInputStream.Seek(orig_pos, SeekOrigin.Begin);
 			#endregion
 
-			return mAlgo.Hash;
+			return mAlgo;
 		}
 	};
 }
