@@ -782,6 +782,26 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		#region Stream Fixed Array
+		public EndianStream StreamFixedArray(bool[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+
+				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
+			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+
+			return this;
+		}
+		public EndianStream StreamFixedArray(bool[] array)
+		{
+			Contract.Requires(array != null);
+
+			return StreamFixedArray(array, 0, array.Length);
+		}
+		#endregion
+
 		#region Stream Array Values
 		public delegate EndianStream StreamArrayValueDelegate<T>(ref T value);
 

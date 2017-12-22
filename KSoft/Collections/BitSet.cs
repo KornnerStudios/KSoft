@@ -959,7 +959,7 @@ namespace KSoft.Collections
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public string ToString<TEnum>(TEnum maxCount
-			, string valueSeperator = ","
+			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, bool stateFilter = true)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -1006,7 +1006,7 @@ namespace KSoft.Collections
 		/// <returns>True if all strings were parsed successfully, false if there were some strings that failed to parse</returns>
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool TryParseFlags<TEnum>(string line
-			, string valueSeperator = ","
+			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, ICollection<string> errorsOutput = null)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{

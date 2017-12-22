@@ -19,12 +19,39 @@ namespace KSoft.IO
 		public override <#= num_type.Keyword #> Read<#= num_type.Code #>()
 		{
 			var value = base.Read<#= num_type.Code #>();
-			return !mRequiresByteSwap 
-				? value 
+			return !mRequiresByteSwap
+				? value
 				: Bitwise.ByteSwap.Swap<#= num_type.Code #>(value);
 		}
 
 <# } #>
+
+		#region ReadFixedArray
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#
+#>
+		public <#= num_type.Keyword #>[] ReadFixedArray(<#= num_type.Keyword #>[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
+
+			for (int x = startIndex, end = startIndex+length; x < end; x++)
+				array[x] = Read<#= num_type.Code #>();
+
+			return array;
+		}
+		public <#= num_type.Keyword #>[] ReadFixedArray(<#= num_type.Keyword #>[] array)
+		{
+			Contract.Requires(array != null);
+			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
+
+			return ReadFixedArray(array, 0, array.Length);
+		}
+
+<# } #>
+		#endregion
 	};
 
 	partial class EndianWriter
@@ -37,12 +64,39 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(<#= num_type.Keyword #>)"/>
 		public override void Write(<#= num_type.Keyword #> value)
 		{
-			base.Write(!mRequiresByteSwap 
-				? value 
+			base.Write(!mRequiresByteSwap
+				? value
 				: Bitwise.ByteSwap.Swap<#= num_type.Code #>(value));
 		}
 
 <# } #>
+
+		#region WriteFixedArray
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#
+#>
+		public <#= num_type.Keyword #>[] WriteFixedArray(<#= num_type.Keyword #>[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
+
+			for (int x = startIndex, end = startIndex+length; x < end; x++)
+				Write(array[x]);
+
+			return array;
+		}
+		public <#= num_type.Keyword #>[] WriteFixedArray(<#= num_type.Keyword #>[] array)
+		{
+			Contract.Requires(array != null);
+			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
+
+			return WriteFixedArray(array, 0, array.Length);
+		}
+
+<# } #>
+		#endregion
 	};
 
 	partial class EndianStream
@@ -59,5 +113,30 @@ namespace KSoft.IO
 		}
 
 <# } #>
+
+		#region StreamFixedArray
+<# foreach(var num_type in PrimitiveDefinitions.Numbers) { #>
+<#
+#>
+		public EndianStream StreamFixedArray(<#= num_type.Keyword #>[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+
+				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
+			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+
+			return this;
+		}
+		public EndianStream StreamFixedArray(<#= num_type.Keyword #>[] array)
+		{
+			Contract.Requires(array != null);
+
+			return StreamFixedArray(array, 0, array.Length);
+		}
+
+<# } #>
+		#endregion
 	};
 }

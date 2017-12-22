@@ -491,8 +491,9 @@ namespace KSoft
 #endif
 		}
 
-		public static bool ParseStringList(string line, List<string> list,
-			bool sort = false, string valueSeperator = ",")
+		public static bool ParseStringList(string line, List<string> list
+			, bool sort = false
+			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator)
 		{
 			if (line == null)
 			{
@@ -517,8 +518,8 @@ namespace KSoft
 
 			return true;
 		}
-		public static bool ParseStringList(IEnumerable<string> collection, List<string> list,
-			bool sort = false)
+		public static bool ParseStringList(IEnumerable<string> collection, List<string> list
+			, bool sort = false)
 		{
 			if (collection == null)
 			{

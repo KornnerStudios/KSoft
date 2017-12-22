@@ -221,12 +221,20 @@ namespace KSoft
 		{
 			return float.TryParse(s, kFloatTryParseNumberStyles, CultureInfo.InvariantCulture, out result);
 		}
+		public static float FloatParseInvariant(string s)
+		{
+			return float.Parse(s, kFloatTryParseNumberStyles, CultureInfo.InvariantCulture);
+		}
 
 		// based on the reference source, this is what the default number styles are
 		public const NumberStyles kDoubleTryParseNumberStyles = kFloatTryParseNumberStyles;
 		public static bool DoubleTryParseInvariant(string s, out double result)
 		{
-			return double.TryParse(s, kFloatTryParseNumberStyles, CultureInfo.InvariantCulture, out result);
+			return double.TryParse(s, kDoubleTryParseNumberStyles, CultureInfo.InvariantCulture, out result);
+		}
+		public static double DoubleParseInvariant(string s)
+		{
+			return double.Parse(s, kDoubleTryParseNumberStyles, CultureInfo.InvariantCulture);
 		}
 	};
 };

@@ -507,5 +507,25 @@ namespace KSoft.IO
 
 			return implementation.Read(this);
 		}
+
+		public bool[] ReadFixedArray(bool[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+			Contract.Ensures(Contract.Result<bool[]>() != null);
+
+			for (int x = startIndex, end = startIndex+length; x < end; x++)
+				array[x] = ReadBoolean();
+
+			return array;
+		}
+		public bool[] ReadFixedArray(bool[] array)
+		{
+			Contract.Requires(array != null);
+			Contract.Ensures(Contract.Result<bool[]>() != null);
+
+			return ReadFixedArray(array, 0, array.Length);
+		}
 	};
 }

@@ -36,7 +36,7 @@ namespace KSoft.IO
 		/// <param name="byteOrder">Endian format for how we interpret the stream's bytes</param>
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
-		public EndianWriter(Stream output, Encoding encoding, 
+		public EndianWriter(Stream output, Encoding encoding,
 			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null) : base(output, encoding)
 		{
 			Contract.Requires<ArgumentNullException>(output != null);
@@ -51,7 +51,7 @@ namespace KSoft.IO
 
 			StreamName = name ?? "(unnamed)";
 
-			// If the stream is a different endian than the runtime, data will 
+			// If the stream is a different endian than the runtime, data will
 			// be byte swapped of course
 			//this.mRequiresByteSwap = Shell.Platform.Environment.ProcessorType.ByteOrder != byteOrder;
 			mRequiresByteSwap = !byteOrder.IsSameAsRuntime();
@@ -63,7 +63,7 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		/// <remarks>Defaults to <see cref="System.Text.UTF8Encoding"/> for the string encoding</remarks>
-		public EndianWriter(Stream output, Shell.EndianFormat byteOrder, 
+		public EndianWriter(Stream output, Shell.EndianFormat byteOrder,
 			object streamOwner = null, string name = null) : this(output, new UTF8Encoding(), byteOrder, streamOwner, name)
 		{
 		}
@@ -73,7 +73,7 @@ namespace KSoft.IO
 		/// Default endian format is set from <see cref="Shell.Platform.Environment"/>.
 		/// <see cref="Owner"/> is set to <c>null</c>
 		/// </remarks>
-		public EndianWriter(Stream output) : this(output, new UTF8Encoding(), 
+		public EndianWriter(Stream output) : this(output, new UTF8Encoding(),
 			Shell.Platform.Environment.ProcessorType.ByteOrder)
 		{
 			Contract.Requires<ArgumentNullException>(output != null);
@@ -131,7 +131,7 @@ namespace KSoft.IO
 			Contract.Requires(tag != null);
 			Contract.Requires(tag.Length == 4);
 
-			// Explicitly check for Little endian since this is 
+			// Explicitly check for Little endian since this is
 			// a character array and not a primitive integer
 			if (ByteOrder == Shell.EndianFormat.Little)
 			{
@@ -204,7 +204,7 @@ namespace KSoft.IO
 		#region Write string
 		/// <summary>Writes a string based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value">String value to write. Null defaults to an empty string</param>
-        /// <param name="storage">Definition for how we're streaming the string</param>
+		/// <param name="storage">Definition for how we're streaming the string</param>
 		public void Write(string value, Memory.Strings.StringStorage storage)
 		{
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
@@ -244,11 +244,11 @@ namespace KSoft.IO
 		/// <summary>Write a pointer value to the stream</summary>
 		/// <param name="value">Handle to stream</param>
 		/// <remarks>
-		/// <see cref="BaseAddress"/> is added to the value of <paramref name="value"/> 
+		/// <see cref="BaseAddress"/> is added to the value of <paramref name="value"/>
 		/// before the final stream happens.
-		/// 
-		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you write 
-		/// the correct virtual-address. Otherwise, set <see cref="BaseAddress"/> 
+		///
+		/// Be sure to set <see cref="BaseAddress"/> to the proper value so you write
+		/// the correct virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to write the pure pointer value.
 		/// </remarks>
 		public void WritePointer(Values.PtrHandle value)
@@ -272,8 +272,8 @@ namespace KSoft.IO
 
 		public void Write(DateTime value, bool isUnixTime = false)
 		{
-			long binary = isUnixTime 
-				? Util.ConvertDateTimeToUnixTime(value) 
+			long binary = isUnixTime
+				? Util.ConvertDateTimeToUnixTime(value)
 				: value.ToBinary();
 
 			Write(binary);
@@ -285,6 +285,26 @@ namespace KSoft.IO
 			Contract.Requires(implementation != null);
 
 			implementation.Write(this, value);
+		}
+
+		public bool[] WriteFixedArray(bool[] array, int startIndex, int length)
+		{
+			Contract.Requires(array != null);
+			Contract.Requires(startIndex >= 0);
+			Contract.Requires(length >= 0);
+			Contract.Ensures(Contract.Result<bool[]>() != null);
+
+			for (int x = startIndex, end = startIndex+length; x < end; x++)
+				Write(array[x]);
+
+			return array;
+		}
+		public bool[] WriteFixedArray(bool[] array)
+		{
+			Contract.Requires(array != null);
+			Contract.Ensures(Contract.Result<bool[]>() != null);
+
+			return WriteFixedArray(array, 0, array.Length);
 		}
 	};
 }

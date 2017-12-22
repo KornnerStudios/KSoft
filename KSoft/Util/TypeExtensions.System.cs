@@ -13,6 +13,8 @@ namespace KSoft
 {
 	partial class TypeExtensions
 	{
+		public const string kDefaultArrayValueSeperator = ",";
+
 		[Contracts.Pure]
 		public static bool IsSigned(this TypeCode c)
 		{
@@ -45,6 +47,15 @@ namespace KSoft
 		}
 
 		#region Boolean
+		public static string ToBinaryString(this bool b)
+		{
+			return b == false ? "0" : "1";
+		}
+		public static string ToLowerString(this bool b)
+		{
+			return b == false ? "false" : "true";
+		}
+
 		public static sbyte SByte(this bool b)
 		{
 			return b == false ? (sbyte)0 : (sbyte)1;
@@ -496,7 +507,30 @@ namespace KSoft
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerator<T> GetGenericEnumerator<T>(this T[] array)
 		{
+			Contract.Requires(array != null);
+
 			return (IEnumerator<T>)array.GetEnumerator();
+		}
+
+		[Contracts.Pure]
+		public static string ArrayToConcatString(this Array array
+			, string valueSeperator = kDefaultArrayValueSeperator)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (array == null || array.Length == 0)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in array)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToString());
+			}
+
+			return sb.ToString();
 		}
 
 		[Contracts.Pure]
@@ -735,6 +769,22 @@ namespace KSoft
 		}
 
 		[Contracts.Pure]
+		public static TOutput[] ConvertAllArray<TInput, TOutput>(this IList<TInput> list, Converter<TInput, TOutput> converter)
+		{
+			Contract.Requires(converter != null);
+
+			if (list == null)
+				return null;
+
+			var array = new TOutput[list.Count];
+
+			for (int x = 0; x < array.Length; x++)
+				array[x] = converter(list[x]);
+
+			return array;
+		}
+
+		[Contracts.Pure]
 		public static int FindIndex<T>(this IEnumerable<T> seq, Predicate<T> match)
 		{
 			Contract.Requires<ArgumentNullException>(seq != null);
@@ -839,6 +889,111 @@ namespace KSoft
 					return false;
 
 			return true;
+		}
+
+		[Contracts.Pure]
+		public static string ToConcatString<T>(this IEnumerable<T> e
+			, string valueSeperator = kDefaultArrayValueSeperator)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (e == null)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in e)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToString());
+			}
+
+			return sb.ToString();
+		}
+		[Contracts.Pure]
+		public static string ToConcatBinaryString(this IEnumerable<bool> e
+			, string valueSeperator = kDefaultArrayValueSeperator
+			, string format = null)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (e == null)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in e)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToBinaryString());
+			}
+
+			return sb.ToString();
+		}
+		[Contracts.Pure]
+		public static string ToConcatLowerString(this IEnumerable<bool> e
+			, string valueSeperator = kDefaultArrayValueSeperator
+			, string format = null)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (e == null)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in e)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToLowerString());
+			}
+
+			return sb.ToString();
+		}
+		[Contracts.Pure]
+		public static string ToConcatStringInvariant(this IEnumerable<float> e
+			, string valueSeperator = kDefaultArrayValueSeperator
+			, string format = null)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (e == null)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in e)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToStringInvariant(format));
+			}
+
+			return sb.ToString();
+		}
+		[Contracts.Pure]
+		public static string ToConcatStringInvariant(this IEnumerable<double> e
+			, string valueSeperator = kDefaultArrayValueSeperator
+			, string format = null)
+		{
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (e == null)
+				return string.Empty;
+
+			var sb = new System.Text.StringBuilder();
+			foreach (var obj in e)
+			{
+				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+					sb.Append(valueSeperator);
+
+				sb.Append(obj.ToStringInvariant(format));
+			}
+
+			return sb.ToString();
 		}
 		#endregion
 
