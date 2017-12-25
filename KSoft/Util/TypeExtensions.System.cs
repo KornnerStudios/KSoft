@@ -524,7 +524,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in array)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToString());
@@ -903,7 +903,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToString());
@@ -924,7 +924,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToBinaryString());
@@ -945,7 +945,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToLowerString());
@@ -966,7 +966,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToStringInvariant(format));
@@ -987,7 +987,7 @@ namespace KSoft
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
-				if (sb.Length > 0 && !valueSeperator.IsNotNullOrEmpty())
+				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
 					sb.Append(valueSeperator);
 
 				sb.Append(obj.ToStringInvariant(format));
@@ -1055,6 +1055,19 @@ namespace KSoft
 				result &= s.CanWrite;
 
 			return result;
+		}
+
+		public static int PeekByte(this System.IO.BinaryReader r)
+		{
+			Contract.Requires(r != null);
+
+			if (!r.BaseStream.CanSeek)
+				return -1;
+
+			int b = r.ReadByte();
+			r.BaseStream.Seek(-sizeof(byte), System.IO.SeekOrigin.Current);
+
+			return b;
 		}
 		#endregion
 

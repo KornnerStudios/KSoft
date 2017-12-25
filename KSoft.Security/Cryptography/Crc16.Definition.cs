@@ -62,8 +62,8 @@ namespace KSoft.Security.Cryptography
 				value &= 0xFF;
 				ushort a = (ushort) (crc << 8);
 				ushort b = (ushort)((crc >> 8) & 0x00FFFFFF); // don't include the top most byte in case there was somehow any carry
-				ushort c = CrcTable[(a ^ value) & 0xFF];
-				return (ushort)(b ^ c);
+				ushort c = CrcTable[(b ^ value) & 0xFF];
+				return (ushort)(a ^ c);
 			}
 
 			public void ComputeUpdate(uint value, ref ushort crc)

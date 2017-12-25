@@ -77,7 +77,8 @@ namespace KSoft.Security.Cryptography
 		/// <returns>The final hash value.</returns>
 		protected override byte[] HashFinal()
 		{
-			Bitwise.ByteSwap.ReplaceBytes(mHashBytes, 0, Hash16 ^ mDefinition.XorOut);
+			Hash16 ^= mDefinition.XorOut;
+			Bitwise.ByteSwap.ReplaceBytes(mHashBytes, 0, Hash16);
 			return mHashBytes;
 		}
 	};

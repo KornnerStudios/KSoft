@@ -66,6 +66,13 @@ namespace KSoft.Security.Cryptography
 			#endregion
 
 			#region Compute 32-bits
+			public void Compute(Shell.EndianFormat byteOrder, uint value)
+			{
+				if (byteOrder == Shell.EndianFormat.Little)
+					ComputeLE(value);
+				else
+					ComputeBE(value);
+			}
 			public void ComputeLE(uint value)
 			{
 				mDefinition.ComputeUpdate((value & 0x000000FFU) >> 0, ref mCrc);
