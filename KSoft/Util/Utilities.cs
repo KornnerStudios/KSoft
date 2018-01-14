@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
-using Expr = System.Linq.Expressions.Expression;
-using Reflect = System.Reflection;
 
 namespace KSoft
 {
@@ -537,5 +535,53 @@ namespace KSoft
 
 			return true;
 		}
+
+		#region GetRelativePath
+		// based on https://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path/32113484#32113484
+
+		/// <summary>
+		/// Creates a relative path from one file or folder to another.
+		/// </summary>
+		/// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
+		/// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
+		/// <returns>The relative path from the start directory to the end path.</returns>
+		public static string GetRelativePath(string fromPath, string toPath)
+		{
+			Contract.Requires<ArgumentNullException>(fromPath.IsNotNullOrEmpty());
+			Contract.Requires<ArgumentNullException>(toPath.IsNotNullOrEmpty());
+
+			Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath));
+			Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath));
+
+			if (fromUri.Scheme != toUri.Scheme)
+			{
+				return toPath;
+			}
+
+			Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+			string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+			if (string.Equals(toUri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
+			{
+				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
+
+			return relativePath;
+		}
+
+		private static string AppendDirectorySeparatorChar(string path)
+		{
+			Contract.Assume(path.IsNotNullOrEmpty());
+
+			// Append a slash only if the path is a directory and does not have a slash.
+			if (!Path.HasExtension(path) &&
+				!path.EndsWith(Path.DirectorySeparatorChar))
+			{
+				return path + Path.DirectorySeparatorChar;
+			}
+
+			return path;
+		}
+		#endregion
 	};
 }

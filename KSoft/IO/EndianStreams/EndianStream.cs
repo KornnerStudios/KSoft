@@ -909,6 +909,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(values != null);
 			Contract.Requires(initializer != null);
+			Contract.Ensures(values.Count == readCount);
 
 			bool reading = IsReading;
 
@@ -925,7 +926,7 @@ namespace KSoft.IO
 
 				Stream(v);
 
-				if (!reading)
+				if (reading)
 					values.Add(v);
 			}
 
