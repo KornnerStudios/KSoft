@@ -143,7 +143,9 @@ namespace KSoft.IO
 			{
 				var value = default( string );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (string)property.GetValue(obj, null) );
@@ -155,7 +157,9 @@ namespace KSoft.IO
 			{
 				var value = default( char );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (char)property.GetValue(obj, null) );
@@ -167,7 +171,9 @@ namespace KSoft.IO
 			{
 				var value = default( bool );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (bool)property.GetValue(obj, null) );
@@ -179,7 +185,9 @@ namespace KSoft.IO
 			{
 				var value = default( float );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (float)property.GetValue(obj, null) );
@@ -191,7 +199,9 @@ namespace KSoft.IO
 			{
 				var value = default( double );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (double)property.GetValue(obj, null) );
@@ -204,7 +214,9 @@ namespace KSoft.IO
 			{
 				var value = default( byte );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (byte)property.GetValue(obj, null) , numBase);
@@ -216,7 +228,9 @@ namespace KSoft.IO
 			{
 				var value = default( sbyte );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (sbyte)property.GetValue(obj, null) , numBase);
@@ -228,7 +242,9 @@ namespace KSoft.IO
 			{
 				var value = default( ushort );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (ushort)property.GetValue(obj, null) , numBase);
@@ -240,7 +256,9 @@ namespace KSoft.IO
 			{
 				var value = default( short );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (short)property.GetValue(obj, null) , numBase);
@@ -252,7 +270,9 @@ namespace KSoft.IO
 			{
 				var value = default( uint );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (uint)property.GetValue(obj, null) , numBase);
@@ -264,7 +284,9 @@ namespace KSoft.IO
 			{
 				var value = default( int );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (int)property.GetValue(obj, null) , numBase);
@@ -276,7 +298,9 @@ namespace KSoft.IO
 			{
 				var value = default( ulong );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (ulong)property.GetValue(obj, null) , numBase);
@@ -288,7 +312,9 @@ namespace KSoft.IO
 			{
 				var value = default( long );
 				ReadCursor( ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (long)property.GetValue(obj, null) , numBase);
@@ -301,7 +327,9 @@ namespace KSoft.IO
 			{
 				var value = default( Values.KGuid );
 				ReadCursor( ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteCursor( (Values.KGuid)property.GetValue(obj, null) );
@@ -485,7 +513,9 @@ namespace KSoft.IO
 			{
 				var value = default( string );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (string)property.GetValue(obj, null) );
@@ -499,7 +529,9 @@ namespace KSoft.IO
 			{
 				var value = default( char );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (char)property.GetValue(obj, null) );
@@ -513,7 +545,9 @@ namespace KSoft.IO
 			{
 				var value = default( bool );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (bool)property.GetValue(obj, null) );
@@ -527,7 +561,9 @@ namespace KSoft.IO
 			{
 				var value = default( float );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (float)property.GetValue(obj, null) );
@@ -541,7 +577,9 @@ namespace KSoft.IO
 			{
 				var value = default( double );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (double)property.GetValue(obj, null) );
@@ -556,7 +594,9 @@ namespace KSoft.IO
 			{
 				var value = default( byte );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (byte)property.GetValue(obj, null) , numBase);
@@ -570,7 +610,9 @@ namespace KSoft.IO
 			{
 				var value = default( sbyte );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (sbyte)property.GetValue(obj, null) , numBase);
@@ -584,7 +626,9 @@ namespace KSoft.IO
 			{
 				var value = default( ushort );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (ushort)property.GetValue(obj, null) , numBase);
@@ -598,7 +642,9 @@ namespace KSoft.IO
 			{
 				var value = default( short );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (short)property.GetValue(obj, null) , numBase);
@@ -612,7 +658,9 @@ namespace KSoft.IO
 			{
 				var value = default( uint );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (uint)property.GetValue(obj, null) , numBase);
@@ -626,7 +674,9 @@ namespace KSoft.IO
 			{
 				var value = default( int );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (int)property.GetValue(obj, null) , numBase);
@@ -640,7 +690,9 @@ namespace KSoft.IO
 			{
 				var value = default( ulong );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (ulong)property.GetValue(obj, null) , numBase);
@@ -654,7 +706,9 @@ namespace KSoft.IO
 			{
 				var value = default( long );
 				ReadElement(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (long)property.GetValue(obj, null) , numBase);
@@ -669,7 +723,9 @@ namespace KSoft.IO
 			{
 				var value = default( Values.KGuid );
 				ReadElement(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteElement(name, (Values.KGuid)property.GetValue(obj, null) );
@@ -948,7 +1004,10 @@ namespace KSoft.IO
 			{
 				var value = default( string );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (string)property.GetValue(obj, null) , predicate);
@@ -968,7 +1027,10 @@ namespace KSoft.IO
 			{
 				var value = default( char );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (char)property.GetValue(obj, null) , predicate);
@@ -988,7 +1050,10 @@ namespace KSoft.IO
 			{
 				var value = default( bool );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (bool)property.GetValue(obj, null) , predicate);
@@ -1008,7 +1073,10 @@ namespace KSoft.IO
 			{
 				var value = default( float );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (float)property.GetValue(obj, null) , predicate);
@@ -1028,7 +1096,10 @@ namespace KSoft.IO
 			{
 				var value = default( double );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (double)property.GetValue(obj, null) , predicate);
@@ -1049,7 +1120,10 @@ namespace KSoft.IO
 			{
 				var value = default( byte );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (byte)property.GetValue(obj, null) , predicate, numBase);
@@ -1069,7 +1143,10 @@ namespace KSoft.IO
 			{
 				var value = default( sbyte );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (sbyte)property.GetValue(obj, null) , predicate, numBase);
@@ -1089,7 +1166,10 @@ namespace KSoft.IO
 			{
 				var value = default( ushort );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (ushort)property.GetValue(obj, null) , predicate, numBase);
@@ -1109,7 +1189,10 @@ namespace KSoft.IO
 			{
 				var value = default( short );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (short)property.GetValue(obj, null) , predicate, numBase);
@@ -1129,7 +1212,10 @@ namespace KSoft.IO
 			{
 				var value = default( uint );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (uint)property.GetValue(obj, null) , predicate, numBase);
@@ -1149,7 +1235,10 @@ namespace KSoft.IO
 			{
 				var value = default( int );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (int)property.GetValue(obj, null) , predicate, numBase);
@@ -1169,7 +1258,10 @@ namespace KSoft.IO
 			{
 				var value = default( ulong );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (ulong)property.GetValue(obj, null) , predicate, numBase);
@@ -1189,7 +1281,10 @@ namespace KSoft.IO
 			{
 				var value = default( long );
 				executed = ReadElementOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (long)property.GetValue(obj, null) , predicate, numBase);
@@ -1210,7 +1305,10 @@ namespace KSoft.IO
 			{
 				var value = default( Values.KGuid );
 				executed = ReadElementOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteElementOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);
@@ -1396,7 +1494,9 @@ namespace KSoft.IO
 			{
 				var value = default( string );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (string)property.GetValue(obj, null) );
@@ -1410,7 +1510,9 @@ namespace KSoft.IO
 			{
 				var value = default( char );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (char)property.GetValue(obj, null) );
@@ -1424,7 +1526,9 @@ namespace KSoft.IO
 			{
 				var value = default( bool );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (bool)property.GetValue(obj, null) );
@@ -1438,7 +1542,9 @@ namespace KSoft.IO
 			{
 				var value = default( float );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (float)property.GetValue(obj, null) );
@@ -1452,7 +1558,9 @@ namespace KSoft.IO
 			{
 				var value = default( double );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (double)property.GetValue(obj, null) );
@@ -1467,7 +1575,9 @@ namespace KSoft.IO
 			{
 				var value = default( byte );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (byte)property.GetValue(obj, null) , numBase);
@@ -1481,7 +1591,9 @@ namespace KSoft.IO
 			{
 				var value = default( sbyte );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (sbyte)property.GetValue(obj, null) , numBase);
@@ -1495,7 +1607,9 @@ namespace KSoft.IO
 			{
 				var value = default( ushort );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (ushort)property.GetValue(obj, null) , numBase);
@@ -1509,7 +1623,9 @@ namespace KSoft.IO
 			{
 				var value = default( short );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (short)property.GetValue(obj, null) , numBase);
@@ -1523,7 +1639,9 @@ namespace KSoft.IO
 			{
 				var value = default( uint );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (uint)property.GetValue(obj, null) , numBase);
@@ -1537,7 +1655,9 @@ namespace KSoft.IO
 			{
 				var value = default( int );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (int)property.GetValue(obj, null) , numBase);
@@ -1551,7 +1671,9 @@ namespace KSoft.IO
 			{
 				var value = default( ulong );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (ulong)property.GetValue(obj, null) , numBase);
@@ -1565,7 +1687,9 @@ namespace KSoft.IO
 			{
 				var value = default( long );
 				ReadAttribute(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (long)property.GetValue(obj, null) , numBase);
@@ -1580,7 +1704,9 @@ namespace KSoft.IO
 			{
 				var value = default( Values.KGuid );
 				ReadAttribute(name, ref value );
-				property.SetValue(obj, value, null);
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				WriteAttribute(name, (Values.KGuid)property.GetValue(obj, null) );
@@ -1859,7 +1985,10 @@ namespace KSoft.IO
 			{
 				var value = default( string );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (string)property.GetValue(obj, null) , predicate);
@@ -1879,7 +2008,10 @@ namespace KSoft.IO
 			{
 				var value = default( char );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (char)property.GetValue(obj, null) , predicate);
@@ -1899,7 +2031,10 @@ namespace KSoft.IO
 			{
 				var value = default( bool );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (bool)property.GetValue(obj, null) , predicate);
@@ -1919,7 +2054,10 @@ namespace KSoft.IO
 			{
 				var value = default( float );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (float)property.GetValue(obj, null) , predicate);
@@ -1939,7 +2077,10 @@ namespace KSoft.IO
 			{
 				var value = default( double );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (double)property.GetValue(obj, null) , predicate);
@@ -1960,7 +2101,10 @@ namespace KSoft.IO
 			{
 				var value = default( byte );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (byte)property.GetValue(obj, null) , predicate, numBase);
@@ -1980,7 +2124,10 @@ namespace KSoft.IO
 			{
 				var value = default( sbyte );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (sbyte)property.GetValue(obj, null) , predicate, numBase);
@@ -2000,7 +2147,10 @@ namespace KSoft.IO
 			{
 				var value = default( ushort );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (ushort)property.GetValue(obj, null) , predicate, numBase);
@@ -2020,7 +2170,10 @@ namespace KSoft.IO
 			{
 				var value = default( short );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (short)property.GetValue(obj, null) , predicate, numBase);
@@ -2040,7 +2193,10 @@ namespace KSoft.IO
 			{
 				var value = default( uint );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (uint)property.GetValue(obj, null) , predicate, numBase);
@@ -2060,7 +2216,10 @@ namespace KSoft.IO
 			{
 				var value = default( int );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (int)property.GetValue(obj, null) , predicate, numBase);
@@ -2080,7 +2239,10 @@ namespace KSoft.IO
 			{
 				var value = default( ulong );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (ulong)property.GetValue(obj, null) , predicate, numBase);
@@ -2100,7 +2262,10 @@ namespace KSoft.IO
 			{
 				var value = default( long );
 				executed = ReadAttributeOpt(name, ref value , numBase);
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (long)property.GetValue(obj, null) , predicate, numBase);
@@ -2121,7 +2286,10 @@ namespace KSoft.IO
 			{
 				var value = default( Values.KGuid );
 				executed = ReadAttributeOpt(name, ref value );
-				property.SetValue(obj, value, null);
+				if (executed)
+				{
+					property.SetValue(obj, value, null);
+				}
 			}
 			else if (IsWriting)
 				executed = WriteAttributeOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);

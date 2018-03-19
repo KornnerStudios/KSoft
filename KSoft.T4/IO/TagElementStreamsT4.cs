@@ -63,8 +63,8 @@ namespace KSoft.T4
 			ttFile.PushIndent("\t");
 			ttFile.PushIndent("\t");
 
-			bool is_opt = 
-				subject == TagElementStreamSubjectType.ElementOpt || 
+			bool is_opt =
+				subject == TagElementStreamSubjectType.ElementOpt ||
 				subject == TagElementStreamSubjectType.AttributeOpt
 				;
 
@@ -109,7 +109,10 @@ namespace KSoft.T4
 					hasTNameParam.UseStringOrEmpty("name,"),
 					codeDef.IsInteger.UseStringOrEmpty(", numBase")
 				);
-				ttFile.WriteLine("property.SetValue(obj, value, null);");
+				if (is_opt)
+					ttFile.WriteLine("if (executed)");
+				using (var cb2 = ttFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
+					ttFile.WriteLine("property.SetValue(obj, value, null);");
 			}
 
 			ttFile.WriteLine("else if (IsWriting)");
