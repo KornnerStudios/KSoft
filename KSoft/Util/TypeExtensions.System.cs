@@ -1071,6 +1071,25 @@ namespace KSoft
 		}
 		#endregion
 
+		/// <summary>
+		/// When the position is 32-bits, returns 8-char hex string, else 16-char
+		/// </summary>
+		/// <param name="filePos"></param>
+		/// <returns></returns>
+		public static string ToFilePositionHexString(this long filePos)
+		{
+			Contract.Requires(filePos >= 0);
+
+			string result;
+
+			if (filePos <= uint.MaxValue)
+				result = filePos.ToString("X8");
+			else
+				result = filePos.ToString("X16");
+
+			return result;
+		}
+
 		#region HashAlgorithm
 		//[Obsolete("Use StreamHashComputer instead")]
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,

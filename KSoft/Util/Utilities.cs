@@ -549,6 +549,7 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentNullException>(fromPath.IsNotNullOrEmpty());
 			Contract.Requires<ArgumentNullException>(toPath.IsNotNullOrEmpty());
+			Contract.Ensures(Contract.Result<string>()==toPath || fromPath.IsNotNullOrEmpty());
 
 			Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath));
 			Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath));
@@ -563,25 +564,75 @@ namespace KSoft
 
 			if (string.Equals(toUri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
 			{
-				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+				relativePath = ReplaceAltDirectorySeparatorWithNormalChar(relativePath);
 			}
 
 			return relativePath;
 		}
 
-		private static string AppendDirectorySeparatorChar(string path)
+		public static string AppendDirectorySeparatorChar(string path)
 		{
-			Contract.Assume(path.IsNotNullOrEmpty());
+			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
-			// Append a slash only if the path is a directory and does not have a slash.
-			if (!Path.HasExtension(path) &&
-				!path.EndsWith(Path.DirectorySeparatorChar))
+			string result = path;
+
+			if (result.IsNotNullOrEmpty())
 			{
-				return path + Path.DirectorySeparatorChar;
+				// Append a slash only if the path is a directory and does not have a slash.
+				if (!Path.HasExtension(result) &&
+					!result.EndsWith(Path.DirectorySeparatorChar))
+				{
+					result += Path.DirectorySeparatorChar;
+				}
 			}
 
-			return path;
+			return result;
 		}
 		#endregion
+
+		public static string RemoveTrailingDirectorySeparatorChar(string path)
+		{
+			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
+
+			string result = path;
+
+			if (result.IsNotNullOrEmpty())
+			{
+				if (!Path.HasExtension(result) &&
+					result.EndsWith(Path.DirectorySeparatorChar))
+				{
+					result = result.Substring(0, result.Length-1);
+				}
+			}
+
+			return result;
+		}
+
+		public static string ReplaceDirectorySeparatorWithAltChar(string path)
+		{
+			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
+
+			string result = path;
+
+			if (result.IsNotNullOrEmpty())
+			{
+				result = result.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			}
+
+			return result;
+		}
+		public static string ReplaceAltDirectorySeparatorWithNormalChar(string path)
+		{
+			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
+
+			string result = path;
+
+			if (result.IsNotNullOrEmpty())
+			{
+				result = result.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
+
+			return result;
+		}
 	};
 }

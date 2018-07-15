@@ -26,7 +26,7 @@ namespace KSoft.Memory.Strings
 		kNumberOf,
 	};
 
-    /// <summary>The storage method types supported for string data</summary>
+	/// <summary>The storage method types supported for string data</summary>
 	public enum StringStorageType : byte
 	{
 		/// <summary>Zero-terminated character string</summary>

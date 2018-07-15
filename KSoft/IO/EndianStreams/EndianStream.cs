@@ -1013,6 +1013,99 @@ namespace KSoft.IO
 
 			return this;
 		}
+
+		public EndianStream StreamVersion(ref byte version
+			, byte versionMin
+			, byte versionMax)
+		{
+				 if (IsReading) version = VersionOutOfRangeException.Assert(Reader, versionMin, versionMax);
+			else if (IsWriting) Writer.Write(version);
+
+			return this;
+		}
+		public EndianStream StreamVersion(ref ushort version
+			, ushort versionMin
+			, ushort versionMax)
+		{
+				 if (IsReading) version = VersionOutOfRangeException.Assert(Reader, versionMin, versionMax);
+			else if (IsWriting) Writer.Write(version);
+
+			return this;
+		}
+		public EndianStream StreamVersion(ref uint version
+			, uint versionMin
+			, uint versionMax)
+		{
+				 if (IsReading) version = VersionOutOfRangeException.Assert(Reader, versionMin, versionMax);
+			else if (IsWriting) Writer.Write(version);
+
+			return this;
+		}
+		public EndianStream StreamVersion(ref ulong version
+			, ulong versionMin
+			, ulong versionMax)
+		{
+				 if (IsReading) version = VersionOutOfRangeException.Assert(Reader, versionMin, versionMax);
+			else if (IsWriting) Writer.Write(version);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Stream a zero-based, positive enum as a version value.
+		/// Uses underlying type for bit width.
+		/// </summary>
+		/// <typeparam name="TEnum"></typeparam>
+		/// <param name="version"></param>
+		/// <param name="maxCount"></param>
+		/// <returns></returns>
+		public EndianStream StreamVersionEnum<TEnum>(ref TEnum version
+			, TEnum maxCount)
+			where TEnum : struct, IComparable, IFormattable, IConvertible
+		{
+			if (IsReading)
+				version = VersionOutOfRangeException.AssertZeroBasedEnum(Reader, maxCount);
+			else if (IsWriting)
+			{
+				var type_code = Reflection.EnumUtil<TEnum>.UnderlyingTypeCode;
+
+				switch (type_code)
+				{
+					case TypeCode.SByte:
+					case TypeCode.Byte:
+					{
+						var integer = Reflection.EnumValue<TEnum>.ToByte(maxCount);
+						Writer.Write(integer);
+					} break;
+
+					case TypeCode.Int16:
+					case TypeCode.UInt16:
+					{
+						var integer = Reflection.EnumValue<TEnum>.ToUInt16(maxCount);
+						Writer.Write(integer);
+					} break;
+
+					case TypeCode.Int32:
+					case TypeCode.UInt32:
+					{
+						var integer = Reflection.EnumValue<TEnum>.ToUInt32(maxCount);
+						Writer.Write(integer);
+					} break;
+
+					case TypeCode.Int64:
+					case TypeCode.UInt64:
+					{
+						var integer = Reflection.EnumValue<TEnum>.ToUInt64(maxCount);
+						Writer.Write(integer);
+					} break;
+
+					default:
+						throw new Debug.UnreachableException(type_code.ToString());
+				}
+			}
+
+			return this;
+		}
 		#endregion
 
 		[System.Diagnostics.Conditional("TRACE")]

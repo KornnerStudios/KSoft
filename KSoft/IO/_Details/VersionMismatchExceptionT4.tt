@@ -45,8 +45,58 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.Read<#= word_type.Code #>();
-			if (version != expected) throw new VersionMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+				throw new VersionMismatchException(s.BaseStream, expected, version);
+		}
+
+<# } #>
+		#endregion
+	};
+
+	partial class VersionOutOfRangeException
+	{
+<# foreach (var word_type in BitwiseT4.BittableTypesInt32) { #>
+		#region <#= word_type.Code #> ctors
+		public VersionOutOfRangeException(string dataDescription
+			, <#= word_type.Keyword #> expectedMin
+			, <#= word_type.Keyword #> expectedMax
+			, <#= word_type.Keyword #> found)
+			: base(string.Format(kDescFormat, dataDescription, expectedMin, expectedMax, found, VersionCompareDesc(expectedMin, expectedMax, found)))
+		{
+			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+		}
+		#endregion
+<# } #>
+
+		#region Stream ctors
+<# foreach (var word_type in BitwiseT4.BittableTypes_Unsigned) { #>
+<#	string hex_format = "\"" + word_type.ToStringHexFormat + "\"";
+#>
+		public VersionOutOfRangeException(Stream s
+			, <#= word_type.Keyword #> expectedMin
+			, <#= word_type.Keyword #> expectedMax
+			, <#= word_type.Keyword #> found)
+			: this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expectedMin, expectedMax, found), expectedMin.ToString(<#= hex_format #>), expectedMax.ToString(<#= hex_format #>), found.ToString(<#= hex_format #>))
+		{
+			Contract.Requires(s != null);
+		}
+
+<# } #>
+		#endregion
+
+		#region EndianReader util
+<# foreach (var word_type in BitwiseT4.BittableTypes_Unsigned) { #>
+		public static <#= word_type.Keyword #> Assert(IO.EndianReader s
+			, <#= word_type.Keyword #> expectedMin
+			, <#= word_type.Keyword #> expectedMax)
+		{
+			Contract.Requires(s != null);
+
+			var version = s.Read<#= word_type.Code #>();
+			if (version < expectedMin || version > expectedMax)
+				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+
+			return version;
 		}
 
 <# } #>
