@@ -283,7 +283,7 @@ namespace KSoft.IO
 					s.ToString(), length.ToString()));
 		}
 
-		/// <summary>Read a string using a <see cref="Data.Strings.StringStorage"/> definition and a provided character length</summary>
+		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
 		/// <param name="length">Length, in characters, of the string.</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
@@ -303,7 +303,7 @@ namespace KSoft.IO
 
 			return sse.ReadString(this, length, maxLength, prefixBitLength);
 		}
-		/// <summary>Read a string using a <see cref="Data.Strings.StringStorageEncoding"/> definition and a provided character length</summary>
+		/// <summary>Read a string using a <see cref="Text.StringStorageEncoding"/> definition and a provided character length</summary>
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		/// <param name="length">Length, in characters, of the string.</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
@@ -323,7 +323,7 @@ namespace KSoft.IO
 			return encoding.ReadString(this, length, maxLength, prefixBitLength);
 		}
 
-		/// <summary>Writes a string based on a <see cref="Data.Strings.StringStorage"/> definition</summary>
+		/// <summary>Writes a string based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value">String value to writee. Null defaults to an empty string</param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
@@ -334,7 +334,7 @@ namespace KSoft.IO
 			sse.WriteString(this, value ?? string.Empty, maxLength,
 				prefixBitLength: TypeExtensions.kNone);
 		}
-		/// <summary>Writes a string using a <see cref="Data.Strings.StringStorageEncoding"/></summary>
+		/// <summary>Writes a string using a <see cref="Text.StringStorageEncoding"/></summary>
 		/// <param name="value">String value to writee. Null defaults to an empty string</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
@@ -347,7 +347,7 @@ namespace KSoft.IO
 				prefixBitLength: TypeExtensions.kNone);
 		}
 
-		/// <summary>Serializes a string based on a <see cref="Data.Strings.StringStorage"/> definition</summary>
+		/// <summary>Serializes a string based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value"></param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
@@ -360,7 +360,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		/// <summary>Serializes a string using a <see cref="Data.Strings.StringStorageEncoding"/></summary>
+		/// <summary>Serializes a string using a <see cref="Text.StringStorageEncoding"/></summary>
 		/// <param name="value"></param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>

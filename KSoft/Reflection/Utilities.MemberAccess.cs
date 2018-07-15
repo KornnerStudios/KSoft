@@ -145,10 +145,14 @@ namespace KSoft.Reflection
 			switch(member.MemberType)
 			{
 			case Reflect.MemberTypes.Field:
-				if (((Reflect.FieldInfo)member).IsInitOnly)
+			{
+				var field_member = (Reflect.FieldInfo)member;
+				if (field_member.IsInitOnly)
+				{
 					throw new MemberAccessException("Tried to generate setter for readonly field " +
 						member.Name + " in " + member.ReflectedType);
-				break;
+				}
+			} break;
 
 			case Reflect.MemberTypes.Property:
 				ValidatePropertyForGenerateSetter(member);

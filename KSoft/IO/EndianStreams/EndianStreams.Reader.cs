@@ -363,8 +363,8 @@ namespace KSoft.IO
 			return encoding.ReadString(this, length);
 		}
 		/// <summary>
-		/// Read a string using a <see cref="Data.Strings.StringStorage"/> encoding.
-		/// String length defaults to <see cref="Data.Strings.StringStorage.FixedLegnth"/>
+		/// Read a string using a <see cref="Memory.Strings.StringStorage"/> encoding.
+		/// String length defaults to <see cref="Memory.Strings.StringStorage.FixedLegnth"/>
 		/// </summary>
 		/// <param name="encoding">The encoding to use for character streaming</param>
 		/// <returns></returns>

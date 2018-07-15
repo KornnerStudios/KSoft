@@ -17,16 +17,20 @@ namespace KSoft
 
 		public static void Initialize()
 		{
-			Util.ValueTypeInitializeComparer			<Memory.Strings.StringStorage>();
-			Util.ValueTypeInitializeEquatableComparer	<Memory.Strings.StringStorage>();
-			Util.ValueTypeInitializeComparer			<Shell.Platform>();
-			Util.ValueTypeInitializeEquatableComparer	<Shell.Platform>();
-			Util.ValueTypeInitializeComparer			<Shell.Processor>();
-			Util.ValueTypeInitializeEquatableComparer	<Shell.Processor>();
-			Util.ValueTypeInitializeComparer			<Values.KGuid>();
-			Util.ValueTypeInitializeEquatableComparer	<Values.KGuid>();
-			Util.ValueTypeInitializeComparer			<Values.PtrHandle>();
-			Util.ValueTypeInitializeEquatableComparer	<Values.PtrHandle>();
+			var dot_net_version = Environment.Version;
+			if (dot_net_version.Major <= 2)
+			{
+				Util.ValueTypeInitializeComparer			<Memory.Strings.StringStorage>();
+				Util.ValueTypeInitializeEquatableComparer	<Memory.Strings.StringStorage>();
+				Util.ValueTypeInitializeComparer			<Shell.Platform>();
+				Util.ValueTypeInitializeEquatableComparer	<Shell.Platform>();
+				Util.ValueTypeInitializeComparer			<Shell.Processor>();
+				Util.ValueTypeInitializeEquatableComparer	<Shell.Processor>();
+				Util.ValueTypeInitializeComparer			<Values.KGuid>();
+				Util.ValueTypeInitializeEquatableComparer	<Values.KGuid>();
+				Util.ValueTypeInitializeComparer			<Values.PtrHandle>();
+				Util.ValueTypeInitializeEquatableComparer	<Values.PtrHandle>();
+			}
 		}
 
 		public static void Dispose()
