@@ -577,6 +577,9 @@ namespace KSoft
 			return relativePath;
 		}
 
+		/// <summary>Appends a slash if the path does not end with an extension and does not already have a slash</summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static string AppendDirectorySeparatorChar(string path)
 		{
 			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
@@ -597,6 +600,30 @@ namespace KSoft
 		}
 		#endregion
 
+		/// <summary>Prefixes a slash to the path if it does not already have a slash</summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public static string PrependDirectorySeparatorChar(string path)
+		{
+			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
+
+			string result = path;
+
+			if (result.IsNotNullOrEmpty())
+			{
+				// Prefix a slash only if the path does not have a slash.
+				if (!result.StartsWith(Path.DirectorySeparatorChar))
+				{
+					result = Path.DirectorySeparatorChar + result;
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>Removes a final slash from the path if it has one</summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static string RemoveTrailingDirectorySeparatorChar(string path)
 		{
 			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
@@ -605,8 +632,7 @@ namespace KSoft
 
 			if (result.IsNotNullOrEmpty())
 			{
-				if (!Path.HasExtension(result) &&
-					result.EndsWith(Path.DirectorySeparatorChar))
+				if (result.EndsWith(Path.DirectorySeparatorChar))
 				{
 					result = result.Substring(0, result.Length-1);
 				}
