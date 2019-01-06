@@ -17,11 +17,11 @@ namespace KSoft.IO
 		}
 		protected override void WriteElement(TCursor n, float value)
 		{
-			WriteElement(n, value.ToStringInvariant(Numbers.kSingleRoundTripFormatSpecifier));
+			WriteElement(n, value.ToStringInvariant(this.SingleFormatSpecifier));
 		}
 		protected override void WriteElement(TCursor n, double value)
 		{
-			WriteElement(n, value.ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
+			WriteElement(n, value.ToStringInvariant(this.DoubleFormatSpecifier));
 		}
 
 		protected override void WriteElement(TCursor n, byte value, NumeralBase toBase)
@@ -73,11 +73,11 @@ namespace KSoft.IO
 		}
 		public override void WriteAttribute(string name, float value)
 		{
-			CursorWriteAttribute(name, value.ToStringInvariant(Numbers.kSingleRoundTripFormatSpecifier));
+			CursorWriteAttribute(name, value.ToStringInvariant(this.SingleFormatSpecifier));
 		}
 		public override void WriteAttribute(string name, double value)
 		{
-			CursorWriteAttribute(name, value.ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
+			CursorWriteAttribute(name, value.ToStringInvariant(this.DoubleFormatSpecifier));
 		}
 
 		public override void WriteAttribute(string name, byte value, NumeralBase toBase)

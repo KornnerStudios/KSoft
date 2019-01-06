@@ -25,12 +25,43 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		#region SingleFormatSpecifier
+		string mSingleFormatSpecifier = Numbers.kSingleRoundTripFormatSpecifier;
+		/// <summary>RoundTrip by default</summary>
+		public string SingleFormatSpecifier
+		{
+			get { return mSingleFormatSpecifier; }
+			set { mSingleFormatSpecifier = value; }
+		}
+		#endregion
+
+		#region DoubleFormatSpecifier
+		string mDoubleFormatSpecifier = Numbers.kDoubleRoundTripFormatSpecifier;
+		/// <summary>RoundTrip by default</summary>
+		public string DoubleFormatSpecifier
+		{
+			get { return mDoubleFormatSpecifier; }
+			set { mDoubleFormatSpecifier = value; }
+		}
+		#endregion
+
 		[Contracts.Pure]
 		public override bool ValidateNameArg(string name) { return !string.IsNullOrEmpty(name); }
 
 		protected TagElementTextStream()
 		{
 			mReadErrorState = new TextStreamReadErrorState(this);
+		}
+
+		public void UseDefaultFloatFormatSpecifiers()
+		{
+			SingleFormatSpecifier = Numbers.kFloatDefaultFormatSpecifier;
+			DoubleFormatSpecifier = Numbers.kFloatDefaultFormatSpecifier;
+		}
+		public void UseRoundTripFloatFormatSpecifiers()
+		{
+			SingleFormatSpecifier = Numbers.kSingleRoundTripFormatSpecifier;
+			DoubleFormatSpecifier = Numbers.kDoubleRoundTripFormatSpecifier;
 		}
 	};
 

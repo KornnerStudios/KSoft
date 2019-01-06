@@ -209,6 +209,8 @@ namespace KSoft
 			}
 		};
 
+		// Single.ToString(string): "if format is null or an empty string, the return value for this isntance is formatted with the general numeric format specifier ("G")
+		public const string kFloatDefaultFormatSpecifier = null;
 		public const string kFloatRoundTripFormatSpecifier = "G9";
 		public const string kSingleRoundTripFormatSpecifier = kFloatRoundTripFormatSpecifier;
 		public const string kDoubleRoundTripFormatSpecifier = "G17";
