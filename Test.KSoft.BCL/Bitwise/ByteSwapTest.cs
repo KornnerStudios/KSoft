@@ -160,9 +160,9 @@ namespace KSoft.Bitwise.Test
 
 			buffer_index = 0;
 			{
-				buffer_index += ByteSwap.SwapData(ByteSwap.kInt64Definition, buffer, buffer_index);
-				buffer_index += ByteSwap.SwapData(ByteSwap.kInt32Definition, buffer, buffer_index);
-				buffer_index += ByteSwap.SwapData(ByteSwap.kInt16Definition, buffer, buffer_index);
+				buffer_index = ByteSwap.SwapData(ByteSwap.kInt64Definition, buffer, buffer_index);
+				buffer_index = ByteSwap.SwapData(ByteSwap.kInt32Definition, buffer, buffer_index);
+				buffer_index = ByteSwap.SwapData(ByteSwap.kInt16Definition, buffer, buffer_index);
 			}
 			Assert.AreEqual(buffer.Length, buffer_index);
 
