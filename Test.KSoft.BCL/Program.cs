@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace KSoft
 {
 	[TestClass] // required for AssemblyInitialize & AssemblyCleanup to work
+	public // VS2017 this started: UTA001: TestClass attribute defined on non-public class KSoft.TestLibrary
 	static partial class TestLibrary
 	{
 		[AssemblyInitialize]
@@ -11,11 +12,11 @@ namespace KSoft
 		{
 			KSoft.Program.Initialize();
 
-			// If this isn't true, then whoever is using this code didn't update 
+			// If this isn't true, then whoever is using this code didn't update
 			// [kTestResultsPath] to reflect their project tree's test results dir.
-			// 
-			// We don't use the TextContext's TestDir properties because there have 
-			// been issues with VS using the "In" dir, and deleting whatever gets 
+			//
+			// We don't use the TextContext's TestDir properties because there have
+			// been issues with VS using the "In" dir, and deleting whatever gets
 			// outputted into there. But hey, maybe I'm just doing something wrong!
 			Assert.IsTrue(System.IO.Directory.Exists(BaseTestClass.kTestResultsPath));
 		}
