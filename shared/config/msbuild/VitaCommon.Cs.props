@@ -29,7 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
 
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -46,6 +46,8 @@
 
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration.Contains(Debug))' ">
@@ -54,13 +56,13 @@
     <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
 
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <!-- <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel> -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration.Contains(Release))' ">
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
 
-    <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
+    <!-- <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel> -->
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">
