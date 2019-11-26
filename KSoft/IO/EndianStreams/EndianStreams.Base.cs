@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿using System.IO;
 
 namespace KSoft.IO
 {

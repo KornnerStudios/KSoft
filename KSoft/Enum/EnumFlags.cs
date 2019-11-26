@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
 
@@ -56,8 +52,8 @@ namespace KSoft
 		// 1		1		R
 		// 1		1		R
 		// 1		2		R
-		// 
-		
+		//
+
 		#region Static interface
 		public static TEnum Add(TEnum value, TEnum flags)		{ return	V1.kAddFlags(value, flags); }
 		public static void Add(ref TEnum value, TEnum flags)	{			V1.kAddFlagsByRef(ref value, flags); }

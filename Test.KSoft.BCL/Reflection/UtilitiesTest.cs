@@ -34,7 +34,7 @@ namespace KSoft.Reflection.Test
 			// Can't use MessageBoxW, seems to implicitly marshal to UTF8? Could have sworn .NET strings were internally UTF16
 			// Then again, my system is setup for en-us...
 			var proc_ptr = LowLevel.Windows.GetProcAddress(module, "MessageBoxA");
-			const System.Runtime.InteropServices.CallingConvention call_conv = 
+			const System.Runtime.InteropServices.CallingConvention call_conv =
 				System.Runtime.InteropServices.CallingConvention.Winapi;
 
 			var msg_box = Util.GetDelegateForFunctionPointer<MessageBoxDelegate>(proc_ptr, call_conv);
@@ -102,6 +102,8 @@ namespace KSoft.Reflection.Test
 		[TestMethod]
 		public void Reflection_GenerateLiteralMemberGetterTest()
 		{
+			// #TODO this isn't passing under .NET 4.5.1, even though the constant does indeed exist...did this ever work?
+
 			// internal const int DefaultBufferSize
 			var kDefaultBufferSize = Util.GenerateStaticFieldGetter<System.IO.StreamReader, int>("DefaultBufferSize");
 
@@ -187,7 +189,7 @@ namespace KSoft.Reflection.Test
 		[TestMethod]
 		public void Reflection_GenerateObjectMethodProxyTest()
 		{
-			var proxy_func = 
+			var proxy_func =
 				Util.GenerateObjectMethodProxy<
 					TestGenerateObjectMethodProxyClass,
 					TestGenerateObjectMethodProxyClassPrivateFunc,
@@ -221,7 +223,7 @@ namespace KSoft.Reflection.Test
 			const Reflect.BindingFlags k_non_public_ctor_binding_flags =
 				Reflect.BindingFlags.Instance | Reflect.BindingFlags.NonPublic;
 
-			var ctor_priv = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass, 
+			var ctor_priv = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
 				TestGenerateConstructorFuncClassPrivateCtor>(k_non_public_ctor_binding_flags);
 			Assert.IsNotNull(ctor_priv);
 

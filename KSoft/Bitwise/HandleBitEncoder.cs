@@ -1,5 +1,9 @@
 ﻿using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -29,7 +33,7 @@ namespace KSoft.Bitwise
 		{
 			uint hi = Bits.GetHighBits(mBits.u64);
 
-			// this order allows a user to XOR again with GetHandle32 to get 
+			// this order allows a user to XOR again with GetHandle32 to get
 			// the upper 32-bit values of m64
 			return hi ^ mBits.u32;
 		}

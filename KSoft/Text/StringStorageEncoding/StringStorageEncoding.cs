@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Text
 {
@@ -10,8 +13,8 @@ namespace KSoft.Text
 
 	/// <summary>Encapsulates an <see cref="Encoding"/> from a <see cref="StringStorage"/> definition</summary>
 	/// <remarks>
-	/// For <see cref="StringStorageType.CString"/> cases, the encoding does not check if there 
-	/// is an existing '\0' character in the user supplied strings. If you pass such strings to 
+	/// For <see cref="StringStorageType.CString"/> cases, the encoding does not check if there
+	/// is an existing '\0' character in the user supplied strings. If you pass such strings to
 	/// the encoding for streaming the results will be undefined. Oh and bad.
 	/// </remarks>
 	public sealed partial class StringStorageEncoding : System.Text.Encoding,
@@ -29,7 +32,7 @@ namespace KSoft.Text
 		/// <summary>Number of bytes a null character consumes</summary>
 		int mNullCharacterSize;
 		/// <summary>
-		/// Number of bytes used to store a fixed length character array using 
+		/// Number of bytes used to store a fixed length character array using
 		/// the <see cref="StringStorageType"/> defined in <see cref="storage"/>
 		/// </summary>
 		int mFixedLengthByteLength;
@@ -63,8 +66,8 @@ namespace KSoft.Text
 				default: throw new Debug.UnreachableException();
 			}
 
-			mFixedLengthByteLength = !storage.IsFixedLength 
-				? 0 
+			mFixedLengthByteLength = !storage.IsFixedLength
+				? 0
 				: GetMaxCleanByteCount(storage.FixedLength);
 
 			mStorage = storage;
@@ -156,7 +159,7 @@ namespace KSoft.Text
 			return max_count;
 		}
 		/// <summary>
-		/// Calculates the maximum number of bytes produced by encoding the specified number of characters WITHOUT 
+		/// Calculates the maximum number of bytes produced by encoding the specified number of characters WITHOUT
 		/// THE EXTRA SURROGATE JIZZ
 		/// </summary>
 		/// <param name="charCount">The number of characters to encode</param>
@@ -165,10 +168,10 @@ namespace KSoft.Text
 		{
 			int max_count = mBaseEncoding.GetMaxByteCount(charCount);
 
-			// NOTE: that GetMaxByteCount considers potential leftover surrogates from a previous decoder operation. 
-			// Because of the decoder, passing a value of 1 to the method retrieves 2 for a single-byte encoding, 
+			// NOTE: that GetMaxByteCount considers potential leftover surrogates from a previous decoder operation.
+			// Because of the decoder, passing a value of 1 to the method retrieves 2 for a single-byte encoding,
 			// such as ASCII. Your application should use the IsSingleByte property if this information is necessary.
-			// ...That being said, it looks like they internally use a null character. So for streaming related cases, 
+			// ...That being said, it looks like they internally use a null character. So for streaming related cases,
 			// we have to circumcise the fucking count.
 			max_count -= mNullCharacterSize;
 
@@ -179,8 +182,8 @@ namespace KSoft.Text
 		/// <returns>The maximum number of characters produced by decoding the specified number of bytes</returns>
 		public override int GetMaxCharCount(int byteCount)
 		{
-			// For Pascal type strings, this will give a larger count 
-			// than usual, even for Max standards, since we can't 
+			// For Pascal type strings, this will give a larger count
+			// than usual, even for Max standards, since we can't
 			// sneak a peak at the length prefix bytes
 			byteCount = CalculateCharByteCount(byteCount); // Remove our String Storage calculations
 
@@ -208,10 +211,10 @@ namespace KSoft.Text
 		/// <summary>Compares this to another object testing for equality</summary>
 		/// <param name="obj"></param>
 		/// <returns>
-		/// True if both this object and <paramref name="obj"/> are equal. 
+		/// True if both this object and <paramref name="obj"/> are equal.
 		/// False if <paramref name="obj"/> is not a <see cref="StringStorageEncoding"/></returns>
 		public override bool Equals(object value)
-		{ 
+		{
 			//return mBaseEncoding.Equals(value);
 			if(value is StringStorageEncoding)
 				return this.Equals(value as StringStorageEncoding);
@@ -242,7 +245,7 @@ namespace KSoft.Text
 
 		#region IEquatable<StringStorageEncoding> Members
 		/// <summary>
-		/// Compares this to another <see cref="StringStorageEncoding"/> object testing 
+		/// Compares this to another <see cref="StringStorageEncoding"/> object testing
 		/// their underlying fields for equality
 		/// </summary>
 		/// <param name="obj">other <see cref="StringStorageEncoding"/> object</param>
@@ -297,13 +300,13 @@ namespace KSoft.Text
 				kStorageEncodingList[x] = new StringStorageEncoding(StringStorage.kStorageTypesList[x]);
 		}
 		/// <summary>
-		/// Try and get an existing <b>static</b> <see cref="StringStorageEncoding"/> instance 
+		/// Try and get an existing <b>static</b> <see cref="StringStorageEncoding"/> instance
 		/// based on a provided definition
 		/// </summary>
 		/// <param name="storageDesc">Storage to base the result on</param>
 		/// <returns>
 		/// If an instance is found with <paramref name="storageDesc"/>, a static based
-		/// object will be returned. Otherwise, a new <see cref="StringStorageEncoding"/> 
+		/// object will be returned. Otherwise, a new <see cref="StringStorageEncoding"/>
 		/// object will be created using the definition.
 		/// </returns>
 		public static StringStorageEncoding TryAndGetStaticEncoding(StringStorage storageDesc)

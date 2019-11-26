@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft
 {
@@ -22,7 +25,7 @@ namespace KSoft
 	/// <summary>
 	/// A fast and efficient implementation of <see cref="IEqualityComparer{T}"/> for Enum types.
 	/// Useful for dictionaries that use Enums as their keys.
-	/// 
+	///
 	/// Also implements <see cref="IComparer{T}"/>
 	/// </summary>
 	/// <example>

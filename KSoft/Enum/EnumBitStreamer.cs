@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 using Expr = System.Linq.Expressions.Expression;
 
 namespace KSoft.IO
@@ -193,7 +191,7 @@ namespace KSoft.IO
 			}
 			#endregion
 
-			var read_result =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're reading, 
+			var read_result =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're reading,
 									Expr.Convert(call_read, args.UnderlyingType) :		// we need to cast the Read result from TStreamType to UnderlyingType
 									(Expr)call_read;
 
@@ -235,7 +233,7 @@ namespace KSoft.IO
 			//////////////////////////////////////////////////////////////////////////
 			// Define the member access
 			var param_v_member =Expr.PropertyOrField(param_v, EnumUtils.kMemberName);	// i.e., 'v.value__'
-			var write_param =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're writing, 
+			var write_param =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're writing,
 									Expr.Convert(param_v_member, args.StreamType) :		// we need to cast the Write param from UnderlyingType to TStreamType
 									(Expr)param_v_member;
 

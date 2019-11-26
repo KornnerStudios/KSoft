@@ -50,6 +50,9 @@ namespace KSoft.Collections.Test
 		[TestMethod]
 		public void Collections_ValueTypeComparerStaticCtorTest()
 		{
+			var dot_net_version = Environment.Version;
+			Assert.IsTrue(dot_net_version.Major <= 2);
+
 			Util.ValueTypeInitializeComparer<TestValueType>();
 
 			var comparer = Comparer<TestValueType>.Default;
@@ -59,6 +62,9 @@ namespace KSoft.Collections.Test
 		[TestMethod]
 		public void Collections_ValueTypeEqualityComparerStaticCtorTest()
 		{
+			var dot_net_version = Environment.Version;
+			Assert.IsTrue(dot_net_version.Major <= 2);
+
 			// REMINDER: This overwrites ValueTypeEquatableComparer's changes
 			Util.ValueTypeInitializeEqualityComparer<TestValueType>();
 
@@ -69,6 +75,9 @@ namespace KSoft.Collections.Test
 		[TestMethod]
 		public void Collections_ValueTypeEquatableComparerStaticCtorTest()
 		{
+			var dot_net_version = Environment.Version;
+			Assert.IsTrue(dot_net_version.Major <= 2);
+
 			// REMINDER: This overwrites ValueTypeEqualityComparer's changes
 			Util.ValueTypeInitializeEquatableComparer<TestValueType>();
 

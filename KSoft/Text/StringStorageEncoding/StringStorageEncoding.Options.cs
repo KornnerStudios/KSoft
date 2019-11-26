@@ -19,12 +19,12 @@ namespace KSoft.Text
 			/// <summary>Throw an exception when invalid bytes are handled</summary>
 			/// <remarks>
 			/// Ignored in <see cref="Memory.Strings.StringStorageWidthType.Ascii"/> cases.
-			/// 
+			///
 			/// For <see cref="Memory.Strings.StringStorageWidthType.UTF7"/> this disables optional characters.
 			/// </remarks>
 			ThrowOnInvalidBytes = 1 << 1,
 			/// <summary>
-			/// By default, we always flush the encoding's encoder\decoder. Use this to listen 
+			/// By default, we always flush the encoding's encoder\decoder. Use this to listen
 			/// to the "flush" parameter instead
 			/// </summary>
 			DontAlwaysFlush = 1 << 2,

@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-using Expr = System.Linq.Expressions.Expression;
+﻿using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
 
 namespace KSoft
 {
-	using EnumUtils = Reflection.EnumUtils;
-
 	partial class EnumFlags<TEnum>
 	{
 		/// <summary>
-		/// Implements the expressions by casting the enum parameters to their underlying integer types before 
+		/// Implements the expressions by casting the enum parameters to their underlying integer types before
 		/// doing a bitwise operation on them
 		/// </summary>
 		static class V1

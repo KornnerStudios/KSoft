@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using StringBuilder = System.Text.StringBuilder;
 
 namespace KSoft
@@ -385,7 +388,7 @@ namespace KSoft
 		#endregion
 
 		#region ToStringList UInt32
-		public static string ToStringList(StringListDesc desc, IEnumerable<uint> values, 
+		public static string ToStringList(StringListDesc desc, IEnumerable<uint> values,
 			Predicate<IEnumerable<uint>> writeTerminator = null)
 		{
 			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);
@@ -415,7 +418,7 @@ namespace KSoft
 		}
 		#endregion
 		#region ToStringList Int32
-		public static string ToStringList(StringListDesc desc, IEnumerable<int> values, 
+		public static string ToStringList(StringListDesc desc, IEnumerable<int> values,
 			Predicate<IEnumerable<int>> writeTerminator = null)
 		{
 			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);
@@ -445,7 +448,7 @@ namespace KSoft
 		}
 		#endregion
 		#region ToStringList UInt64
-		public static string ToStringList(StringListDesc desc, IEnumerable<ulong> values, 
+		public static string ToStringList(StringListDesc desc, IEnumerable<ulong> values,
 			Predicate<IEnumerable<ulong>> writeTerminator = null)
 		{
 			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);
@@ -475,7 +478,7 @@ namespace KSoft
 		}
 		#endregion
 		#region ToStringList Int64
-		public static string ToStringList(StringListDesc desc, IEnumerable<long> values, 
+		public static string ToStringList(StringListDesc desc, IEnumerable<long> values,
 			Predicate<IEnumerable<long>> writeTerminator = null)
 		{
 			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);

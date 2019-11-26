@@ -1,7 +1,4 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 using Vector2f = SlimMath.Vector2;
 using Vector3f = SlimMath.Vector3;
 using Vector4f = SlimMath.Vector4;

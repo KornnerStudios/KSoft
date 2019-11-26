@@ -34,9 +34,15 @@ namespace KSoft.IO.Test
 			{
 				using (var bs = new IO.BitStream(ms, FileAccess.Write))
 				{
+					int expected_bit_position = 0;
+
 					bs.StreamMode = FileAccess.Write;
 					foreach (var kv in values)
+					{
 						bs.WriteWord(kv.Key, kv.Value);
+						expected_bit_position += kv.Value;
+						Assert.AreEqual(expected_bit_position, bs.BitPosition, "Value=" + kv.Key);
+					}
 				}
 				Text.Util.ByteArrayToStream(ms.ToArray(), System.Console.Out);
 				System.Console.WriteLine();

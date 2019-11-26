@@ -1,6 +1,9 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft
 {
@@ -117,7 +120,7 @@ namespace KSoft
 
 		#endregion
 
-		public static bool GetBitConstants(Type integerType, 
+		public static bool GetBitConstants(Type integerType,
 			out int byteCount, out int bitCount, out int bitShift, out int bitMod)
 		{
 			Contract.Requires/*<ArgumentNullException>*/(integerType != null);

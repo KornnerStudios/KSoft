@@ -4,8 +4,11 @@
 <#@ import namespace="KSoft.T4" #>
 using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -22,7 +25,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -74,7 +77,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -101,7 +104,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -125,7 +128,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -150,7 +153,7 @@ namespace KSoft.IO
 <# foreach (var type in TagElementStreamsT4.SerializableTypesIntegers) { #>
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>

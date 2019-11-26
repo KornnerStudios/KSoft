@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
@@ -12,7 +15,7 @@ namespace KSoft.Shell
 	/// <summary>Represents a processor definition</summary>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	[System.Diagnostics.DebuggerDisplay("IA = {InstructionSet}, WordSize = {ProcessorSize}, Endian = {ByteOrder}")]
-	public struct Processor : 
+	public struct Processor :
 		IComparer<Processor>, System.Collections.IComparer,
 		IComparable<Processor>, IComparable,
 		IEquatable<Processor>
@@ -113,9 +116,9 @@ namespace KSoft.Shell
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			return string.Format("[{0}\t{1}\t{2}]", 
-				InstructionSet.ToString(), 
-				ProcessorSize.ToString(), 
+			return string.Format("[{0}\t{1}\t{2}]",
+				InstructionSet.ToString(),
+				ProcessorSize.ToString(),
 				ByteOrder.ToString()
 				);
 		}
@@ -214,8 +217,8 @@ namespace KSoft.Shell
 		static readonly Processor kPowerPcXenon = new Processor(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC (Xenon) processor definition</summary>
 		/// <remarks>
-		/// Why is there a special Xenon definition? Because if I recall correctly, the Xenon is a 64-bit processor however 
-		/// its instruction set is treated as if it were 32-bit. So we may adjust the definition system later on for these 
+		/// Why is there a special Xenon definition? Because if I recall correctly, the Xenon is a 64-bit processor however
+		/// its instruction set is treated as if it were 32-bit. So we may adjust the definition system later on for these
 		/// types of processor cases.
 		/// </remarks>
 		public static Processor PowerPcXenon	{ get { return kPowerPcXenon; } }

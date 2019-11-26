@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Exprs = System.Linq.Expressions;
 
 namespace KSoft.IO
@@ -46,8 +49,8 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && stringResolver != null);
 
 			bool reading = IsReading;
-			string str = reading 
-				? null 
+			string str = reading
+				? null
 				: stringResolver(ctxt, id);
 
 			StreamCursor(ref str);
@@ -104,7 +107,7 @@ namespace KSoft.IO
 				 if (IsReading) ReadElementEnum(name, ref value);
 			else if (IsWriting) WriteElementEnum(name, value, isFlags);
 		}
-		public void StreamElementEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+		public void StreamElementEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			bool isFlags = false)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -146,8 +149,8 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && stringResolver != null);
 
 			bool reading = IsReading;
-			string str = reading 
-				? null 
+			string str = reading
+				? null
 				: stringResolver(ctxt, id);
 
 			StreamElement(name, ref str);
@@ -196,7 +199,7 @@ namespace KSoft.IO
 			else if (IsWriting) executed = WriteElementEnumOptOnTrue(name, value, predicate, isFlags);
 			return executed;
 		}
-		public bool StreamElementEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+		public bool StreamElementEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -252,8 +255,8 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && stringResolver != null);
 
 			bool reading = IsReading;
-			string str = reading 
-				? null 
+			string str = reading
+				? null
 				: stringResolver(ctxt, id);
 
 			bool executed = StreamElementOpt(name, ref str, predicate);
@@ -307,7 +310,7 @@ namespace KSoft.IO
 				 if (IsReading) ReadAttributeEnum(name, ref value);
 			else if (IsWriting) WriteAttributeEnum(name, value, isFlags);
 		}
-		public void StreamAttributeEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+		public void StreamAttributeEnum<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			bool isFlags = false)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -372,7 +375,7 @@ namespace KSoft.IO
 			else if (IsWriting) executed = WriteAttributeEnumOptOnTrue(name, value, predicate, isFlags);
 			return executed;
 		}
-		public bool StreamAttributeEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr, 
+		public bool StreamAttributeEnumOpt<T, TEnum>(TName name, T obj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -455,7 +458,7 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && integerResolver != null);
 
 			bool reading = IsReading;
-			var integer = reading 
+			var integer = reading
 				? TypeExtensions.kNone
 				: integerResolver(ctxt, id);
 
@@ -482,8 +485,8 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && stringResolver != null);
 
 			bool reading = IsReading;
-			string str = reading 
-				? null 
+			string str = reading
+				? null
 				: stringResolver(ctxt, id);
 
 			StreamAttribute(name, ref str);
@@ -516,7 +519,7 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && integerResolver != null);
 
 			bool reading = IsReading;
-			var integer = reading 
+			var integer = reading
 				? TypeExtensions.kNone
 				: integerResolver(ctxt, id);
 
@@ -548,8 +551,8 @@ namespace KSoft.IO
 			Contract.Requires(idResolver != null && stringResolver != null);
 
 			bool reading = IsReading;
-			string str = reading 
-				? null 
+			string str = reading
+				? null
 				: stringResolver(ctxt, id);
 
 			bool executed = StreamAttributeOpt(name, ref str, predicate);

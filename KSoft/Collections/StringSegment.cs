@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Collections
 {
 	using StringSegmentEnumerator = StringSegment.Enumerator;
 
+	// #TODO how is this better or different compared to StringSegment Microsoft.Extensions.Primitives.dll?
 	public partial struct StringSegment
 		: IReadOnlyList<char>
 		, IEquatable<StringSegment>

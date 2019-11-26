@@ -1,7 +1,4 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Security.Cryptography
 {
 	public sealed class XTEA
@@ -12,9 +9,9 @@ namespace KSoft.Security.Cryptography
 			uint[] key = new uint[4];
 			for (int i = 0; i < 16; )
 			{
-				key[i >> 2]=((uint)(b[i++] << 24)) | 
-							((uint)(b[i++] << 16)) | 
-							((uint)(b[i++] << 8)) | 
+				key[i >> 2]=((uint)(b[i++] << 24)) |
+							((uint)(b[i++] << 16)) |
+							((uint)(b[i++] << 8)) |
 							((uint) b[i++]);
 			}
 

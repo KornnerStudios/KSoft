@@ -5,7 +5,11 @@
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft
 {
@@ -14,7 +18,7 @@ namespace KSoft
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
 <#	var code_gen = new BitwiseT4.BitReverseCodeGenerator(
 		this, bittable_type);
-	
+
 	code_gen.Generate();
 #>
 

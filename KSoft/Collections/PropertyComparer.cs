@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Collections.Generic
 {
@@ -21,11 +24,11 @@ namespace KSoft.Collections.Generic
 		void ValidateProperty(Type type, bool checkPropertyOwner = false)
 		{
 			if (!mProperty.CanRead)
-				throw new MemberAccessException(string.Format("{0}'s property '{1}' can't be read!", 
+				throw new MemberAccessException(string.Format("{0}'s property '{1}' can't be read!",
 					type.Name, mProperty.Name));
 
 			if (checkPropertyOwner && mProperty.DeclaringType != type)
-				throw new MissingMemberException(string.Format("Property '{1}' is not a member of {0}!", 
+				throw new MissingMemberException(string.Format("Property '{1}' is not a member of {0}!",
 					type.Name, mProperty.Name));
 		}
 
@@ -62,7 +65,7 @@ namespace KSoft.Collections.Generic
 				if (properties.Length > 0)
 					mProperty = properties[0];
 				else
-					throw new MissingMemberException(string.Format("{0} does not contain any properties", 
+					throw new MissingMemberException(string.Format("{0} does not contain any properties",
 						type.Name));
 			}
 			else
@@ -71,7 +74,7 @@ namespace KSoft.Collections.Generic
 				if (prop != null)
 					mProperty = prop;
 				else
-					throw new MissingMemberException(string.Format("{0} does not contain a property named '{1}'", 
+					throw new MissingMemberException(string.Format("{0} does not contain a property named '{1}'",
 						type.Name, propertyName));
 			}
 
@@ -105,7 +108,7 @@ namespace KSoft.Collections.Generic
 			return result;
 		}
 
-		public static PropertyComparer<T> SortBy(string propertyName, 
+		public static PropertyComparer<T> SortBy(string propertyName,
 			SortDirection direction = SortDirection.Ascending)
 		{
 			return new PropertyComparer<T>(propertyName, direction);

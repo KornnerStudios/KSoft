@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
@@ -24,7 +21,7 @@ namespace KSoft.IO
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
 		/// <remarks>
 		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.ByteOrder"/>
-		/// then no actual order state change will happen. However, this construct 
+		/// then no actual order state change will happen. However, this construct
 		/// will continue to be usable and will Dispose of properly with no error
 		/// </remarks>
 		IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo);

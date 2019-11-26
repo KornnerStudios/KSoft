@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
 

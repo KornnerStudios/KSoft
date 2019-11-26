@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Memory.Strings
 {
 	/// <summary>Builds representations of unmanaged string pools</summary>
 	/// <remarks>
 	/// Equal (case-sensitive) strings will only ever appear once.
-	/// 
-	/// While this builds a representation of an unmanaged string pool, 
+	///
+	/// While this builds a representation of an unmanaged string pool,
 	/// the implementation is entirely "safe" and managed in .NET.
-	/// 
-	/// Call the explicit Read\Write methods to fragment where the respected 
-	/// information is streamed. Otherwise use the default 
+	///
+	/// Call the explicit Read\Write methods to fragment where the respected
+	/// information is streamed. Otherwise use the default
 	/// <see cref="IO.IEndianStreamable"/> implementation to stream this class
 	/// </remarks>
 	public partial class StringMemoryPool : IO.IEndianStreamable, IO.IEndianStreamSerializable,
@@ -78,7 +81,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="str">value to add</param>
 		/// <returns>address reference of the string</returns>
 		/// <remarks>
-		/// If <see cref="Configuration.AllowDuplicates"/> is NOT true, this will return an address 
+		/// If <see cref="Configuration.AllowDuplicates"/> is NOT true, this will return an address
 		/// of a string which is equal to <paramref name="str"/>
 		/// </remarks>
 		public Values.PtrHandle Add(string str)
@@ -135,11 +138,11 @@ namespace KSoft.Memory.Strings
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns>
-		/// Address of <paramref name="value"/> in the pool or <see cref="kInvalidReference"/> 
+		/// Address of <paramref name="value"/> in the pool or <see cref="kInvalidReference"/>
 		/// if there is no matching string
 		/// </returns>
 		/// <remarks>
-		/// This method is not written to support configurations whose <see cref="Config.AllowDuplicates"/> 
+		/// This method is not written to support configurations whose <see cref="Config.AllowDuplicates"/>
 		/// is set to true. The first instance will ALWAYS be returned.
 		/// </remarks>
 		[Contracts.Pure]
@@ -215,7 +218,7 @@ namespace KSoft.Memory.Strings
 				mReferences[x] = new Values.PtrHandle(Settings.AddressSize);
 		}
 		/// <summary>
-		/// Write the header for this pool to a stream for future re-initializing 
+		/// Write the header for this pool to a stream for future re-initializing
 		/// and usage, storing things such as the configuration, count, etc
 		/// </summary>
 		/// <param name="s"></param>
@@ -232,7 +235,7 @@ namespace KSoft.Memory.Strings
 		/// <summary>Read the character count for the string values from a stream</summary>
 		/// <param name="s"></param>
 		/// <remarks>
-		/// Obviously, this needs to be called before <see cref="ReadStrings(IO.EndianReader s)"/> 
+		/// Obviously, this needs to be called before <see cref="ReadStrings(IO.EndianReader s)"/>
 		/// if you're going to even use this (due to performance reasons or due to the storage definition)
 		/// </remarks>
 		public void ReadStringCharacterLengths(IO.EndianReader s)

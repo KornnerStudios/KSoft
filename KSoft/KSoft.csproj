@@ -125,6 +125,7 @@
       <DependentUpon>IReadOnlyBitSet.EnumeratorsT4.tt</DependentUpon>
     </Compile>
     <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
+    <Compile Include="Debug\ContractShim.cs" />
     <Compile Include="Debug\KSoftFileLogTraceListener.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Debug\TypeCheck.cs" />

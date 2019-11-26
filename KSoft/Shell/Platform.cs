@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Shell
@@ -185,7 +188,7 @@ namespace KSoft.Shell
 			'Mx86' - Mac Intel x86
 			'Mx64' - Mac Intel x64
 			'PING' - Linux (aka Ping1)
-			
+
 			'XBOX' - Xbox 1
 			'X360' - Xbox 360
 			'X720' - Xbox Durango
@@ -276,7 +279,7 @@ namespace KSoft.Shell
 						}
 						break;
 
-					// TODO: Somehow use Environment.OSVersion.Version to detect if this is 
+					// TODO: Somehow use Environment.OSVersion.Version to detect if this is
 					// a Mac Intel (I think PPC was discontinued after 10.5?)
 					case PlatformID.MacOSX:
 						switch (size)

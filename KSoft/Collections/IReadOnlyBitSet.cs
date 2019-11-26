@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Collections
 {
@@ -70,7 +74,7 @@ namespace KSoft.Collections
 		/// <returns>true if the current set is a subset of other; otherwise, false</returns>
 		/// <remarks>
 		/// If <paramref name="other"/> contains the same bits as the current set, the current set is still considered a subset of other.
-		/// 
+		///
 		/// This method always returns <b>false</b> if the current set has elements that are not in <paramref name="other"/>.
 		/// </remarks>
 		bool IsSubsetOf(IReadOnlyBitSet other);

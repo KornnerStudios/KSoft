@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -92,7 +95,7 @@ namespace KSoft.IO
 		/// <summary>Utility for instant look-up of a type's read/write methods</summary>
 		/// <typeparam name="TStreamType">Integer-type</typeparam>
 		/// <remarks>
-		/// Why did I make a static generic class just for this? It feels clean and 
+		/// Why did I make a static generic class just for this? It feels clean and
 		/// http://stackoverflow.com/questions/686630/static-generic-class-as-dictionary/686689#686689
 		/// </remarks>
 		internal protected static class StreamType<TStreamType>

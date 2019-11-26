@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-using Exprs = System.Linq.Expressions;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Expr = System.Linq.Expressions.Expression;
 using Reflect = System.Reflection;
 
@@ -71,8 +72,8 @@ namespace KSoft.Reflection
 		}
 		static Type GetDynamicDelegateType(bool hasResult, int paramCount)
 		{
-			return hasResult 
-				? GetDynamicDelegateFuncType(paramCount) 
+			return hasResult
+				? GetDynamicDelegateFuncType(paramCount)
 				: GetDynamicDelegateActionType(paramCount);
 		}
 		static Type[] GetDynamicDelegateParamTypes(Type result, params Type[] parameters)

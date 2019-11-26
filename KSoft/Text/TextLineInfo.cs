@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Text
 {
@@ -69,7 +73,7 @@ namespace KSoft.Text
 
 		public bool Equals(ITextLineInfo other)
 		{
-			return LineNumber == other.LineNumber && 
+			return LineNumber == other.LineNumber &&
 				LinePosition == other.LinePosition;
 		}
 

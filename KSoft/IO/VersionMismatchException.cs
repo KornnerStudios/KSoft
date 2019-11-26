@@ -1,5 +1,4 @@
 ﻿using System;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {

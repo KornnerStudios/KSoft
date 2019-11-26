@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Debug
 {
@@ -19,10 +23,13 @@ namespace KSoft.Debug
 		{
 			Contract.Requires<ArgumentNullException>(obj != null);
 
-			try {
+			try
+			{
 				result = (TResult)obj;
-			} catch (InvalidCastException ice) {
-				throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'", 
+			}
+			catch (InvalidCastException ice)
+			{
+				throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'",
 					obj.GetType().FullName, typeof(TResult).FullName), ice);
 			}
 		}
@@ -56,7 +63,7 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentException">When <paramref name="obj"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
 		public static void CastReference<TIn, TResult>(TIn obj, out TResult result)
-			where TIn : class 
+			where TIn : class
 			where TResult : class
 		{
 			Contract.Requires<ArgumentNullException>(obj != null);
@@ -64,8 +71,10 @@ namespace KSoft.Debug
 			result = obj as TResult;
 
 			if (result == null)
+			{
 				throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'",
 					obj.GetType().FullName, typeof(TResult).FullName));
+			}
 		}
 		/// <summary>Basically a beefed up argument type checker</summary>
 		/// <typeparam name="TIn">Input type</typeparam>
@@ -118,11 +127,15 @@ namespace KSoft.Debug
 				result = obj as TResult;
 
 				if (result == null)
-					throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'", 
+				{
+					throw new ArgumentException(string.Format("obj was an unexpected type. Got '{0}' where I expected '{1}'",
 						typeof(TIn).FullName, typeof(TResult).FullName));
+				}
 			}
 			else
+			{
 				result = null;
+			}
 		}
 	};
 }

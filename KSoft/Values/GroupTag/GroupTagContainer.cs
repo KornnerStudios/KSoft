@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Values
 {
 	/// <summary>Attribute applied to classes which house a static <see cref="GroupTagCollection"/> property</summary>
 	/// <remarks>
-	/// Allows for ease-of-use in other attributes where we'd need to index a <see cref="GroupTagCollection"/> 
+	/// Allows for ease-of-use in other attributes where we'd need to index a <see cref="GroupTagCollection"/>
 	/// collection for a specific <see cref="GroupTagData"/> member
 	/// </remarks>
 	/// <seealso cref="Shell.PlatformGroups"/>
@@ -51,7 +54,7 @@ namespace KSoft.Values
 
 			var pi = mHost.GetProperty(collectionName, BindingFlags.Public | BindingFlags.Static);
 			if (pi == null) throw new ArgumentException(
-				string.Format("[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName), 
+				string.Format("[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName),
 				"container");
 
 			mTagCollection = pi.GetValue(null, null) as GroupTagCollection;
@@ -89,7 +92,7 @@ namespace KSoft.Values
 		/// <summary>Get all <see cref="GroupTagCollection"/> property values from a group tag container</summary>
 		/// <param name="container">Type which acts as a <see cref="GroupTagCollection"/> container</param>
 		/// <returns>
-		/// Enumeration of property names (as they appear in <paramref name="container"/>'s definition) 
+		/// Enumeration of property names (as they appear in <paramref name="container"/>'s definition)
 		/// and their respected values.
 		/// </returns>
 		/// <remarks>The "main" group is still included in the resulting enumeration</remarks>

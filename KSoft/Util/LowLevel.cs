@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.LowLevel.Util
 {
@@ -34,7 +37,7 @@ namespace KSoft.LowLevel.Util
 		/// <param name="obj">Object to copy</param>
 		/// <param name="ptr">Address of the unmanaged memory</param>
 		/// <remarks>
-		/// Doesn't destroy any pre-existing memory or objects inside <paramref name="ptr"/> 
+		/// Doesn't destroy any pre-existing memory or objects inside <paramref name="ptr"/>
 		/// before the copy takes place
 		/// </remarks>
 		public static void StructureToPtr<T>(T obj, IntPtr ptr)
@@ -43,7 +46,7 @@ namespace KSoft.LowLevel.Util
 
 			Marshal.StructureToPtr(obj, ptr, false);
 		}
-		
+
 		/// <summary>Allocate unmanaged memory for an object of type <paramref name="t"/></summary>
 		/// <param name="t">Type to allocate memory for</param>
 		/// <returns>Handle to allocated memory</returns>
@@ -60,7 +63,7 @@ namespace KSoft.LowLevel.Util
 		{
 			return Marshal.AllocHGlobal(SizeOf<T>());
 		}
-		
+
 		/// <summary>Free unmanaged memory for an existing object</summary>
 		/// <param name="ptr">Memory allocated by <c>New</c></param>
 		public static void Delete(IntPtr ptr)

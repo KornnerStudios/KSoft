@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿using System.Collections.Generic;
 
 namespace KSoft.Collections
 {
@@ -9,7 +6,7 @@ namespace KSoft.Collections
 	/// <typeparam name="T"></typeparam>
 	/// <remarks>
 	/// Based on .NET's own (internal) <b>ObjectEqualityComparer{T}</b>
-	/// 
+	///
 	/// This will overwrite any changes made by <see cref="ValueTypeEquatableComparer{T}"/>!
 	/// </remarks>
 	sealed class ValueTypeEqualityComparer<T> : EqualityComparer<T>

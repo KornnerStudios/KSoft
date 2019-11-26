@@ -5,7 +5,11 @@
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -160,14 +164,14 @@ namespace KSoft.Bitwise
 		/// <returns>
 		/// If <paramref name="addOrRemove"/> is True:
 		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
-		/// 
+		///
 		/// Else:
 		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
 		/// </returns>
 		public static <#= prim_keyword #> Modify(bool addOrRemove, <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
 		{
 			return (addOrRemove == true ?
-				lhs |= rhs : 
+				lhs |= rhs :
 				lhs &= (<#= prim_keyword #>)~rhs);
 		}
 		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>

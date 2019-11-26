@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Memory.Strings
 {
 	/// <summary>String storage definition</summary>
 	public struct StringStorage : //IO.IEndianStreamable,
-		IEquatable<StringStorage>, IEqualityComparer<StringStorage>, 
+		IEquatable<StringStorage>, IEqualityComparer<StringStorage>,
 		IComparer<StringStorage>, IComparable<StringStorage>,
 		System.Collections.IComparer, IComparable
 	{
@@ -48,9 +51,9 @@ namespace KSoft.Memory.Strings
 		/// <summary>Does the storage use a fixed length character array</summary>
 		/// <remarks>
 		/// Ignored in <see cref="StringStorageType.Clr"/> cases
-		/// 
-		/// For <see cref="StringStorageType.CharArray"/> cases, the full fixed length 
-		/// buffer can be used, but for <see cref="StringStorageType.CString"/> cases 
+		///
+		/// For <see cref="StringStorageType.CharArray"/> cases, the full fixed length
+		/// buffer can be used, but for <see cref="StringStorageType.CString"/> cases
 		/// the <see cref="FixedLength"/> will be 1 less due to null termination
 		/// </remarks>
 		public bool IsFixedLength { get { return mFixedLength != 0 && !HasLengthPrefix; } }
@@ -65,12 +68,12 @@ namespace KSoft.Memory.Strings
 		/// <param name="type">Storage method for this string definition</param>
 		/// <param name="byteOrder"></param>
 		/// <param name="fixedLength">The storage fixed length (in characters) of this string definition</param>
-		public StringStorage(StringStorageWidthType widthType, StringStorageType type, 
+		public StringStorage(StringStorageWidthType widthType, StringStorageType type,
 			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, short fixedLength = 0)
 		{
 			Contract.Requires(!type.UsesLengthPrefix(), "Use ctor with StringStorageLengthPrefix instead");
 			Contract.Requires(fixedLength >= 0);
-			Contract.Requires(fixedLength == 0 || !widthType.IsVariableWidth(), 
+			Contract.Requires(fixedLength == 0 || !widthType.IsVariableWidth(),
 				"Can't use a variable width encoding with fixed buffers!");
 
 			mWidthType = widthType;
@@ -135,7 +138,7 @@ namespace KSoft.Memory.Strings
 		#endregion
 
 		#region GetHashCode
-		static int CalculateHashCode(StringStorageWidthType widthType, StringStorageType type, Shell.EndianFormat byteOrder, 
+		static int CalculateHashCode(StringStorageWidthType widthType, StringStorageType type, Shell.EndianFormat byteOrder,
 			StringStorageLengthPrefix prefix,
 			short fixedLength)
 		{
@@ -170,7 +173,7 @@ namespace KSoft.Memory.Strings
 		/// <summary>Compares this to another object testing for equality</summary>
 		/// <param name="obj"></param>
 		/// <returns>
-		/// True if both this object and <paramref name="obj"/> are equal. 
+		/// True if both this object and <paramref name="obj"/> are equal.
 		/// False if <paramref name="obj"/> is not a <see cref="StringStorage"/></returns>
 		public override bool Equals(object obj)
 		{

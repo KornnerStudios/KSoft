@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft
 {
@@ -14,7 +18,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> so 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> so
 		/// any possibly existing value will be zeroed before <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -33,7 +37,7 @@ namespace KSoft
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/>
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncodeEnum(uint value, ref uint bits, ref int bitIndex, uint bitMask)
@@ -56,7 +60,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> so 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> so
 		/// any possibly existing value will be zeroed before <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -75,7 +79,7 @@ namespace KSoft
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/>
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncodeEnum(ulong value, ref ulong bits, ref int bitIndex, ulong bitMask)
@@ -101,7 +105,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Doesn't clear the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Doesn't clear the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any possibly existing flags will be retained before and after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -120,7 +124,7 @@ namespace KSoft
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/>
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncodeFlags(uint value, ref uint bits, ref int bitIndex, uint bitMask)
@@ -143,7 +147,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Doesn't clear the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Doesn't clear the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any possibly existing flags will be retained before and after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -162,7 +166,7 @@ namespace KSoft
 		/// <param name="bitIndex">Index in <paramref name="bits"/> to start encoding at</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <remarks>
-		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/> 
+		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and <paramref name="bitIndex"/>
 		/// is incremented by the bit count (determined from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncodeFlags(ulong value, ref ulong bits, ref int bitIndex, ulong bitMask)
@@ -188,7 +192,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -208,10 +212,10 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
-		/// 
-		/// On return <paramref name="bitIndex"/> is incremented by the bit count (determined 
+		///
+		/// On return <paramref name="bitIndex"/> is incremented by the bit count (determined
 		/// from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncode(uint value, ref uint bits, ref int bitIndex, uint bitMask)
@@ -230,7 +234,7 @@ namespace KSoft
 		/// <param name="traits"></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -250,7 +254,7 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]
@@ -270,10 +274,10 @@ namespace KSoft
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
-		/// 
-		/// On return <paramref name="bitIndex"/> is incremented by the bit count (determined 
+		///
+		/// On return <paramref name="bitIndex"/> is incremented by the bit count (determined
 		/// from <paramref name="bitMask"/>)
 		/// </remarks>
 		public static void BitEncode(ulong value, ref ulong bits, ref int bitIndex, ulong bitMask)
@@ -292,7 +296,7 @@ namespace KSoft
 		/// <param name="traits"></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
 		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/> 
+		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
 		/// </remarks>
 		[Contracts.Pure]

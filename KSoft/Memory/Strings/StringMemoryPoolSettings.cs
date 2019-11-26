@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Memory.Strings
 {
 	/// <summary>
@@ -81,7 +76,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="method">Text storage definition</param>
 		/// <remarks>
 		/// A null string entry <b>is</b> added by default.
-		/// 
+		///
 		/// <see cref="AddressSize"/> is determined from <see cref="Shell.Platform.Environment"/>
 		/// </remarks>
 		public StringMemoryPoolSettings(StringStorage method)

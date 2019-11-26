@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -11,10 +15,10 @@ namespace KSoft.Bitwise
 
 	/// <summary>Encases a 32-bit bit-vector into a reference object, with bit-manipulator methods</summary>
 	/// <remarks>
-	/// By using a reference object to store the underlying value, we can declare properties in 
+	/// By using a reference object to store the underlying value, we can declare properties in
 	/// classes which use this type and then do things like:
 	/// <code>obj.Flags.Reset(0);</code>
-	/// With [Flags] retaining the new value. If this were a value type object, the above code 
+	/// With [Flags] retaining the new value. If this were a value type object, the above code
 	/// wouldn't affect [obj]'s [Flags] property because [Flags] would be RETURNING a value, not a reference
 	/// </remarks>
 	public sealed class Flags32
@@ -75,7 +79,7 @@ namespace KSoft.Bitwise
 		{
 			if (cond)
 				Add(flags);
-			
+
 			return cond;
 		}
 		#endregion
@@ -93,7 +97,7 @@ namespace KSoft.Bitwise
 		{
 			if (cond)
 				Remove(flags);
-			
+
 			return cond;
 		}
 		#endregion

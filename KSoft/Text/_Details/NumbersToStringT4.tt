@@ -6,8 +6,11 @@
 <#@ import namespace="KSoft.T4" #>
 using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using StringBuilder = System.Text.StringBuilder;
 
 namespace KSoft
@@ -148,7 +151,7 @@ namespace KSoft
 <#	var prim_keyword = num_type.Keyword;
 #>
 		#region ToStringList <#= num_type.Code #>
-		public static string ToStringList(StringListDesc desc, IEnumerable<<#= prim_keyword #>> values, 
+		public static string ToStringList(StringListDesc desc, IEnumerable<<#= prim_keyword #>> values,
 			Predicate<IEnumerable<<#= prim_keyword #>>> writeTerminator = null)
 		{
 			Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);

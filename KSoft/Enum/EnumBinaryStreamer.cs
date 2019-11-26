@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Expr = System.Linq.Expressions.Expression;
 
 namespace KSoft.IO
@@ -71,7 +75,7 @@ namespace KSoft.IO
 		/// <summary>Utility for instant look-up of a type's read/write methods</summary>
 		/// <typeparam name="TStreamType">Integer-type</typeparam>
 		/// <remarks>
-		/// Why did I make a static generic class just for this? It feels clean and 
+		/// Why did I make a static generic class just for this? It feels clean and
 		/// http://stackoverflow.com/questions/686630/static-generic-class-as-dictionary/686689#686689
 		/// </remarks>
 		internal protected static class StreamType<TStreamType>
@@ -329,7 +333,7 @@ namespace KSoft.IO
 			//////////////////////////////////////////////////////////////////////////
 			// Define the Read call
 			var call_read =		Expr.Call(param_s, readMethodInfo);						// i.e., 's.Read<Type>()'
-			var read_result =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're reading, 
+			var read_result =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're reading,
 									Expr.Convert(call_read, args.UnderlyingType) :		// we need to cast the Read result from TStreamType to UnderlyingType
 									(Expr)call_read;
 
@@ -369,7 +373,7 @@ namespace KSoft.IO
 			//////////////////////////////////////////////////////////////////////////
 			// Define the member access
 			var param_v_member =Expr.PropertyOrField(param_v, EnumUtils.kMemberName);	// i.e., 'v.value__'
-			var write_param =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're writing, 
+			var write_param =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're writing,
 									Expr.Convert(param_v_member, args.StreamType) :		// we need to cast the Write param from UnderlyingType to TStreamType
 									(Expr)param_v_member;
 

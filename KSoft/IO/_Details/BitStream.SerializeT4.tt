@@ -3,10 +3,12 @@
 <#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
-using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
 
@@ -68,7 +70,7 @@ namespace KSoft.IO
 	var prim_typename = bittable_type.Code;
     bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
-		public BitStream StreamFixedArray(<#= prim_keyword #>[] array, 
+		public BitStream StreamFixedArray(<#= prim_keyword #>[] array,
 			int elementBitSize = Bits.k<#= prim_typename #>BitCount
 <#		if (is_signed) { #>
 			, bool signExtend = false
@@ -109,7 +111,7 @@ namespace KSoft.IO
 	var prim_typename = bittable_type.Code;
     bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
-		public BitStream StreamArray(ref <#= prim_keyword #>[] array, 
+		public BitStream StreamArray(ref <#= prim_keyword #>[] array,
 			int lengthBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
 <#		if (is_signed) { #>
 			, bool signExtend = false
@@ -139,7 +141,7 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleNonIntegerTypes) { #>
 <#
 #>
-		public BitStream StreamArray(ref <#= bittable_type.Keyword #>[] array, 
+		public BitStream StreamArray(ref <#= bittable_type.Keyword #>[] array,
 			int lengthBitSize)
 		{
 			Contract.Requires(IsReading || array != null);
@@ -165,7 +167,7 @@ namespace KSoft.IO
 	var prim_typename = bittable_type.Code;
     bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
-		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list, 
+		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list,
 			int countBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
 <#		if (is_signed) { #>
 			, bool signExtend = false
@@ -205,7 +207,7 @@ namespace KSoft.IO
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
 #>
-		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list, 
+		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list,
 			int countBitSize)
 		{
 			Contract.Requires(list != null);

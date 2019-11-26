@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Text
 {
@@ -90,9 +86,9 @@ namespace KSoft.Text
 			int prefix_bytes;
 			switch (mStorage.LengthPrefix)
 			{
-				case StringStorageLengthPrefix.Int7:	Bitwise.Encoded7BitInt.Write(bytes, byteIndex, charCount); 
+				case StringStorageLengthPrefix.Int7:	Bitwise.Encoded7BitInt.Write(bytes, byteIndex, charCount);
 					prefix_bytes = Bitwise.Encoded7BitInt.CalculateSize(charCount); break;
-				case StringStorageLengthPrefix.Int8:	bytes[byteIndex] = (byte)charCount; 
+				case StringStorageLengthPrefix.Int8:	bytes[byteIndex] = (byte)charCount;
 					prefix_bytes = sizeof(byte); break;
 				case StringStorageLengthPrefix.Int16:	Bitwise.ByteSwap.ReplaceBytes(bytes, byteIndex, (short)charCount);
 														Bitwise.ByteSwap.SwapInt16(bytes, byteIndex);
@@ -157,7 +153,7 @@ namespace KSoft.Text
 			}
 		}
 		#endregion
-		
+
 		/// <summary>Converts a set of characters into a sequence of bytes.</summary>
 		class Encoder : System.Text.Encoder
 		{
@@ -166,7 +162,7 @@ namespace KSoft.Text
 			public Encoder(StringStorageEncoding enc) { mEncoding = enc; mEnc = enc.mBaseEncoding.GetEncoder(); }
 
 			/// <summary>
-			/// Calculates the number of bytes produced by encoding a set of characters from the specified character array. 
+			/// Calculates the number of bytes produced by encoding a set of characters from the specified character array.
 			/// A parameter indicates whether to clear the internal state of the encoder after the calculation.
 			/// </summary>
 			/// <param name="chars">The character array containing the set of characters to encode</param>
@@ -185,7 +181,7 @@ namespace KSoft.Text
 			}
 
 			/// <summary>
-			/// Encodes a set of characters from the specified character array and any characters in the internal buffer into the specified byte array. 
+			/// Encodes a set of characters from the specified character array and any characters in the internal buffer into the specified byte array.
 			/// A parameter indicates whether to clear the internal state of the encoder after the conversion.
 			/// </summary>
 			/// <param name="chars">The character array containing the set of characters to encode</param>

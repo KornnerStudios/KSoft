@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Memory
 {
 	/// <summary>
-	/// Specialized stack for dealing with "Physical Addresses" (PAs) and translating them into virtual addresses 
+	/// Specialized stack for dealing with "Physical Addresses" (PAs) and translating them into virtual addresses
 	/// (VAs) when serialized to a stream, and from VAs to PAs when serialized from a stream
 	/// </summary>
 	/// <remarks>Should only be instanced and used directly be the EndianStream classes</remarks>
@@ -105,8 +108,8 @@ namespace KSoft.Memory
 		/// <remarks>If <paramref name="pa"/> is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it streamed without fix-up</remarks>
 		public void WritePhysicalAsVirtualAddress(IO.EndianWriter s, Values.PtrHandle pa)
 		{
-			var va = pa.IsInvalidHandle 
-				? pa 
+			var va = pa.IsInvalidHandle
+				? pa
 				: pa - CurrentAddress;
 
 			s.WriteRawPointer(va);

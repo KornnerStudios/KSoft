@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿using System.Collections.Generic;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using TWord = System.UInt32;
 
@@ -177,7 +179,7 @@ namespace KSoft.IO
 
 
 		#region StreamFixedArray
-		public BitStream StreamFixedArray(char[] array, 
+		public BitStream StreamFixedArray(char[] array,
 			int elementBitSize = Bits.kCharBitCount
 			)
 		{
@@ -188,7 +190,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(byte[] array, 
+		public BitStream StreamFixedArray(byte[] array,
 			int elementBitSize = Bits.kByteBitCount
 			)
 		{
@@ -199,7 +201,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(sbyte[] array, 
+		public BitStream StreamFixedArray(sbyte[] array,
 			int elementBitSize = Bits.kSByteBitCount
 			, bool signExtend = false
 			)
@@ -211,7 +213,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(ushort[] array, 
+		public BitStream StreamFixedArray(ushort[] array,
 			int elementBitSize = Bits.kUInt16BitCount
 			)
 		{
@@ -222,7 +224,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(short[] array, 
+		public BitStream StreamFixedArray(short[] array,
 			int elementBitSize = Bits.kInt16BitCount
 			, bool signExtend = false
 			)
@@ -234,7 +236,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(uint[] array, 
+		public BitStream StreamFixedArray(uint[] array,
 			int elementBitSize = Bits.kUInt32BitCount
 			)
 		{
@@ -245,7 +247,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(int[] array, 
+		public BitStream StreamFixedArray(int[] array,
 			int elementBitSize = Bits.kInt32BitCount
 			, bool signExtend = false
 			)
@@ -257,7 +259,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(ulong[] array, 
+		public BitStream StreamFixedArray(ulong[] array,
 			int elementBitSize = Bits.kUInt64BitCount
 			)
 		{
@@ -268,7 +270,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamFixedArray(long[] array, 
+		public BitStream StreamFixedArray(long[] array,
 			int elementBitSize = Bits.kInt64BitCount
 			, bool signExtend = false
 			)
@@ -309,7 +311,7 @@ namespace KSoft.IO
 
 
 		#region StreamArray
-		public BitStream StreamArray(ref char[] array, 
+		public BitStream StreamArray(ref char[] array,
 			int lengthBitSize, int elementBitSize = Bits.kCharBitCount
 			)
 		{
@@ -327,7 +329,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref byte[] array, 
+		public BitStream StreamArray(ref byte[] array,
 			int lengthBitSize, int elementBitSize = Bits.kByteBitCount
 			)
 		{
@@ -345,7 +347,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref sbyte[] array, 
+		public BitStream StreamArray(ref sbyte[] array,
 			int lengthBitSize, int elementBitSize = Bits.kSByteBitCount
 			, bool signExtend = false
 			)
@@ -364,7 +366,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref ushort[] array, 
+		public BitStream StreamArray(ref ushort[] array,
 			int lengthBitSize, int elementBitSize = Bits.kUInt16BitCount
 			)
 		{
@@ -382,7 +384,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref short[] array, 
+		public BitStream StreamArray(ref short[] array,
 			int lengthBitSize, int elementBitSize = Bits.kInt16BitCount
 			, bool signExtend = false
 			)
@@ -401,7 +403,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref uint[] array, 
+		public BitStream StreamArray(ref uint[] array,
 			int lengthBitSize, int elementBitSize = Bits.kUInt32BitCount
 			)
 		{
@@ -419,7 +421,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref int[] array, 
+		public BitStream StreamArray(ref int[] array,
 			int lengthBitSize, int elementBitSize = Bits.kInt32BitCount
 			, bool signExtend = false
 			)
@@ -438,7 +440,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref ulong[] array, 
+		public BitStream StreamArray(ref ulong[] array,
 			int lengthBitSize, int elementBitSize = Bits.kUInt64BitCount
 			)
 		{
@@ -456,7 +458,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref long[] array, 
+		public BitStream StreamArray(ref long[] array,
 			int lengthBitSize, int elementBitSize = Bits.kInt64BitCount
 			, bool signExtend = false
 			)
@@ -476,7 +478,7 @@ namespace KSoft.IO
 			return this;
 		}
 
-		public BitStream StreamArray(ref bool[] array, 
+		public BitStream StreamArray(ref bool[] array,
 			int lengthBitSize)
 		{
 			Contract.Requires(IsReading || array != null);
@@ -492,7 +494,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref float[] array, 
+		public BitStream StreamArray(ref float[] array,
 			int lengthBitSize)
 		{
 			Contract.Requires(IsReading || array != null);
@@ -508,7 +510,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamArray(ref double[] array, 
+		public BitStream StreamArray(ref double[] array,
 			int lengthBitSize)
 		{
 			Contract.Requires(IsReading || array != null);
@@ -528,7 +530,7 @@ namespace KSoft.IO
 
 
 		#region StreamList
-		public BitStream StreamElements(ICollection< char > list, 
+		public BitStream StreamElements(ICollection< char > list,
 			int countBitSize, int elementBitSize = Bits.kCharBitCount
 			)
 		{
@@ -555,7 +557,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< byte > list, 
+		public BitStream StreamElements(ICollection< byte > list,
 			int countBitSize, int elementBitSize = Bits.kByteBitCount
 			)
 		{
@@ -582,7 +584,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< sbyte > list, 
+		public BitStream StreamElements(ICollection< sbyte > list,
 			int countBitSize, int elementBitSize = Bits.kSByteBitCount
 			, bool signExtend = false
 			)
@@ -610,7 +612,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< ushort > list, 
+		public BitStream StreamElements(ICollection< ushort > list,
 			int countBitSize, int elementBitSize = Bits.kUInt16BitCount
 			)
 		{
@@ -637,7 +639,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< short > list, 
+		public BitStream StreamElements(ICollection< short > list,
 			int countBitSize, int elementBitSize = Bits.kInt16BitCount
 			, bool signExtend = false
 			)
@@ -665,7 +667,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< uint > list, 
+		public BitStream StreamElements(ICollection< uint > list,
 			int countBitSize, int elementBitSize = Bits.kUInt32BitCount
 			)
 		{
@@ -692,7 +694,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< int > list, 
+		public BitStream StreamElements(ICollection< int > list,
 			int countBitSize, int elementBitSize = Bits.kInt32BitCount
 			, bool signExtend = false
 			)
@@ -720,7 +722,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< ulong > list, 
+		public BitStream StreamElements(ICollection< ulong > list,
 			int countBitSize, int elementBitSize = Bits.kUInt64BitCount
 			)
 		{
@@ -747,7 +749,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< long > list, 
+		public BitStream StreamElements(ICollection< long > list,
 			int countBitSize, int elementBitSize = Bits.kInt64BitCount
 			, bool signExtend = false
 			)
@@ -776,7 +778,7 @@ namespace KSoft.IO
 			return this;
 		}
 
-		public BitStream StreamElements(ICollection< bool > list, 
+		public BitStream StreamElements(ICollection< bool > list,
 			int countBitSize)
 		{
 			Contract.Requires(list != null);
@@ -801,7 +803,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< float > list, 
+		public BitStream StreamElements(ICollection< float > list,
 			int countBitSize)
 		{
 			Contract.Requires(list != null);
@@ -826,7 +828,7 @@ namespace KSoft.IO
 
 			return this;
 		}
-		public BitStream StreamElements(ICollection< double > list, 
+		public BitStream StreamElements(ICollection< double > list,
 			int countBitSize)
 		{
 			Contract.Requires(list != null);

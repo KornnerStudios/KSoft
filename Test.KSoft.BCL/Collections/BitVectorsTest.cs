@@ -20,8 +20,8 @@ namespace KSoft.Collections.Test
 			ulong word = 0;
 			for(int x = 0; x < bitLength; x += Bits.kByteBitCount)
 			{
-				word |= pattern;
 				word <<= Bits.kByteBitCount;
+				word |= pattern;
 			}
 
 			return word;

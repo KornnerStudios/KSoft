@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Text
 {
 	/// <summary>Encodes/decodes bytes to/from a string</summary>
 	/// <remarks>
 	/// Encoded string is always in big-endian ordering
-	/// 
+	///
 	/// <p>Encode and Decode take a <b>includeProceedingZeros</b> parameter which acts as a work-around
 	/// for an edge case with our BigInteger implementation.
-	/// MSDN says BigInteger byte arrays are in LSB->MSB ordering. So a byte buffer with zeros at the 
+	/// MSDN says BigInteger byte arrays are in LSB->MSB ordering. So a byte buffer with zeros at the
 	/// end will have those zeros ignored in the resulting encoded radix string.
 	/// If such a loss in precision absolutely cannot occur pass true to <b>includeProceedingZeros</b>
 	/// and for a tiny bit of extra processing it will handle the padding of zero digits (encoding)
 	/// or bytes (decoding).</p>
-	/// <p>Note: doing this for decoding <b>may</b> add an extra byte more than what was originally 
+	/// <p>Note: doing this for decoding <b>may</b> add an extra byte more than what was originally
 	/// given to Encode.</p>
 	/// </remarks>
 	// Based on the answers from http://codereview.stackexchange.com/questions/14084/base-36-encoding-of-a-byte-array/
@@ -88,7 +91,7 @@ namespace KSoft.Text
 			// List<> has a(n in-place) Reverse method. StringBuilder doesn't. That's why.
 			var result = new List<char>(result_length);
 
-			// HACK: BigInteger uses the last byte as the 'sign' byte. If the byte's MSB is set, 
+			// HACK: BigInteger uses the last byte as the 'sign' byte. If the byte's MSB is set,
 			// we need to pad the input with an extra 0 (ie, make it positive)
 			if (IntegerMath.IsSigned(bytes[bytes.Length-1]))
 				Array.Resize(ref bytes, bytes.Length+1);
@@ -111,7 +114,7 @@ namespace KSoft.Text
 			// orientate the characters in big-endian ordering
 			if (kEndian == Shell.EndianFormat.Little)
 				result.Reverse();
-			// If we didn't end up adding padding, ToArray will end up returning a TrimExcess'd array, 
+			// If we didn't end up adding padding, ToArray will end up returning a TrimExcess'd array,
 			// so nothing wasted
 			return new string(result.ToArray());
 		}
@@ -181,7 +184,7 @@ namespace KSoft.Text
 		/// <returns>The decoded bytes, or null if an invalid character is encountered</returns>
 		/// <remarks>
 		/// If <paramref name="radixChars"/> is an empty string, returns a zero length array
-		/// 
+		///
 		/// Using <paramref name="IncludeProceedingZeros"/> has the potential to return a buffer with an
 		/// additional zero byte that wasn't in the input. So a 4 byte buffer was encoded, this could end up
 		/// returning a 5 byte buffer, with the extra byte being null.

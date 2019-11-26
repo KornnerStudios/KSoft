@@ -1,11 +1,14 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
 	/// <summary>
-	/// Helper type for exposing the <see cref="TagElementStream.StreamElementBegin(string)">StreamElementBegin</see> and 
+	/// Helper type for exposing the <see cref="TagElementStream.StreamElementBegin(string)">StreamElementBegin</see> and
 	/// <see cref="TagElementStream.StreamElementEnd()">StreamElementEnd</see> in a way which works with the C# "using" statements
 	/// </summary>
 	/// <remarks>If a null element name is given, skips the bookmarking process entiring</remarks>
@@ -19,7 +22,7 @@ namespace KSoft.IO
 		#region Null
 		TagElementStreamBookmark(bool dummy) { mStream = null; mOldCursor = null; }
 
-		public static  TagElementStreamBookmark<TDoc, TCursor, TName> Null { get { 
+		public static  TagElementStreamBookmark<TDoc, TCursor, TName> Null { get {
 			return new TagElementStreamBookmark<TDoc, TCursor, TName>(dummy:true);
 		} }
 		#endregion
@@ -54,7 +57,7 @@ namespace KSoft.IO
 	};
 
 	/// <summary>
-	/// Helper type for exposing the <see cref="TagElementStream.SaveCursor()">SaveCursor</see> and 
+	/// Helper type for exposing the <see cref="TagElementStream.SaveCursor()">SaveCursor</see> and
 	/// <see cref="TagElementStream.RestoreCursor()">RestoreCursor</see> in a way which works with the C# "using" statements
 	/// </summary>
 	public struct TagElementStreamReadBookmark<TDoc, TCursor, TName> : IDisposable

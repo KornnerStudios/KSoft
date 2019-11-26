@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-using Expr = System.Linq.Expressions.Expression;
+﻿using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
 
 namespace KSoft
@@ -13,7 +8,7 @@ namespace KSoft
 	partial class EnumFlags<TEnum>
 	{
 		/// <summary>
-		/// Implements the expressions by directly accessing the enum's internal integer field and doing bitwise 
+		/// Implements the expressions by directly accessing the enum's internal integer field and doing bitwise
 		/// operations on that instead
 		/// </summary>
 		static class V2

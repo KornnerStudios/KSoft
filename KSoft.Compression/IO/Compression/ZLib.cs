@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO.Compression
-{	
+{
 	public static class ZLib
 	{
 		const int kSizeOfHeader = sizeof(ushort);
@@ -26,7 +29,7 @@ namespace KSoft.IO.Compression
 		}
 
 		public static byte[] BufferFromStream(MemoryStream ms,
-			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32, 
+			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32,
 			bool skipHeader = true)
 		{
 			Contract.Requires<ArgumentNullException>(ms != null);
@@ -41,7 +44,7 @@ namespace KSoft.IO.Compression
 			}
 		}
 		public static byte[] BufferFromBytes(byte[] bytes,
-			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32, 
+			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32,
 			bool skipHeader = true)
 		{
 			Contract.Requires<ArgumentNullException>(bytes != null);
@@ -84,7 +87,7 @@ namespace KSoft.IO.Compression
 
 			return compressedBytes;
 		}
-		public static uint LowLevelDecompress(byte[] compressedBytes, byte[] uncompressedBytes, 
+		public static uint LowLevelDecompress(byte[] compressedBytes, byte[] uncompressedBytes,
 			bool noHeader = true)
 		{
 			Contract.Requires<ArgumentNullException>(compressedBytes != null);

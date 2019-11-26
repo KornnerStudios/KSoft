@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Memory.Strings
 {
 	partial class StringMemoryPool
 	{
 		/// <summary>
-		/// Enumerates the strings in a <see cref="StringMemoryPool"/> in key-value pairs 
+		/// Enumerates the strings in a <see cref="StringMemoryPool"/> in key-value pairs
 		/// with the <b>address</b> being the <i>key</i> and the <b>string</b> being the <i>value</i>
 		/// </summary>
 		protected struct KeyValueEnumerator : IEnumerator<KeyValuePair<Values.PtrHandle, string>>

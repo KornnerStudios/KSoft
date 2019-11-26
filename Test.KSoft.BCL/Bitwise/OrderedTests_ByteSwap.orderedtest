@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <OrderedTest name="orderedtests_byteswap" storage="bitwise\orderedtests_byteswap.orderedtest" id="b4ab0a91-78c9-40c8-80bc-81613b9a1746" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <TestLinks>
-    <TestLink id="d3fb136f-4a48-a581-1242-4c8682b6f9dc" name="ByteSwap_ReplaceBytesTest" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
-    <TestLink id="4121de30-d694-1f3f-07b1-af0acace8e97" name="ByteSwap_SwapBufferTest" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
+    <TestLink id="d3fb136f-4a48-a581-1242-4c8682b6f9dc" name="ByteSwap_ReplaceBytesTest" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" storage="bitwise\orderedtests_byteswap.orderedtest" />
+    <TestLink id="4121de30-d694-1f3f-07b1-af0acace8e97" name="ByteSwap_SwapBufferTest" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" storage="bitwise\orderedtests_byteswap.orderedtest" />
   </TestLinks>
 </OrderedTest>

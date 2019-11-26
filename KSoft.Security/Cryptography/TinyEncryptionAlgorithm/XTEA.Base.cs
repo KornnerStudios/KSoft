@@ -1,7 +1,4 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Security.Cryptography
 {
 	// http://code.google.com/p/h2database/source/browse/trunk/h2/src/main/org/h2/security/XTEA.java
@@ -10,7 +7,7 @@ namespace KSoft.Security.Cryptography
 		protected const uint kDelta = 0x9E3779B9;
 
 		protected static readonly uint[] kDeltas = {
-			//		0			1			2			3			4			5
+			//       0           1           2           3           4           5
 			0x00000000, 0x9E3779B9, 0x9E3779B9, 0x3C6EF372, 0x3C6EF372, 0xDAA66D2B, // 0
 			0xDAA66D2B, 0x78DDE6E4, 0x78DDE6E4, 0x1715609D, 0x1715609D, 0xB54CDA56, // 6
 			0xB54CDA56, 0x5384540F, 0x5384540F, 0xF1BBCDC8, 0xF1BBCDC8, 0x8FF34781, // 12

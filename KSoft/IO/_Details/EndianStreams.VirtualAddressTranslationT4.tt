@@ -3,8 +3,6 @@
 <#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
 <#@ import namespace="KSoft.T4" #>
 using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {

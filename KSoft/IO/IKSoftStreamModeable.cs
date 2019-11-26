@@ -1,10 +1,16 @@
 ﻿using System;
 using System.IO;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
+	// For the lack of a better name...
+
 	/// <summary>Exposes data streaming state information and control</summary>
 	[Contracts.ContractClass(typeof(IKSoftStreamModeableContract))]
 	public interface IKSoftStreamModeable
@@ -24,7 +30,7 @@ namespace KSoft.IO
 
 		public FileAccess StreamMode {
 			get {
-				Contract.Ensures(Contract.Result<FileAccess>() < FileAccess.ReadWrite, 
+				Contract.Ensures(Contract.Result<FileAccess>() < FileAccess.ReadWrite,
 					"StreamMode was unset before use!");
 
 				throw new NotImplementedException();

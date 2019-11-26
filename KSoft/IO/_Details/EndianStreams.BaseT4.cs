@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.IO
 {
@@ -56,8 +54,8 @@ namespace KSoft.IO
 			/// <param name="requiresSwitch">Is there an actual order switch even occurring?</param>
 			public EndianFormatSwitchBlock(EndianReader s, bool requiresSwitch)
 			{
-				mStream = requiresSwitch 
-					? s 
+				mStream = requiresSwitch
+					? s
 					: null;
 
 				if (requiresSwitch) // if not, don't do anything but keep the IDisposable wheel turning
@@ -88,8 +86,8 @@ namespace KSoft.IO
 		/// <param name="switchTo">Byte order to switch to</param>
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
 		/// <remarks>
-		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.State"/> 
-		/// then no actual object state changes will happen. However, this construct 
+		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.State"/>
+		/// then no actual object state changes will happen. However, this construct
 		/// will continue to be usable and will Dispose of properly with no error
 		/// </remarks>
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)
@@ -198,8 +196,8 @@ namespace KSoft.IO
 			/// <param name="requiresSwitch">Is there an actual order switch even occurring?</param>
 			public EndianFormatSwitchBlock(EndianWriter s, bool requiresSwitch)
 			{
-				mStream = requiresSwitch 
-					? s 
+				mStream = requiresSwitch
+					? s
 					: null;
 
 				if (requiresSwitch) // if not, don't do anything but keep the IDisposable wheel turning
@@ -230,8 +228,8 @@ namespace KSoft.IO
 		/// <param name="switchTo">Byte order to switch to</param>
 		/// <returns>Object which when Disposed will return this stream to its original <see cref="Shell.EndianFormat"/> state</returns>
 		/// <remarks>
-		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.State"/> 
-		/// then no actual object state changes will happen. However, this construct 
+		/// If <paramref name="switchTo"/> is the same as <see cref="EndianStream.State"/>
+		/// then no actual object state changes will happen. However, this construct
 		/// will continue to be usable and will Dispose of properly with no error
 		/// </remarks>
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)

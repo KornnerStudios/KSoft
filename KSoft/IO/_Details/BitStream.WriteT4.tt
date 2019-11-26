@@ -3,9 +3,11 @@
 <#@ assembly name="$(VitaSolutionFamilyBinPath)KSoft.T4.dll" #>
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
-using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using TWord = System.<#= BitwiseT4.BitStreamCacheWord.Code #>;
 

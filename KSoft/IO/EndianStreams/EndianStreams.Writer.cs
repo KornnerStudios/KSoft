@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -64,7 +67,7 @@ namespace KSoft.IO
 		/// <param name="name">Special name to associate with this stream</param>
 		/// <remarks>Defaults to <see cref="System.Text.UTF8Encoding"/> for the string encoding</remarks>
 		public EndianWriter(Stream output, Shell.EndianFormat byteOrder,
-			object streamOwner = null, string name = null) : this(output, new UTF8Encoding(), byteOrder, streamOwner, name)
+			object streamOwner = null, string name = null) : this(output, Encoding.UTF8, byteOrder, streamOwner, name)
 		{
 		}
 		/// <summary>Create a new binary writer which uses the environment's endian format</summary>
@@ -73,7 +76,7 @@ namespace KSoft.IO
 		/// Default endian format is set from <see cref="Shell.Platform.Environment"/>.
 		/// <see cref="Owner"/> is set to <c>null</c>
 		/// </remarks>
-		public EndianWriter(Stream output) : this(output, new UTF8Encoding(),
+		public EndianWriter(Stream output) : this(output, Encoding.UTF8,
 			Shell.Platform.Environment.ProcessorType.ByteOrder)
 		{
 			Contract.Requires<ArgumentNullException>(output != null);

@@ -1,6 +1,8 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Security.Cryptography
 {
@@ -15,9 +17,9 @@ namespace KSoft.Security.Cryptography
 			uint[] key = new uint[4];
 			for (int i = 0; i < 16; )
 			{
-				key[i >> 2]=((uint)(b[i++] << 24)) | 
-							((uint)(b[i++] << 16)) | 
-							((uint)(b[i++] << 8)) | 
+				key[i >> 2]=((uint)(b[i++] << 24)) |
+							((uint)(b[i++] << 16)) |
+							((uint)(b[i++] << 8)) |
 							((uint) b[i++]);
 			}
 

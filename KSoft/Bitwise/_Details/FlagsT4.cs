@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -367,14 +371,14 @@ namespace KSoft.Bitwise
 		/// <returns>
 		/// If <paramref name="addOrRemove"/> is True:
 		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
-		/// 
+		///
 		/// Else:
 		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
 		/// </returns>
 		public static byte Modify(bool addOrRemove, byte lhs, byte rhs)
 		{
 			return (addOrRemove == true ?
-				lhs |= rhs : 
+				lhs |= rhs :
 				lhs &= (byte)~rhs);
 		}
 		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>
@@ -400,14 +404,14 @@ namespace KSoft.Bitwise
 		/// <returns>
 		/// If <paramref name="addOrRemove"/> is True:
 		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
-		/// 
+		///
 		/// Else:
 		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
 		/// </returns>
 		public static ushort Modify(bool addOrRemove, ushort lhs, ushort rhs)
 		{
 			return (addOrRemove == true ?
-				lhs |= rhs : 
+				lhs |= rhs :
 				lhs &= (ushort)~rhs);
 		}
 		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>
@@ -433,14 +437,14 @@ namespace KSoft.Bitwise
 		/// <returns>
 		/// If <paramref name="addOrRemove"/> is True:
 		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
-		/// 
+		///
 		/// Else:
 		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
 		/// </returns>
 		public static uint Modify(bool addOrRemove, uint lhs, uint rhs)
 		{
 			return (addOrRemove == true ?
-				lhs |= rhs : 
+				lhs |= rhs :
 				lhs &= (uint)~rhs);
 		}
 		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>
@@ -466,14 +470,14 @@ namespace KSoft.Bitwise
 		/// <returns>
 		/// If <paramref name="addOrRemove"/> is True:
 		/// <paramref name="lhs"/> |= <paramref name="rhs"/>
-		/// 
+		///
 		/// Else:
 		/// <paramref name="lhs"/> &amp;= <paramref name="rhs"/>
 		/// </returns>
 		public static ulong Modify(bool addOrRemove, ulong lhs, ulong rhs)
 		{
 			return (addOrRemove == true ?
-				lhs |= rhs : 
+				lhs |= rhs :
 				lhs &= (ulong)~rhs);
 		}
 		/// <summary>Modify <paramref name="lhs"/> with <paramref name="rhs"/></summary>

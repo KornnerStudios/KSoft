@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -16,9 +20,9 @@ namespace KSoft.Bitwise
 	{
 		#region IByteSwappable Members
 		public int SizeOf { get {
-			Contract.Ensures(Contract.Result<int>() > 0, 
+			Contract.Ensures(Contract.Result<int>() > 0,
 				"You can't define a zero-byte struct, so what's the point of this definition?");
-			
+
 			throw new NotImplementedException();
 		} }
 
@@ -26,7 +30,7 @@ namespace KSoft.Bitwise
 			Contract.Ensures(Contract.Result<short[]>() != null);
 			Contract.Ensures(Contract.Result<short[]>().Length >= ByteSwap.kMinumumNumberOfDefinitionBsCodes,
 				"Codes should include: ArrayStart, {Count}, {Elements}, and ArrayEnd");
-			
+
 			throw new NotImplementedException();
 		} }
 

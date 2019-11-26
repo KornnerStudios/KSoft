@@ -1,7 +1,4 @@
-﻿using System;
-using System.Xml;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿using System.Xml;
 
 namespace KSoft.Xml
 {

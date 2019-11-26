@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Bitwise
 {
@@ -68,7 +72,7 @@ namespace KSoft.Bitwise
 				shift += 7;
 			} while ((b & 0x80) != 0);
 
-			// either buffer is incomplete or 
+			// either buffer is incomplete or
 			// this isn't even data with a 7-bit integer.
 			if ((size + count) > maxCount)
 				return TypeExtensions.kNone;

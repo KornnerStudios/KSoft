@@ -7,15 +7,15 @@
 // modification, are permitted provided that the following conditions are met:
 //
 // Redistributions of source code must retain the above copyright notice, this
-// list of conditions and the following disclaimer. 
+// list of conditions and the following disclaimer.
 //
 // Redistributions in binary form must reproduce the above copyright notice,
 // this list of conditions and the following disclaimer in the documentation
-// and/or other materials provided with the distribution. 
+// and/or other materials provided with the distribution.
 //
 // Neither the name of the ORGANIZATION nor the names of its contributors may
 // be used to endorse or promote products derived from this software without
-// specific prior written permission. 
+// specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -32,15 +32,10 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections.Specialized;
 using System.Resources;
 using System.Globalization;
-using System.ComponentModel;
-using System.Reflection;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 #pragma warning disable 3021
 
 namespace BKSystem.IO
@@ -297,7 +292,7 @@ namespace BKSystem.IO
 		/// </remarks>
 		static uint [] BitMaskHelperLUT = new uint []
 		{
-			0x00000000, 
+			0x00000000,
 			0x00000001, 0x00000003, 0x00000007, 0x0000000F,
 			0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF,
 			0x000001FF, 0x000003FF, 0x000007FF, 0x00000FFF,
@@ -380,7 +375,7 @@ namespace BKSystem.IO
 			{
 				if(!_blnIsOpen)
 					throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
-				
+
 				return (long)_uiBitBuffer_Length;
 			}
 		}
@@ -570,7 +565,7 @@ namespace BKSystem.IO
 			{
 				if(!_blnIsOpen)
 					throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
-				
+
 				return ((long)_auiBitBuffer.Length) << BitBuffer_SizeOfElement_Shift;
 			}
 		}
@@ -743,7 +738,7 @@ namespace BKSystem.IO
 		{
 			if(capacity <= 0)
 				throw new ArgumentOutOfRangeException(BitStreamResources.GetString("ArgumentOutOfRange_NegativeOrZeroCapacity"));
-		
+
 			_auiBitBuffer = new uint[(capacity >> BitBuffer_SizeOfElement_Shift) + ((capacity & BitBuffer_SizeOfElement_Mod) > 0 ? 1 : 0)];
 		}
 		/// <summary>
@@ -768,16 +763,16 @@ namespace BKSystem.IO
 
 			// Write the stream to the internal buffer using a temporary byte buffer
 			byte [] abytBits = new byte [bits.Length];
-			
-			
+
+
 			long lCurrentPos = bits.Position;
 			bits.Position = 0;
-			
+
 			bits.Read(abytBits, 0, (int)bits.Length);
-			
+
 			bits.Position = lCurrentPos;
 
-			
+
 			Write(abytBits, 0, (int)bits.Length);
 			this.Position = 0;
 		}
@@ -898,7 +893,7 @@ namespace BKSystem.IO
 				// in current bit buffer element
 			{
 				UpdateIndicesForWrite(uiBitBuffer_FreeBits);
-			
+
 				uint uiValue_RemainingBits = count - uiBitBuffer_FreeBits;
 				uint uiValue_StartIndex = bitIndex;
 				Write(ref bits, ref uiValue_StartIndex, ref uiValue_RemainingBits);
@@ -956,7 +951,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -1102,7 +1097,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -1200,7 +1195,7 @@ namespace BKSystem.IO
 		{
 			// Convert the value to a byte
 			byte bytBits = (byte)bits;
-			
+
 			Write(bytBits, bitIndex, count);
 		}
 		/// <summary>
@@ -1280,7 +1275,7 @@ namespace BKSystem.IO
 
 			byte [] abytBits = new byte [count];
 			Buffer.BlockCopy(bits, offset, abytBits, 0, count);
-		
+
 			Write(abytBits, 0, count);
 		}
 		/// <summary>
@@ -1395,7 +1390,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -1542,7 +1537,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -1639,7 +1634,7 @@ namespace BKSystem.IO
 		{
 			// Convert the value to an UInt16
 			ushort usBits = (ushort)bits;
-			
+
 			Write(usBits, bitIndex, count);
 		}
 		/// <summary>
@@ -1717,7 +1712,7 @@ namespace BKSystem.IO
 
 			ushort [] ausBits = new ushort [count];
 			Buffer.BlockCopy(bits, offset << 1, ausBits, 0, count << 1);
-		
+
 			Write(ausBits, 0, count);
 		}
 		#endregion
@@ -1815,7 +1810,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -1911,7 +1906,7 @@ namespace BKSystem.IO
 		{
 			// Convert the value to an UInt32
 			uint uiBits = (uint)bits;
-			
+
 			Write(uiBits, bitIndex, count);
 		}
 		/// <summary>
@@ -1988,7 +1983,7 @@ namespace BKSystem.IO
 
 			uint [] auiBits = new uint [count];
 			Buffer.BlockCopy(bits, offset << 2, auiBits, 0, count << 2);
-		
+
 			Write(auiBits, 0, count);
 		}
 		/// <summary>
@@ -2060,7 +2055,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -2228,7 +2223,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -2325,7 +2320,7 @@ namespace BKSystem.IO
 		{
 			// Convert the value to an UInt64
 			ulong ulBits = (ulong)bits;
-			
+
 			Write(ulBits, bitIndex, count);
 		}
 		/// <summary>
@@ -2403,7 +2398,7 @@ namespace BKSystem.IO
 
 			ulong [] aulBits = new ulong [count];
 			Buffer.BlockCopy(bits, offset << 4, aulBits, 0, count << 4);
-		
+
 			Write(aulBits, 0, count);
 		}
 		/// <summary>
@@ -2477,7 +2472,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			Write(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -2557,7 +2552,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_Stream"));
-		
+
 			byte [] abytBits = ToByteArray();
 
 			bits.Write(abytBits, 0, abytBits.Length);
@@ -2628,7 +2623,7 @@ namespace BKSystem.IO
 				uint uiValue_BitMask = (BitMaskHelperLUT[uiActualCount] >> iValue_BitsToShift);
 				uiValue &= uiValue_BitMask;
 				uiValue <<= iValue_BitsToShift;
-				
+
 				uint uiRemainingCount = (uint)iValue_BitsToShift;
 				uint uiBitIndex = 0;
 				uint uiValueToAppend = 0;
@@ -2686,7 +2681,7 @@ namespace BKSystem.IO
 			uint uiCount = 1;
 			uint uiBit = 0;
 			uint uiBitsRead = Read(ref uiBit, ref uiBitIndex, ref uiCount);
-			
+
 			bit = Convert.ToBoolean(uiBit);
 
 			return (int)uiBitsRead;
@@ -2726,7 +2721,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			return Read(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -2789,7 +2784,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iBitCounter = offset; iBitCounter < iEndIndex; iBitCounter++)
 				iBitsRead += Read(out bits[iBitCounter]);
-		
+
 			return iBitsRead;
 		}
 		#endregion
@@ -2878,7 +2873,7 @@ namespace BKSystem.IO
 			uint uiCount = (uint)count;
 			uint uiBits = 0;
 			uint uiBitsRead = Read(ref uiBits, ref uiBitIndex, ref uiCount);
-		
+
 			bits = (byte)uiBits;
 
 			return (int)uiBitsRead;
@@ -2918,7 +2913,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			return Read(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -2981,7 +2976,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iByteCounter = offset; iByteCounter < iEndIndex; iByteCounter++)
 				iBitsRead += Read(out bits[iByteCounter]);
-		
+
 			return iBitsRead / 8;
 		}
 		/// <summary>
@@ -3151,7 +3146,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iSByteCounter = offset; iSByteCounter < iEndIndex; iSByteCounter++)
 				iBitsRead += Read(out bits[iSByteCounter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -3169,7 +3164,7 @@ namespace BKSystem.IO
 		{
 			byte bytBits;
 			int iBitsRead = Read(out bytBits);
-			
+
 			if(iBitsRead == 0)
 				return -1;
 			else
@@ -3187,7 +3182,7 @@ namespace BKSystem.IO
 			// Write this stream's internal buffer to a new byte buffer
 			long lCurrentPos = this.Position;
 			this.Position = 0;
-			
+
 			byte [] abytBits = new byte [this.Length8];
 			this.Read(abytBits, 0, (int)this.Length8);
 
@@ -3282,7 +3277,7 @@ namespace BKSystem.IO
 			uint uiCount = (uint)count;
 			uint uiBits = 0;
 			uint uiBitsRead = Read(ref uiBits, ref uiBitIndex, ref uiCount);
-		
+
 			bits = (char)uiBits;
 
 			return (int)uiBitsRead;
@@ -3322,7 +3317,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			return Read(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -3385,7 +3380,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iCharCounter = offset; iCharCounter < iEndIndex; iCharCounter++)
 				iBitsRead += Read(out bits[iCharCounter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -3473,7 +3468,7 @@ namespace BKSystem.IO
 			uint uiCount = (uint)count;
 			uint uiBits = 0;
 			uint uiBitsRead = Read(ref uiBits, ref uiBitIndex, ref uiCount);
-		
+
 			bits = (ushort)uiBits;
 
 			return (int)uiBitsRead;
@@ -3514,7 +3509,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			return Read(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -3578,7 +3573,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iUInt16Counter = offset; iUInt16Counter < iEndIndex; iUInt16Counter++)
 				iBitsRead += Read(out bits[iUInt16Counter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -3746,7 +3741,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iShortCounter = offset; iShortCounter < iEndIndex; iShortCounter++)
 				iBitsRead += Read(out bits[iShortCounter]);
-			
+
 			return iBitsRead;
 		}
 		#endregion
@@ -3837,7 +3832,7 @@ namespace BKSystem.IO
 			uint uiCount = (uint)count;
 			uint uiBits = 0;
 			uint uiBitsRead = Read(ref uiBits, ref uiBitIndex, ref uiCount);
-		
+
 			bits = uiBits;
 
 			return (int)uiBitsRead;
@@ -3942,7 +3937,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iUInt32Counter = offset; iUInt32Counter < iEndIndex; iUInt32Counter++)
 				iBitsRead += Read(out bits[iUInt32Counter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -4106,7 +4101,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iInt32Counter = offset; iInt32Counter < iEndIndex; iInt32Counter++)
 				iBitsRead += Read(out bits[iInt32Counter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -4211,7 +4206,7 @@ namespace BKSystem.IO
 				throw new ObjectDisposedException(BitStreamResources.GetString("ObjectDisposed_BitStreamClosed"));
 			if(bits == null)
 				throw new ArgumentNullException("bits", BitStreamResources.GetString("ArgumentNull_BitBuffer"));
-		
+
 			return Read(bits, 0, bits.Length);
 		}
 		/// <summary>
@@ -4491,7 +4486,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iUInt64Counter = offset; iUInt64Counter < iEndIndex; iUInt64Counter++)
 				iBitsRead += Read(out bits[iUInt64Counter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -4659,7 +4654,7 @@ namespace BKSystem.IO
 			int iBitsRead = 0;
 			for(int iInt64Counter = offset; iInt64Counter < iEndIndex; iInt64Counter++)
 				iBitsRead += Read(out bits[iInt64Counter]);
-		
+
 			return iBitsRead;
 		}
 		/// <summary>
@@ -5086,14 +5081,14 @@ namespace BKSystem.IO
 					bstrmNew.Position = uiBitCounter;
 					bstrmNew.Write(blnBit);
 				}
-			
+
 				// Clear out the last count bits
 				for(uint uiBitCounter = uiLength - uiCount; uiBitCounter < uiLength; uiBitCounter++)
 					bstrmNew.Write(false);
 			}
 
 			bstrmNew.Position = 0;
-		
+
 			return bstrmNew;
 		}
 		/// <summary>
@@ -5150,7 +5145,7 @@ namespace BKSystem.IO
 			}
 
 			bstrmNew.Position = 0;
-		
+
 			return bstrmNew;
 		}
 		#endregion
@@ -5185,7 +5180,7 @@ namespace BKSystem.IO
 				for(iBitCounter = 31; iBitCounter >= 0; iBitCounter--)
 				{
 					uint uiBitMask = ui1 << iBitCounter;
-					
+
 					if((_auiBitBuffer[uiCounter] & uiBitMask) == uiBitMask)
 						sb.Append('1');
 					else
@@ -5203,7 +5198,7 @@ namespace BKSystem.IO
 				for(iBitCounter = 31; iBitCounter >= iBitCounterMin; iBitCounter--)
 				{
 					uint uiBitMask = ui1 << iBitCounter;
-					
+
 					if((_auiBitBuffer[uiCounter] & uiBitMask) == uiBitMask)
 						sb.Append('1');
 					else
@@ -5271,7 +5266,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5309,7 +5304,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5344,7 +5339,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5382,7 +5377,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5417,7 +5412,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5453,7 +5448,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5490,7 +5485,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5526,7 +5521,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5563,7 +5558,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5601,7 +5596,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		/// <summary>
@@ -5640,7 +5635,7 @@ namespace BKSystem.IO
 					sb.Append('0');
 			}
 			sb.Append("}");
-		
+
 			return sb.ToString();
 		}
 		#endregion
@@ -5752,7 +5747,7 @@ namespace BKSystem.IO
 			uint [] auiNewBuffer = new uint [newLength];
 
 			uint uiBufferLength = (uint)buffer.Length;
-			
+
 			if(uiBufferLength < newLength)
 				Buffer.BlockCopy(buffer, 0, auiNewBuffer, 0, (int)(uiBufferLength << 2));
 			else // buffer.Length >= newLength
@@ -5760,7 +5755,7 @@ namespace BKSystem.IO
 
 			// Free the previously allocated buffer
 			buffer = null;
-			
+
 			return auiNewBuffer;
 		}
 		#endregion
@@ -5812,7 +5807,7 @@ namespace BKSystem.IO
 			Buffer.BlockCopy(_auiBitBuffer, 0, bstrmCopy._auiBitBuffer, 0, bstrmCopy._auiBitBuffer.Length << 2);
 
 			bstrmCopy._uiBitBuffer_Length = this._uiBitBuffer_Length;
-		
+
 			return bstrmCopy;
 		}
 		#endregion

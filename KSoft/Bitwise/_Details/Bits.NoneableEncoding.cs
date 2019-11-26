@@ -1,6 +1,10 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft
 {
@@ -36,7 +40,7 @@ namespace KSoft
 			{
 				// GetMaxEnumBits asserts maxValue > 1, as why would you normally want to bit encode an enum with only 1 possible value?
 				// hard set naked bit count to 1-bit to get around this case (where NONE and 0 are valid values)
-				int naked_bit_count = maxValue > 1 
+				int naked_bit_count = maxValue > 1
 					? GetMaxEnumBits(maxValue)
 					: 1;
 
@@ -83,7 +87,7 @@ namespace KSoft
 			{
 				// GetMaxEnumBits asserts maxValue > 1, as why would you normally want to bit encode an enum with only 1 possible value?
 				// hard set naked bit count to 1-bit to get around this case (where NONE and 0 are valid values)
-				int naked_bit_count = maxValue > 1 
+				int naked_bit_count = maxValue > 1
 					? GetMaxEnumBits(maxValue)
 					: 1;
 

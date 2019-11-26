@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Text
 {
@@ -21,7 +22,7 @@ namespace KSoft.Text
 		/// <returns>Estimated byte count of the actual string data to be transformed into characters</returns>
 		int CalcCharByteCountPascalInt7(int byteCount)
 		{
-			// HACK: It is possible the underlying encoding doesn't actually have a 
+			// HACK: It is possible the underlying encoding doesn't actually have a
 			// fixed character size for one, some, or all of its characters
 			int char_count = byteCount / mNullCharacterSize;
 
@@ -130,7 +131,7 @@ namespace KSoft.Text
 			return byteCount;
 		}
 		#endregion
-		
+
 		/// <summary>Converts a sequence of encoded bytes into a set of characters.</summary>
 		class Decoder : System.Text.Decoder
 		{
@@ -154,7 +155,7 @@ namespace KSoft.Text
 				return char_count;
 			}
 			/// <summary>
-			/// Calculates the number of characters produced by decoding a sequence of bytes from the specified byte array. 
+			/// Calculates the number of characters produced by decoding a sequence of bytes from the specified byte array.
 			/// A parameter indicates whether to clear the internal state of the decoder after the calculation.
 			/// </summary>
 			/// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
@@ -191,7 +192,7 @@ namespace KSoft.Text
 				return chars_written;
 			}
 			/// <summary>
-			/// Decodes a sequence of bytes from the specified byte array and any bytes in the internal buffer into the specified character array. 
+			/// Decodes a sequence of bytes from the specified byte array and any bytes in the internal buffer into the specified character array.
 			/// A parameter indicates whether to clear the internal state of the decoder after the conversion.
 			/// </summary>
 			/// <param name="bytes">The byte array containing the sequence of bytes to decode</param>
@@ -222,7 +223,7 @@ namespace KSoft.Text
 		/// <param name="offset">offset to start the null comparison at</param>
 		/// <returns>True if <paramref name="characters"/> is null; all zeros</returns>
 		/// <remarks>
-		/// If <paramref name="byteOrder"/> is different from <see cref="Storage.ByteOrder"/>, this will 
+		/// If <paramref name="byteOrder"/> is different from <see cref="Storage.ByteOrder"/>, this will
 		/// byte-swap the bytes before returning
 		/// </remarks>
 		bool ReadStringMultiByteIsNull(Shell.EndianFormat byteOrder, byte[] characters, int offset)
@@ -371,7 +372,7 @@ namespace KSoft.Text
 
 			actualCount = TypeExtensions.kNone; // complete string case
 
-			// the user was nice and saved us some CPU trying to feel around for the null 
+			// the user was nice and saved us some CPU trying to feel around for the null
 			// because we don't have a fixed length to speed things up
 			if (!mStorage.IsFixedLength && length > 0)
 			{
@@ -384,7 +385,7 @@ namespace KSoft.Text
 			{
 				using (var ms = new System.IO.MemoryStream(!mStorage.IsFixedLength ? 512 : mStorage.FixedLength))
 				{
-					// The N-byte methods take care of reading past the 
+					// The N-byte methods take care of reading past the
 					// null character, no need to do it in this case.
 					if (mNullCharacterSize == 1)	ReadCStringSingleByte(s, ms);
 					else							ReadCStringMultiByte(s, ms);
@@ -408,7 +409,7 @@ namespace KSoft.Text
 
 			actualCount = TypeExtensions.kNone; // complete string case
 
-			// the user was nice and saved us some CPU trying to feel around for the null 
+			// the user was nice and saved us some CPU trying to feel around for the null
 			// because we don't have a fixed length to speed things up
 			if (!mStorage.IsFixedLength && length > 0)
 			{
@@ -421,7 +422,7 @@ namespace KSoft.Text
 			{
 				using (var ms = new System.IO.MemoryStream(!mStorage.IsFixedLength ? 512 : mStorage.FixedLength))
 				{
-					// The N-byte methods take care of reading past the 
+					// The N-byte methods take care of reading past the
 					// null character, no need to do it in this case.
 					if (mNullCharacterSize == 1)	ReadCStringSingleByte(s, ms, maxLength);
 					else							ReadCStringMultiByte(s, ms, maxLength);
@@ -548,7 +549,7 @@ namespace KSoft.Text
 			switch (mStorage.Type)
 			{
 				// Type streamers should set actual_count to -1 if we're to assume all the bytes are characters.
-				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to 
+				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to
 				// include null characters in the result string)
 
 				case StringStorageType.CString:		bytes = ReadStrCString(s, length, out actual_count); break;
@@ -579,7 +580,7 @@ namespace KSoft.Text
 			switch (mStorage.Type)
 			{
 				// Type streamers should set actual_count to -1 if we're to assume all the bytes are characters.
-				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to 
+				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to
 				// include null characters in the result string)
 
 				case StringStorageType.CString:		bytes = ReadStrCString(s, length, out actual_count, maxLength); break;

@@ -1,5 +1,9 @@
 ﻿using System.IO;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -14,7 +18,7 @@ namespace KSoft.IO
 			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
 		}
 
-		SignatureMismatchException(long pos, string expected, string found) : 
+		SignatureMismatchException(long pos, string expected, string found) :
 			base(string.Format(kFormat, pos.ToString("X8"), expected, found))
 		{
 		}

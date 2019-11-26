@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -31,7 +34,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -40,7 +43,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref byte value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -49,7 +52,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref sbyte value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -58,7 +61,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref ushort value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -67,7 +70,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref short value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -76,7 +79,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref uint value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -85,7 +88,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref int value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -94,7 +97,7 @@ namespace KSoft.IO
 		protected abstract void ReadElement(TCursor n, ref ulong value, NumeralBase fromBase);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="n">Node element to read</param>
@@ -268,7 +271,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -282,7 +285,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -296,7 +299,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -310,7 +313,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -324,7 +327,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -338,7 +341,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -352,7 +355,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -366,7 +369,7 @@ namespace KSoft.IO
 		}
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -405,7 +408,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -414,7 +417,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref byte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -423,7 +426,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref sbyte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -432,7 +435,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref ushort value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -441,7 +444,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref short value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -450,7 +453,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref uint value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -459,7 +462,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref int value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -468,7 +471,7 @@ namespace KSoft.IO
 		public abstract void ReadAttribute(TName name, ref ulong value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -512,7 +515,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -523,7 +526,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref byte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -534,7 +537,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref sbyte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -545,7 +548,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref ushort value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -556,7 +559,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref short value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -567,7 +570,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref uint value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -578,7 +581,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref int value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -589,7 +592,7 @@ namespace KSoft.IO
 		public abstract bool ReadElementOpt(TName name, ref ulong value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the InnerText of element <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Element name</param>
@@ -630,7 +633,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -640,7 +643,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref byte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -650,7 +653,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref sbyte value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -660,7 +663,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref ushort value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -670,7 +673,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref short value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -680,7 +683,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref uint value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -690,7 +693,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref int value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>
@@ -700,7 +703,7 @@ namespace KSoft.IO
 		public abstract bool ReadAttributeOpt(TName name, ref ulong value, NumeralBase fromBase = NumeralBase.Decimal);
 		/// <summary>
 		/// Stream out the attribute data of <paramref name="name"/>
-		/// using numerical base of <paramref name="base"/> into 
+		/// using numerical base of <paramref name="base"/> into
 		/// <paramref name="value"/>
 		/// </summary>
 		/// <param name="name">Attribute name</param>

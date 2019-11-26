@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.IO
 {
@@ -84,8 +87,8 @@ namespace KSoft.IO
 		/// <summary>Byte length of the bitstream or <see cref="BaseStream"/>'s Length</summary>
 		/// <exception cref="NotSupportedException"><see cref="BaseStream"/> does not support seeking</exception>
 		public long Length { get {
-			return mEndPosition > 0 
-				? mEndPosition 
+			return mEndPosition > 0
+				? mEndPosition
 				: BaseStream.Length;
 		} }
 		/// <summary>Number of bits in the bitstream</summary>
@@ -98,14 +101,14 @@ namespace KSoft.IO
 		public long BitPosition	{ get {
 			long position = ((BaseStream.Position - mStartPosition) * Bits.kByteBitCount) + mCacheBitIndex;
 			// When reading we initialize the cache, meaning we've already advanced BaseStream.Position
-			return IsWriting 
-				? position 
+			return IsWriting
+				? position
 				: position - mCacheBitsStreamedCount;
 		} }
 
 		bool IsEndOfStream { get {
-			return CanSeek 
-				? BaseStream.Position >= Length 
+			return CanSeek
+				? BaseStream.Position >= Length
 				: false;
 		} }
 
@@ -128,12 +131,12 @@ namespace KSoft.IO
 		/// <remarks>
 		/// If <paramref name="baseStream"/> CanSeek, the default value for <paramref name="startPos"/> is the current Position of the stream.
 		/// Else the default value is zero.
-		/// 
-		/// The default value for <paramref name="endPos"/> is zero. When it is zero, <paramref name="Stream"/>'s Length is always used at 
+		///
+		/// The default value for <paramref name="endPos"/> is zero. When it is zero, <paramref name="Stream"/>'s Length is always used at
 		/// runtime. So it will acknowledge changes in the base stream length after the constructor finishes.
 		/// </remarks>
 		public BitStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite,
-			long startPos = TypeExtensions.kNone, long endPos = TypeExtensions.kNone, 
+			long startPos = TypeExtensions.kNone, long endPos = TypeExtensions.kNone,
 			string streamName = "")
 		{
 			Contract.Requires<ArgumentNullException>(baseStream != null);
@@ -232,7 +235,7 @@ namespace KSoft.IO
 		{
 			value = ReadDouble();
 		}
-		public void Write(double value)	
+		public void Write(double value)
 		{
 			Write(BitConverter.DoubleToInt64Bits(value), Bits.kInt32BitCount);
 		}
@@ -290,8 +293,8 @@ namespace KSoft.IO
 		/// <param name="prefixBitLength">Pascal only: Number of bits in the prefix count</param>
 		/// <returns></returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or 
-		/// doesn't require an explicit character length. If you do provide the 
+		/// Length can be non-positive if <paramref name="storage"/> defines or
+		/// doesn't require an explicit character length. If you do provide the
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
 		public string ReadString(Memory.Strings.StringStorage storage, int length = TypeExtensions.kNone,
@@ -310,8 +313,8 @@ namespace KSoft.IO
 		/// <param name="prefixBitLength">Pascal only: Number of bits in the prefix count</param>
 		/// <returns></returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or 
-		/// doesn't require an explicit character length. If you do provide the 
+		/// Length can be non-positive if <paramref name="storage"/> defines or
+		/// doesn't require an explicit character length. If you do provide the
 		/// length, this operation will perform faster in some cases.
 		/// </remarks>
 		public string ReadString(Text.StringStorageEncoding encoding, int length = TypeExtensions.kNone,

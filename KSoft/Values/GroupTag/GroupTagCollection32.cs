@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using TagWord = System.UInt32;
 
@@ -107,7 +111,7 @@ namespace KSoft.Values
 		#endregion
 
 		/// <summary>Get a new instance of an empty collection</summary>
-		public static GroupTag32Collection Empty { get { 
+		public static GroupTag32Collection Empty { get {
 			return new GroupTag32Collection();
 		} }
 	};
@@ -115,10 +119,10 @@ namespace KSoft.Values
 
 	/// <summary>Attribute applied to classes which house a static <see cref="GroupTag32Collection"/> property</summary>
 	/// <remarks>
-	/// Allows for ease-of-use in other attributes where we'd need to index a <see cref="GroupTag32Collection"/> 
+	/// Allows for ease-of-use in other attributes where we'd need to index a <see cref="GroupTag32Collection"/>
 	/// collection for a specific <see cref="GroupTagData32"/> member.
-	/// 
-	/// <see cref="GroupTagContainerAttribute.kDefaultName"/> is the default name value used for the "main" 
+	///
+	/// <see cref="GroupTagContainerAttribute.kDefaultName"/> is the default name value used for the "main"
 	/// collection lookup
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]

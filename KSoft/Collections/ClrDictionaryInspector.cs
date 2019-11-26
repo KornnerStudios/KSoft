@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-using Exprs = System.Linq.Expressions;
-using Expr = System.Linq.Expressions.Expression;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Reflect = System.Reflection;
 
 namespace KSoft.Collections
@@ -182,7 +184,7 @@ namespace KSoft.Collections
 			}
 #endif
 
-			return 
+			return
 				from e in GetEntriesInBucket(target_bucket)
 				where e.HashCode == hash_code && !mDic.Comparer.Equals(e.Key, key)
 				select e;
