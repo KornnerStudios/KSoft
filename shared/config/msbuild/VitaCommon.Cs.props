@@ -8,6 +8,9 @@
 
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+
+    <!--#TODO how can this be data driven?-->
+    <MicrosoftCodeContractsInstalled>false</MicrosoftCodeContractsInstalled>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
@@ -29,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
 
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>$(MicrosoftCodeContractsInstalled)</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -47,24 +50,24 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
 
-    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled)==false " >None</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration.Contains(Debug))' ">
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <DefineConstants>CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition=" $(MicrosoftCodeContractsInstalled)==false ">CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
     <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
 
-    <!-- <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel> -->
+    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled) ">Full</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration.Contains(Release))' ">
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <DefineConstants>CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition=" $(MicrosoftCodeContractsInstalled)==false ">CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
 
-    <!-- <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel> -->
+    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled) ">ReleaseRequires</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">

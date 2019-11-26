@@ -425,6 +425,8 @@ namespace System.Diagnostics.ContractsShim
 		//     Return value of the enclosing method or property.
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static T Result<T>() { return default(T); }
+#endif
+#if true // #HORRIBLE_SHIM. Can't use for non-out params without breaking things!
 		//
 		// Summary:
 		//     Represents the final (output) value of an out parameter when returning from a

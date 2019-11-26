@@ -61,8 +61,10 @@ namespace KSoft.IO
 		/// <summary>Flush the cache to <see cref="BaseStream"/> with <see cref="kWordByteCount"/> or fewer bytes bytes</summary>
 		void FlushCache()
 		{
+			#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY
 			Contract.Ensures(Contract.ValueAtReturn(out mCache) == 0);
 			Contract.Ensures(Contract.ValueAtReturn(out mCacheBitIndex) == 0);
+			#endif
 
 			if (mCacheBitIndex == 0) // no bits to flush!
 			{
