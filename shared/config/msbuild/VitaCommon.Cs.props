@@ -9,8 +9,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
 
-    <!--#TODO how can this be data driven?-->
     <MicrosoftCodeContractsInstalled>false</MicrosoftCodeContractsInstalled>
+    <MicrosoftCodeContractsInstalled Condition=" '$(CodeContractsInstallDir)' != '' ">true</MicrosoftCodeContractsInstalled>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
