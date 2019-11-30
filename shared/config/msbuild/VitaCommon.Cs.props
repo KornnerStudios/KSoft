@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
 
     <MicrosoftCodeContractsInstalled>false</MicrosoftCodeContractsInstalled>
-    <MicrosoftCodeContractsInstalled Condition=" '$(CodeContractsInstallDir)' != '' ">true</MicrosoftCodeContractsInstalled>
+    <MicrosoftCodeContractsInstalled Condition=" '$(CodeContractsInstallDir)' != '' AND $(VisualStudioVersion) &lt;= 14.0 ">true</MicrosoftCodeContractsInstalled>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
