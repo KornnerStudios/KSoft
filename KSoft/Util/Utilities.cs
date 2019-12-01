@@ -276,35 +276,6 @@ namespace KSoft
 
 		#endregion
 
-		public static void ValueTypeInitializeComparer<T>()
-			where T : struct, System.Collections.IComparer, IComparer<T>
-		{
-			// Because the defaultComparer static was changed to be readonly as well in mscorlib 4.0
-			Contract.Requires(System.Environment.Version.Major <= 2, "This no longer works in .NET4+");
-
-			// ReSharper disable once NotAccessedVariable
-			var comparer = Collections.ValueTypeComparer<T>.Default;
-			comparer = null;
-		}
-		public static void ValueTypeInitializeEqualityComparer<T>()
-			where T : struct, IEqualityComparer<T>
-		{
-			Contract.Requires(System.Environment.Version.Major <= 2, "This no longer works in .NET4+");
-
-			// ReSharper disable once NotAccessedVariable
-			var comparer = Collections.ValueTypeEqualityComparer<T>.Default;
-			comparer = null;
-		}
-		public static void ValueTypeInitializeEquatableComparer<T>()
-			where T : struct, IEquatable<T>
-		{
-			Contract.Requires(System.Environment.Version.Major <= 2, "This no longer works in .NET4+");
-
-			// ReSharper disable once NotAccessedVariable
-			var comparer = Collections.ValueTypeEquatableComparer<T>.Default;
-			comparer = null;
-		}
-
 		#region CountNumberOfFormatArguments
 		private static int CountNumberOfFormatArgumentsFormatError(int position)
 		{

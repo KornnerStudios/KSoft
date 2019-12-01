@@ -111,9 +111,6 @@
     <Compile Include="Collections\PropertyComparer.cs" />
     <Compile Include="Collections\StringSegment.cs" />
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
-    <Compile Include="Collections\ValueTypeComparer.cs" />
-    <Compile Include="Collections\ValueTypeEqualityComparer.cs" />
-    <Compile Include="Collections\ValueTypeEquatableComparer.cs" />
     <Compile Include="Collections\_Details\BitSetT4.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
