@@ -102,12 +102,23 @@ namespace KSoft.Reflection.Test
 		[TestMethod]
 		public void Reflection_GenerateLiteralMemberGetterTest()
 		{
-			// #TODO this isn't passing under .NET 4.5.1, even though the constant does indeed exist...did this ever work?
+			// DefaultBufferSize is a property, at least in .NET 4.5+
+			const string kLiteralName = "DefaultFileStreamBufferSize";
+
+			var literalFieldInfo = typeof(System.IO.StreamReader).GetField(
+				kLiteralName,
+				Reflect.BindingFlags.Static |
+				Reflect.BindingFlags.Instance |
+				Reflect.BindingFlags.NonPublic |
+				Reflect.BindingFlags.IgnoreCase |
+				Reflect.BindingFlags.FlattenHierarchy);
+			Assert.IsNotNull(literalFieldInfo, "Literal not found. Renamed?");
+			Assert.IsTrue(literalFieldInfo.IsLiteral);
 
 			// internal const int DefaultBufferSize
-			var kDefaultBufferSize = Util.GenerateStaticFieldGetter<System.IO.StreamReader, int>("DefaultBufferSize");
+			var kDefaultBufferSize = Util.GenerateStaticFieldGetter<System.IO.StreamReader, int>(kLiteralName);
 
-			Assert.AreEqual(1024, kDefaultBufferSize());
+			Assert.AreEqual(4096, kDefaultBufferSize());
 		}
 
 		#region Generate MemberSetter fail tests
