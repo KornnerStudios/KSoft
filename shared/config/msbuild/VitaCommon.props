@@ -10,6 +10,11 @@
 	<VitaRootDir Condition=" !HasTrailingSlash('$(VitaRootDir)') ">$(VitaRootDir)\</VitaRootDir>
 
 	<VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">Unknown</VitaSolutionFamily>
+
+	<!--First, convert 14.0 into 140.0-->
+	<!--Second, convert to int to remove any decimal point to match C++'s PlatformToolsetVersion-->
+	<!--Third, prepend with 'v' to match common 'vc' prefix for C++-->
+	<VitaVisualStudioVersion>v$([MSBuild]::Multiply($(VisualStudioVersion), 10))</VitaVisualStudioVersion>	
   </PropertyGroup>
 
   <Import           Project="$(VitaRootDir)user\config\msbuild\VitaUserConfig.props" 
@@ -61,14 +66,14 @@
 
 	<!-- Per-project .obj (and the like) output directory -->
 	<VitaObjDir >$(VitaRootDir)_obj\</VitaObjDir>
-	<VitaObjPath>$(VitaObjDir)$(ProjectName)\$(Configuration)\$(Platform)\</VitaObjPath>
+	<VitaObjPath>$(VitaObjDir)$(VitaVisualStudioVersion)\$(ProjectName)\$(Configuration)\$(Platform)\</VitaObjPath>
 
 	<!-- Per-project binary output directory -->
 	<VitaBinDir
 	  >$(VitaRootDir)_bin\</VitaBinDir>
 	<!-- root directory of per-project and solution folders for the current configuration -->
 	<VitaBinRootPath
-	  >$(VitaBinDir)$(Configuration)\$(Platform)\</VitaBinRootPath>
+	  >$(VitaBinDir)$(VitaVisualStudioVersion)\$(Configuration)\$(Platform)\</VitaBinRootPath>
 	<VitaBinPath
 	  >$(VitaBinRootPath)$(ProjectName)\</VitaBinPath>
 	<!-- We use the assembly name instead of the project for .NET modules -->
@@ -82,7 +87,7 @@
 	<VitaLibDir 
 	  >$(VitaRootDir)_lib\</VitaLibDir>
 	<VitaLibPath 
-	  >$(VitaLibDir)$(Configuration)\$(Platform)\$(ProjectName)\</VitaLibPath>
+	  >$(VitaLibDir)$(VitaVisualStudioVersion)\$(Configuration)\$(Platform)\$(ProjectName)\</VitaLibPath>
   </PropertyGroup>
 
   <Import Condition=" '$(VitaSourceLanguage)' == 'VC++' "
