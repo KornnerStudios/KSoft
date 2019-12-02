@@ -123,7 +123,9 @@ namespace KSoft.IO
 		/// <param name="oldCursor">Previously saved cursor. Set to null before the method returns</param>
 		public void RestoreCursor(ref TCursor oldCursor)
 		{
+			#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY
 			Contract.Ensures(Contract.ValueAtReturn(out oldCursor) == null);
+			#endif
 			Contract.Assert(oldCursor != null, "Can't restore a cursor that wasn't saved!");
 
 			Cursor = oldCursor;
