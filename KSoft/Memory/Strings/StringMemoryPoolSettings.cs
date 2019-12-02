@@ -87,7 +87,7 @@ namespace KSoft.Memory.Strings
 		#endregion
 
 		#region IEndianStreamable Members
-#if false // TODO
+#if false // #TODO
 		public void Read(KSoft.IO.EndianReader s)
 		{
 			var storage = new StringStorage(); storage.Read(s);

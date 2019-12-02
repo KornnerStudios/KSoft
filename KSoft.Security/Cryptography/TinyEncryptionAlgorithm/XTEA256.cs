@@ -35,7 +35,7 @@ namespace KSoft.Security.Cryptography
 
 		protected override void EncryptBlock(byte[] input, byte[] output, int offset)
 		{
-			Contract.Assert(false); // TODO
+			Contract.Assert(false); // #TODO
 		}
 
 		protected override void DecryptBlock(byte[] input, byte[] output, int offset)

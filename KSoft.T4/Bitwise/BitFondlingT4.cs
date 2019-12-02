@@ -199,7 +199,7 @@ namespace KSoft.T4.Bitwise
 			}
 			protected override void GenerateEpilogue()
 			{
-				mFile.WriteLine("return ({0}){1};", 
+				mFile.WriteLine("return ({0}){1};",
 					PrimitiveDefinitions.kInt32.Keyword,
 					kFondleVarName);
 			}
@@ -252,7 +252,7 @@ namespace KSoft.T4.Bitwise
 		// UInt16 - ~64
 		// UInt32 - ~65
 		// UInt64 - ~86
-		// TODO: the generated code for 16-bit isn't working right...who's fault is this?
+		// #TODO: the generated code for 16-bit isn't working right...who's fault is this?
 		public class FastBitCountCodeGenerator
 			: BitCountCodeGenerator
 		{

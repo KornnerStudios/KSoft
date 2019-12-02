@@ -71,7 +71,7 @@ namespace KSoft.Text
 		#region Byte arrays
 		public const int kDefaultHexDigitsPerLine = 16;
 
-		// TODO: Instead of doing byte.ToString("X2") we could just have a lookup table...
+		// #REVIEW: Instead of doing byte.ToString("X2") we could just have a lookup table...
 
 		#region ByteArrayToString (byte[] to string)
 		/// <summary>Converts an array of bytes to a hex string</summary>

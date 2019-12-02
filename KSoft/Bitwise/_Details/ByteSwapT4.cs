@@ -544,7 +544,7 @@ namespace KSoft.Bitwise
 		}
 		#endregion
 
-		// TODO: verify we don't need any sign-extension magic
+		// #TODO: verify we don't need any sign-extension magic
 		#region Int24
 		/// <summary>Swaps a <see cref="Int32" /> and returns the result</summary>
 		/// <param name="value"></param>
@@ -694,7 +694,7 @@ namespace KSoft.Bitwise
 		}
 		#endregion
 
-		// TODO: verify we don't need any sign-extension magic
+		// #TODO: verify we don't need any sign-extension magic
 		#region Int40
 		/// <summary>Swaps a <see cref="Int64" /> and returns the result</summary>
 		/// <param name="value"></param>

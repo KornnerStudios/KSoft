@@ -18,7 +18,7 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Cryptography_JenkinsHashLookup2Test()
 		{
-			// TODO: find test vectors
+			// #TODO: find test vectors
 		}
 
 		void TestLookup3(string input, uint expected_output, uint seed = 0)

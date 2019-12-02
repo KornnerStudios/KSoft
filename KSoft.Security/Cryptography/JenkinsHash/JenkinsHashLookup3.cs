@@ -7,7 +7,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.Security.Cryptography
 {
 	// http://burtleburtle.net/bob/c/lookup3.c
-	// TODO: hashlittle2 support (two results)?
+	// #REVIEW: hashlittle2 support (two results)?
 	public abstract class JenkinsHashLookup3 : JenkinsHashLookup
 	{
 		const uint kGoldenRatio = 0xDEADBEEF;

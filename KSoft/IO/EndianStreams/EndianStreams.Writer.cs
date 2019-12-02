@@ -169,7 +169,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		// TODO: generate with T4
+		// #TODO: generate with T4
 		#region Write numerics
 		/// <summary>Writes a signed 24-bit integer</summary>
 		/// <param name="value"></param>

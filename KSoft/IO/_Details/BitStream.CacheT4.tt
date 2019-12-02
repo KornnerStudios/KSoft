@@ -38,8 +38,8 @@ namespace KSoft.IO
 		/// <summary>The bit cache we use for streaming to/from <see cref="BaseStream"/></summary>
 		TWord mCache;
 
-		// TODO: change mIoBuffer to be kWordByteCount and do an entire Read/Write() instead of looping?
-		// TODO: maybe change the ReadWord implementation to not automatically populate the next word...
+		// #REVIEW: change mIoBuffer to be kWordByteCount and do an entire Read/Write() instead of looping?
+		// #REVIEW: maybe change the ReadWord implementation to not automatically populate the next word...
 		#region Cache operations
 		/// <summary>Fill the cache with <see cref="kWordByteCount"/> or fewer bytes bytes</summary>
 		void FillCache()

@@ -50,7 +50,7 @@ namespace KSoft.IO
 				#endregion
 				#region Register Binary
 				extension_format |= TagElementStreamFormat.Binary;
-				// TODO: not all binary formats are implemented yet, and will throw an exception
+				// #TODO: not all binary formats are implemented yet, and will throw an exception
 				try { extension = GetExtension(extension_format); }
 				catch (NotImplementedException) { extension = null; }
 

@@ -194,7 +194,7 @@ namespace KSoft
 
 			return true;
 		}
-#if false // TODO
+#if false // #TODO
 		/// <summary>
 		/// Copies a range of elements from a source array into the element memory of a destination array
 		/// </summary>

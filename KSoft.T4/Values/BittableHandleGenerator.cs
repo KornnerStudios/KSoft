@@ -60,7 +60,7 @@ namespace KSoft.T4.Values
 			CtorFromValueTypeName = null;
 			CtorFromValueParamName = "value";
 		}
-		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile, 
+		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile,
 			string underlyingTypeName, string structName)
 			: this()
 		{
@@ -68,7 +68,7 @@ namespace KSoft.T4.Values
 			mUnderlyingTypeName = underlyingTypeName;
 			mStructName = structName;
 		}
-		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile, 
+		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile,
 			NumberCodeDefinition underlyingType, string structName)
 			: this(ttFile, underlyingType.Code.ToString(), structName)
 		{
@@ -92,7 +92,7 @@ namespace KSoft.T4.Values
 		#region Generate type declaration
 		void WriteDeclAttributes()
 		{
-			// TODO
+			// #TODO_IMPLEMENT
 		}
 		void WriteDeclHeader()
 		{

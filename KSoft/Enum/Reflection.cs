@@ -12,7 +12,7 @@ using ExprParam = System.Linq.Expressions.ParameterExpression;
 
 namespace KSoft.Reflection
 {
-	// TODO: check out http://damieng.com/blog/2010/10/17/enums-better-syntax-improved-performance-and-tryparse-in-net-3-5
+	// #TODO: check out http://damieng.com/blog/2010/10/17/enums-better-syntax-improved-performance-and-tryparse-in-net-3-5
 
 	internal static class EnumUtils
 	{

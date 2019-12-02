@@ -15,7 +15,7 @@ namespace KSoft.IO
 			var text_node = GetInnerTextNode(n);
 			if (text_node != null)
 			{
-				ReadErrorNode = text_node; // TODO: which is more informative, using the element (n) or text_node?
+				ReadErrorNode = text_node; // #REVIEW: which is more informative, using the element (n) or text_node?
 				// TextNode's actual text
 				return text_node.Value;
 			}

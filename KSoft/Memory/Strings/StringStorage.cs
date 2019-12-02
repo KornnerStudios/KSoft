@@ -114,7 +114,7 @@ namespace KSoft.Memory.Strings
 		#endregion
 
 		#region IEndianStreamable Members
-#if false // TODO
+#if false // #TODO
 		public void Read(IO.EndianReader s)
 		{
 			mWidthType = (StringStorageWidthType)s.ReadByte();
@@ -283,7 +283,7 @@ namespace KSoft.Memory.Strings
 		public static StringStorage UnicodeStringBigEndian { get { return kStringUnicodeBE; } }
 		#endregion
 
-		// TODO: struct cctors are flaky, need a different method of defining this
+		// #TODO: struct cctors are flaky, need a different method of defining this
 		internal static readonly StringStorage[] kStorageTypesList;
 		static StringStorage()
 		{

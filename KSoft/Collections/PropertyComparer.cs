@@ -91,11 +91,11 @@ namespace KSoft.Collections.Generic
 
 		public override int Compare(T x, T y)
 		{
-			// TODO: would be better off having a variant impl that generates a LINQ expression for the compare.
+			// #REVIEW: would be better off having a variant impl that generates a LINQ expression for the compare.
 			// Would require a TProp (property's type) generic param, but we'd also be avoiding any boxing
 			// operations so long as we constrain TProp : IComparable<TProp>
 
-			// TODO: I think it's safe to cast to IComparable<T>
+			// #REVIEW: I think it's safe to cast to IComparable<T>
 			// unless you're still using .NET 1 assemblies...why would you do such a thing?
 			var obj1 = mProperty.GetValue(x, null) as IComparable;
 			var obj2 = mProperty.GetValue(y, null) as IComparable;

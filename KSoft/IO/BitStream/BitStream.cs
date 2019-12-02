@@ -388,21 +388,23 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
-#if false // TODO redo optimization
+#if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount && count >= kWordByteCount)
 			{
 				LowLevel.Data.ByteSwap.ReplaceBytes(buffer, index, mCache);
 				index += sizeof(TWord); count -= sizeof(TWord);
 
-				// TODO: need to handle unaligned reads
+				// #TODO: need to handle unaligned reads
 				BaseStream.Read(buffer, index, count);
 				mCacheBitsStreamedCount += count * Bits.kByteBitCount;
 				FillCache();
 			}
 			else
 #endif
+			{
 				for (int x = index; x < count; x++)
 					Read(out buffer[x], bitCount);
+			}
 		}
 		public void Write(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
 		{
@@ -411,17 +413,19 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
-#if false // TODO redo optimization
+#if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount)
 			{
-				// TODO: need to handle unaligned writes
+				// #TODO: need to handle unaligned writes
 				BaseStream.Write(buffer, index, count);
 				mCacheBitsStreamedCount += count * Bits.kByteBitCount;
 			}
 			else
 #endif
-			for (int x = index; x < count; x++)
+			{
+				for (int x = index; x < count; x++)
 					Write(buffer[x], bitCount);
+			}
 		}
 		public BitStream Stream(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
 		{
@@ -444,7 +448,7 @@ namespace KSoft.IO
 
 			byte[] buffer = new byte[byteCount];
 
-			if(byteCount > 0)
+			if (byteCount > 0)
 				Read(buffer, 0, byteCount);
 
 			return buffer;

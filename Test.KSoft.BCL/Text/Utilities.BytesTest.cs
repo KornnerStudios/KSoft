@@ -34,7 +34,7 @@ namespace KSoft.Text.Test
 			// Test case: Partial byte array (explicit range)
 			test_value = Util.ByteArrayToString(Strings.kDataBytes, 1, 2);
 			Assert.AreEqual(Strings.kDataString.Substring(2, 4), test_value);
-			// TODO: Test ByteArrayToStream
+			// #TODO_UNITTEST: Test ByteArrayToStream
 
 
 			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(Strings.kDataStringLong);
@@ -45,7 +45,7 @@ namespace KSoft.Text.Test
 			}
 			test_value = Util.ByteArrayToAlignedString(test_data);
 			Assert.AreEqual(Strings.kDataStringAsAlignedByteString, test_value);
-			// TODO: Test ByteArrayToAlignedOutput
+			// #TODO_UNITTEST: Test ByteArrayToAlignedOutput
 		}
 
 

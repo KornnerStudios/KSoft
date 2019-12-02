@@ -137,11 +137,11 @@ namespace KSoft
 			}
 		};
 
-		// TODO: IsWhiteSpace can be rather expensive, and it is used in TryParseImpl. Perhaps we can make a variant
+		// #REVIEW: IsWhiteSpace can be rather expensive, and it is used in TryParseImpl. Perhaps we can make a variant
 		// that can safely assume all characters are non-ws, and have TryParseList impls call it instead?
 		// The TryParse() below would need to be updated to catch trailing ws
 
-		// TODO: add an option to just flat out skip unsuccessful items?
+		// #REVIEW: add an option to just flat out skip unsuccessful items?
 
 		abstract class TryParseNumberListBase<T, TListItem>
 			where T : struct
@@ -205,7 +205,7 @@ namespace KSoft
 					start = end + 1;
 				}
 
-				// TODO: should we add support for throwing an exception or such when a terminator isn't encountered?
+				// #REVIEW: should we add support for throwing an exception or such when a terminator isn't encountered?
 
 				return mList.Count == 0
 					? EmptyResult

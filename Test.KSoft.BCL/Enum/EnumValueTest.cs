@@ -47,7 +47,7 @@ namespace KSoft.Reflection.Test
 			PositiveValue = kPositiveValue,
 		};
 
-		// TODO: T4?
+		// #REVIEW: T4?
 		[TestMethod]
 		public void Enum_ValueMethodsTest()
 		{

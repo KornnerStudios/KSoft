@@ -449,7 +449,7 @@ namespace KSoft.Collections
 		/// <param name="value">New value of the bit</param>
 		void SetInternal(int bitIndex, bool value)
 		{
-			// TODO: is it really worth checking that we're not setting a bit to the same state?
+			// #REVIEW: is it really worth checking that we're not setting a bit to the same state?
 			// Yes, currently, as SetInternal updates Cardinality
 
 			int index;
@@ -851,7 +851,7 @@ namespace KSoft.Collections
 
 		void System.Collections.ICollection.CopyTo(Array array, int arrayIndex)
 		{
-			// TODO: verify 'array' lengths
+			// #TODO: verify 'array' lengths
 			if (array is TWord[])
 				Array.Copy(mArray, arrayIndex, array, 0, LengthInWords);
 			else if (array is byte[])
@@ -885,7 +885,7 @@ namespace KSoft.Collections
 		#region IEquatable<IReadOnlyBitSet> Members
 		public bool Equals(IReadOnlyBitSet other)
 		{
-			// TODO: this also needs to check BitwiseEquals
+			// #TODO: this also needs to check BitwiseEquals
 			return Length == other.Length && Cardinality == other.Cardinality;
 		}
 		#endregion
@@ -893,7 +893,7 @@ namespace KSoft.Collections
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			// TODO: needs to write like byte[] in order to be TWord agnostic
+			// #TODO: needs to write like byte[] in order to be TWord agnostic
 			throw new NotImplementedException();
 		}
 

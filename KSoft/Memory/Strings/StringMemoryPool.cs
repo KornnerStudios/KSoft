@@ -208,7 +208,7 @@ namespace KSoft.Memory.Strings
 		public void ReadHeader(IO.EndianReader s)
 		{
 			Contract.Requires(s != null);
-			// TODO: test to see if the config is a built-in, else we could overwrite an existing config
+			// #TODO: test to see if the config is a built-in, else we could overwrite an existing config
 //			Configuration.Read(s);
 			int count = s.ReadInt32();
 			Size = s.ReadUInt32();

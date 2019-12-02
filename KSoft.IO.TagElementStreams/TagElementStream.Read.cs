@@ -93,7 +93,7 @@ namespace KSoft.IO
 		/// <param name="detailsException">The additional details to include in the thrown exception (really, the inner exception. eg, InvalidData)</param>
 		public abstract void ThrowReadException(Exception detailsException);
 
-		// TODO: document that 'ref value' will equal the streamed value or 'null' after returning, depending on success
+		// #TODO: document that 'ref value' will equal the streamed value or 'null' after returning, depending on success
 
 		#region ReadElement impl
 		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>

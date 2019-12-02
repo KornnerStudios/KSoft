@@ -99,7 +99,7 @@ namespace KSoft.Bitwise
 		#endregion
 
 <# if (bittable_type.IsUnnaturalWord) { #>
-		// TODO: verify we don't need any sign-extension magic
+		// #TODO: verify we don't need any sign-extension magic
 <# } /*IsUnnaturalWord*/ #>
 		#region <#= bittable_type.WordTypeNameSigned #>
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> and returns the result</summary>

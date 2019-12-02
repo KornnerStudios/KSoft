@@ -71,22 +71,26 @@ namespace KSoft.Reflection
 			var il = invoke.GetILGenerator();
 
 			// Generate IL for loading all the args by index
-			// TODO: IL has Ldarg_0 to Ldarg_3...do these provide any tangible perf benefits?
+			// #REVIEW: IL has Ldarg_0 to Ldarg_3...do these provide any tangible perf benefits?
 			{
 				int arg_index = 0;
-				if (param_types.Length >= 1) {
+				if (param_types.Length >= 1)
+				{
 					il.Emit(Reflect.Emit.OpCodes.Ldarg_0);
 					arg_index++;
 				}
-				if (param_types.Length >= 2) {
+				if (param_types.Length >= 2)
+				{
 					il.Emit(Reflect.Emit.OpCodes.Ldarg_1);
 					arg_index++;
 				}
-				if (param_types.Length >= 3) {
+				if (param_types.Length >= 3)
+				{
 					il.Emit(Reflect.Emit.OpCodes.Ldarg_2);
 					arg_index++;
 				}
-				if (param_types.Length >= 4) {
+				if (param_types.Length >= 4)
+				{
 					il.Emit(Reflect.Emit.OpCodes.Ldarg_3);
 					arg_index++;
 				}

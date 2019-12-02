@@ -254,7 +254,7 @@ namespace KSoft.Shell
 			{
 				kIsMonoRuntime = System.Type.GetType("Mono.Runtime") != null;
 
-				// TODO: .NET 4 upgrade:
+				// #REVIEW: .NET 4 upgrade:
 				// System.Environment.Is64BitProcess and Is64BitOperatingSystem
 				ProcessorSize size;
 				switch (IntPtr.Size) // HACK: the only way I've read on how to detect the processor size (assuming you compile with AnyCPU)
@@ -262,9 +262,8 @@ namespace KSoft.Shell
 					case 4: size = ProcessorSize.x32; break;
 					case 8: size = ProcessorSize.x64; break;
 
-					// TODO: use UnreachableCaseException
 					default:
-						throw new PlatformNotSupportedException(string.Format("Pointer Size: {0}",
+						throw new Debug.UnreachableException(string.Format("Pointer Size: {0}",
 							IntPtr.Size.ToString()));
 				}
 
@@ -279,7 +278,7 @@ namespace KSoft.Shell
 						}
 						break;
 
-					// TODO: Somehow use Environment.OSVersion.Version to detect if this is
+					// #REVIEW: Somehow use Environment.OSVersion.Version to detect if this is
 					// a Mac Intel (I think PPC was discontinued after 10.5?)
 					case PlatformID.MacOSX:
 						switch (size)
@@ -297,11 +296,10 @@ namespace KSoft.Shell
 						}
 						break;
 
-					// TODO: iPod maybe?
+					// #REVIEW: iPod maybe?
 
-					// TODO: use UnreachableCaseException
 					default:
-						throw new PlatformNotSupportedException(string.Format("PlatformID: {0}",
+						throw new Debug.UnreachableException(string.Format("PlatformID: {0}",
 							System.Environment.OSVersion.Platform.ToString()));
 				}
 			}

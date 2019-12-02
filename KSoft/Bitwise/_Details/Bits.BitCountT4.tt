@@ -30,7 +30,7 @@ namespace KSoft
 <#	var code_gen = new BitwiseT4.FastBitCountCodeGenerator(
 		this, bittable_type);
 
-		// TODO: the formula doesn't work with 16-bits correctly...not sure who's fault it is yet
+		// #TODO: the formula doesn't work with 16-bits correctly...not sure who's fault it is yet
 		if (bittable_type.Code == TypeCode.UInt16)
 			continue;
 
