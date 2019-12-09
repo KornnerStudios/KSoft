@@ -30,6 +30,11 @@ namespace KSoft
 		/// <summary>DebuggerDisplay value to use to display the object's {DebuggerDisplay} value without any quotes</summary>
 		public const string DebuggerDisplayPropNameSansQuotes = "{DebuggerDisplay,nq}";
 
+		/// <summary>When you want to declare a variable, perhaps for debugging, but only ever assign it, use this to silence compiler warnings</summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="unused"></param>
+		public static void MarkUnusedVariable<T>(ref T unused) { }
+
 		#region static EmptyArray
 		private static object[] gEmptyArray;
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
