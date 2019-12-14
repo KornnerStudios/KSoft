@@ -49,5 +49,10 @@ namespace KSoft.Debug
 
 			return sources;
 		}
+
+		public static int CompareTraceSourcesByName(TraceSource x, TraceSource y)
+		{
+			return string.CompareOrdinal(x.Name, y.Name);
+		}
 	};
 }

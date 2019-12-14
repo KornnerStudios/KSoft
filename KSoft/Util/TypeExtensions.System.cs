@@ -999,6 +999,12 @@ namespace KSoft
 
 			return sb.ToString();
 		}
+
+		public static List<T> SortAndReturn<T>(this List<T> list, Comparison<T> comparison)
+		{
+			list.Sort(comparison);
+			return list;
+		}
 		#endregion
 
 		#region Diagnostics

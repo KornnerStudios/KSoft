@@ -3,9 +3,8 @@
 namespace KSoft.Text
 {
 	public interface IHandleTextParseError
+		: IO.ICanThrowReadExceptionsWithExtraDetails
 	{
-		void ThrowReadExeception(Exception detailsException);
-
 		void LogReadExceptionWarning(Exception detailsException);
 	};
 

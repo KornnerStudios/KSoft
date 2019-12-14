@@ -92,6 +92,8 @@ namespace KSoft.IO
 		/// <summary>Throws a suitable exception to detail the position information of the last read</summary>
 		/// <param name="detailsException">The additional details to include in the thrown exception (really, the inner exception. eg, InvalidData)</param>
 		public abstract void ThrowReadException(Exception detailsException);
+		// #NOTE: this is dumb, but without doing this I get CS0535
+		void ICanThrowReadExceptionsWithExtraDetails.ThrowReadExeception(Exception detailsException) { ThrowReadException(detailsException); }
 
 		// #TODO: document that 'ref value' will equal the streamed value or 'null' after returning, depending on success
 

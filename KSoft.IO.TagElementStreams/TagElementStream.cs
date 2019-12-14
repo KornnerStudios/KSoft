@@ -21,7 +21,11 @@ namespace KSoft.IO
 	/// <typeparam name="TCursor">Type used to represent Elements</typeparam>
 	/// <typeparam name="TName">Type used to represent name values (eg, string)</typeparam>
 	[Contracts.ContractClass(typeof(TagElementStreamContract<,,>))]
-	public abstract partial class TagElementStream<TDoc, TCursor, TName> : IKSoftStream, IKSoftStreamModeable, IDisposable
+	public abstract partial class TagElementStream<TDoc, TCursor, TName>
+		: IKSoftStream
+		, IKSoftStreamModeable
+		, ICanThrowReadExceptionsWithExtraDetails
+		, IDisposable
 		where TDoc : class
 		where TCursor : class
 	{

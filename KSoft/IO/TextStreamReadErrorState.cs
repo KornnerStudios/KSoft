@@ -7,8 +7,14 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.IO
 {
+	public interface ICanThrowReadExceptionsWithExtraDetails
+	{
+		void ThrowReadExeception(Exception detailsException);
+	};
+
 	internal sealed class TextStreamReadErrorState
 		: Text.IHandleTextParseError
+		, ICanThrowReadExceptionsWithExtraDetails
 	{
 		readonly IKSoftStream mStream;
 		Text.ITextLineInfo mReadLineInfo;
