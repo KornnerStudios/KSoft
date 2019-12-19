@@ -83,11 +83,15 @@ namespace KSoft
 		static void ToStringBuilder(StringBuilder sb, int value, int radix, int startIndex, string digits)
 		{
 			// Sign support only exist for decimal and lower bases
-			if(radix <= kBase10 && value < 0)
+			if (radix <= kBase10 && value < 0)
 			{
 				sb.Append('-');
 				++startIndex;
 				value = -value; // change the value to positive
+			}
+			else if (radix > kBase10 && value < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(value), value, "Sign support only exist for decimal and lower bases");
 			}
 
 			var radix_in_word = (int)radix;
@@ -105,10 +109,14 @@ namespace KSoft
 
 			bool signed = false;
 			// Sign support only exist for decimal and lower bases
-			if(radix <= kBase10 && value < 0)
+			if (radix <= kBase10 && value < 0)
 			{
 				signed = true;
 				value = -value; // change the value to positive
+			}
+			else if (radix > kBase10 && value < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(value), value, "Sign support only exist for decimal and lower bases");
 			}
 
 			var radix_in_word = (int)radix;
@@ -238,11 +246,15 @@ namespace KSoft
 		static void ToStringBuilder(StringBuilder sb, long value, int radix, int startIndex, string digits)
 		{
 			// Sign support only exist for decimal and lower bases
-			if(radix <= kBase10 && value < 0)
+			if (radix <= kBase10 && value < 0)
 			{
 				sb.Append('-');
 				++startIndex;
 				value = -value; // change the value to positive
+			}
+			else if (radix > kBase10 && value < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(value), value, "Sign support only exist for decimal and lower bases");
 			}
 
 			var radix_in_word = (long)radix;
@@ -260,10 +272,14 @@ namespace KSoft
 
 			bool signed = false;
 			// Sign support only exist for decimal and lower bases
-			if(radix <= kBase10 && value < 0)
+			if (radix <= kBase10 && value < 0)
 			{
 				signed = true;
 				value = -value; // change the value to positive
+			}
+			else if (radix > kBase10 && value < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(value), value, "Sign support only exist for decimal and lower bases");
 			}
 
 			var radix_in_word = (long)radix;

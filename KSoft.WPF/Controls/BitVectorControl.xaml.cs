@@ -40,7 +40,8 @@ namespace KSoft.WPF.Controls
 			set { SetValue(FlagsEnumTypeProperty, value); }
 		}
 		public static readonly DependencyProperty FlagsEnumTypeProperty = DependencyProperty.Register(
-			nameof(FlagsEnumType), typeof(Type), typeof(BitVectorControl),
+			nameof(FlagsEnumType),
+			typeof(Type), typeof(BitVectorControl),
 			new PropertyMetadata(null, new PropertyChangedCallback(OnBitEnumTypePropertyChanged)),
 			Reflection.Util.IsEnumTypeOrNull);
 		#endregion
@@ -162,7 +163,7 @@ namespace KSoft.WPF.Controls
 			var ctrl = (BitVectorControl)d;
 			var source = (IBitVectorUserInterfaceData)e.NewValue;
 
-			ctrl.BitItems.Clear();
+			var newBitItems = new ObservableCollection<BitItemModel>();
 			if (source != null)
 			{
 				for (int bit_index = 0; bit_index < source.NumberOfBits; bit_index++)
@@ -172,9 +173,11 @@ namespace KSoft.WPF.Controls
 					model.DisplayName = source.GetDisplayName(bit_index);
 					model.ToolTip = source.GetDescription(bit_index);
 					model.IsVisible = source.IsVisible(bit_index);
-					ctrl.BitItems.Add(model);
+					newBitItems.Add(model);
 				}
 			}
+
+			ctrl.BitItems = newBitItems;
 		}
 
 		#region OnVectorPropertyChanged

@@ -12,26 +12,26 @@ namespace KSoft.Values
 	public enum EqualityTraits : byte
 	{
 		NotEqual = 0,
-		Equal = 1 << 0,
+		Equal = 1 << 0,			// 1
 
-		LessThan = 2 << 0,
-		GreaterThan = 2 << 1,
+		LessThan = 2 << 0,		// 2
+		GreaterThan = 2 << 1,	// 4
 
-		LessThanEqual =
+		LessThanEqual =			// 3
 			Equal | LessThan,
-		GreaterThanEqual =
+		GreaterThanEqual =		// 5
 			Equal | GreaterThan,
 
 		[System.Reflection.Obfuscation(Exclude=false)]
-		kEqualityMask =
+		kEqualityMask =			// 1
 			NotEqual | Equal,
 		[System.Reflection.Obfuscation(Exclude=false)]
-		kInequalityMask =
+		kInequalityMask =		// 6
 			LessThan | GreaterThan,
 
 		/// <remarks>3 bits</remarks>
 		[System.Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)]
-		kAll =
+		kAll =					// 7
 			kEqualityMask | kInequalityMask,
 	};
 }

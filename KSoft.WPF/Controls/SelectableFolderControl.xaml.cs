@@ -5,6 +5,8 @@ using WinForms = System.Windows.Forms;
 
 namespace KSoft.WPF.Controls
 {
+	// #TODO: use CommonOpenFileDialog (need to defer to a nuget) https://github.com/aybe/Windows-API-Code-Pack-1.1/blob/master/source/WindowsAPICodePack/Shell/CommonFileDialogs/CommonOpenFileDialog.cs
+
 	/// <summary>
 	/// Interaction logic for SelectableFolderControl.xaml
 	/// </summary>
@@ -57,6 +59,11 @@ namespace KSoft.WPF.Controls
 					}
 				}
 			}
+		}
+
+		private void OnClearClick(object sender, RoutedEventArgs e)
+		{
+			Text = "";
 		}
 	};
 }

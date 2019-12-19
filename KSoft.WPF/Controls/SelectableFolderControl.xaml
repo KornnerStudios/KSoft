@@ -7,8 +7,9 @@
              mc:Ignorable="d"
              d:DesignWidth="196">
     <DockPanel>
-        <Button Height="Auto" Margin="0" Padding="0" DockPanel.Dock="Right" Click="OnBrowseClick">Browse</Button>
-        <TextBox Height="Auto" HorizontalAlignment="Stretch" DockPanel.Dock="Right" IsReadOnly="True" IsReadOnlyCaretVisible="True"
+		<Button Height="Auto" Margin="0" Padding="0" DockPanel.Dock="Right" Click="OnClearClick">Clear</Button>
+		<Button Height="Auto" Margin="0" Padding="0" DockPanel.Dock="Right" Click="OnBrowseClick">Browse</Button>
+		<TextBox Height="Auto" HorizontalAlignment="Stretch" DockPanel.Dock="Right" IsReadOnly="True" IsReadOnlyCaretVisible="True"
            Text="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type KSoftWpfControls:SelectableFolderControl}}}" />
     </DockPanel>
 </UserControl>

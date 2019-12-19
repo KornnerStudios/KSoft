@@ -49,7 +49,10 @@
     </Compile>
     <Compile Include="Controls\SliderEx.cs" />
     <Compile Include="Converters\BooleanToTrueOrFalseStringConverter.cs" />
+    <Compile Include="Converters\IntegerEqualityTraitsTestToBooleanConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\StringIsNotNullOrEmptyConverter.cs" />
+    <Compile Include="Converters\StringIsNullOrEmptyConverter.cs" />
     <Compile Include="IBitVectorUserInterfaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

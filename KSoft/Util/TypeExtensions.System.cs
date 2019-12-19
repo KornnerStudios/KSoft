@@ -19,6 +19,20 @@ namespace KSoft
 	{
 		public const string kDefaultArrayValueSeperator = ",";
 
+		#region TypeCode
+		[Contracts.Pure]
+		public static TypeCode TryGetTypeCode(this object obj)
+		{
+			var type_code = TypeCode.Empty;
+
+			if (obj != null)
+			{
+				type_code = Type.GetTypeCode(obj.GetType());
+			}
+
+			return type_code;
+		}
+
 		[Contracts.Pure]
 		public static bool IsSigned(this TypeCode c)
 		{
@@ -34,6 +48,23 @@ namespace KSoft
 					return false;
 			}
 		}
+
+		[Contracts.Pure]
+		public static bool IsUnsigned(this TypeCode c)
+		{
+			switch (c)
+			{
+				case TypeCode.Byte:
+				case TypeCode.UInt16:
+				case TypeCode.UInt32:
+				case TypeCode.UInt64:
+					return true;
+
+				default:
+					return false;
+			}
+		}
+		#endregion
 
 		public static string ToStringInvariant(this float v, string format = null)
 		{
