@@ -13,13 +13,10 @@
   </PropertyGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\KSoft.BCL.props" />
   <ItemGroup>
-    <Reference Include="SlimMath">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VitaRootDir)shared\external_libraries\SlimMath.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
