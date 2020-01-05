@@ -42,15 +42,44 @@ namespace KSoft.WPF.Controls
 
 		private void OnBrowseClick(object sender, RoutedEventArgs e)
 		{
+			e.Handled = true;
+			OnBrowseClickUsingFolderSelectDialog(sender, e);
+		}
+
+		private void OnBrowseClickUsingFolderBrowserDialog(object sender, RoutedEventArgs e)
+		{
+			var parentWindowHandleWrapper = WindowsForms.Win32WindowHandleWrapper.FromDependencyObject(this);
+
 			using (var dlg = new WinForms.FolderBrowserDialog())
 			{
 				dlg.Description = Description;
 				dlg.SelectedPath = Text;
 				dlg.ShowNewFolderButton = true;
-				var result = dlg.ShowDialog();
+				var result = dlg.ShowDialog(parentWindowHandleWrapper);
 				if (result == WinForms.DialogResult.OK)
 				{
 					Text = dlg.SelectedPath;
+					BindingExpression be = GetBindingExpression(TextProperty);
+					if (be != null)
+					{
+						// Textbox bindings are only updated on the lostfocus event.
+						be.UpdateSource();
+					}
+				}
+			}
+		}
+
+		private void OnBrowseClickUsingFolderSelectDialog(object sender, RoutedEventArgs e)
+		{
+			var parentWindowHandleWrapper = WindowsForms.Win32WindowHandleWrapper.FromDependencyObject(this);
+
+			var dlg = new WindowsForms.FolderSelectDialog();
+			{
+				dlg.Title = Description;
+				dlg.InitialDirectory = Text;
+				if (dlg.ShowDialog(parentWindowHandleWrapper.Handle))
+				{
+					Text = dlg.FileName;
 					BindingExpression be = GetBindingExpression(TextProperty);
 					if (be != null)
 					{

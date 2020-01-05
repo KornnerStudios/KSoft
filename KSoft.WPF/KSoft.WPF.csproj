@@ -53,6 +53,8 @@
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\StringIsNotNullOrEmptyConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyConverter.cs" />
+    <Compile Include="WindowsForms\Win32WindowHandleWrapper.cs" />
+    <Compile Include="WindowsForms\FolderSelectDialog.cs" />
     <Compile Include="IBitVectorUserInterfaceData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

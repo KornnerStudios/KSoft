@@ -14,7 +14,7 @@ Specifically, you're viewing the "KSoft.BCL" (Base Class Libraries) repository. 
 
 Some are open source (eg, [KSoft.Blam][KSoftBlam], for targeting the [Halo][WikiHaloFPS] engine), some closed (eg, KSoft.XDK, for targeting multi-generation [Xbox Development Kits][WikiXDK]). This is part of the reason for not messing with sub-modules or the other such source-control mechanisms, but also because the developer writing this isn't experienced with such setups :o)
 
-[KSoftBlam]: https://bitbucket.org/KornnerStudios/ksoft.blam
+[KSoftBlam]: https://github.com/KornnerStudios/KSoft.Blam
 [WikiHaloFPS]: http://en.wikipedia.org/wiki/Halo_%28series%29#Original_trilogy
 [WikiXDK]: http://en.wikipedia.org/wiki/Xbox_Development_Kit
 
