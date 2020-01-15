@@ -38,10 +38,16 @@ namespace KSoft.Text.Test
 				io.Writer.Write(test4, encoding);
 				io.Writer.Write(test5, encoding);
 
-				if(k_output_ms) using (var fs = new System.IO.FileStream(System.IO.Path.Combine(kTestResultsPath, "StringStorageEncodingTestWrite.bin"), 
-					System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Read))
+				if (k_output_ms)
 				{
-					ms.WriteTo(fs);
+					string output_ms_path = System.IO.Path.Combine(base.TestContext.TestResultsDirectory, "StringStorageEncodingTestWrite.bin");
+					Console.WriteLine("Writing to: {0}", output_ms_path);
+
+					using (var fs = new System.IO.FileStream(output_ms_path,
+						System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Read))
+					{
+						ms.WriteTo(fs);
+					}
 				}
 
 				ms.Seek(0, System.IO.SeekOrigin.Begin);
