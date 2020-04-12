@@ -17,6 +17,78 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// Duplicated types from Microsoft.VisualBasic.Logging to compile for .NET Core
+namespace Microsoft.VisualBasic.Logging
+{
+	//
+	// Summary:
+	//     Determines what to do when the Microsoft.VisualBasic.Logging.FileLogTraceListener
+	//     object attempts to write to a log and there is less free disk space available
+	//     than specified by the Microsoft.VisualBasic.Logging.FileLogTraceListener.ReserveDiskSpace
+	//     property.
+	public enum DiskSpaceExhaustedOption
+	{
+		//
+		// Summary:
+		//     Throw an exception.
+		ThrowException = 0,
+		//
+		// Summary:
+		//     Discard log messages.
+		DiscardMessages = 1
+	};
+
+	//
+	// Summary:
+	//     Determines which predefined path the Microsoft.VisualBasic.Logging.FileLogTraceListener
+	//     class uses to write its log files.
+	public enum LogFileLocation
+	{
+		//
+		// Summary:
+		//     Use the path of the current system's temporary folder.
+		TempDirectory = 0,
+		//
+		// Summary:
+		//     Use the path for a user's application data.
+		LocalUserApplicationDirectory = 1,
+		//
+		// Summary:
+		//     Use the path for the application data that is shared among all users.
+		CommonApplicationDirectory = 2,
+		//
+		// Summary:
+		//     Use the path for the executable file that started the application.
+		ExecutableDirectory = 3,
+		//
+		// Summary:
+		//     If the string specified by Microsoft.VisualBasic.Logging.FileLogTraceListener.CustomLocation
+		//     is not empty, then use it as the path. Otherwise, use the path for a user's application
+		//     data.
+		Custom = 4
+	};
+
+	//
+	// Summary:
+	//     Determines which date to include in the names of the Microsoft.VisualBasic.Logging.FileLogTraceListener
+	//     class log files.
+	public enum LogFileCreationScheduleOption
+	{
+		//
+		// Summary:
+		//     Do not include the date in the log file name.
+		None = 0,
+		//
+		// Summary:
+		//     Include the current date in the log file name.
+		Daily = 1,
+		//
+		// Summary:
+		//     Include the first day of the current week in the log file name.
+		Weekly = 2
+	};
+}
+
 namespace KSoft.Debug
 {
 	// #NOTE: This is based on Microsoft.VisualBasic's FileLogTraceListener and TextWriterTraceListener
