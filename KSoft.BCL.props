@@ -14,6 +14,8 @@ For C#, you have to add it:
 
 		<VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">KSoft.BCL</VitaSolutionFamily>
 		<VitaUseSolutionFamilyDirs>true</VitaUseSolutionFamilyDirs>
+
+		<VitaNugetPackagesDir Condition=" '$(VitaNugetPackagesDir)' == '' ">$(MSBuildThisFileDirectory)\packages</VitaNugetPackagesDir>
 	</PropertyGroup>
 
 	<Import Project="$(VitaRootDir)KSoft\shared\config\msbuild\VitaCommon.props" />
