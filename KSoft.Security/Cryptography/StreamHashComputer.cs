@@ -20,7 +20,7 @@ namespace KSoft.Security.Cryptography
 		private byte[] mScratchBuffer;
 		private long mStartOffset;
 		private long mCount;
-		private bool mRestorePosition;
+		private readonly bool mRestorePosition;
 
 		public Stream InputStream { get { return mInputStream; } }
 		public long StartOffset { get { return mStartOffset; } }

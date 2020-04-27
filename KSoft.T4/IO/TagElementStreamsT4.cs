@@ -15,7 +15,7 @@ namespace KSoft.T4
 
 	public static class TagElementStreamsT4
 	{
-		public class OperationDefinition
+		public sealed class OperationDefinition
 		{
 			public TagElementStreamSubjectType SubjectType { get; private set; }
 			public string Name { get; private set; }
@@ -60,6 +60,11 @@ namespace KSoft.T4
 		public static void GenerateObjectPropertyStreamMethod(TextTemplating.TextTransformation ttFile,
 			TagElementStreamSubjectType subject, PrimitiveCodeDefinition codeDef, bool hasTNameParam = true)
 		{
+			if (ttFile == null)
+				throw new ArgumentNullException(nameof(ttFile));
+			if (codeDef == null)
+				throw new ArgumentNullException(nameof(codeDef));
+
 			ttFile.PushIndent("\t");
 			ttFile.PushIndent("\t");
 

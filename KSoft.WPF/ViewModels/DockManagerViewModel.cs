@@ -119,8 +119,7 @@ namespace KSoft.WPF.ViewModels
 
 			foreach (var obj in Documents)
 			{
-				var vm = obj as TViewModel;
-				if (vm == null)
+				if (!(obj is TViewModel vm))
 					continue;
 
 				viewModel = vm;

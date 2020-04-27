@@ -423,8 +423,7 @@ namespace KSoft.Values
 
 		public static bool TryParse(string input, out KGuid result)
 		{
-			Guid guid;
-			if (Guid.TryParse(input, out guid))
+			if (Guid.TryParse(input, out Guid guid))
 			{
 				result = new KGuid(guid);
 				return true;
@@ -435,8 +434,7 @@ namespace KSoft.Values
 		}
 		public static bool TryParseExact(string input, string format, out KGuid result)
 		{
-			Guid guid;
-			if (Guid.TryParseExact(input, format, out guid))
+			if (Guid.TryParseExact(input, format, out Guid guid))
 			{
 				result = new KGuid(guid);
 				return true;

@@ -30,7 +30,7 @@ namespace KSoft.IO
 		}
 
 		#region Cursor
-		public override string CursorName { get { return Cursor != null ? Cursor.Name : null; } }
+		public override string CursorName { get { return Cursor?.Name; } }
 
 		public override void InitializeAtRootElement()
 		{
@@ -131,8 +131,10 @@ namespace KSoft.IO
 			else
 				base.StreamName = streamNameOverride;
 
-			var doc = new Xml.XmlDocumentWithLocation();
-			doc.FileName = base.StreamName;
+			var doc = new Xml.XmlDocumentWithLocation
+			{
+				FileName = base.StreamName
+			};
 			Document = doc;
 			try
 			{
@@ -191,7 +193,7 @@ namespace KSoft.IO
 			Document = document;
 			Cursor = cursor;
 
-			this.StreamName = string.Format("XmlDocument:{0}", document.Name);
+			this.StreamName = string.Format(Util.InvariantCultureInfo, "XmlDocument:{0}", document.Name);
 
 			StreamMode = StreamPermissions = permissions;
 
@@ -209,12 +211,13 @@ namespace KSoft.IO
 			var root = new XmlDocument();
 			root.AppendChild(root.CreateElement(rootName));
 
-			XmlElementStream @this = new XmlElementStream();
-			@this.Document = root;
+			XmlElementStream @this = new XmlElementStream
+			{
+				Document = root,
+				Owner = owner,
+			};
 
 			@this.StreamMode = @this.StreamPermissions = System.IO.FileAccess.Write;
-
-			@this.Owner = owner;
 
 			@this.InitializeAtRootElement();
 

@@ -4,7 +4,7 @@ using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4
 {
-	public class TextT4
+	public static class TextT4
 	{
 		const int kMaxDecimal = 10;
 		const int kMaxHexidecimal = 16;
@@ -33,11 +33,11 @@ namespace KSoft.T4
 
 		public abstract class CharLookupCodeGeneratorBase
 		{
-			protected TextTemplating.TextTransformation mFile;
+			protected TextTemplating.TextTransformation File { get; private set; }
 
 			protected CharLookupCodeGeneratorBase(TextTemplating.TextTransformation ttFile)
 			{
-				mFile = ttFile;
+				File = ttFile;
 			}
 
 			protected abstract string TableName { get; }
@@ -72,54 +72,54 @@ namespace KSoft.T4
 					if (digitIndex == -1)
 						digitIndex = 0;
 
-					return string.Format("0x{0},",
-						digitIndex.ToString("X"));
+					return string.Format(UtilT4.InvariantCultureInfo, "0x{0},",
+						digitIndex.ToString("X", UtilT4.InvariantCultureInfo));
 				}
 
-				return string.Format("{0}, ", digitIndex);
+				return string.Format(UtilT4.InvariantCultureInfo, "{0}, ", digitIndex);
 			}
 
 			void WriteColumnHeader()
 			{
-				mFile.Write("//\t");
+				File.Write("//\t");
 				for (int x = 0; x < kMaxHexidecimal; x++)
-					mFile.Write("{0}{1}", x.ToString("X"), RowHeaderTabString);
-				mFile.WriteLine("");
+					File.Write("{0}{1}", x.ToString("X", UtilT4.InvariantCultureInfo), RowHeaderTabString);
+				File.WriteLine("");
 			}
 			void WriteColumnHeader_Numbers()
 			{
-				mFile.Write("//\t");
+				File.Write("//\t");
 				for (int x = 0; x < kMaxDecimal; x++)
-					mFile.Write("{0}{1}", x, RowHeaderTabString);
-				mFile.WriteLine("");
+					File.Write("{0}{1}", x, RowHeaderTabString);
+				File.WriteLine("");
 			}
 			void WriteColumnHeader_A_to_O(bool uppercase)
 			{
 				char min = ToCharCaseInvariant('A', uppercase);
 				char max = ToCharCaseInvariant('O', uppercase);
 
-				mFile.Write("//\t");
+				File.Write("//\t");
 				for (char x = min; x <= max; x++)
-					mFile.Write("{0}{1}", x, RowHeaderTabString);
-				mFile.WriteLine("");
+					File.Write("{0}{1}", x, RowHeaderTabString);
+				File.WriteLine("");
 			}
 			void WriteColumnHeader_P_to_Z(bool uppercase)
 			{
 				char min = ToCharCaseInvariant('P', uppercase);
 				char max = ToCharCaseInvariant('Z', uppercase);
 
-				mFile.Write("//\t");
+				File.Write("//\t");
 				for (char x = min; x <= max; x++)
-					mFile.Write("{0}{1}", x, RowHeaderTabString);
-				mFile.WriteLine("");
+					File.Write("{0}{1}", x, RowHeaderTabString);
+				File.WriteLine("");
 			}
 			public void Generate()
 			{
-				using (mFile.EnterCodeBlock())
-				using (mFile.EnterCodeBlock())
+				using (File.EnterCodeBlock())
+				using (File.EnterCodeBlock())
 				{
 					WriteXmlDoc();
-					mFile.WriteLine("static readonly {0}[] {1}{2} = {{",
+					File.WriteLine("static readonly {0}[] {1}{2} = {{",
 						TableElementType.Keyword,
 						TableName,
 						TableNamePostfix);
@@ -140,31 +140,31 @@ namespace KSoft.T4
 					#endregion
 
 					if (column == 0)
-						mFile.PushIndent("\t");
+						File.PushIndent("\t");
 
 					if (LookupUsesCharByte(x))
 					{
 						digit_index = OverrideDigitIndex(x, digit_index);
 
-						mFile.Write(DigitToElementText(digit_index++));
+						File.Write(DigitToElementText(digit_index++));
 					}
 					else
-						mFile.Write(DigitToElementText(-1));
+						File.Write(DigitToElementText(-1));
 
 					if (column++ == kMaxHexidecimal-1)
 					{
-						mFile.PopIndent();
+						File.PopIndent();
 
-						mFile.WriteLine("// {0}", row.ToString("X"));
+						File.WriteLine("// {0}", row.ToString("X", UtilT4.InvariantCultureInfo));
 						column = 0;
 						row++;
 					}
 				}
 
-				using (mFile.EnterCodeBlock())
-				using (mFile.EnterCodeBlock())
+				using (File.EnterCodeBlock())
+				using (File.EnterCodeBlock())
 				{
-					mFile.WriteLine("};");
+					File.WriteLine("};");
 				}
 			}
 		};
@@ -182,8 +182,8 @@ namespace KSoft.T4
 
 			protected override void WriteXmlDoc()
 			{
-				mFile.WriteXmlDocSummary("Latin-1 lookup table for converting char to a digit");
-				mFile.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
+				File.WriteXmlDocSummary("Latin-1 lookup table for converting char to a digit");
+				File.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
 			}
 		};
 		public sealed class CharToByteLookupTable36CodeGenerator
@@ -194,7 +194,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 36.ToString(); } }
+			protected override string TableNamePostfix { get { return 36.ToString(UtilT4.InvariantCultureInfo); } }
 
 			protected override int OverrideDigitIndex(int charByte, int digitIndex)
 			{
@@ -212,7 +212,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 62.ToString(); } }
+			protected override string TableNamePostfix { get { return 62.ToString(UtilT4.InvariantCultureInfo); } }
 		};
 		public sealed class CharToByteLookupTable16CodeGenerator
 			: CharToByteLookupTableCodeGeneratorBase
@@ -222,7 +222,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 16.ToString(); } }
+			protected override string TableNamePostfix { get { return 16.ToString(UtilT4.InvariantCultureInfo); } }
 
 			protected override bool LookupUsesCharByte(int charByte)
 			{
@@ -252,15 +252,15 @@ namespace KSoft.T4
 
 			protected override void WriteXmlDoc()
 			{
-				mFile.WriteXmlDocSummary("Latin-1 lookup table for testing if char is a digit");
-				mFile.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
+				File.WriteXmlDocSummary("Latin-1 lookup table for testing if char is a digit");
+				File.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
 			}
 
 			protected override string DigitToElementText(int digitIndex)
 			{
 				bool is_digit = digitIndex >= 0;
 
-				return string.Format("{0},\t", is_digit.ToValueKeyword());
+				return string.Format(UtilT4.InvariantCultureInfo, "{0},\t", is_digit.ToValueKeyword());
 			}
 		};
 		public sealed class CharIsDigitLookupTable62CodeGenerator
@@ -271,7 +271,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 62.ToString(); } }
+			protected override string TableNamePostfix { get { return 62.ToString(UtilT4.InvariantCultureInfo); } }
 		};
 		public sealed class CharIsDigitLookupTable16CodeGenerator
 			: CharIsDigitLookupTableCodeGeneratorBase
@@ -281,7 +281,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 16.ToString(); } }
+			protected override string TableNamePostfix { get { return 16.ToString(UtilT4.InvariantCultureInfo); } }
 
 			protected override bool LookupUsesCharByte(int charByte)
 			{
@@ -305,13 +305,13 @@ namespace KSoft.T4
 
 			protected override void WriteXmlDoc()
 			{
-				mFile.WriteXmlDocSummary("Latin-1 lookup bitvector for testing if char is a digit");
-				mFile.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
+				File.WriteXmlDocSummary("Latin-1 lookup bitvector for testing if char is a digit");
+				File.WriteXmlDocRemarks("Supports up to base {0}", TableNamePostfix);
 			}
 
 			protected virtual string BitArrayElementToElementText(byte element)
 			{
-				return string.Format("{0},\t", element.ToString("X2"));
+				return string.Format(UtilT4.InvariantCultureInfo, "{0},\t", element.ToString("X2", UtilT4.InvariantCultureInfo));
 			}
 
 			static int GetBitArrayLength(int bitLength, int wordBitSize)
@@ -339,11 +339,11 @@ namespace KSoft.T4
 			}
 			public void Generate()
 			{
-				using (mFile.EnterCodeBlock())
-				using (mFile.EnterCodeBlock())
+				using (File.EnterCodeBlock())
+				using (File.EnterCodeBlock())
 				{
 					WriteXmlDoc();
-					mFile.WriteLine("static readonly {0}[] {1}{2} = {{",
+					File.WriteLine("static readonly {0}[] {1}{2} = {{",
 						kVectorElementDef.Keyword,
 						TableName,
 						TableNamePostfix);
@@ -358,24 +358,24 @@ namespace KSoft.T4
 					x++)
 				{
 					if (column == 0)
-						mFile.PushIndent("\t");
+						File.PushIndent("\t");
 
-					mFile.Write(BitArrayElementToElementText(bitvector[x]));
+					File.Write(BitArrayElementToElementText(bitvector[x]));
 
 					if (column++ == kMaxHexidecimal-1)
 					{
-						mFile.PopIndent();
+						File.PopIndent();
 
-						mFile.WriteLine("// {0}", row.ToString("X"));
+						File.WriteLine("// {0}", row.ToString("X", UtilT4.InvariantCultureInfo));
 						column = 0;
 						row++;
 					}
 				}
 
-				using (mFile.EnterCodeBlock())
-				using (mFile.EnterCodeBlock())
+				using (File.EnterCodeBlock())
+				using (File.EnterCodeBlock())
 				{
-					mFile.WriteLine("};");
+					File.WriteLine("};");
 				}
 			}
 		};

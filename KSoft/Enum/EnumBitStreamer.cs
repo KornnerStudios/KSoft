@@ -37,7 +37,7 @@ namespace KSoft.IO
 
 				if (!EnumUtils.TypeIsSupported(tc))
 				{
-					var message = string.Format("{0} is an invalid stream type", StreamType);
+					var message = string.Format(Util.InvariantCultureInfo, "{0} is an invalid stream type", StreamType);
 
 					throw new NotSupportedException(message);
 				}
@@ -278,8 +278,7 @@ namespace KSoft.IO
 		/// <returns>Value read from the stream</returns>
 		public static TEnum Read(IO.BitStream s, int bitCount)
 		{
-			TEnum value;
-			kRead(s, out value, bitCount);
+			kRead(s, out TEnum value, bitCount);
 
 			return value;
 		}

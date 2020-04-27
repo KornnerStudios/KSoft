@@ -32,8 +32,7 @@ namespace KSoft.Bitwise
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
 
-				int size_in_bytes, size_in_codes;
-				return SwapData(buffer, startIndex, out size_in_bytes, out size_in_codes);
+				return SwapData(buffer, startIndex, out int size_in_bytes, out int size_in_codes);
 			}
 
 			public int SwapData(byte[] buffer, int startIndex,

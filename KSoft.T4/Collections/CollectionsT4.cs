@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4
@@ -24,8 +23,8 @@ namespace KSoft.T4
 
 		public sealed class BitStateDef
 		{
-			public string ApiName;
-			public bool Value;
+			public string ApiName { get; private set; }
+			public bool Value { get; private set; }
 
 			public BitStateDef(string name, bool value)
 			{
@@ -35,11 +34,11 @@ namespace KSoft.T4
 
 			// name to use in XMLdoc contents
 			public string DocName { get {
-				return ApiName.ToLower();
+				return ApiName.ToLower(UtilT4.InvariantCultureInfo);
 			} }
 			// C# bool keyword
 			public string ValueKeyword { get {
-				return Value.ToString().ToLower();
+				return Value.ToString(UtilT4.InvariantCultureInfo).ToLower(UtilT4.InvariantCultureInfo);
 			} }
 			public string BinaryName { get {
 				return Value
@@ -48,7 +47,7 @@ namespace KSoft.T4
 			} }
 
 			public string DocNameVerbose { get {
-				return string.Format("{0} ({1})", BinaryName, DocName);
+				return string.Format(UtilT4.InvariantCultureInfo, "{0} ({1})", BinaryName, DocName);
 			} }
 		};
 		public static IEnumerable<BitStateDef> BitStateDefs { get {

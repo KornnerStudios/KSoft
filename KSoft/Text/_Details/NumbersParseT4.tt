@@ -222,12 +222,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<<#= prim_keyword_nullable #>[]> kEmptyResult =
-				new Lazy<<#= prim_keyword_nullable #>[]>(() => new <#= prim_keyword_nullable #>[0]);
-
-			protected override IEnumerable<<#= prim_keyword_nullable #>> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<<#= prim_keyword_nullable #>> EmptyResult => Array.Empty<<#= prim_keyword_nullable #>>();
 
 			protected <#= prim_keyword_nullable #> ProcessItem(int start, int length)
 			{

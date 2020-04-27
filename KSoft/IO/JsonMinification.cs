@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -33,6 +34,8 @@ namespace DouglasCrockford.JsMin
 	/// <summary>
 	/// The exception that is thrown when a minification of asset code by JSMin is failed
 	/// </summary>
+	[SuppressMessage("Microsoft.Design", "CA1032")]
+	[SuppressMessage("Microsoft.Design", "CA2237")]
 	public sealed class JsMinificationException : Exception
 	{
 		/// <summary>
@@ -60,6 +63,7 @@ namespace DouglasCrockford.JsMin
 	/// The JavaScript Minifier
 	/// </summary>
 	public sealed class JsMinifier
+		: IDisposable
 	{
 		/// <summary>
 		/// Average compression ratio
@@ -83,6 +87,12 @@ namespace DouglasCrockford.JsMin
 		/// </summary>
 		private readonly object _minificationSynchronizer = new object();
 
+
+		public void Dispose()
+		{
+			KSoft.Util.DisposeAndNull(ref _reader);
+			KSoft.Util.DisposeAndNull(ref _writer);
+		}
 
 		/// <summary>
 		/// Removes a comments and unnecessary whitespace from JavaScript code
@@ -127,11 +137,8 @@ namespace DouglasCrockford.JsMin
 				}
 				finally
 				{
-					_reader.Dispose();
-					_reader = null;
-
-					_writer.Dispose();
-					_writer = null;
+					KSoft.Util.DisposeAndNull(ref _reader);
+					KSoft.Util.DisposeAndNull(ref _writer);
 
 					_sb.Clear();
 				}

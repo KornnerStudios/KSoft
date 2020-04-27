@@ -13,7 +13,7 @@ namespace KSoft.Memory.Strings
 		public Values.PtrHandle BaseAddress { get; private set; }
 
 		#region AddressSize
-		Shell.ProcessorSize mAddressSize;
+		readonly Shell.ProcessorSize mAddressSize;
 		/// <summary>Size of addresses used for referencing serialized strings</summary>
 		public Shell.ProcessorSize AddressSize { get { return mAddressSize; } }
 		#endregion

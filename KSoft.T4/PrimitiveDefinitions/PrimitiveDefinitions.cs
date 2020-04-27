@@ -3,16 +3,14 @@ using System.Collections.Generic;
 
 namespace KSoft.T4
 {
-	public class PrimitiveDefinitions
+	public static class PrimitiveDefinitions
 	{
 		class BooleanCodeDefinition
 			: PrimitiveCodeDefinition
 		{
 			internal BooleanCodeDefinition() : base("bool", TypeCode.Boolean) { }
 
-			public override int SizeOfInBytes { get {
-				return sizeof(bool);
-			} }
+			public override int SizeOfInBytes => sizeof(bool);
 		};
 
 		class CharCodeDefinition
@@ -20,9 +18,7 @@ namespace KSoft.T4
 		{
 			internal CharCodeDefinition() : base("char", TypeCode.Char) { }
 
-			public override int SizeOfInBytes { get {
-				return sizeof(char);
-			} }
+			public override int SizeOfInBytes => sizeof(char);
 		};
 
 		class StringCodeDefinition
@@ -30,9 +26,7 @@ namespace KSoft.T4
 		{
 			internal StringCodeDefinition() : base("string", TypeCode.String) { }
 
-			public override int SizeOfInBytes { get {
-				return -1;
-			} }
+			public override int SizeOfInBytes => -1;
 		};
 
 		class KGuidCodeDefinition
@@ -40,9 +34,7 @@ namespace KSoft.T4
 		{
 			internal KGuidCodeDefinition() : base("Values.KGuid", TypeCode.Object) { }
 
-			public override int SizeOfInBytes { get {
-				return 16;
-			} }
+			public override int SizeOfInBytes => 16;
 		};
 
 		#region Individual definitions

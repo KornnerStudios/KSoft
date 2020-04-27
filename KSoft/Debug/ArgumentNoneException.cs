@@ -2,6 +2,7 @@
 namespace KSoft
 {
 	/// <summary>Exception thrown when a handle value is NONE where it is not a supported case</summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
 	public class ArgumentNoneException : System.ArgumentException
 	{
 		public ArgumentNoneException() : base()

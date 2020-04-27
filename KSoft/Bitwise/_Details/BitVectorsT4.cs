@@ -629,8 +629,7 @@ namespace KSoft.Collections
 			if (string.IsNullOrWhiteSpace(flagStr))
 				return null;
 
-			TEnum flag;
-			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out flag))
+			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out TEnum flag))
 			{
 				if (errorsOutput != null)
 				{
@@ -1277,8 +1276,7 @@ namespace KSoft.Collections
 			if (string.IsNullOrWhiteSpace(flagStr))
 				return null;
 
-			TEnum flag;
-			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out flag))
+			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out TEnum flag))
 			{
 				if (errorsOutput != null)
 				{

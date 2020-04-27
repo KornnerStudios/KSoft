@@ -195,8 +195,10 @@ namespace KSoft
 			var flattenedExceptions = new List<Exception>();
 
 			// Create a list to remember all aggregates to be flattened, this will be accessed like a FIFO queue
-			var exceptionsToFlatten = new List<AggregateException>();
-			exceptionsToFlatten.Add(e);
+			var exceptionsToFlatten = new List<AggregateException>
+			{
+				e
+			};
 			int nDequeueIndex = 0;
 
 			// Continue removing and recursively flattening exceptions, until there are no more.
@@ -214,11 +216,9 @@ namespace KSoft
 						continue;
 					}
 
-					var currentInnerAsAggregate = currentInnerException as AggregateException;
-
 					// If this exception is an aggregate, keep it around for later.  Otherwise,
 					// simply add it to the list of flattened exceptions to be returned.
-					if (currentInnerAsAggregate != null)
+					if (currentInnerException is AggregateException currentInnerAsAggregate)
 					{
 						exceptionsToFlatten.Add(currentInnerAsAggregate);
 					}
@@ -247,8 +247,7 @@ namespace KSoft
 			if (e == null)
 				return null;
 
-			var ae = e as AggregateException;
-			if (ae == null)
+			if (!(e is AggregateException ae))
 				return e.Message;
 
 			var sb = new System.Text.StringBuilder();
@@ -267,8 +266,7 @@ namespace KSoft
 			if (e == null)
 				return null;
 
-			var ae = e as AggregateException;
-			if (ae == null)
+			if (!(e is AggregateException ae))
 				return e.ToString();
 
 			var sb = new System.Text.StringBuilder();
@@ -893,8 +891,7 @@ namespace KSoft
 				// arbitrary add threshold for List optimization
 				if (add_count > 16)
 				{
-					var list = collection as List<T>;
-					if (list != null && list.Capacity < requiredCount)
+					if (collection is List<T> list && list.Capacity < requiredCount)
 					{
 						list.Capacity += add_count;
 					}
@@ -948,8 +945,7 @@ namespace KSoft
 		}
 		[Contracts.Pure]
 		public static string ToConcatBinaryString(this IEnumerable<bool> e
-			, string valueSeperator = kDefaultArrayValueSeperator
-			, string format = null)
+			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -969,8 +965,7 @@ namespace KSoft
 		}
 		[Contracts.Pure]
 		public static string ToConcatLowerString(this IEnumerable<bool> e
-			, string valueSeperator = kDefaultArrayValueSeperator
-			, string format = null)
+			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -1124,9 +1119,9 @@ namespace KSoft
 			string result;
 
 			if (filePos <= uint.MaxValue)
-				result = filePos.ToString("X8");
+				result = filePos.ToString("X8", Util.InvariantCultureInfo);
 			else
-				result = filePos.ToString("X16");
+				result = filePos.ToString("X16", Util.InvariantCultureInfo);
 
 			return result;
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -10,15 +11,19 @@ namespace KSoft.Bitwise
 {
 	/// <summary>Pre-defined byte swapping codes</summary>
 	[EnumBitEncoderDisable]
+	[SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	public enum BsCode : short
 	{
 		/// <summary>Byte-swap code for 8 bits of data</summary>
 		Byte = 1,
 		/// <summary>Byte-swap code for 16 bits of data</summary>
+		[SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		Int16 = -2,
 		/// <summary>Byte-swap code for 32 bits of data</summary>
+		[SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		Int32 = -4,
 		/// <summary>Byte-swap code for 64 bits of data</summary>
+		[SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		Int64 = -8,
 
 		/// <summary>

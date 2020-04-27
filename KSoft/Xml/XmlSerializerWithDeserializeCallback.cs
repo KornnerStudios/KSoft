@@ -56,6 +56,7 @@ namespace KSoft.Xml
         }
 		#endregion
 
+#if false // CA5369:UseXMLReaderForDeserialize
 		public new object Deserialize(Stream stream)
         {
             var result = base.Deserialize(stream);
@@ -73,8 +74,9 @@ namespace KSoft.Xml
 
             return result;
         }
+#endif
 
-        public new object Deserialize(XmlReader xmlReader)
+		public new object Deserialize(XmlReader xmlReader)
         {
             var result = base.Deserialize(xmlReader);
 
@@ -83,6 +85,7 @@ namespace KSoft.Xml
             return result;
         }
 
+#if false // CA5369:UseXMLReaderForDeserialize
         public new object Deserialize(XmlSerializationReader reader)
         {
             var result = base.Deserialize(reader);
@@ -91,8 +94,9 @@ namespace KSoft.Xml
 
             return result;
         }
+#endif
 
-        public new object Deserialize(XmlReader xmlReader, string encodingStyle)
+		public new object Deserialize(XmlReader xmlReader, string encodingStyle)
         {
             var result = base.Deserialize(xmlReader, encodingStyle);
 
@@ -128,13 +132,11 @@ namespace KSoft.Xml
 			if (deserializedObjectType.IsValueType)
 				return;
 
-            var deserializationCallback = deserializedObject as IDeserializationCallback;
-
-            if (deserializationCallback != null)
-            {
-                deserializationCallback.OnDeserialization(this);
+			if (deserializedObject is IDeserializationCallback deserializationCallback)
+			{
+				deserializationCallback.OnDeserialization(this);
 				deserializedObject = deserializationCallback;
-            }
+			}
 
 			if (DontRecursivelyCheckForDeserializationCallbacks)
 				return;
@@ -150,16 +152,15 @@ namespace KSoft.Xml
 					if (!interfaceType.GenericTypeArguments[0].IsValueType)
 						continue;
 
-                    var collection = propertyInfo.GetValue(deserializedObject) as IEnumerable;
 
-                    if (collection != null)
-                    {
-                        foreach (var item in collection)
-                        {
-                            CheckForDeserializationCallbacks(item);
-                        }
-                    }
-                }
+					if (propertyInfo.GetValue(deserializedObject) is IEnumerable collection)
+					{
+						foreach (var item in collection)
+						{
+							CheckForDeserializationCallbacks(item);
+						}
+					}
+				}
                 else
                 {
                     CheckForDeserializationCallbacks(propertyInfo.GetValue(deserializedObject));

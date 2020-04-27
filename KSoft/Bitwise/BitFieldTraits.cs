@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -8,6 +9,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.Bitwise
 {
 	/// <summary>Represents the info needed to compose a specific bit-field</summary>
+	[SuppressMessage("Microsoft.Design", "CA1815")]
 	public struct BitFieldTraits
 	{
 		public const int kMaxBitCount = Bits.kInt64BitCount;

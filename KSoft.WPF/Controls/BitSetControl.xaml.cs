@@ -168,11 +168,13 @@ namespace KSoft.WPF.Controls
 			{
 				for (int bit_index = 0; bit_index < source.NumberOfBits; bit_index++)
 				{
-					var model = new BitItemModel();
-					model.BitIndex = bit_index;
-					model.DisplayName = source.GetDisplayName(bit_index);
-					model.ToolTip = source.GetDescription(bit_index);
-					model.IsVisible = source.IsVisible(bit_index);
+					var model = new BitItemModel
+					{
+						BitIndex = bit_index,
+						DisplayName = source.GetDisplayName(bit_index),
+						ToolTip = source.GetDescription(bit_index),
+						IsVisible = source.IsVisible(bit_index)
+					};
 					newBitItems.Add(model);
 				}
 			}

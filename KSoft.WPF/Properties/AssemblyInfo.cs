@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -46,3 +47,7 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.*")]
+
+[assembly: SuppressMessage("Style",
+	"IDE1005:Delegate invocation can be simplified.",
+	Justification = "Can't breakpoint simplification")]

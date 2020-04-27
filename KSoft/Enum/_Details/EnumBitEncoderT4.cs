@@ -48,7 +48,7 @@ namespace KSoft
 			var mnames = Reflection.EnumUtil<TEnum>.Names;
 
 			#region is_type_signed
-			Func<bool> func_is_type_signed = delegate()
+			bool func_is_type_signed()
 			{
 				switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
 				{
@@ -58,7 +58,7 @@ namespace KSoft
 						return true;
 					default: return false;
 				}
-			};
+			}
 			bool is_type_signed = func_is_type_signed();
 			#endregion
 
@@ -70,13 +70,18 @@ namespace KSoft
 				// Validate members when the underlying type is signed
 				if (!Reflection.EnumUtil<TEnum>.IsFlags && is_type_signed)
 				{
-					int int_value = Convert.ToInt32(mvalues.GetValue(x));
+					int int_value = Convert.ToInt32(mvalues.GetValue(x), Util.InvariantCultureInfo);
 
 					if (int_value < TypeExtensions.kNoneInt32)
-						throw new ArgumentOutOfRangeException("TEnum",
-							string.Format("{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+					{
+						throw new ArgumentOutOfRangeException(nameof(TEnum),
+							string.Format(Util.InvariantCultureInfo,
+								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+					}
 					else if (int_value.IsNone())
+					{
 						hasNone = mvalue_is_none = true;
+					}
 				}
 
 				ProcessMembers_DebugCheckMemberName(t, Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]);
@@ -84,7 +89,7 @@ namespace KSoft
 				if (mvalue_is_none) // don't perform greatest value checking on NONE values
 					continue;
 
-				temp = Convert.ToUInt32(mvalues.GetValue(x));
+				temp = Convert.ToUInt32(mvalues.GetValue(x), Util.InvariantCultureInfo);
 				// Base max_value off the predetermined member name first
 				if (IsMaxMemberName(Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]))
 				{
@@ -391,7 +396,7 @@ namespace KSoft
 			var mnames = Reflection.EnumUtil<TEnum>.Names;
 
 			#region is_type_signed
-			Func<bool> func_is_type_signed = delegate()
+			bool func_is_type_signed()
 			{
 				switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
 				{
@@ -402,7 +407,7 @@ namespace KSoft
 						return true;
 					default: return false;
 				}
-			};
+			}
 			bool is_type_signed = func_is_type_signed();
 			#endregion
 
@@ -414,13 +419,18 @@ namespace KSoft
 				// Validate members when the underlying type is signed
 				if (!Reflection.EnumUtil<TEnum>.IsFlags && is_type_signed)
 				{
-					long int_value = Convert.ToInt64(mvalues.GetValue(x));
+					long int_value = Convert.ToInt64(mvalues.GetValue(x), Util.InvariantCultureInfo);
 
 					if (int_value < TypeExtensions.kNoneInt64)
-						throw new ArgumentOutOfRangeException("TEnum",
-							string.Format("{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+					{
+						throw new ArgumentOutOfRangeException(nameof(TEnum),
+							string.Format(Util.InvariantCultureInfo,
+								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+					}
 					else if (int_value.IsNone())
+					{
 						hasNone = mvalue_is_none = true;
+					}
 				}
 
 				ProcessMembers_DebugCheckMemberName(t, Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]);
@@ -428,7 +438,7 @@ namespace KSoft
 				if (mvalue_is_none) // don't perform greatest value checking on NONE values
 					continue;
 
-				temp = Convert.ToUInt64(mvalues.GetValue(x));
+				temp = Convert.ToUInt64(mvalues.GetValue(x), Util.InvariantCultureInfo);
 				// Base max_value off the predetermined member name first
 				if (IsMaxMemberName(Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]))
 				{

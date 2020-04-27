@@ -299,20 +299,16 @@ namespace KSoft.Bitwise.Test
 		[TestMethod]
 		public void Bits_TestBitmaskLookUpTableGenerators()
 		{
-			byte[] generated8;
-			Bits.BitmaskLookUpTableGenerate(Bits.kByteBitCount, out generated8);
+			Bits.BitmaskLookUpTableGenerate(Bits.kByteBitCount, out byte[] generated8);
 			Assert.IsTrue(generated8.EqualsArray(kBitmaskLookup8));
 
-			ushort[] generated16;
-			Bits.BitmaskLookUpTableGenerate(Bits.kInt16BitCount, out generated16);
+			Bits.BitmaskLookUpTableGenerate(Bits.kInt16BitCount, out ushort[] generated16);
 			Assert.IsTrue(generated16.EqualsArray(kBitmaskLookup16));
 
-			uint[] generated32;
-			Bits.BitmaskLookUpTableGenerate(Bits.kInt32BitCount, out generated32);
+			Bits.BitmaskLookUpTableGenerate(Bits.kInt32BitCount, out uint[] generated32);
 			Assert.IsTrue(generated32.EqualsArray(kBitmaskLookup32));
 
-			ulong[] generated64;
-			Bits.BitmaskLookUpTableGenerate(Bits.kInt64BitCount, out generated64);
+			Bits.BitmaskLookUpTableGenerate(Bits.kInt64BitCount, out ulong[] generated64);
 			Assert.IsTrue(generated64.EqualsArray(kBitmaskLookup64));
 
 		}
@@ -347,11 +343,10 @@ namespace KSoft.Bitwise.Test
 
 			#region 64-bit
 			long i64_max_value;
-			int i64_bit_count;
 			ulong i64_bit_mask;
 
 			i64_max_value = long.MaxValue >> 1;
-			i64_bit_mask = Bits.GetNoneableEncodingTraits(i64_max_value, out i64_bit_count);
+			i64_bit_mask = Bits.GetNoneableEncodingTraits(i64_max_value, out int i64_bit_count);
 			Assert.AreEqual(62, i64_bit_count);
 			Assert.AreEqual(0x3FFFFFFFFFFFFFFFUL, i64_bit_mask);
 
@@ -374,9 +369,7 @@ namespace KSoft.Bitwise.Test
 		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
 		{
-			int bit_count;
-
-			Bits.GetNoneableEncodingTraits(0, out bit_count);
+			Bits.GetNoneableEncodingTraits(0, out int bit_count);
 		}
 
 		[TestMethod]
@@ -384,9 +377,7 @@ namespace KSoft.Bitwise.Test
 		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
 		{
-			int bit_count;
-
-			Bits.GetNoneableEncodingTraits(int.MaxValue, out bit_count);
+			Bits.GetNoneableEncodingTraits(int.MaxValue, out int bit_count);
 		}
 		#endregion
 
@@ -410,15 +401,22 @@ namespace KSoft.Bitwise.Test
 		[TestMethod]
 		public void Union_Test()
 		{
-			var t = new TestUnion();
-
-			t.Data1 = new TestUnionData1();
-			t.Data1.Str = "";
+			var t = new TestUnion
+			{
+				Data1 = new TestUnionData1()
+				{
+					Str = ""
+				}
+			};
 			Console.WriteLine(t.Data2.Index);
 
-			var t2 = new TestUnion();
-			t2.Data2 = new TestUnionData2();
-			t2.Data2.Index = -1;
+			var t2 = new TestUnion
+			{
+				Data2 = new TestUnionData2
+				{
+					Index = -1
+				}
+			};
 			Console.WriteLine(t2.Data1);
 		}
 	};

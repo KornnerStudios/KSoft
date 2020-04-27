@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -26,6 +27,7 @@ namespace KSoft.Values
 	/// <remarks>If you use the parameterless ctor, the pointer will be implicitly 32-bit</remarks>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size = PtrHandle.kSizeOf)]
 //	[System.ComponentModel.TypeConverter(typeof(PtrHandleConverter))]
+	[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 	public struct PtrHandle
 		: IO.IEndianStreamable
 		, IComparer<PtrHandle>, IComparable<PtrHandle>
@@ -70,6 +72,7 @@ namespace KSoft.Values
 		ulong Handle;
 		/// <summary>Extra Pointer info field space</summary>
 		[System.Runtime.InteropServices.FieldOffset(8)]
+		[SuppressMessage("Style", "IDE0044:Delegate invocation can be simplified.")]
 		ulong Info;
 
 		/// <summary>Mutable 32-bit Address</summary>
@@ -240,9 +243,8 @@ namespace KSoft.Values
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is PtrHandle)
+			if (obj is PtrHandle p)
 			{
-				PtrHandle p = (PtrHandle)obj;
 				return this == p;
 			}
 

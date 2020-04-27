@@ -139,8 +139,8 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		int System.Collections.IComparer.Compare(object x, object y)
 		{
-			Processor _x; Debug.TypeCheck.CastValue(x, out _x);
-			Processor _y; Debug.TypeCheck.CastValue(y, out _y);
+			Debug.TypeCheck.CastValue(x, out Processor _x);
+			Debug.TypeCheck.CastValue(y, out Processor _y);
 
 			return Processor.StaticCompare(_x, _y);
 		}
@@ -159,7 +159,7 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		int IComparable.CompareTo(object obj)
 		{
-			Processor _obj; Debug.TypeCheck.CastValue(obj, out _obj);
+			Debug.TypeCheck.CastValue(obj, out Processor _obj);
 
 			return Processor.StaticCompare(this, _obj);
 		}

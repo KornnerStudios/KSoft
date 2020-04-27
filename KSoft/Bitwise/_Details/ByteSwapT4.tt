@@ -20,8 +20,8 @@ namespace KSoft.Bitwise
 	var const_keyword= bittable_type.GetConstantKeyword();
 	var byte_swap_gen = bittable_type.NewByteSwapCodeGenerator(this);
 	var byte_access_gen = bittable_type.NewByteAccessCodeGenerator(this);
-	var overload_suffix_for_uint = bittable_type.GetOverloadSuffixForUnnaturalWord(signed: false);
-	var overload_suffix_for_int = bittable_type.GetOverloadSuffixForUnnaturalWord(signed: true);
+	var overload_suffix_for_uint = bittable_type.GetOverloadSuffixForUnnaturalWord(isSigned: false);
+	var overload_suffix_for_int = bittable_type.GetOverloadSuffixForUnnaturalWord(isSigned: true);
 #>
 <# if (bittable_type.IsUnnaturalWord) { #>
 		public const int kSizeOfU<#= const_keyword #> = sizeof(byte) * <#= bittable_type.SizeOfInBytes #>;
@@ -110,7 +110,7 @@ namespace KSoft.Bitwise
 			<#= bittable_type.SignedKeyword #> value)
 		{
 			return
-<# byte_swap_gen.Generate(signed: true); #>
+<# byte_swap_gen.Generate(isSigned: true); #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
 		/// <param name="value"></param>
@@ -118,7 +118,7 @@ namespace KSoft.Bitwise
 			ref <#= bittable_type.SignedKeyword #> value)
 		{
 			value =
-<# byte_swap_gen.Generate(signed: true); #>
+<# byte_swap_gen.Generate(isSigned: true); #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>

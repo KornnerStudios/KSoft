@@ -104,24 +104,20 @@ namespace KSoft.WPF.Controls
 		private void OnBitChanged(BitItemModel bitModel, bool newValue)
 		{
 			var bit_vector = BitVector;
-			if (bit_vector is Collections.BitVector32)
+			if (bit_vector is Collections.BitVector32 vector32)
 			{
-				var vector = (Collections.BitVector32)bit_vector;
-
-				if (vector[bitModel.BitIndex] != newValue)
+				if (vector32[bitModel.BitIndex] != newValue)
 				{
-					vector[bitModel.BitIndex] = newValue;
-					BitVector = vector;
+					vector32[bitModel.BitIndex] = newValue;
+					BitVector = vector32;
 				}
 			}
-			else if (bit_vector is Collections.BitVector64)
+			else if (bit_vector is Collections.BitVector64 vector64)
 			{
-				var vector = (Collections.BitVector64)bit_vector;
-
-				if (vector[bitModel.BitIndex] != newValue)
+				if (vector64[bitModel.BitIndex] != newValue)
 				{
-					vector[bitModel.BitIndex] = newValue;
-					BitVector = vector;
+					vector64[bitModel.BitIndex] = newValue;
+					BitVector = vector64;
 				}
 			}
 		}
@@ -168,11 +164,13 @@ namespace KSoft.WPF.Controls
 			{
 				for (int bit_index = 0; bit_index < source.NumberOfBits; bit_index++)
 				{
-					var model = new BitItemModel();
-					model.BitIndex = bit_index;
-					model.DisplayName = source.GetDisplayName(bit_index);
-					model.ToolTip = source.GetDescription(bit_index);
-					model.IsVisible = source.IsVisible(bit_index);
+					var model = new BitItemModel
+					{
+						BitIndex = bit_index,
+						DisplayName = source.GetDisplayName(bit_index),
+						ToolTip = source.GetDescription(bit_index),
+						IsVisible = source.IsVisible(bit_index)
+					};
 					newBitItems.Add(model);
 				}
 			}

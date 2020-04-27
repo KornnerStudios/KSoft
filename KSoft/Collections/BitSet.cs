@@ -47,11 +47,8 @@ namespace KSoft.Collections
 
 		static BitSet()
 		{
-			int word_byte_count;
-			int word_bit_count; // we define a const for this, so ignore it
-			int word_bit_shift; // unused
 			bool success = Bits.GetBitConstants(typeof(TWord),
-				out word_byte_count, out word_bit_count, out word_bit_shift, out kWordBitMod);
+				out int word_byte_count, out int word_bit_count, out int word_bit_shift, out kWordBitMod);
 			Contract.Assert(success, "TWord is an invalid type for BitSet");
 
 			kVectorLengthInT = Bits.GetVectorLengthInT<TWord>();
@@ -147,8 +144,7 @@ namespace KSoft.Collections
 				#region clear old bits if downsizing
 				if (value < mLength)
 				{
-					int index, bit_offset;
-					kVectorBitCursorInT(value, out index, out bit_offset);
+					kVectorBitCursorInT(value, out int index, out int bit_offset);
 
 					// clear old, now unused, bits in the caboose word
 					if (bit_offset != 0)
@@ -416,10 +412,7 @@ namespace KSoft.Collections
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
 		bool GetInternal(int bitIndex)
 		{
-			int index;
-			TWord bitmask;
-
-			return GetInternal(bitIndex, out index, out bitmask);
+			return GetInternal(bitIndex, out int index, out TWord bitmask);
 		}
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
@@ -452,9 +445,7 @@ namespace KSoft.Collections
 			// #REVIEW: is it really worth checking that we're not setting a bit to the same state?
 			// Yes, currently, as SetInternal updates Cardinality
 
-			int index;
-			TWord bitmask;
-			bool old_value = GetInternal(bitIndex, out index, out bitmask);
+			bool old_value = GetInternal(bitIndex, out int index, out TWord bitmask);
 
 			if (old_value != value)
 				SetInternal(index, bitmask, value);
@@ -476,9 +467,7 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
 
-			int index;
-			TWord bitmask;
-			bool old_value = GetInternal(bitIndex, out index, out bitmask);
+			bool old_value = GetInternal(bitIndex, out int index, out TWord bitmask);
 			bool new_value = !old_value;
 
 			SetInternal(index, bitmask, new_value);
@@ -515,8 +504,7 @@ namespace KSoft.Collections
 
 		public int NextBitIndex(int startBitIndex, bool stateFilter)
 		{
-			int index, bit_offset;
-			kVectorBitCursorInT(startBitIndex, out index, out bit_offset);
+			kVectorBitCursorInT(startBitIndex, out int index, out int bit_offset);
 
 			// get a mask for the the bits that start at bit_offset, thus ignoring bits that came before startBitIndex
 			var bitmask = kVectorElementSectionBitMask(bit_offset);
@@ -1054,8 +1042,7 @@ namespace KSoft.Collections
 			if (string.IsNullOrWhiteSpace(flagStr))
 				return null;
 
-			TEnum flag;
-			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out flag))
+			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out TEnum flag))
 			{
 				if (errorsOutput != null)
 				{

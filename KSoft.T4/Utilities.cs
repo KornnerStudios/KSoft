@@ -1,24 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4
 {
 	public static class UtilT4
 	{
+		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
+
 		public static string EnumConstraintsCode()
 		{
 			var sb = new System.Text.StringBuilder("struct");
 
-			sb.AppendFormat(", {0}", typeof(IComparable).Name);
-			sb.AppendFormat(", {0}", typeof(IFormattable).Name);
-			sb.AppendFormat(", {0}", typeof(IConvertible).Name);
+			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IComparable).Name);
+			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IFormattable).Name);
+			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IConvertible).Name);
 
 			return sb.ToString();
 		}
 
 		public static NumberCodeDefinition TryGetSignedDefinition(this NumberCodeDefinition def)
 		{
+			if (def == null)
+				throw new ArgumentNullException(nameof(def));
+
 			switch (def.Code)
 			{
 				case TypeCode.Byte:
@@ -80,26 +84,26 @@ namespace KSoft.T4
 			string format, params object[] args)
 		{
 			WriteXmlDocLine(ttFile, "summary", null,
-				string.Format(format, args));
+				string.Format(InvariantCultureInfo, format, args));
 		}
 		internal static void WriteXmlDocParameter(this TextTemplating.TextTransformation ttFile,
 			string paramName, string format, params object[] args)
 		{
 			WriteXmlDocLine(ttFile, "param",
-				string.Format("name=\"{0}\"", paramName),
-				string.Format(format, args));
+				string.Format(InvariantCultureInfo, "name=\"{0}\"", paramName),
+				string.Format(InvariantCultureInfo, format, args));
 		}
 		internal static void WriteXmlDocReturns(this TextTemplating.TextTransformation ttFile,
 			string format, params object[] args)
 		{
 			WriteXmlDocLine(ttFile, "returns", null,
-				string.Format(format, args));
+				string.Format(InvariantCultureInfo, format, args));
 		}
 		internal static void WriteXmlDocRemarks(this TextTemplating.TextTransformation ttFile,
 			string format, params object[] args)
 		{
 			WriteXmlDocLine(ttFile, "remarks", null,
-				string.Format(format, args));
+				string.Format(InvariantCultureInfo, format, args));
 		}
 
 		internal static string ToValueKeyword(this bool condition)
@@ -112,7 +116,7 @@ namespace KSoft.T4
 		}
 		internal static string UseStringOrEmpty(this bool condition, string trueStringFormat, params object[] args)
 		{
-			return condition ? string.Format(trueStringFormat, args) : string.Empty;
+			return condition ? string.Format(InvariantCultureInfo, trueStringFormat, args) : string.Empty;
 		}
 
 		class NullDisposableImpl

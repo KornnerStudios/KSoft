@@ -67,8 +67,7 @@ namespace KSoft.IO
 
 			StreamName = null;
 
-			var fs = stream as System.IO.FileStream;
-			if (fs != null)
+			if (stream is System.IO.FileStream fs)
 				StreamName = fs.Name;
 
 			if (StreamName == null)

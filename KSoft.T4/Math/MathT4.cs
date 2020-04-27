@@ -5,11 +5,11 @@ namespace KSoft.T4.Math
 {
 	public static class MathT4
 	{
-		public struct VectorComponent
+		public sealed class VectorComponent
 		{
-			public readonly string Name;
-			public readonly int Index;
-			public readonly bool LastComponent;
+			public string Name { get; private set; }
+			public int Index { get; private set; }
+			public bool LastComponent { get; private set; }
 
 			internal VectorComponent(int index, string name, int vecDimensions = 0)
 			{
@@ -35,10 +35,10 @@ namespace KSoft.T4.Math
 			}
 		};
 
-		public class VectorDef
+		public sealed class VectorDef
 		{
-			public NumberCodeDefinition CodeDef;
-			public int Dimensions;
+			public NumberCodeDefinition CodeDef { get; private set; }
+			public int Dimensions { get; private set; }
 
 			public VectorDef(NumberCodeDefinition codeDef, int dimensions)
 			{
@@ -51,7 +51,8 @@ namespace KSoft.T4.Math
 					? "i"
 					: "f";
 
-				return string.Format("Vec{0}{1}{2}",
+				return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+					"Vec{0}{1}{2}",
 					Dimensions, typeChar, CodeDef.SizeOfInBits);
 			} }
 
@@ -113,7 +114,10 @@ namespace KSoft.T4.Math
 				foreach (var comp in Components)
 				{
 					if (useCastsIfNeeded)
-						sb.AppendFormat("({0})( ", CodeDef.Keyword);
+					{
+						sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture,
+							"({0})( ", CodeDef.Keyword);
+					}
 
 					sb.Append(prefix);
 					sb.Append(comp.Name);

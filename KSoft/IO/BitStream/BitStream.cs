@@ -208,8 +208,7 @@ namespace KSoft.IO
 		#region Single
 		public float ReadSingle()
 		{
-			uint data;
-			Read(out data, Bits.kInt32BitCount);
+			Read(out uint data, Bits.kInt32BitCount);
 
 			return Bitwise.ByteSwap.SingleFromUInt32(data);
 		}
@@ -226,8 +225,7 @@ namespace KSoft.IO
 		#region Double
 		public double ReadDouble()
 		{
-			long data;
-			Read(out data, Bits.kInt64BitCount);
+			Read(out long data, Bits.kInt64BitCount);
 
 			return BitConverter.Int64BitsToDouble(data);
 		}
@@ -246,8 +244,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
 
-			long time64;
-			Read(out time64, bitCount);
+			Read(out long time64, bitCount);
 
 			return Util.ConvertDateTimeFromUnixTime(time64);
 		}

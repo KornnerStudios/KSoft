@@ -230,9 +230,11 @@ namespace KSoft.WPF
 				var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
 				foreach (var str in bitStrings)
 				{
-					var bit_ui_info = new BitUserInterfaceData();
-					bit_ui_info.DisplayName = str;
-					bit_ui_info.Visible = true;
+					var bit_ui_info = new BitUserInterfaceData
+					{
+						DisplayName = str,
+						Visible = true
+					};
 
 					if (bit_ui_info.CanNotBeRendered)
 						bit_ui_infos.Add(null);

@@ -296,11 +296,13 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(reader != null);
 			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
-			var s = new EndianStream();
-			s.BaseStream = reader.BaseStream;
-			s.StreamPermissions = FileAccess.Read;
-			s.StreamMode = FileAccess.Read;
-			s.Reader = reader;
+			var s = new EndianStream
+			{
+				BaseStream = reader.BaseStream,
+				StreamPermissions = FileAccess.Read,
+				StreamMode = FileAccess.Read,
+				Reader = reader
+			};
 
 			return s;
 		}
@@ -309,11 +311,13 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(writer != null);
 			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
-			var s = new EndianStream();
-			s.BaseStream = writer.BaseStream;
-			s.StreamPermissions = FileAccess.Write;
-			s.StreamMode = FileAccess.Write;
-			s.Writer = writer;
+			var s = new EndianStream
+			{
+				BaseStream = writer.BaseStream,
+				StreamPermissions = FileAccess.Write,
+				StreamMode = FileAccess.Write,
+				Writer = writer
+			};
 
 			return s;
 		}

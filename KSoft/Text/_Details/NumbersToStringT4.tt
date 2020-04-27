@@ -53,11 +53,11 @@ namespace KSoft
 
 <#		if (num_type.IsSigned) {
 #>
-			bool signed = false;
+			bool is_signed = false;
 			// Sign support only exist for decimal and lower bases
 			if (radix <= kBase10 && value < 0)
 			{
-				signed = true;
+				is_signed = true;
 				value = -value; // change the value to positive
 			}
 			else if (radix > kBase10 && value < 0)
@@ -75,7 +75,7 @@ namespace KSoft
 
 <#		if (num_type.IsSigned) {
 #>
-			if(signed)
+			if (is_signed)
 				sb.Add('-');
 
 <#		} #>

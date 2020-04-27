@@ -19,7 +19,7 @@ namespace KSoft.Bitwise
 		#region Sign bit access
 		internal const int kSignBitIndex = kDataBitIndex + kDataBitCount;
 		const int kSignBitCount = 1;
-		internal const int kSignBitMask = 1 << kSignBitIndex;
+		internal const int kSignBitMask = kSignBitCount << kSignBitIndex;
 
 		public static bool IsSigned(uint data)
 		{

@@ -41,7 +41,7 @@ namespace KSoft.Bitwise
 		void VerifyBitIndex(int advanceBitCount)
 		{
 			if (mBitIndex + advanceBitCount > Bits.kInt64BitCount)
-				throw new System.ArgumentOutOfRangeException("bitIndex", mBitIndex + advanceBitCount,
+				throw new System.ArgumentOutOfRangeException(nameof(advanceBitCount), mBitIndex + advanceBitCount,
 					"bitIndex is or will be greater than to Bits.kInt64BitCount");
 		}
 
@@ -55,10 +55,8 @@ namespace KSoft.Bitwise
 		#region Overrides
 		public override bool Equals(object obj)
 		{
-			if (obj is HandleBitEncoder)
+			if (obj is HandleBitEncoder o)
 			{
-				var o = (HandleBitEncoder)obj;
-
 				return mBitIndex == o.mBitIndex &&
 					mBits.u64 == o.mBits.u64;
 			}
@@ -74,7 +72,8 @@ namespace KSoft.Bitwise
 		/// <remarks>Handle value is formatted to a 16-character hex string</remarks>
 		public override string ToString()
 		{
-			return string.Format("[{0} @ {1}]", mBits.u64.ToString("X16"), mBitIndex.ToString());
+			return string.Format(Util.InvariantCultureInfo,
+				"[{0} @ {1}]", mBits.u64.ToString("X16", Util.InvariantCultureInfo), mBitIndex.ToString(Util.InvariantCultureInfo));
 		}
 		#endregion
 	};

@@ -96,9 +96,9 @@ namespace KSoft.IO
 
 			var base_format = format.GetBaseFormat();
 
-			RegisteredFormat registration;
-			if (!gRegisteredFormats.TryGetValue(base_format, out registration))
-				throw new ArgumentException(string.Format("Format {0} ({1}) is not registered, can't {2}",
+			if (!gRegisteredFormats.TryGetValue(base_format, out RegisteredFormat registration))
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+					"Format {0} ({1}) is not registered, can't {2}",
 					base_format, format, operation));
 
 			return registration;
@@ -224,16 +224,17 @@ namespace KSoft.IO
 
 			string extension = Path.GetExtension(filename);
 			if (string.IsNullOrEmpty(extension))
-				throw new ArgumentException(string.Format("'{0}' doesn't have a valid file extension",
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+					"'{0}' doesn't have a valid file extension",
 					filename));
 
-			TagElementStreamFormat format;
-			if (!gRegisteredFileExtensions.TryGetValue(extension, out format))
-				throw new ArgumentException(string.Format("No TagElementStream is registered to handle '{0}' files",
+			if (!gRegisteredFileExtensions.TryGetValue(extension, out TagElementStreamFormat format))
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+					"No TagElementStream is registered to handle '{0}' files",
 					extension));
 
 			// NOTE: could just use File.OpenRead instead. File isn't actually ever written to in this context
-			using(var fs = File.Open(filename, FileMode.Open, permissions))
+			using (var fs = File.Open(filename, FileMode.Open, permissions))
 			{
 				var stream = Open(fs, format, permissions, owner);
 

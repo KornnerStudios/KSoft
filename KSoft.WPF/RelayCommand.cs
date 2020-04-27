@@ -6,8 +6,8 @@ namespace KSoft.WPF
 	public class RelayCommand
 		: ICommand
 	{
-		private Predicate<object> mCanExecute;
-		private Action<object> mExecute;
+		private readonly Predicate<object> mCanExecute;
+		private readonly Action<object> mExecute;
 
 		public RelayCommand(Predicate<object> canExecute, Action<object> execute)
 		{

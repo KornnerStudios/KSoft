@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -33,3 +34,18 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("KSoft.IO.TagElementStreams")]
 [assembly: InternalsVisibleTo("KSoft.Security")]
 [assembly: InternalsVisibleTo("Test.KSoft.BCL")]
+
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1034:NestedTypesShouldNotBeVisible",
+	Justification = "Because I do this all over the place")]
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1062:ValidateArgumentsOfPublicMethods",
+	Justification = "CodeContracts generally handle this already")]
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1303:DoNotPassLiteralsAsLocalizedParameters")]
+
+[assembly: SuppressMessage("Style",
+	"IDE1005:Delegate invocation can be simplified.",
+	Justification = "Can't breakpoint simplification")]

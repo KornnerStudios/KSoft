@@ -101,8 +101,7 @@ namespace KSoft.Text
 			// which invokes BigInteger.CompareTo(BigInteger)
 			while (!dividend.IsZero)
 			{
-				BigInteger remainder;
-				dividend = BigInteger.DivRem(dividend, kRadixBig, out remainder);
+				dividend = BigInteger.DivRem(dividend, kRadixBig, out BigInteger remainder);
 				int digit_index = System.Math.Abs((int)remainder);
 				result.Add(kDigits[digit_index]);
 			}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.IO
 {
@@ -18,7 +19,7 @@ namespace KSoft.IO
 		}
 
 		VersionMismatchException(long pos, string cmp, string expected, string found)
-			: base(string.Format(kFormat, pos.ToFilePositionHexString(), expected, found, cmp))
+			: base(string.Format(Util.InvariantCultureInfo, kFormat, pos.ToFilePositionHexString(), expected, found, cmp))
 		{
 		}
 	};
@@ -29,7 +30,11 @@ namespace KSoft.IO
 		const string kFormat = "Invalid version! @{0} Expected value between {1} and {2}, got '{3}' ({4} data)";
 		const string kDescFormat = "Invalid '{0}' version! Expected value between {1} and {2}, got '{3}' ({4} data)";
 
-		static string VersionCompareDesc<T>(T expectedMin, T expectedMax, T found)
+		static string VersionCompareDesc<T>(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			T expectedMin,
+			T expectedMax,
+			T found)
 			where T : struct, IComparable<T>
 		{
 			if (found.CompareTo(expectedMax) > 0)
@@ -43,7 +48,7 @@ namespace KSoft.IO
 			, string expectedMin
 			, string expectedMax
 			, string found)
-			: base(string.Format(kFormat, pos.ToFilePositionHexString(), expectedMin, expectedMax, found, cmp))
+			: base(string.Format(Util.InvariantCultureInfo, kFormat, pos.ToFilePositionHexString(), expectedMin, expectedMax, found, cmp))
 		{
 		}
 

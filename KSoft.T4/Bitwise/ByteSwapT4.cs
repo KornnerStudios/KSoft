@@ -9,17 +9,17 @@ namespace KSoft.T4.Bitwise
 	{
 		public sealed class ByteSwapableIntegerDefinition
 		{
-			NumberCodeDefinition mCodeDef;
-			int mSizeOfInBits;
-			int mSizeOfInBytes;
+			readonly NumberCodeDefinition mCodeDef;
+			readonly int mSizeOfInBits;
+			readonly int mSizeOfInBytes;
 
-			public ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef, int bitCount)
+			internal ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef, int bitCount)
 			{
 				mCodeDef = codeDef;
 				mSizeOfInBits = bitCount;
 				mSizeOfInBytes = bitCount / kBitsPerByte;
 			}
-			public ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef)
+			internal ByteSwapableIntegerDefinition(NumberCodeDefinition codeDef)
 				: this(codeDef, codeDef.SizeOfInBits)
 			{
 			}
@@ -42,7 +42,7 @@ namespace KSoft.T4.Bitwise
 			public string GetConstantKeyword()
 			{
 				return IsUnnaturalWord
-					? "Int" + SizeOfInBits.ToString()
+					? "Int" + SizeOfInBits.ToString(UtilT4.InvariantCultureInfo)
 					: mCodeDef.GetConstantKeyword();
 			}
 
@@ -50,20 +50,20 @@ namespace KSoft.T4.Bitwise
 
 			public string WordTypeNameUnsigned { get {
 				return IsUnnaturalWord
-					? "UInt" + SizeOfInBits.ToString()
+					? "UInt" + SizeOfInBits.ToString(UtilT4.InvariantCultureInfo)
 					: Code.ToString();
 			} }
 			public string WordTypeNameSigned { get {
 				return IsUnnaturalWord
-					? "Int" + SizeOfInBits.ToString()
+					? "Int" + SizeOfInBits.ToString(UtilT4.InvariantCultureInfo)
 					: SignedCode.ToString();
 			} }
-			public string GetOverloadSuffixForUnnaturalWord(bool signed)
+			public string GetOverloadSuffixForUnnaturalWord(bool isSigned)
 			{
 				if (!IsUnnaturalWord)
 					return "";
 
-				return signed
+				return isSigned
 					? WordTypeNameSigned
 					: WordTypeNameUnsigned;
 			}
@@ -71,7 +71,7 @@ namespace KSoft.T4.Bitwise
 			public string SizeOfCode { get {
 				return IsUnnaturalWord
 					? "kSizeOf" + GetConstantKeyword()
-					: string.Format("sizeof({0})", Keyword);
+					: string.Format(UtilT4.InvariantCultureInfo, "sizeof({0})", Keyword);
 			} }
 
 			public IntegerByteSwapCodeGenerator NewByteSwapCodeGenerator(TextTemplating.TextTransformation ttFile,
@@ -101,7 +101,7 @@ namespace KSoft.T4.Bitwise
 			TextTemplating.TextTransformation mFile;
 			ByteSwapableIntegerDefinition mDef;
 
-			string mValueName;
+			readonly string mValueName;
 
 			public IntegerByteSwapCodeGenerator(TextTemplating.TextTransformation ttFile,
 				ByteSwapableIntegerDefinition def, string valueName)
@@ -112,13 +112,13 @@ namespace KSoft.T4.Bitwise
 				mValueName = valueName;
 			}
 
-			void GeneratePrologue(bool cast, bool signed)
+			void GeneratePrologue(bool cast, bool isSigned)
 			{
 				// smaller integers are promoted to larger types when bit operated on
 				// this is for casting the final result back into the smaller integer type
 				if (cast)
 				{
-					var def = signed
+					var def = isSigned
 						? mDef.TryGetSignedDefinition()
 						: mDef.CodeDefinition;
 
@@ -135,11 +135,11 @@ namespace KSoft.T4.Bitwise
 					mFile.Write(")");
 				}
 			}
-			void GenerateStep(bool signed, int shift, string mask, bool lastOperation = false)
+			void GenerateStep(bool isSigned, int shift, string mask, bool lastOperation = false)
 			{
 				// mask is not added when this is the last op in signed expression as the mask will be an unsigned value
 				// this isn't the case for unnatural-words, which should consume fewer bits than the MSB/sign-bit
-				bool mask_op = mDef.IsUnnaturalWord || !signed || !lastOperation;
+				bool mask_op = mDef.IsUnnaturalWord || !isSigned || !lastOperation;
 				if (mask_op)
 					mFile.Write("(");
 				else
@@ -173,7 +173,7 @@ namespace KSoft.T4.Bitwise
 					mFile.Write(" | ");
 			}
 
-			void GenerateCode(bool signed)
+			void GenerateCode(bool isSigned)
 			{
 				// amount to increase 'shift' after each step
 				const int k_step_shift_inc = kBitsPerByte * 2;
@@ -182,7 +182,7 @@ namespace KSoft.T4.Bitwise
 				bool cast = mDef.BitOperatorsImplicitlyUpCast;
 				string hex_format = mDef.ToStringHexFormat;
 
-				GeneratePrologue(cast, signed);
+				GeneratePrologue(cast, isSigned);
 
 				// GenerateStep's 'shift' is negative when the operation is a RHS (>>), and positive for LHS (<<)
 				int shift = (0-mDef.SizeOfInBits) + kBitsPerByte;
@@ -192,18 +192,18 @@ namespace KSoft.T4.Bitwise
 				// Once 'shift' becomes positive, we're generating steps to swap the LSB bytes to the MSBs half.
 				for(int x = mDef.SizeOfInBytes-1; x >= 0; x--, shift += k_step_shift_inc, mask <<= kBitsPerByte)
 				{
-					GenerateStep(signed, shift, mask.ToString(hex_format), x == 0);
+					GenerateStep(isSigned, shift, mask.ToString(hex_format, UtilT4.InvariantCultureInfo), x == 0);
 					mFile.NewLine();
 				}
 
 				GenerateEpilogue(cast);
 			}
-			public void Generate(bool signed = false)
+			public void Generate(bool isSigned = false)
 			{
 				// indent to method code body's indention level, plus one (l-value statement should be on the line before)
 				using (mFile.EnterCodeBlock(indentCount: 3+1))
 				{
-					GenerateCode(signed);
+					GenerateCode(isSigned);
 
 					mFile.EndStmt();
 				}

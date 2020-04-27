@@ -36,24 +36,23 @@ namespace KSoft.IO
 
 <#		if (BitwiseT4.BitStreamCacheWord.SizeOfInBits == 32 && bittable_type.SizeOfInBits == 64) {
 #>
-			uint msb_word = 0, lsb_word;
+			uint msb_word = 0;
 			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
-			if(msb_bit_count > 0)
+			if (msb_bit_count > 0)
 				ReadWord(out msb_word, msb_bit_count);
-			ReadWord(out lsb_word, lsb_bit_count);
+			ReadWord(out uint lsb_word, lsb_bit_count);
 
 			ulong word = (ulong)msb_word << lsb_bit_count;
 			word |= (ulong)lsb_word;
 <#		} else {
 #>
-			TWord word;
-			ReadWord(out word, bitCount);
+			ReadWord(out TWord word, bitCount);
 <#		} #>
 <#		if (is_signed) {
 #>
-			if(signExtend && bitCount != Bits.k<#= prim_typename #>BitCount)
+			if (signExtend && bitCount != Bits.k<#= prim_typename #>BitCount)
 				return (<#= prim_keyword #>)Bits.SignExtend( (<#= prim_keyword #>)word, bitCount );
 <#		} #>
 

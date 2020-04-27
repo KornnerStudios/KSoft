@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace KSoft.IO
@@ -13,6 +14,7 @@ namespace KSoft.IO
 		public static List<string> gErrorsOutputList = new List<string>();
 	};
 
+	[SuppressMessage("Microsoft.Design", "CA1815")]
 	public struct JsonNode
 	{
 		private IDictionary<string, object> mData;
@@ -44,8 +46,7 @@ namespace KSoft.IO
 
 			foreach (var kvp in mData)
 			{
-				var nodeValues = kvp.Value as IDictionary<string, object>;
-				if (nodeValues == null)
+				if (!(kvp.Value is IDictionary<string, object> nodeValues))
 					continue;
 
 				var childNode = new JsonNode(nodeValues);
@@ -63,7 +64,7 @@ namespace KSoft.IO
 
 		public ICollection<string> ChildNames { get {
 			if (IsNull)
-				return new string[0];
+				return Array.Empty<string>();
 
 			return mData.Keys;
 		} }
@@ -91,14 +92,13 @@ namespace KSoft.IO
 
 			IDictionary<string, object> childData;
 
-			object existingValue;
-			if (mData.TryGetValue(valueName, out existingValue))
+			if (mData.TryGetValue(valueName, out object existingValue))
 			{
 				childData = existingValue as IDictionary<string, object>;
 
 				if (childData == null)
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
 						valueName, existingValue.GetType()));
 					return Null;
@@ -120,14 +120,13 @@ namespace KSoft.IO
 
 			IDictionary<string, object> childData;
 
-			object existingValue;
-			if (mData.TryGetValue(valueName, out existingValue))
+			if (mData.TryGetValue(valueName, out object existingValue))
 			{
 				childData = existingValue as IDictionary<string, object>;
 
 				if (childData == null)
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to get a child node named {0} with an unexpected type: {1}",
 						valueName, existingValue.GetType()));
 					return Null;
@@ -146,14 +145,13 @@ namespace KSoft.IO
 
 			IList<object> existingArray = null;
 
-			object existingValue;
-			if (mData.TryGetValue(valueName, out existingValue))
+			if (mData.TryGetValue(valueName, out object existingValue))
 			{
 				existingArray = existingValue as IList<object>;
 
 				if (existingArray == null)
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
 						valueName, existingValue.GetType()));
 					return false;
@@ -178,14 +176,13 @@ namespace KSoft.IO
 
 			IList<object> existingArray = null;
 
-			object existingValue;
-			if (mData.TryGetValue(valueName, out existingValue))
+			if (mData.TryGetValue(valueName, out object existingValue))
 			{
 				existingArray = existingValue as IList<object>;
 
 				if (existingArray == null)
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
 						valueName, existingValue.GetType()));
 					return false;
@@ -210,14 +207,13 @@ namespace KSoft.IO
 
 			IList<object> array;
 
-			object existingValue;
-			if (mData.TryGetValue(valueName, out existingValue))
+			if (mData.TryGetValue(valueName, out object existingValue))
 			{
 				array = existingValue as IList<object>;
 
 				if (array == null)
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to get a child node named {0} with an unexpected type: {1}",
 						valueName, existingValue.GetType()));
 					yield break;
@@ -228,8 +224,7 @@ namespace KSoft.IO
 
 			foreach (var o in array)
 			{
-				var arrayElement = o as IDictionary<string, object>;
-				if (arrayElement == null)
+				if (!(o is IDictionary<string, object> arrayElement))
 					continue;
 
 				yield return new JsonNode(arrayElement);
@@ -250,8 +245,7 @@ namespace KSoft.IO
 			if (values == null)
 				return false;
 
-			var list = values as List<string>;
-			if (list == null)
+			if (!(values is List<string> list))
 				list = new List<string>(values);
 
 			MiniJSON.Json.SetValue(mData, valueName, list);
@@ -376,8 +370,7 @@ namespace KSoft.IO
 			return SetValueForName(valueName, value);
 		}
 
-		public bool SetPodValues<T>(string valueName, IList<T> list
-			, string valueSeperator = ",")
+		public bool SetPodValues<T>(string valueName, IList<T> list)
 		{
 			if (list == null || list.Count == 0)
 				return false;
@@ -399,7 +392,7 @@ namespace KSoft.IO
 
 				default:
 				{
-					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"We currently don't handle setting JSON data from lists of {0} types (Type={1})",
 						typeCode, type));
 					return false;
@@ -417,8 +410,7 @@ namespace KSoft.IO
 			if (IsEmpty)
 				return null;
 
-			object value;
-			mData.TryGetValue(valueName, out value);
+			mData.TryGetValue(valueName, out object value);
 
 			return value;
 		}
@@ -429,7 +421,7 @@ namespace KSoft.IO
 
 			return ParseValue(value, ref retVal);
 		}
-		private bool ParseValue(object value, ref bool retVal)
+		private static bool ParseValue(object value, ref bool retVal)
 		{
 			if (value == null)
 				return false;
@@ -492,7 +484,7 @@ namespace KSoft.IO
 
 			return ParseValue(value, ref retVal);
 		}
-		private bool ParseValue(object value, ref string retVal)
+		private static bool ParseValue(object value, ref string retVal)
 		{
 			if (value == null)
 				return false;
@@ -522,7 +514,7 @@ namespace KSoft.IO
 				retVal = (byte)integer;
 			return parsed;
 		}
-		private bool ParseValue(object value, ref int retVal, string valueName = null)
+		private static bool ParseValue(object value, ref int retVal, string valueName = null)
 		{
 			if (value == null)
 				return false;
@@ -545,10 +537,9 @@ namespace KSoft.IO
 
 				case TypeCode.String:
 				{
-					int tryValue;
-					if (!int.TryParse((string)value, out tryValue) && valueName != null)
+					if (!int.TryParse((string)value, out int tryValue) && valueName != null)
 					{
-						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 							"Failed parsing {0} value '{1}' as an {2}",
 							valueName, value, "int"));
 						return false;
@@ -569,7 +560,7 @@ namespace KSoft.IO
 
 			return ParseValue(value, ref retVal, valueName);
 		}
-		private bool ParseValue(object value, ref long retVal, string valueName = null)
+		private static bool ParseValue(object value, ref long retVal, string valueName = null)
 		{
 			if (value == null)
 				return false;
@@ -592,10 +583,9 @@ namespace KSoft.IO
 
 				case TypeCode.String:
 				{
-					long tryValue;
-					if (!long.TryParse((string)value, out tryValue) && valueName != null)
+					if (!long.TryParse((string)value, out long tryValue) && valueName != null)
 					{
-						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 							"Failed parsing {0} value '{1}' as an {2}",
 							valueName, value, "long"));
 						return false;
@@ -619,7 +609,7 @@ namespace KSoft.IO
 			retVal = (float)doubleValue;
 			return true;
 		}
-		private bool ParseValue(object value, ref float retVal
+		private static bool ParseValue(object value, ref float retVal
 			, string valueName = null)
 		{
 			double doubleValue = 0;
@@ -636,7 +626,7 @@ namespace KSoft.IO
 
 			return ParseValue(value, ref retVal, valueName);
 		}
-		private bool ParseValue(object value, ref double retVal
+		private static bool ParseValue(object value, ref double retVal
 			, string valueName = null)
 		{
 			if (value == null)
@@ -660,10 +650,9 @@ namespace KSoft.IO
 
 				case TypeCode.String:
 				{
-					double tryValue;
-					if (!Numbers.DoubleTryParseInvariant((string)value, out tryValue) && valueName != null)
+					if (!Numbers.DoubleTryParseInvariant((string)value, out double tryValue) && valueName != null)
 					{
-						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 							"Failed parsing {0} value '{1}' as an {2}",
 							valueName, value, "double"));
 						return false;
@@ -691,7 +680,7 @@ namespace KSoft.IO
 				{
 					if (!Util.TryParseEnumOpt((string)value, ref retVal))
 					{
-						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 							"'{0}' couldn't be parsed for enum named '{1}' (type={2}). Checking spelling",
 							value, valueName, typeof(TEnum)));
 						return false;
@@ -725,8 +714,7 @@ namespace KSoft.IO
 
 				case TypeCode.Object:
 				{
-					var objList = value as List<object>;
-					if (objList == null)
+					if (!(value is List<object> objList))
 						return false;
 
 					result = retVal.TryParseFlags<TEnum>(objList.OfType<string>(), logFailures ? JsonNodeGlobals.gErrorsOutputList : null);
@@ -739,7 +727,7 @@ namespace KSoft.IO
 
 			if (logFailures && JsonNodeGlobals.gErrorsOutputList.Count > 0)
 			{
-				Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+				Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 					"Failed parsing {0} value '{1}' as an {2}:\n{3}",
 					valueName, value, "FLAGS", JsonNodeGlobals.gErrorsOutputList.Join("\n")));
 				JsonNodeGlobals.gErrorsOutputList.Clear();
@@ -767,8 +755,7 @@ namespace KSoft.IO
 
 				case TypeCode.Object:
 				{
-					var objList = value as List<object>;
-					if (objList == null)
+					if (!(value is List<object> objList))
 						return false;
 
 					result = retVal.TryParseFlags<TEnum>(objList.OfType<string>(), logFailures ? JsonNodeGlobals.gErrorsOutputList : null);
@@ -781,7 +768,7 @@ namespace KSoft.IO
 
 			if (logFailures && JsonNodeGlobals.gErrorsOutputList.Count > 0)
 			{
-				Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+				Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 					"Failed parsing {0} value '{1}' as an {2}:\n{3}",
 					valueName, value, "FLAGS", JsonNodeGlobals.gErrorsOutputList.Join("\n")));
 				JsonNodeGlobals.gErrorsOutputList.Clear();
@@ -804,8 +791,7 @@ namespace KSoft.IO
 
 				case TypeCode.Object:
 				{
-					var objList = value as List<object>;
-					if (objList == null)
+					if (!(value is List<object> objList))
 						return false;
 
 					return Util.ParseStringList(objList.OfType<string>(), list, sort);
@@ -817,14 +803,13 @@ namespace KSoft.IO
 		}
 
 		public bool GetPodValues<T>(string valueName, IList<T> list
-			, string valueSeperator = ",", bool clearFirst = true)
+			, bool clearFirst = true)
 		{
 			object value = TryGetValueForName(valueName);
 			if (value == null)
 				return false;
 
-			var objList = value as List<object>;
-			if (objList == null)
+			if (!(value is List<object> objList))
 				return false;
 
 			if (clearFirst)
@@ -842,7 +827,7 @@ namespace KSoft.IO
 					{
 						bool boolean = false;
 						if (ParseValue(o, ref boolean))
-							parsedValue = Convert.ChangeType(boolean, typeCode);
+							parsedValue = Convert.ChangeType(boolean, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
@@ -852,7 +837,7 @@ namespace KSoft.IO
 					{
 						int integer = 0;
 						if (ParseValue(o, ref integer))
-							parsedValue = Convert.ChangeType(integer, typeCode);
+							parsedValue = Convert.ChangeType(integer, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
@@ -860,7 +845,7 @@ namespace KSoft.IO
 					{
 						long integer = 0;
 						if (ParseValue(o, ref integer))
-							parsedValue = Convert.ChangeType(integer, typeCode);
+							parsedValue = Convert.ChangeType(integer, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
@@ -868,7 +853,7 @@ namespace KSoft.IO
 					{
 						float real = 0;
 						if (ParseValue(o, ref real))
-							parsedValue = Convert.ChangeType(real, typeCode);
+							parsedValue = Convert.ChangeType(real, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
@@ -876,7 +861,7 @@ namespace KSoft.IO
 					{
 						double real = 0;
 						if (ParseValue(o, ref real))
-							parsedValue = Convert.ChangeType(real, typeCode);
+							parsedValue = Convert.ChangeType(real, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
@@ -884,13 +869,13 @@ namespace KSoft.IO
 					{
 						string str = null;
 						if (ParseValue(o, ref str))
-							parsedValue = Convert.ChangeType(str, typeCode);
+							parsedValue = Convert.ChangeType(str, typeCode, Util.InvariantCultureInfo);
 						break;
 					}
 
 					default:
 					{
-						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(
+						Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 							"We currently don't handle parsing JSON data into lists of {0} types (Type={1})",
 							typeCode, type));
 						continue;
@@ -916,8 +901,7 @@ namespace KSoft.IO
 			{
 				case TypeCode.Object:
 				{
-					var objList = value as List<object>;
-					if (objList == null)
+					if (!(value is List<object> objList))
 						return false;
 
 					if (objList.Count == 1)
@@ -961,8 +945,7 @@ namespace KSoft.IO
 			{
 				case TypeCode.Object:
 				{
-					var objList = value as List<object>;
-					if (objList == null)
+					if (!(value is List<object> objList))
 						return false;
 
 					if (objList.Count == 1)

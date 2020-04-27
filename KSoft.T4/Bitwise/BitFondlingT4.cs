@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Debug = System.Diagnostics.Debug;
+﻿using Debug = System.Diagnostics.Debug;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4.Bitwise
@@ -40,11 +38,11 @@ namespace KSoft.T4.Bitwise
 			/// <summary>Declares and initializes the variable (of the underlying number type) used for bit fondling</summary>
 			protected override void GeneratePrologue()
 			{
-				mFile.Write(mDef.SizeOfInBits == PrimitiveDefinitions.kUInt64.SizeOfInBits
+				File.Write(Def.SizeOfInBits == PrimitiveDefinitions.kUInt64.SizeOfInBits
 					? PrimitiveDefinitions.kUInt64.Keyword
 					: PrimitiveDefinitions.kUInt32.Keyword);
 
-				mFile.WriteLine(" {0} = {1};", kFondleVarName, kBitsParamName);
+				File.WriteLine(" {0} = {1};", kFondleVarName, kBitsParamName);
 			}
 
 			/// <summary>Given a bit pattern mask at the byte level, build the mask suitable for the underlying number type</summary>
@@ -54,8 +52,8 @@ namespace KSoft.T4.Bitwise
 			{
 				var sb = new System.Text.StringBuilder("0x");
 
-				var mask_str = byteMask.ToString("X2");
-				for (int x = 0; x < mDef.SizeOfInBytes; x++)
+				var mask_str = byteMask.ToString("X2", UtilT4.InvariantCultureInfo);
+				for (int x = 0; x < Def.SizeOfInBytes; x++)
 					sb.Append(mask_str);
 
 				return sb.ToString();
@@ -76,7 +74,7 @@ namespace KSoft.T4.Bitwise
 					mask_str = zero_str + mask_str;
 
 				var sb = new System.Text.StringBuilder("0x");
-				for (int x = 0; x < mDef.SizeOfInBytes; x += wordSize)
+				for (int x = 0; x < Def.SizeOfInBytes; x += wordSize)
 					sb.Append(mask_str);
 
 				return sb.ToString();
@@ -95,43 +93,44 @@ namespace KSoft.T4.Bitwise
 
 			protected override void GenerateXmlDoc()
 			{
-				mFile.WriteXmlDocSummary("Get the bit-reversed equivalent of an unsigned integer");
-				mFile.WriteXmlDocParameter(kBitsParamName,
+				File.WriteXmlDocSummary("Get the bit-reversed equivalent of an unsigned integer");
+				File.WriteXmlDocParameter(kBitsParamName,
 					"Integer to bit-reverse");
-				mFile.WriteXmlDocReturns("");
+				File.WriteXmlDocReturns("");
 			}
 			protected override void GenerateMethodSignature()
 			{
-				string param_bits = string.Format("{0} {1}", mDef.Keyword, kBitsParamName);
+				string param_bits = string.Format(UtilT4.InvariantCultureInfo,
+					"{0} {1}", Def.Keyword, kBitsParamName);
 
-				mFile.WriteLine("[Contracts.Pure]");
-				mFile.WriteLine("public static {0} {1}({2})",
-					mDef.Keyword,
+				File.WriteLine("[Contracts.Pure]");
+				File.WriteLine("public static {0} {1}({2})",
+					Def.Keyword,
 					"BitReverse",
 					param_bits);
 			}
 			protected override void GenerateEpilogue()
 			{
-				mFile.Write("return ");
+				File.Write("return ");
 
-				if (mDef.SizeOfInBits < PrimitiveDefinitions.kUInt32.SizeOfInBits)
-					mFile.Write("({0})", mDef.Keyword);
+				if (Def.SizeOfInBits < PrimitiveDefinitions.kUInt32.SizeOfInBits)
+					File.Write("({0})", Def.Keyword);
 
-				mFile.Write(kFondleVarName);
-				mFile.WriteLine(";");
+				File.Write(kFondleVarName);
+				File.WriteLine(";");
 			}
 
 			void GenerateOperationCode(string maskLHS, string maskRHS, int shiftAmount, string doc)
 			{
-				mFile.Write("{0} = (({0} & {1}) >> {3,2}) | (({0} & {2}) << {3,2});",
+				File.Write("{0} = (({0} & {1}) >> {3,2}) | (({0} & {2}) << {3,2});",
 					kFondleVarName,
 					maskLHS,
 					maskRHS,
 					shiftAmount);
 				if (doc != null)
-					mFile.WriteLine(" // {0}", doc);
+					File.WriteLine(" // {0}", doc);
 				else
-					mFile.WriteLine("");
+					File.WriteLine("");
 			}
 			void GenerateBitOperationCode(byte byteMaskLHS, byte byteMaskRHS, int shiftAmount, string doc = null)
 			{
@@ -159,11 +158,11 @@ namespace KSoft.T4.Bitwise
 				GenerateBitOperationCode(kMaskNibbleMsb, kMaskNibbleLsb, 4,
 					"swap nibbles");
 
-				if (mDef.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort),	"swap bytes");
-				if (mDef.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint),		"swap halves");
-				if (mDef.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong),	"swap words");
+				if (Def.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort),	"swap bytes");
+				if (Def.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint),		"swap halves");
+				if (Def.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong),	"swap words");
 
-				mFile.NewLine();
+				File.NewLine();
 			}
 		};
 
@@ -182,39 +181,40 @@ namespace KSoft.T4.Bitwise
 
 			protected override void GenerateXmlDoc()
 			{
-				mFile.WriteXmlDocSummary("Count the number of 'on' bits in an unsigned integer");
-				mFile.WriteXmlDocParameter(kBitsParamName,
+				File.WriteXmlDocSummary("Count the number of 'on' bits in an unsigned integer");
+				File.WriteXmlDocParameter(kBitsParamName,
 					"Integer whose bits to count");
-				mFile.WriteXmlDocReturns("");
+				File.WriteXmlDocReturns("");
 			}
 			protected override void GenerateMethodSignature()
 			{
-				string param_bits = string.Format("{0} {1}", mDef.Keyword, kBitsParamName);
+				string param_bits = string.Format(UtilT4.InvariantCultureInfo,
+					"{0} {1}", Def.Keyword, kBitsParamName);
 
-				mFile.WriteLine("[Contracts.Pure]");
-				mFile.WriteLine("public static {0} {1}({2})",
+				File.WriteLine("[Contracts.Pure]");
+				File.WriteLine("public static {0} {1}({2})",
 					PrimitiveDefinitions.kInt32.Keyword,
 					"BitCount",
 					param_bits);
 			}
 			protected override void GenerateEpilogue()
 			{
-				mFile.WriteLine("return ({0}){1};",
+				File.WriteLine("return ({0}){1};",
 					PrimitiveDefinitions.kInt32.Keyword,
 					kFondleVarName);
 			}
 
 			void GenerateOperationCode(string maskLHS, string maskRHS, int shiftAmount, string doc)
 			{
-				mFile.Write("{0} = (({0} & {1}) >> {3,2}) + ({0} & {2});",
+				File.Write("{0} = (({0} & {1}) >> {3,2}) + ({0} & {2});",
 					kFondleVarName,
 					maskLHS,
 					maskRHS,
 					shiftAmount);
 				if (doc != null)
-					mFile.WriteLine(" // {0}", doc);
+					File.WriteLine(" // {0}", doc);
 				else
-					mFile.NewLine();
+					File.NewLine();
 			}
 			void GenerateBitOperationCode(byte byteMaskLHS, byte byteMaskRHS, int shiftAmount, string doc = null)
 			{
@@ -239,11 +239,11 @@ namespace KSoft.T4.Bitwise
 				GenerateBitOperationCode(kMaskConsecutivePairsMsb, kMaskConsecutivePairsLsb, 2);
 				GenerateBitOperationCode(kMaskNibbleMsb, kMaskNibbleLsb, 4);
 
-				if (mDef.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort));
-				if (mDef.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint));
-				if (mDef.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong));
+				if (Def.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort));
+				if (Def.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint));
+				if (Def.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong));
 
-				mFile.NewLine();
+				File.NewLine();
 			}
 		};
 
@@ -264,31 +264,31 @@ namespace KSoft.T4.Bitwise
 			void GenerateCodeStep1()
 			{
 				// v = v - ((v >> 1) & (T)~(T)0/3);
-				mFile.WriteLine("{0} =  {0} - (({0} >> 1) & {1});",
+				File.WriteLine("{0} =  {0} - (({0} >> 1) & {1});",
 					kFondleVarName,
 					BuildBitMaskForInteger(kMaskEvenBits));
 			}
 			void GenerateCodeStep2()
 			{
 				// v = (v & (T)~(T)0/15*3) + ((v >> 2) & (T)~(T)0/15*3);
-				mFile.WriteLine("{0} = ({0} & {1}) + (({0} >> 2) & {1});",
+				File.WriteLine("{0} = ({0} & {1}) + (({0} >> 2) & {1});",
 					kFondleVarName,
 					BuildBitMaskForInteger(kMaskConsecutivePairsLsb));
 			}
 			void GenerateCodeStep3()
 			{
 				// v = (v + (v >> 4)) & (T)~(T)0/255*15;
-				mFile.WriteLine("{0} =  {0} + ({0} >> 4) & {1};",
+				File.WriteLine("{0} =  {0} + ({0} >> 4) & {1};",
 					kFondleVarName,
 					BuildBitMaskForInteger(kMaskNibbleLsb));
 			}
 			void GenerateCodeFinalCount()
 			{
 				// c = (T)(v * ((T)~(T)0/255)) >> (sizeof(T) - 1) * CHAR_BIT;
-				mFile.WriteLine("{0} = ({0} * {1}) >> {2};",
+				File.WriteLine("{0} = ({0} * {1}) >> {2};",
 					kFondleVarName,
 					BuildBitMaskForInteger(0x01),
-					mDef.SizeOfInBits - kBitsPerByte);
+					Def.SizeOfInBits - kBitsPerByte);
 			}
 			protected override void GenerateCode()
 			{
@@ -297,7 +297,7 @@ namespace KSoft.T4.Bitwise
 				GenerateCodeStep3();
 				GenerateCodeFinalCount();
 
-				mFile.NewLine();
+				File.NewLine();
 			}
 		}
 	};

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Bitwise
 {
+	[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields")]
 	public static class Single24
 	{
 		public const float MinValue = kMin;
@@ -71,9 +73,9 @@ namespace KSoft.Bitwise
 			return value >= kMin && value <= kMax;
 		}
 
-		public static uint FromSingle(float single)
+		public static uint FromSingle(float singleValue)
 		{
-			uint data = Bitwise.ByteSwap.SingleToUInt32(single);
+			uint data = Bitwise.ByteSwap.SingleToUInt32(singleValue);
 			uint mantissa = (data & Single32.kMantissaBitMask) >> Single32.kMantissaBitIndex;
 			uint exponent = (data & Single32.kExponentBitMask) >> Single32.kExponentBitIndex;
 			uint sign = (data & Single32.kSignBitMask) >> Single32.kSignBitIndex;

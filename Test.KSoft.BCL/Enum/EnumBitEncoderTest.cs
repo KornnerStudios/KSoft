@@ -301,15 +301,11 @@ namespace KSoft.Test
 			encoder.Encode32(ss.ByteOrder, TypeExtensions.BitEncoders.EndianFormat);
 			encoder.Encode32((uint)ss.FixedLength, 0x7FFF);
 
-			Memory.Strings.StringStorageWidthType widthType;
-			Memory.Strings.StringStorageType type;
-			Shell.EndianFormat byteOrder;
-			uint fixedLength;
 			var decoder = new Bitwise.HandleBitEncoder(encoder.GetHandle32());
-			decoder.Decode32(out widthType, TypeExtensions.BitEncoders.StringStorageWidthType);
-			decoder.Decode32(out type, TypeExtensions.BitEncoders.StringStorageType);
-			decoder.Decode32(out byteOrder, TypeExtensions.BitEncoders.EndianFormat);
-			decoder.Decode32(out fixedLength, 0x7FFF);
+			decoder.Decode32(out Memory.Strings.StringStorageWidthType widthType, TypeExtensions.BitEncoders.StringStorageWidthType);
+			decoder.Decode32(out Memory.Strings.StringStorageType type, TypeExtensions.BitEncoders.StringStorageType);
+			decoder.Decode32(out Shell.EndianFormat byteOrder, TypeExtensions.BitEncoders.EndianFormat);
+			decoder.Decode32(out uint fixedLength, 0x7FFF);
 
 			Assert.AreEqual(ss.WidthType, widthType);
 			Assert.AreEqual(ss.Type, type);

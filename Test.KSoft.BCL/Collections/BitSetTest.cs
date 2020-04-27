@@ -67,7 +67,7 @@ namespace KSoft.Collections.Test
 		{
 			var lhs_bits = new bool[] { false, false, true, };
 			var lhs_bs = new BitSet(lhs_bits);
-			// rhs is our operation input, and it needs to be longer than lhs to also validate 
+			// rhs is our operation input, and it needs to be longer than lhs to also validate
 			// ClearAlignmentOnlyBitsForBitOperation's logic is working as intended
 			var rhs_bits = new bool[] { false, true, false, true, };
 			var rhs_bs = new BitSet(rhs_bits);
@@ -116,14 +116,14 @@ namespace KSoft.Collections.Test
 			var bs_empty = new BitSet();
 			var bits = new bool[] { false, false, true, };
 			var bs = new BitSet(bits);
-			Action bs_verify_unchanged_func = () =>
+			void bs_verify_unchanged_func()
 			{
 				Assert.AreEqual(1, bs.Cardinality);
 				Assert.AreEqual(2, bs.CardinalityZeros);
 				Assert.AreEqual(bs[0], false);
 				Assert.AreEqual(bs[1], false);
 				Assert.AreEqual(bs[2], true);
-			};
+			}
 
 			bs.Or(bs_empty);
 			bs_verify_unchanged_func();

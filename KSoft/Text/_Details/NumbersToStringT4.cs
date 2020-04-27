@@ -107,11 +107,11 @@ namespace KSoft
 		{
 			int start_index = sb.Count;
 
-			bool signed = false;
+			bool is_signed = false;
 			// Sign support only exist for decimal and lower bases
 			if (radix <= kBase10 && value < 0)
 			{
-				signed = true;
+				is_signed = true;
 				value = -value; // change the value to positive
 			}
 			else if (radix > kBase10 && value < 0)
@@ -126,7 +126,7 @@ namespace KSoft
 				value /= radix_in_word;
 			} while (value > 0);
 
-			if(signed)
+			if (is_signed)
 				sb.Add('-');
 
 			sb.Reverse(start_index, sb.Count-start_index);
@@ -270,11 +270,11 @@ namespace KSoft
 		{
 			int start_index = sb.Count;
 
-			bool signed = false;
+			bool is_signed = false;
 			// Sign support only exist for decimal and lower bases
 			if (radix <= kBase10 && value < 0)
 			{
-				signed = true;
+				is_signed = true;
 				value = -value; // change the value to positive
 			}
 			else if (radix > kBase10 && value < 0)
@@ -289,7 +289,7 @@ namespace KSoft
 				value /= radix_in_word;
 			} while (value > 0);
 
-			if(signed)
+			if (is_signed)
 				sb.Add('-');
 
 			sb.Reverse(start_index, sb.Count-start_index);

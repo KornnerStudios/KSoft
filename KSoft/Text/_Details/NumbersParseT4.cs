@@ -727,12 +727,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<byte?[]> kEmptyResult =
-				new Lazy<byte?[]>(() => new byte?[0]);
-
-			protected override IEnumerable<byte?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<byte?> EmptyResult => Array.Empty<byte?>();
 
 			protected byte? ProcessItem(int start, int length)
 			{
@@ -813,12 +808,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<sbyte?[]> kEmptyResult =
-				new Lazy<sbyte?[]>(() => new sbyte?[0]);
-
-			protected override IEnumerable<sbyte?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<sbyte?> EmptyResult => Array.Empty<sbyte?>();
 
 			protected sbyte? ProcessItem(int start, int length)
 			{
@@ -899,12 +889,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<ushort?[]> kEmptyResult =
-				new Lazy<ushort?[]>(() => new ushort?[0]);
-
-			protected override IEnumerable<ushort?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<ushort?> EmptyResult => Array.Empty<ushort?>();
 
 			protected ushort? ProcessItem(int start, int length)
 			{
@@ -985,12 +970,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<short?[]> kEmptyResult =
-				new Lazy<short?[]>(() => new short?[0]);
-
-			protected override IEnumerable<short?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<short?> EmptyResult => Array.Empty<short?>();
 
 			protected short? ProcessItem(int start, int length)
 			{
@@ -1071,12 +1051,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<uint?[]> kEmptyResult =
-				new Lazy<uint?[]>(() => new uint?[0]);
-
-			protected override IEnumerable<uint?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<uint?> EmptyResult => Array.Empty<uint?>();
 
 			protected uint? ProcessItem(int start, int length)
 			{
@@ -1157,12 +1132,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<int?[]> kEmptyResult =
-				new Lazy<int?[]>(() => new int?[0]);
-
-			protected override IEnumerable<int?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<int?> EmptyResult => Array.Empty<int?>();
 
 			protected int? ProcessItem(int start, int length)
 			{
@@ -1243,12 +1213,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<ulong?[]> kEmptyResult =
-				new Lazy<ulong?[]>(() => new ulong?[0]);
-
-			protected override IEnumerable<ulong?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<ulong?> EmptyResult => Array.Empty<ulong?>();
 
 			protected ulong? ProcessItem(int start, int length)
 			{
@@ -1329,12 +1294,7 @@ namespace KSoft
 			{
 			}
 
-			static readonly Lazy<long?[]> kEmptyResult =
-				new Lazy<long?[]>(() => new long?[0]);
-
-			protected override IEnumerable<long?> EmptyResult { get {
-				return kEmptyResult.Value;
-			} }
+			protected override IEnumerable<long?> EmptyResult => Array.Empty<long?>();
 
 			protected long? ProcessItem(int start, int length)
 			{

@@ -1,6 +1,5 @@
 ﻿using System;
 using Debug = System.Diagnostics.Debug;
-using Reflect = System.Reflection;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4.Values
@@ -14,7 +13,7 @@ namespace KSoft.T4.Values
 		/// <summary>Handle represents a value where NULL (0) is the 'invalid' sentinel</summary>
 		Nullable,
 		/// <summary>Handle is a wrapper for a void* value</summary>
-		IntPtr,
+		IntPtrWrapper,
 	};
 
 	public sealed class BittableHandleGenerator
@@ -68,10 +67,13 @@ namespace KSoft.T4.Values
 			mUnderlyingTypeName = underlyingTypeName;
 			mStructName = structName;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile,
 			NumberCodeDefinition underlyingType, string structName)
 			: this(ttFile, underlyingType.Code.ToString(), structName)
 		{
+			if (underlyingType == null)
+				throw new ArgumentNullException(nameof(underlyingType));
 		}
 
 		public static BittableHandleGenerator ForIntPtr(TextTemplating.TextTransformation ttFile,
@@ -79,7 +81,7 @@ namespace KSoft.T4.Values
 		{
 			return new BittableHandleGenerator(ttFile, "IntPtr", structName)
 			{
-				Kind = BittableHandleKind.IntPtr,
+				Kind = BittableHandleKind.IntPtrWrapper,
 
 				SupportsIComparable = false,
 
@@ -90,6 +92,7 @@ namespace KSoft.T4.Values
 		#endregion
 
 		#region Generate type declaration
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1822", Justification="Remove supression once this does something")]
 		void WriteDeclAttributes()
 		{
 			// #TODO_IMPLEMENT
@@ -110,7 +113,7 @@ namespace KSoft.T4.Values
 		// Curiously recurring template pattern
 		string BuildDeclInheritanceTextCRTP(string genericClassName)
 		{
-			return string.Format("{0}<{1}>", genericClassName, mStructName);
+			return string.Format(UtilT4.InvariantCultureInfo, "{0}<{1}>", genericClassName, mStructName);
 		}
 		int WriteDeclInheritanceEntry(int position, bool entryExists, string entryText)
 		{

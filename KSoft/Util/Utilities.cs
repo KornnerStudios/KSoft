@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -22,6 +23,7 @@ namespace KSoft
 		public const string kIgnoreOverrideJust = "Validation performed in base method";
 	};
 
+	[SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces")]
 	public static partial class Util
 	{
 		// Based on http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx
@@ -33,7 +35,12 @@ namespace KSoft
 		/// <summary>When you want to declare a variable, perhaps for debugging, but only ever assign it, use this to silence compiler warnings</summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="unused"></param>
-		public static void MarkUnusedVariable<T>(ref T unused) { }
+		public static void MarkUnusedVariable<T>(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			ref T unused)
+		{}
+
+		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
 
 		#region static EmptyArray
 		private static object[] gEmptyArray;
@@ -158,7 +165,7 @@ namespace KSoft
 		sealed class ComparerFactory<T>
 			: IComparer<T>
 		{
-			Func<T, T, int> mComparer;
+			readonly Func<T, T, int> mComparer;
 
 			ComparerFactory(Func<T, T, int> comparer)
 			{
@@ -202,7 +209,7 @@ namespace KSoft
 
 			// If they're not the same instance, or both null, either one of them is null or neither is.
 			// If x isn't null, then either y is null or they're two objects in which case they can be equated
-			if (!result && (object)x != null)
+			if (!result && !(x is null))
 				return x.Equals(y);
 
 			return result;

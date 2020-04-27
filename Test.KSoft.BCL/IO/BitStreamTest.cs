@@ -52,8 +52,7 @@ namespace KSoft.IO.Test
 				{
 					foreach (var kv in values)
 					{
-						uint word;
-						bs_old.Read(out word, 0, kv.Value);
+						bs_old.Read(out uint word, 0, kv.Value);
 						Assert.AreEqual(kv.Key, word);
 					}
 				}
@@ -76,8 +75,7 @@ namespace KSoft.IO.Test
 					bs.StreamMode = FileAccess.Read;
 					foreach (var kv in values)
 					{
-						uint word;
-						bs.ReadWord(out word, kv.Value);
+						bs.ReadWord(out uint word, kv.Value);
 						Assert.AreEqual(kv.Key, word);
 					}
 				}
@@ -102,21 +100,18 @@ namespace KSoft.IO.Test
 				using (var bs_old = new IO.BitStream(ms, FileAccess.Read))
 				{
 					bs_old.StreamMode = FileAccess.Read;
-					int _int;
-					long _long;
-					bool _bool;
 
 					//bs_old.Read(out _int, 0, 15);
-					bs_old.Read(out _int, 15);
+					bs_old.Read(out int _int, 15);
 					Assert.AreEqual(1337, _int);
 
-					bs_old.Read(out _long, 60, signExtend: true);
+					bs_old.Read(out long _long, 60, signExtend: true);
 					Assert.AreEqual(-21474836480L, _long);
 					//bs_old.Read(out _int, 0, 30);
 					bs_old.Read(out _int, 30, signExtend: true);
 					Assert.AreEqual(-1, _int);
 
-					bs_old.Read(out _bool);
+					bs_old.Read(out bool _bool);
 					Assert.AreEqual(false, _bool);
 
 					//bs_old.Read(out _int, 0, 27);

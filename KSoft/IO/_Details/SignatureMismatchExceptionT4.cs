@@ -11,25 +11,33 @@ namespace KSoft.IO
 	{
 		#region Stream ctors
 		public SignatureMismatchException(Stream s, byte expected, byte found) :
-			this(s.Position - 1, expected.ToString("X2"), found.ToString("X2"))
+			this(s.Position - 1,
+				expected.ToString("X2", Util.InvariantCultureInfo),
+				found.ToString("X2", Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}
 
 		public SignatureMismatchException(Stream s, ushort expected, ushort found) :
-			this(s.Position - 2, expected.ToString("X4"), found.ToString("X4"))
+			this(s.Position - 2,
+				expected.ToString("X4", Util.InvariantCultureInfo),
+				found.ToString("X4", Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}
 
 		public SignatureMismatchException(Stream s, uint expected, uint found) :
-			this(s.Position - 4, expected.ToString("X8"), found.ToString("X8"))
+			this(s.Position - 4,
+				expected.ToString("X8", Util.InvariantCultureInfo),
+				found.ToString("X8", Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}
 
 		public SignatureMismatchException(Stream s, ulong expected, ulong found) :
-			this(s.Position - 8, expected.ToString("X16"), found.ToString("X16"))
+			this(s.Position - 8,
+				expected.ToString("X16", Util.InvariantCultureInfo),
+				found.ToString("X16", Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}

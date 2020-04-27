@@ -39,7 +39,7 @@ namespace KSoft.Text
 	{
 		public static readonly TextLineInfo Empty = new TextLineInfo();
 
-		int mLineNumber, mLinePosition;
+		readonly int mLineNumber, mLinePosition;
 
 		public bool HasLineInfo	{ get { return mLineNumber > 0; } }
 

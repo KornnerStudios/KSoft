@@ -22,7 +22,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		// .NET 4.5: BinaryReader has 'bool leaveOpen' ctor
+		// #REVIEW: .NET 4.5: BinaryReader has 'bool leaveOpen' ctor
 		#region Ctor
 		/// <summary>Create a new binary reader which respects the endian format of the underlying stream's bytes</summary>
 		/// <param name="input">Base stream to use as input</param>
@@ -95,8 +95,7 @@ namespace KSoft.IO
 
 		public IDisposable ReadSignatureWithByteSwapSupport(uint expectedSignature)
 		{
-			uint actualSignature;
-			return ReadSignatureWithByteSwapSupport(expectedSignature, out actualSignature);
+			return ReadSignatureWithByteSwapSupport(expectedSignature, out uint actualSignature);
 		}
 
 		#region Pad

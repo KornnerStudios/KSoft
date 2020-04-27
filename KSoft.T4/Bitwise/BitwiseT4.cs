@@ -24,7 +24,10 @@ namespace KSoft.T4.Bitwise
 		// Get the keyword used to define general constants for integer types (bit count, etc)
 		public static string GetConstantKeyword(this NumberCodeDefinition def)
 		{
-			switch(def.Code)
+			if (def == null)
+				throw new ArgumentNullException(nameof(def));
+
+			switch (def.Code)
 			{
 				case TypeCode.Byte:
 				case TypeCode.SByte:
@@ -48,6 +51,9 @@ namespace KSoft.T4.Bitwise
 		}
 		public static string GetVectorsSuffix(this NumberCodeDefinition def)
 		{
+			if (def == null)
+				throw new ArgumentNullException(nameof(def));
+
 			if (!def.IsByte)
 				return GetConstantKeyword(def);
 
@@ -139,10 +145,12 @@ namespace KSoft.T4.Bitwise
 			PrimitiveDefinitions.kUInt32,
 			PrimitiveDefinitions.kUInt64,
 		};
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		public static IReadOnlyList<NumberCodeDefinition> BittableTypes_Unsigned { get {
 			return kBittableTypes_Unsigned;
 		} }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		public static IEnumerable<NumberCodeDefinition> BittableTypes_MajorWords { get {
 			yield return PrimitiveDefinitions.kUInt32;
 			yield return PrimitiveDefinitions.kUInt64;
@@ -177,7 +185,7 @@ namespace KSoft.T4.Bitwise
 			readonly string mBufferName;
 			readonly string mOffsetName; // NOTE: offset variable must be mutable!
 
-			public IntegerByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
+			internal IntegerByteAccessCodeGenerator(TextTemplating.TextTransformation ttFile,
 				NumberCodeDefinition def,
 				string byteName, string bufferName, string offsetName = null,
 				int bitCount = -1)
@@ -289,24 +297,24 @@ namespace KSoft.T4.Bitwise
 
 		public abstract class BitUtilCodeGenerator
 		{
-			protected TextTemplating.TextTransformation mFile;
-			protected NumberCodeDefinition mDef;
+			protected TextTemplating.TextTransformation File { get; private set; }
+			protected NumberCodeDefinition Def { get; private set; }
 
 			protected BitUtilCodeGenerator(TextTemplating.TextTransformation ttFile, NumberCodeDefinition def)
 			{
-				mFile = ttFile;
-				mDef = def;
+				File = ttFile;
+				Def = def;
 			}
 
 			public void Generate()
 			{
-				using (mFile.EnterCodeBlock())
-				using (mFile.EnterCodeBlock())
+				using (File.EnterCodeBlock())
+				using (File.EnterCodeBlock())
 				{
 					GenerateXmlDoc();
 					GenerateMethodSignature();
 
-					using (mFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
+					using (File.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
 					{
 						GeneratePrologue();
 						GenerateCode();

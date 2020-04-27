@@ -20,10 +20,8 @@ namespace KSoft.IO
 
 		static void InitializeBitmaskLookUpTable(out TWord[] table)
 		{
-			int word_bit_count, word_byte_count; // we define a const for these now, so ignore it
-			int word_bit_shift, word_bit_mod; // unused
 			bool success = Bits.GetBitConstants(typeof(TWord),
-				out word_byte_count, out word_bit_count, out word_bit_shift, out word_bit_mod);
+				out int word_byte_count, out int word_bit_count, out int word_bit_shift, out int word_bit_mod);
 			Contract.Assert(success, "TWord is an invalid type for BitStream");
 
 			Bits.BitmaskLookUpTableGenerate(kWordBitCount, out table);
@@ -124,8 +122,7 @@ namespace KSoft.IO
 
 		public bool ReadBoolean()
 		{
-			TWord word;
-			ReadWord(out word, Bits.kBooleanBitCount);
+			ReadWord(out TWord word, Bits.kBooleanBitCount);
 
 			return 1 == word;
 		}

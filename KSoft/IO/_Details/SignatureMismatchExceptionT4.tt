@@ -19,7 +19,9 @@ namespace KSoft.IO
 <#	string hex_format = "\"" + word_type.ToStringHexFormat + "\"";
 #>
 		public SignatureMismatchException(Stream s, <#= word_type.Keyword #> expected, <#= word_type.Keyword #> found) :
-			this(s.Position - <#= word_type.SizeOfInBytes #>, expected.ToString(<#= hex_format #>), found.ToString(<#= hex_format #>))
+			this(s.Position - <#= word_type.SizeOfInBytes #>,
+				expected.ToString(<#= hex_format #>, Util.InvariantCultureInfo),
+				found.ToString(<#= hex_format #>, Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}

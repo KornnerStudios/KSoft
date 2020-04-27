@@ -1,5 +1,5 @@
 ﻿#if CONTRACTS_FULL_SHIM
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
 using System.Reflection;
 
@@ -17,6 +17,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace System.Diagnostics.ContractsShim
 {
 	// alt for System.Diagnostics.Contracts.__ContractsRuntime+ContractException
+	[SuppressMessage("Microsoft.Design", "CA1064")]
 	internal class ContractShimException : Exception
 	{
 		public ContractShimException() : base() { }

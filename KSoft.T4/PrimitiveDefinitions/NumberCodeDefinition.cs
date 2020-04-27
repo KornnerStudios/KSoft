@@ -30,12 +30,13 @@ namespace KSoft.T4
 			}
 			else
 			{
-				desc_id = Code.ToString().ToLower() + "-precision";
+				desc_id = Code.ToString().ToLower(UtilT4.InvariantCultureInfo) + "-precision";
 
 				desc_postfix = "number";
 			}
 
-			SetupDescription(string.Format("{0} {1} {2}",
+			SetupDescription(string.Format(UtilT4.InvariantCultureInfo,
+				"{0} {1} {2}",
 				desc_prefix, desc_id, desc_postfix).Trim());
 		}
 
@@ -124,7 +125,7 @@ namespace KSoft.T4
 
 		/// <summary>ToString format string to get the integer's value in a non-truncated hexadecimal value</summary>
 		public string ToStringHexFormat { get {
-			return IsInteger 
+			return IsInteger
 				? "X" + (SizeOfInBytes * 2)
 				: "";
 		} }

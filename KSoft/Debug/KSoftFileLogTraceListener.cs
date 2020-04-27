@@ -108,7 +108,7 @@ namespace KSoft.Debug
 			: IDisposable
 		{
 			private StreamWriter mStream;
-			private object mSyncObject;
+			private readonly object mSyncObject;
 			private int mReferenceCount;
 			private bool mDisposed;
 
@@ -235,7 +235,7 @@ namespace KSoft.Debug
 
 			kNumberOf
 		};
-		static string[] mSupportedAttributes;
+		static readonly string[] mSupportedAttributes;
 		private Collections.BitVector32 mPropertiesSet;
 
 		private bool GetPropertyIfNotSet(Property property, out string value)
@@ -258,8 +258,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.DoNotIncludeSourceName, out property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeSourceName, out string property))
 				{
 					this.DoNotIncludeSourceName = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -277,8 +276,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.DoNotIncludeEventType, out property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeEventType, out string property))
 				{
 					this.DoNotIncludeEventType = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -296,8 +294,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.DoNotIncludeEventId, out property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeEventId, out string property))
 				{
 					this.DoNotIncludeEventId = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -315,8 +312,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.OnlyWriteExceptionMessage, out property))
+				if (GetPropertyIfNotSet(Property.OnlyWriteExceptionMessage, out string property))
 				{
 					this.OnlyWriteExceptionMessage = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -335,8 +331,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.Append, out property))
+				if (GetPropertyIfNotSet(Property.Append, out string property))
 				{
 					this.Append = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -359,8 +354,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.AutoFlush, out property))
+				if (GetPropertyIfNotSet(Property.AutoFlush, out string property))
 				{
 					this.AutoFlush = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -380,8 +374,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.BaseFileName, out property))
+				if (GetPropertyIfNotSet(Property.BaseFileName, out string property))
 				{
 					this.BaseFileName = property;
 				}
@@ -407,8 +400,7 @@ namespace KSoft.Debug
 			[SecuritySafeCritical]
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.CustomLocation, out property))
+				if (GetPropertyIfNotSet(Property.CustomLocation, out string property))
 				{
 					this.CustomLocation = property;
 				}
@@ -438,8 +430,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.Delimiter, out property))
+				if (GetPropertyIfNotSet(Property.Delimiter, out string property))
 				{
 					this.Delimiter = property;
 				}
@@ -457,8 +448,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.DiskSpaceExhaustedBehavior, out property))
+				if (GetPropertyIfNotSet(Property.DiskSpaceExhaustedBehavior, out string property))
 				{
 					var converter = TypeDescriptor.GetConverter(typeof(DiskSpaceExhaustedOption));
 					this.DiskSpaceExhaustedBehavior = (DiskSpaceExhaustedOption)converter.ConvertFromInvariantString(property);
@@ -480,8 +470,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.Encoding, out property))
+				if (GetPropertyIfNotSet(Property.Encoding, out string property))
 				{
 					this.Encoding = Encoding.GetEncoding(property);
 				}
@@ -501,8 +490,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.IncludeHostName, out property))
+				if (GetPropertyIfNotSet(Property.IncludeHostName, out string property))
 				{
 					this.IncludeHostName = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
 				}
@@ -522,8 +510,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.Location, out property))
+				if (GetPropertyIfNotSet(Property.Location, out string property))
 				{
 					TypeConverter converter = TypeDescriptor.GetConverter(typeof(LogFileLocation));
 					this.Location = (LogFileLocation)converter.ConvertFromInvariantString(property);
@@ -532,7 +519,7 @@ namespace KSoft.Debug
 			}
 			set
 			{
-				ValidateLogFileLocationEnumValue(value, "value");
+				ValidateLogFileLocationEnumValue(value, nameof(value));
 				if (this.mLocation != value)
 				{
 					this.CloseCurrentStream();
@@ -547,8 +534,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.LogFileCreationSchedule, out property))
+				if (GetPropertyIfNotSet(Property.LogFileCreationSchedule, out string property))
 				{
 					var converter = TypeDescriptor.GetConverter(typeof(LogFileCreationScheduleOption));
 					this.LogFileCreationSchedule = (LogFileCreationScheduleOption)converter.ConvertFromInvariantString(property);
@@ -557,7 +543,7 @@ namespace KSoft.Debug
 			}
 			set
 			{
-				ValidateLogFileCreationScheduleOptionEnumValue(value, "value");
+				ValidateLogFileCreationScheduleOptionEnumValue(value, nameof(value));
 				if (value != this.mLogFileDateStamp)
 				{
 					this.CloseCurrentStream();
@@ -572,8 +558,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.MaxFileSize, out property))
+				if (GetPropertyIfNotSet(Property.MaxFileSize, out string property))
 				{
 					this.MaxFileSize = Convert.ToInt64(property, CultureInfo.InvariantCulture);
 				}
@@ -595,8 +580,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				string property;
-				if (GetPropertyIfNotSet(Property.ReservedDiskSpace, out property))
+				if (GetPropertyIfNotSet(Property.ReservedDiskSpace, out string property))
 				{
 					this.ReserveDiskSpace = Convert.ToInt64(property, CultureInfo.InvariantCulture);
 				}
@@ -624,7 +608,7 @@ namespace KSoft.Debug
 			}
 		}
 
-		private DateTime mDay;
+		private readonly DateTime mDay;
 		private int mDays;
 		private DateTime mFirstDayOfWeek;
 
@@ -1331,10 +1315,7 @@ namespace KSoft.Debug
 		{
 			string pathRoot = Path.GetPathRoot(Path.GetFullPath(this.FullLogFileName));
 			new FileIOPermission(FileIOPermissionAccess.PathDiscovery, pathRoot).Demand();
-			long num = -1L;
-			long num2;
-			long num3;
-			if (GetDiskFreeSpaceEx(pathRoot, out num, out num2, out num3) && num > -1L)
+			if (GetDiskFreeSpaceEx(pathRoot, out long num, out long num2, out long num3) && num > -1L)
 			{
 				return num;
 			}

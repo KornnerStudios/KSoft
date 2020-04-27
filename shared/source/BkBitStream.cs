@@ -81,6 +81,7 @@ namespace BKSystem.IO
 	/// <seealso cref="Stream"/>
 	/// <seealso cref="int"/>
 	/// <seealso cref="byte"/>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0018:Inline variable declaration")]
 	public class BitStream : Stream
 	{
 		public FileAccess StreamMode { get; set; }
@@ -290,7 +291,7 @@ namespace BKSystem.IO
 		/// <remarks>
 		///		This field is static.
 		/// </remarks>
-		static uint [] BitMaskHelperLUT = new uint []
+		static readonly uint [] BitMaskHelperLUT = new uint []
 		{
 			0x00000000,
 			0x00000001, 0x00000003, 0x00000007, 0x0000000F,

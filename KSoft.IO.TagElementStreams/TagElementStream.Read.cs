@@ -28,8 +28,7 @@ namespace KSoft.IO
 			string str, ref TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			TEnum temp;
-			bool result = Enum.TryParse(str, ignoreCase, out temp);
+			bool result = Enum.TryParse(str, ignoreCase, out TEnum temp);
 
 			if (!result)
 				return TagElementStreamParseEnumResult.FailedMemberNotFound;

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace KSoft.T4
 {
-	public class NumbersT4
+	public static class NumbersT4
 	{
 		/// <summary>
 		/// 	Should KSoft.Numbers.ToString use the ToStringBuilder() overload that uses a List&amp;char&amp;?
 		/// </summary>
-		public static bool ToStringShouldUseListOfChar = true;
+		public static bool ToStringShouldUseListOfChar { get; } = true;
 
-		public static bool ParseShouldUseUppercaseCheck = false;
+		public static bool ParseShouldUseUppercaseCheck { get; } = false;
 
-		public static bool ParseShouldAllowLeadingWhite = true; // a la NumberStyles.AllowLeadingWhite
+		public static bool ParseShouldAllowLeadingWhite { get; } = true; // a la NumberStyles.AllowLeadingWhite
 
 		public static IEnumerable<NumberCodeDefinition> ParseableIntegersSmall { get {
 			yield return PrimitiveDefinitions.kByte;

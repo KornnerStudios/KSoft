@@ -77,7 +77,7 @@ namespace MiniJSON {
     /// All numbers are parsed to doubles.
     /// </summary>
     public static class Json {
-        public static string PrettyPrintSpace = "\t";
+        public static string PrettyPrintSpace { get; set; } = "\t";
 
         private static object ConvertInt64(Type returnType, long number)
         {
@@ -176,14 +176,12 @@ namespace MiniJSON {
 
         public static T GetValue<T>(object jsonObject, string key, T defaultValue = default(T))
         {
-            var dict = jsonObject as Dictionary<string, object>;
-            if (dict == null)
-            {
-                return defaultValue;
-            }
+			if (!(jsonObject is Dictionary<string, object> dict))
+			{
+				return defaultValue;
+			}
 
-            object result;
-            if (!dict.TryGetValue(key, out result))
+            if (!dict.TryGetValue(key, out object result))
             {
                 return defaultValue;
             }
@@ -244,11 +242,10 @@ namespace MiniJSON {
 
         public static void SetValue(object jsonObject, string key, object value)
         {
-            var dict = jsonObject as Dictionary<string, object>;
-            if (dict == null)
-                return;
+			if (!(jsonObject is Dictionary<string, object> dict))
+				return;
 
-            if (key.IndexOf('.') != -1)
+			if (key.IndexOf('.') != -1)
             {
                 Json.SetValue(dict, key.Split('.'), value);
             }
@@ -535,14 +532,19 @@ namespace MiniJSON {
                 // Allow scientific notation in floating point numbers by @shiwano
                 // https://github.com/Jackyjjc/MiniJSON.cs/commit/6de00beb134bbab9d873033a48b32e4067ed0c25
                 if (number.IndexOf('.') == -1 && number.IndexOf('E') == -1 && number.IndexOf('e') == -1) {
-                    long parsedInt;
-                    Int64.TryParse(number, out parsedInt);
-                    return parsedInt;
+					// KM00 start
+					if (Int64.TryParse(number, out long parsedInt))
+					{
+						return parsedInt;
+					}
+					else
+					{
+					}
+					// KM00 end
                 }
 
-                double parsedDouble;
                 // KM00 start
-                KSoft.Numbers.DoubleTryParseInvariant(number, out parsedDouble);
+                KSoft.Numbers.DoubleTryParseInvariant(number, out double parsedDouble);
                 // KM00 end
                 return parsedDouble;
             }
@@ -660,7 +662,7 @@ namespace MiniJSON {
         /// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
         public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
-            return Serializer.Serialize(obj);
+            return Serializer.Serialize(obj, prettyPrint, numPrettyPrintLevels);
         }
 
         sealed class Serializer {
@@ -673,11 +675,12 @@ namespace MiniJSON {
             }
 
             public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
-                var instance = new Serializer();
-
-                instance.prettyPrint = prettyPrint;
-                instance.numPrettyPrintLevels = numPrettyPrintLevels;
-                instance.SerializeValue(obj);
+				var instance = new Serializer
+				{
+					prettyPrint = prettyPrint,
+					numPrettyPrintLevels = numPrettyPrintLevels
+				};
+				instance.SerializeValue(obj);
 
                 return instance.builder.ToString();
             }
