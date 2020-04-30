@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -17,18 +18,20 @@ namespace KSoft.Text
 	/// is an existing '\0' character in the user supplied strings. If you pass such strings to
 	/// the encoding for streaming the results will be undefined. Oh and bad.
 	/// </remarks>
-	public sealed partial class StringStorageEncoding : System.Text.Encoding,
-		IEquatable<StringStorageEncoding>, IEqualityComparer<StringStorageEncoding>,
-		IComparer<StringStorageEncoding>, IComparable<StringStorageEncoding>
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
+	public sealed partial class StringStorageEncoding
+		: System.Text.Encoding
+		, IEquatable<StringStorageEncoding>, IEqualityComparer<StringStorageEncoding>
+		, IComparer<StringStorageEncoding>, IComparable<StringStorageEncoding>
 	{
 		Encoding mBaseEncoding;
 		#region Storage
 		StringStorage mStorage;
 		/// <summary>The string storage definition for this encoding</summary>
-		public StringStorage Storage { get { return mStorage; } }
+		public StringStorage Storage { get => mStorage; }
 		#endregion
 		Options mOptions;
-		bool DontAlwaysFlush { get { return (mOptions & Options.DontAlwaysFlush) != 0; } }
+		bool DontAlwaysFlush { get => (mOptions & Options.DontAlwaysFlush) != 0; }
 		/// <summary>Number of bytes a null character consumes</summary>
 		int mNullCharacterSize;
 		/// <summary>
@@ -196,17 +199,17 @@ namespace KSoft.Text
 		#endregion
 
 		#region overrides to baseEncoding
-		public override string BodyName			{ get { return mBaseEncoding.BodyName; } }
-		public override int CodePage			{ get { return mBaseEncoding.CodePage; } }
-		public override string EncodingName		{ get { return mBaseEncoding.EncodingName; } }
-		public override string HeaderName		{ get { return mBaseEncoding.HeaderName; } }
-		public override bool IsBrowserDisplay	{ get { return mBaseEncoding.IsBrowserDisplay; } }
-		public override bool IsBrowserSave		{ get { return mBaseEncoding.IsBrowserSave; } }
-		public override bool IsMailNewsDisplay	{ get { return mBaseEncoding.IsMailNewsDisplay; } }
-		public override bool IsMailNewsSave		{ get { return mBaseEncoding.IsMailNewsSave; } }
-		public override bool IsSingleByte		{ get { return mBaseEncoding.IsSingleByte; } }
-		public override string WebName			{ get { return mBaseEncoding.WebName; } }
-		public override int WindowsCodePage		{ get { return mBaseEncoding.WindowsCodePage; } }
+		public override string BodyName			=> mBaseEncoding.BodyName;
+		public override int CodePage			=> mBaseEncoding.CodePage;
+		public override string EncodingName		=> mBaseEncoding.EncodingName;
+		public override string HeaderName		=> mBaseEncoding.HeaderName;
+		public override bool IsBrowserDisplay	=> mBaseEncoding.IsBrowserDisplay;
+		public override bool IsBrowserSave		=> mBaseEncoding.IsBrowserSave;
+		public override bool IsMailNewsDisplay	=> mBaseEncoding.IsMailNewsDisplay;
+		public override bool IsMailNewsSave		=> mBaseEncoding.IsMailNewsSave;
+		public override bool IsSingleByte		=> mBaseEncoding.IsSingleByte;
+		public override string WebName			=> mBaseEncoding.WebName;
+		public override int WindowsCodePage		=> mBaseEncoding.WindowsCodePage;
 
 		/// <summary>Compares this to another object testing for equality</summary>
 		/// <param name="obj"></param>
@@ -216,31 +219,16 @@ namespace KSoft.Text
 		public override bool Equals(object value)
 		{
 			//return mBaseEncoding.Equals(value);
-			if(value is StringStorageEncoding)
-				return this.Equals(value as StringStorageEncoding);
+			if (value is StringStorageEncoding e)
+				return this.Equals(e);
 
 			return false;
 		}
-		public override System.Text.Decoder GetDecoder()
-		{
-			return new Decoder(this);
-		}
-		public override System.Text.Encoder GetEncoder()
-		{
-			return new Encoder(this);
-		}
-		public override int GetHashCode()
-		{
-			return mBaseEncoding.GetHashCode();
-		}
-		public override byte[] GetPreamble()
-		{
-			return mBaseEncoding.GetPreamble();
-		}
-		public override bool IsAlwaysNormalized(NormalizationForm form)
-		{
-			return mBaseEncoding.IsAlwaysNormalized(form);
-		}
+		public override System.Text.Decoder GetDecoder() => new Decoder(this);
+		public override System.Text.Encoder GetEncoder() => new Encoder(this);
+		public override int GetHashCode() => mBaseEncoding.GetHashCode();
+		public override byte[] GetPreamble() => mBaseEncoding.GetPreamble();
+		public override bool IsAlwaysNormalized(NormalizationForm form) => mBaseEncoding.IsAlwaysNormalized(form);
 		#endregion
 
 		#region IEquatable<StringStorageEncoding> Members
@@ -256,15 +244,9 @@ namespace KSoft.Text
 				mStorage.Equals(other.mStorage);
 		}
 
-		public bool Equals(StringStorageEncoding x, StringStorageEncoding y)
-		{
-			return x.Equals(y);
-		}
+		public bool Equals(StringStorageEncoding x, StringStorageEncoding y) => x.Equals(y);
 
-		public int GetHashCode(StringStorageEncoding obj)
-		{
-			return obj.GetHashCode();
-		}
+		public int GetHashCode(StringStorageEncoding obj) => obj.GetHashCode();
 		#endregion
 
 		#region IComparer<StringStorageEncoding> Members
@@ -272,10 +254,7 @@ namespace KSoft.Text
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public int Compare(StringStorageEncoding x, StringStorageEncoding y)
-		{
-			return x.CompareTo(y);
-		}
+		public int Compare(StringStorageEncoding x, StringStorageEncoding y) => x.CompareTo(y);
 		/// <summary>Compare this with another <see cref="StringStorageEncoding"/> object for similar underlying values</summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
@@ -292,13 +271,15 @@ namespace KSoft.Text
 
 
 		#region Static encodings
-		internal static readonly StringStorageEncoding[] kStorageEncodingList;
-		static StringStorageEncoding()
+		internal static readonly StringStorageEncoding[] kStorageEncodingList = EncodingArrayFromStorageArray(StringStorage.kStorageTypesList);
+		static StringStorageEncoding[] EncodingArrayFromStorageArray(StringStorage[] storageArray)
 		{
-			kStorageEncodingList = new StringStorageEncoding[StringStorage.kStorageTypesList.Length];
-			for (int x = 0; x < kStorageEncodingList.Length; x++)
-				kStorageEncodingList[x] = new StringStorageEncoding(StringStorage.kStorageTypesList[x]);
+			var encodings = new StringStorageEncoding[storageArray.Length];
+			for (int x = 0; x < encodings.Length; x++)
+				encodings[x] = new StringStorageEncoding(storageArray[x]);
+			return encodings;
 		}
+
 		/// <summary>
 		/// Try and get an existing <b>static</b> <see cref="StringStorageEncoding"/> instance
 		/// based on a provided definition

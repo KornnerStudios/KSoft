@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Pure = System.Diagnostics.Contracts.PureAttribute;
 using DebuggerStepThrough = System.Diagnostics.DebuggerStepThroughAttribute;
 
@@ -57,16 +58,18 @@ namespace KSoft
 
 		[Pure, DebuggerStepThrough] public static bool True()				{ return true; }
 		[Pure, DebuggerStepThrough] public static bool False()				{ return false; }
+		[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
 		[Pure, DebuggerStepThrough] public static bool True<T>(T dummy)		{ return true; }
+		[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
 		[Pure, DebuggerStepThrough] public static bool False<T>(T dummy)	{ return false; }
 
 		[Pure, DebuggerStepThrough]
-		public static bool IsNotNull<T>(T obj)
+		public static bool IsNotNull<T>(T theObj)
 			where T : class
-		{ return obj != null; }
+		{ return theObj != null; }
 
-		[Pure, DebuggerStepThrough] public static bool IsNotEmpty(System.Guid guid)		{ return guid != System.Guid.Empty; }
-		[Pure, DebuggerStepThrough] public static bool IsNotEmpty(Values.KGuid guid)	{ return guid != Values.KGuid.Empty; }
+		[Pure, DebuggerStepThrough] public static bool IsNotEmpty(System.Guid uuid)		{ return uuid != System.Guid.Empty; }
+		[Pure, DebuggerStepThrough] public static bool IsNotEmpty(Values.KGuid uuid)	{ return uuid != Values.KGuid.Empty; }
 
 		[Pure, DebuggerStepThrough] public static bool IsZero(int x)	{ return x == 0; }
 		[Pure, DebuggerStepThrough] public static bool IsZero(uint x)	{ return x == 0; }

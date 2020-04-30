@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -12,6 +13,7 @@ namespace KSoft.Collections
 	using StateFilterEnumeratorWrapper = EnumeratorWrapper<int, IReadOnlyBitSetEnumerators.StateFilterEnumerator>;
 
 	[Contracts.ContractClass(typeof(IReadOnlyBitSetContract))]
+	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public interface IReadOnlyBitSet
 		: ICloneable
 		, IReadOnlyCollection<bool>
@@ -44,6 +46,7 @@ namespace KSoft.Collections
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
+		[SuppressMessage("Microsoft.Design", "CA1716:IdentifiersShouldNotMatchKeywords")]
 		bool Get(int bitIndex);
 
 		int NextBitIndex(int startBitIndex, bool stateFilter);

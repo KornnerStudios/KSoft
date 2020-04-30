@@ -1,4 +1,5 @@
-﻿
+﻿using System.Diagnostics.CodeAnalysis;
+
 namespace KSoft.Collections
 {
 	/// <summary>Directions in which collection items may be sorted</summary>
@@ -14,6 +15,7 @@ namespace KSoft.Collections
 	};
 
 	[System.Flags]
+	[SuppressMessage("Microsoft.Design", "CA1714:FlagsEnumsShouldHavePluralNames")]
 	public enum TreeTraversalDirection : byte
 	{
 		PreOrder	= 1,	// Root, Left, Right

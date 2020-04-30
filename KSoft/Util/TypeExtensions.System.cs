@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
@@ -21,13 +22,13 @@ namespace KSoft
 
 		#region TypeCode
 		[Contracts.Pure]
-		public static TypeCode TryGetTypeCode(this object obj)
+		public static TypeCode TryGetTypeCode(this object theObj)
 		{
 			var type_code = TypeCode.Empty;
 
-			if (obj != null)
+			if (theObj != null)
 			{
-				type_code = Type.GetTypeCode(obj.GetType());
+				type_code = Type.GetTypeCode(theObj.GetType());
 			}
 
 			return type_code;
@@ -336,8 +337,8 @@ namespace KSoft
 					// Unify path names to unix style
 					//path = path.Replace('\\', '/');
 
-					const string kBasePath = @"KStudio\Vita\";
-					int base_path_index = path.IndexOf(kBasePath);
+					const string kBasePath = @"KStudio\Vita\"; // #TODO need a better way of doing this
+					int base_path_index = path.IndexOf(kBasePath, StringComparison.InvariantCultureIgnoreCase);
 					if (base_path_index >= 0)
 					{
 						path = path.Substring(base_path_index + kBasePath.Length);
@@ -379,6 +380,7 @@ namespace KSoft
 		#endregion
 
 		#region String
+		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
 		public static string Format(this string format, params object[] args)
 		{
 			return string.Format(format, args);
@@ -470,7 +472,8 @@ namespace KSoft
 			{
 				char c = s[x];
 				if (c < 0 || c > sbyte.MaxValue)
-					throw new System.IO.InvalidDataException(string.Format("0x{0:X4} does not look like ASCII. #{1} in '{2}'",
+					throw new System.IO.InvalidDataException(string.Format(KSoft.Util.InvariantCultureInfo,
+						"0x{0:X4} does not look like ASCII. #{1} in '{2}'",
 						(int)c, x, s));
 
 				buffer[x] = (byte)c;
@@ -495,6 +498,7 @@ namespace KSoft
 			return null;
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
 		public static string AddFormat(this ICollection<string> collection, string format, params object[] args)
 		{
 			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
@@ -1370,13 +1374,13 @@ namespace KSoft
 		#endregion
 
 		#region ObjectModel
-		public static bool SetFieldVal<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+		public static bool SetFieldVal<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 			where T : struct, IEquatable<T>
 		{
-			if (obj == null)
+			if (theObj == null)
 				return false;
 
 			if (!overrideChecks)
@@ -1386,18 +1390,18 @@ namespace KSoft
 			field = value;
 
 			if (handler != null)
-				handler(obj, new PropertyChangedEventArgs(propertyName));
+				handler(theObj, new PropertyChangedEventArgs(propertyName));
 
 			return true;
 		}
 
-		public static bool SetFieldEnum<TEnum>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+		public static bool SetFieldEnum<TEnum>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
 			, ref TEnum field, TEnum value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			if (obj == null)
+			if (theObj == null)
 				return false;
 
 			if (!overrideChecks)
@@ -1407,18 +1411,18 @@ namespace KSoft
 			field = value;
 
 			if (handler != null)
-				handler(obj, new PropertyChangedEventArgs(propertyName));
+				handler(theObj, new PropertyChangedEventArgs(propertyName));
 
 			return true;
 		}
 
-		public static bool SetFieldObj<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+		public static bool SetFieldObj<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 			where T : class, IEquatable<T>
 		{
-			if (obj == null)
+			if (theObj == null)
 				return false;
 
 			if (!overrideChecks)
@@ -1435,17 +1439,17 @@ namespace KSoft
 			field = value;
 
 			if (handler != null)
-				handler(obj, new PropertyChangedEventArgs(propertyName));
+				handler(theObj, new PropertyChangedEventArgs(propertyName));
 
 			return true;
 		}
 
-		public static bool SetField<T>(this INotifyPropertyChanged obj, PropertyChangedEventHandler handler
+		public static bool SetField<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
-			if (obj == null)
+			if (theObj == null)
 				return false;
 
 			if (!overrideChecks)
@@ -1455,7 +1459,7 @@ namespace KSoft
 			field = value;
 
 			if (handler != null)
-				handler(obj, new PropertyChangedEventArgs(propertyName));
+				handler(theObj, new PropertyChangedEventArgs(propertyName));
 
 			return true;
 		}

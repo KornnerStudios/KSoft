@@ -1,7 +1,7 @@
 ﻿
 namespace KSoft.IO
 {
-	public partial class TagElementStreamDefaultSerializer
+	partial class TagElementStreamDefaultSerializer
 	{
 		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
 			ref Shell.Processor value)

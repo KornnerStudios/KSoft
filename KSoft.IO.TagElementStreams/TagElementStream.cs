@@ -168,7 +168,7 @@ namespace KSoft.IO
 		/// <summary>Optionally enter an tag element</summary>
 		/// <typeparam name="T">Context type for the write predicate's object</typeparam>
 		/// <param name="elementName">If null, no bookmarking is actually performed</param>
-		/// <param name="obj">The context object for <paramref name="writeShouldEnterBookmark"/></param>
+		/// <param name="theObj">The context object for <paramref name="writeShouldEnterBookmark"/></param>
 		/// <param name="writeShouldEnterBookmark">When writing, this predicate controls if a bookmark is entered</param>
 		/// <returns></returns>
 		/// <remarks>
@@ -176,10 +176,10 @@ namespace KSoft.IO
 		/// When writing, works entirely on <see cref="writeShouldEnterBookmark"/> for entering a bookmark.
 		/// </remarks>
 		public /*IDisposable*/TagElementStreamBookmark<TDoc, TCursor, TName> EnterCursorBookmarkOpt<T>(TName elementName,
-			T obj, Predicate<T> writeShouldEnterBookmark)
+			T theObj, Predicate<T> writeShouldEnterBookmark)
 		{
 			if ((IsReading && ElementsExists(elementName)) ||
-				(IsWriting && writeShouldEnterBookmark(obj)))
+				(IsWriting && writeShouldEnterBookmark(theObj)))
 				return new TagElementStreamBookmark<TDoc, TCursor, TName>(this, elementName);
 
 			return TagElementStreamBookmark<TDoc, TCursor, TName>.Null;
@@ -243,11 +243,20 @@ namespace KSoft.IO
 		protected abstract int PredictElementCount(TCursor cursor);
 		#endregion
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
-			mCursor = null;
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
-			Owner = null;
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				mCursor = null;
+
+				Owner = null;
+			}
 		}
 
 		[Contracts.Pure]

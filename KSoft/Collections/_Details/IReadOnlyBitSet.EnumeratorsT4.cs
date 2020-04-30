@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Collections
 {
@@ -15,7 +16,9 @@ namespace KSoft.Collections
 			int mBitIndex;
 			bool mCurrent;
 
-			StateEnumerator(IReadOnlyBitSet bitset, bool dummy)
+			StateEnumerator(IReadOnlyBitSet bitset,
+				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				bool dummy)
 				: this()
 			{
 				mSet = bitset;
@@ -36,7 +39,7 @@ namespace KSoft.Collections
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+			object System.Collections.IEnumerator.Current { get => this.Current; }
 
 			public void Reset()
 			{
@@ -60,7 +63,9 @@ namespace KSoft.Collections
 			readonly bool mStateFilter;
 			readonly int mStartBitIndex;
 
-			StateFilterEnumerator(IReadOnlyBitSet bitset, bool dummy)
+			StateFilterEnumerator(IReadOnlyBitSet bitset,
+				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				bool dummy)
 				: this()
 			{
 				mSet = bitset;
@@ -81,7 +86,7 @@ namespace KSoft.Collections
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+			object System.Collections.IEnumerator.Current { get => this.Current; }
 
 			public void Reset()
 			{

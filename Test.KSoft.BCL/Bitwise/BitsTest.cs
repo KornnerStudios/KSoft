@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -10,6 +11,7 @@ namespace KSoft.Bitwise.Test
 		const ulong kOddBits = 0x5555555555555555UL;
 		const ulong kEvenNybbles = 0x3333333333333333UL;
 		const ulong kOddNybbles = 0xCCCCCCCCCCCCCCCCUL;
+		[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields")]
 		const ulong kMiddleNybbles = 0x6666666666666666UL; // Bit pattern middle bits are set in a nybble
 
 		#region BitCount
@@ -84,6 +86,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 //		[TestMethod]
+		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic", Justification="#TODO_UNITTEST")]
 		public void Bits_BitCountToMaskTest()
 		{
 			// #TODO_UNITTEST
@@ -169,6 +172,7 @@ namespace KSoft.Bitwise.Test
 		#endregion
 
 		#region BitSwap
+		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic", Justification="#TODO_UNITTEST")]
 		public void Bits_BitSwapTest()
 		{
 			// #TODO_UNITTEST

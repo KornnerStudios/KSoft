@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -12,10 +13,12 @@ namespace KSoft.Values
 	/// <summary>Base interface for Group Tag identifier definitions</summary>
 	[Contracts.ContractClass(typeof(GroupTagDataContract))]
 //	[System.ComponentModel.TypeConverter(typeof(GroupTagDataConverter))]
-	public abstract class GroupTagData : IO.IEndianStreamable,
-		IComparer<GroupTagData>, IComparable<GroupTagData>,
-		IEquatable<GroupTagData>, IEqualityComparer<GroupTagData>,
-		System.Collections.IComparer, IComparable
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
+	public abstract class GroupTagData
+		: IO.IEndianStreamable
+		, IComparer<GroupTagData>, IComparable<GroupTagData>
+		, IEquatable<GroupTagData>, IEqualityComparer<GroupTagData>
+		, System.Collections.IComparer, IComparable
 	{
 		#region Name
 		public const string kNullGroupName = TypeExtensions.kNoneDisplayString;
@@ -23,16 +26,16 @@ namespace KSoft.Values
 
 		readonly string mName;
 		/// <summary>Full name of this group</summary>
-		public string Name { get { return mName; } }
+		public string Name { get => mName; }
 
 		/// <summary>Formats <see cref="Name"/> to a properly (left) aligned string (using blank-white-space)</summary>
 		/// <returns><see cref="string.PadLeft"/> on <see cref="Name"/></returns>
 		/// <remarks>Pad width is determined by <see cref="kGroupNamePadLength"/></remarks>
-		public string NameToLeftPaddedString()	{ return mName.PadLeft(kGroupNamePadLength); }
+		public string NameToLeftPaddedString()	=> mName.PadLeft(kGroupNamePadLength);
 		/// <summary> Formats <see cref="Name"/> to a properly (right) aligned string (using blank-white-space)</summary>
 		/// <returns><see cref="string.PadRight"/> on <see cref="Name"/></returns>
 		/// <remarks>Pad width is determined by <see cref="kGroupNamePadLength"/></remarks>
-		public string NameToRightPaddedString()	{ return mName.PadRight(kGroupNamePadLength); }
+		public string NameToRightPaddedString()	=> mName.PadRight(kGroupNamePadLength);
 		#endregion
 
 		#region Tag
@@ -40,20 +43,18 @@ namespace KSoft.Values
 		readonly char[] mTag;
 		/// <summary>The character code of this group</summary>
 		[System.ComponentModel.Browsable(false)]
-		public char[] Tag { get { return mTag; } }
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
+		public char[] Tag { get => mTag; }
 		/// <summary>Get the character code of this group as a string</summary>
-		public string TagString { get { return mTagAsString; } }
+		public string TagString { get => mTagAsString; }
 		#endregion
 
 		/// <summary>Extra data that can be tagged to this Group Tag</summary>
 		[System.ComponentModel.Browsable(false)]
 		public object UserData { get; private set; }
 
-		#region Guid
-		readonly KGuid mGuid = KGuid.Empty;
 		/// <summary>Guid for this group tag</summary>
-		public KGuid Guid	{ get { return mGuid; } }
-		#endregion
+		public KGuid Uuid	{ get; private set; } = KGuid.Empty;
 
 #if false // ObjectInvariant moot, as all non-user properties are readonly
 		[Contracts.ContractInvariantMethod]
@@ -92,6 +93,8 @@ namespace KSoft.Values
 #endif
 			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
 
+			Util.MarkUnusedVariable(ref expectedLength); // #REVIEW: why did I leave the Requires using this commented out?
+
 			mName = name;
 			mTagAsString = groupTag;
 			mTag = groupTag.ToCharArray();
@@ -99,18 +102,18 @@ namespace KSoft.Values
 		/// <summary>Initialize a group tag from a character code, name and <see cref="Guid"/></summary>
 		/// <param name="groupTag">Character code string</param>
 		/// <param name="name">Name of this group tag</param>
-		/// <param name="guid">Guid for this group tag</param>
+		/// <param name="uuid">Guid for this group tag</param>
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
-		protected GroupTagData(string groupTag, string name, KGuid guid, int expectedLength) : this(groupTag, name, expectedLength)
+		protected GroupTagData(string groupTag, string name, KGuid uuid, int expectedLength) : this(groupTag, name, expectedLength)
 		{
 #if false
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
-			Contract.Requires(guid != KGuid.Empty);
+			Contract.Requires(uuid != KGuid.Empty);
 #endif
 
-			mGuid = guid;
+			Uuid = uuid;
 		}
 		/// <summary>Specialized ctor for <see cref="GroupTagData64"/> built from two <see cref="GroupTagData32"/></summary>
 		/// <param name="maj">First four-character code</param>
@@ -127,38 +130,50 @@ namespace KSoft.Values
 			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
 
 			mName = name;
-			mTagAsString = string.Format("{0}{1}", maj.mTagAsString, min.mTagAsString);
+			mTagAsString = string.Format(Util.InvariantCultureInfo,
+				"{0}{1}", maj.mTagAsString, min.mTagAsString);
 			mTag = mTagAsString.ToCharArray();
 		}
 		/// <summary>Specialized ctor for <see cref="GroupTagData64"/> built from two <see cref="GroupTagData32"/></summary>
 		/// <param name="maj">First four-character code</param>
 		/// <param name="min">Second four-character code</param>
 		/// <param name="name">Name of this group tag</param>
-		/// <param name="guid">Guid for this group tag</param>
+		/// <param name="uuid">Guid for this group tag</param>
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
-		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid guid) : this(maj, min, name)
+		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : this(maj, min, name)
 		{
 #if false
 			Contract.Requires(maj != null && maj != GroupTagData32.Null);
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(guid != KGuid.Empty);
+			Contract.Requires(uuid != KGuid.Empty);
 #endif
 
-			mGuid = guid;
+			Uuid = uuid;
 		}
 		#endregion
 
 
 		#region Overrides
-		public override string ToString()
+		public override string ToString() => string.Format(Util.InvariantCultureInfo,
+			"['{0," + (this is GroupTagData32 ? "4" : "8") + "}'  {1}]",
+			TagString, Name);
+
+		public override int GetHashCode() => Name.GetHashCode();
+
+		public override bool Equals(object obj)
 		{
-			return string.Format("['{0," + (this is GroupTagData32 ? "4" : "8") + "}'  {1}]",
-				TagString, Name);
+			if (obj is GroupTagData g)
+				return this.Equals(g);
+
+			return false;
 		}
 		#endregion
 
 		#region Operators
+		public static bool operator ==(GroupTagData a, GroupTagData b) => a.Equals(b);
+		public static bool operator !=(GroupTagData a, GroupTagData b) => !(a == b);
+
 		/// <summary>Returns the name of this group tag</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -172,6 +187,7 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in char[] form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator char[](GroupTagData value)
 		{
 			Contract.Requires(value != null);

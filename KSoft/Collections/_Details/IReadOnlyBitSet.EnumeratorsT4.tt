@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Collections
 {
@@ -28,7 +29,9 @@ namespace KSoft.Collections
 			readonly int mStartBitIndex;
 <# } #>
 
-			<#= enum_type_name #>(IReadOnlyBitSet bitset, bool dummy)
+			<#= enum_type_name #>(IReadOnlyBitSet bitset,
+				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				bool dummy)
 				: this()
 			{
 				mSet = bitset;
@@ -49,7 +52,7 @@ namespace KSoft.Collections
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+			object System.Collections.IEnumerator.Current { get => this.Current; }
 
 			public void Reset()
 			{

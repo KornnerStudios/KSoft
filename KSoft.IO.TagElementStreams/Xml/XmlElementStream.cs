@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -68,7 +69,7 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 
-			return n != null && n.Value != string.Empty;
+			return n != null && n.Value.IsNotNullOrEmpty();
 		}
 
 		public override bool ElementsExist { get { return Cursor != null && Cursor.HasChildNodes; } }
@@ -104,10 +105,7 @@ namespace KSoft.IO
 		}
 
 		/// <see cref="XmlElement.ChildNodes.Count"/>
-		protected override int PredictElementCount(XmlElement cursor)
-		{
-			return cursor.ChildNodes.Count;
-		}
+		protected override int PredictElementCount(XmlElement cursor) => cursor.ChildNodes.Count;
 		#endregion
 
 		#region Constructor
@@ -120,6 +118,7 @@ namespace KSoft.IO
 		/// <param name="sourceStream">Stream we're to load the XML from</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
+		[SuppressMessage("Microsoft.Design", "CA3075:InsecureDTDProcessing")]
 		public XmlElementStream(System.IO.Stream sourceStream,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null, string streamNameOverride = null)
 		{
@@ -138,7 +137,10 @@ namespace KSoft.IO
 			Document = doc;
 			try
 			{
-				Document.Load(sourceStream);
+				using (var xmlReader = XmlReader.Create(sourceStream))
+				{
+					Document.Load(xmlReader);
+				}
 			} catch (Exception ex)
 			{
 				throw new System.IO.InvalidDataException("Failed to load " + StreamName, ex);
@@ -164,7 +166,15 @@ namespace KSoft.IO
 			Document = new Xml.XmlDocumentWithLocation();
 			try
 			{
-				Document.Load(this.StreamName = filename);
+				var xml_reader_settings = new XmlReaderSettings
+				{
+					 XmlResolver = null,
+					 DtdProcessing = DtdProcessing.Ignore
+				};
+				using (var xml_reader = XmlReader.Create(this.StreamName = filename, xml_reader_settings))
+				{
+					Document.Load(xml_reader);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -208,7 +218,10 @@ namespace KSoft.IO
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(rootName));
 
-			var root = new XmlDocument();
+			var root = new XmlDocument()
+			{
+				XmlResolver = null,
+			};
 			root.AppendChild(root.CreateElement(rootName));
 
 			XmlElementStream @this = new XmlElementStream

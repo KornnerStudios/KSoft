@@ -48,6 +48,7 @@ namespace KSoft
 		public static readonly int kBitCount;
 
 		#region Static Initialize
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		static void ProcessMembers(Type t, out <#= bittable_type.Keyword #> maxValue, out bool hasNone)
 		{
 			maxValue = <#= bittable_type.Keyword #>.MaxValue;
@@ -85,6 +86,7 @@ namespace KSoft
 
 					if (int_value < TypeExtensions.kNoneInt<#= bittable_type.SizeOfInBits #>)
 					{
+						// CA2208
 						throw new ArgumentOutOfRangeException(nameof(TEnum),
 							string.Format(Util.InvariantCultureInfo,
 								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
@@ -133,6 +135,7 @@ namespace KSoft
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitEncoder<#= bittable_type.SizeOfInBits #>()
 		{
 			Type t = typeof(TEnum);

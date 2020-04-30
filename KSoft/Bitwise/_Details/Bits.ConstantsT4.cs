@@ -107,16 +107,16 @@ namespace KSoft
 
 		#region kBitmaskLookup
 		/// <summary>Bit count to bit-mask look up table for 8-bit words</summary>
-		public static readonly byte[] kBitmaskLookup8;
+		public static readonly byte[] kBitmaskLookup8 = BitmaskByteLookUpTableGenerate(kByteBitCount);
 
 		/// <summary>Bit count to bit-mask look up table for 16-bit words</summary>
-		public static readonly ushort[] kBitmaskLookup16;
+		public static readonly ushort[] kBitmaskLookup16 = BitmaskUInt16LookUpTableGenerate(kUInt16BitCount);
 
 		/// <summary>Bit count to bit-mask look up table for 32-bit words</summary>
-		public static readonly uint[] kBitmaskLookup32;
+		public static readonly uint[] kBitmaskLookup32 = BitmaskUInt32LookUpTableGenerate(kUInt32BitCount);
 
 		/// <summary>Bit count to bit-mask look up table for 64-bit words</summary>
-		public static readonly ulong[] kBitmaskLookup64;
+		public static readonly ulong[] kBitmaskLookup64 = BitmaskUInt64LookUpTableGenerate(kUInt64BitCount);
 
 		#endregion
 

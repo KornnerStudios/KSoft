@@ -15,8 +15,7 @@ namespace KSoft.LowLevel.Util
 		where T : struct
 	{
 		/// <summary>Size-of (in bytes) of the value type we're managing</summary>
-		public static readonly int kSizeOf;
-		static StructBitManager()	{ kSizeOf = Marshal.SizeOf(typeof(T)); }
+		public static readonly int kSizeOf = Marshal.SizeOf<T>();
 		/// <summary>Size-of (in bytes) of the value type we're managing</summary>
 		public int SizeOf { get { return kSizeOf; } }
 
@@ -40,6 +39,8 @@ namespace KSoft.LowLevel.Util
 
 		private void Dispose(bool disposing)
 		{
+			KSoft.Util.MarkUnusedVariable(ref disposing);
+
 			// check to see if we've already been called
 			if (mHandle != IntPtr.Zero)
 			{

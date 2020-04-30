@@ -35,9 +35,9 @@ namespace KSoft.Values
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 		}
 		/// <summary>Create a collection based on an existing list of group tags</summary>
-		/// <param name="guid">Guid for this group tag collection</param>
+		/// <param name="uuid">Guid for this group tag collection</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(KGuid guid, params GroupTagDatum[] groupTags) : base(groupTags, guid)
+		public GroupTag64Collection(KGuid uuid, params GroupTagDatum[] groupTags) : base(groupTags, uuid)
 		{
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
@@ -55,10 +55,10 @@ namespace KSoft.Values
 				Sort();
 		}
 		/// <summary>Create a collection using an explicit list of group tags</summary>
-		/// <param name="guid">Guid for this group tag collection</param>
+		/// <param name="uuid">Guid for this group tag collection</param>
 		/// <param name="sort">Should we sort the list?</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag64Collection(KGuid guid, bool sort, params GroupTagDatum[] groupTags) : this(guid, groupTags)
+		public GroupTag64Collection(KGuid uuid, bool sort, params GroupTagDatum[] groupTags) : this(uuid, groupTags)
 		{
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
@@ -144,6 +144,6 @@ namespace KSoft.Values
 		}
 
 		/// <summary>The "main" group of the class which this attribute was applied to</summary>
-		public GroupTag64Collection Collection { get { return mTagCollection as GroupTag64Collection; } }
+		public GroupTag64Collection Collection { get { return TagCollection as GroupTag64Collection; } }
 	};
 }

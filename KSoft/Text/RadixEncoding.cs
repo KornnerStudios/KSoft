@@ -41,7 +41,7 @@ namespace KSoft.Text
 
 		public override string ToString()
 		{
-			return string.Format("Base-{0} {1}", Radix.ToString(), kDigits);
+			return string.Format(KSoft.Util.InvariantCultureInfo, "Base-{0} {1}", Radix.ToString(KSoft.Util.InvariantCultureInfo), kDigits);
 		}
 
 		/// <summary>Create a radix encoder using the given characters as the digits in the radix</summary>

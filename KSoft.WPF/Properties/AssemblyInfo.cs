@@ -24,6 +24,7 @@ using System.Windows;
 //the line below to match the UICulture setting in the project file.
 
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
+[assembly: NeutralResourcesLanguage("en")]
 
 
 [assembly:ThemeInfo(
@@ -47,6 +48,12 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.*")]
+
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1034:NestedTypesShouldNotBeVisible",
+	Justification = "Because I do this all over the place")]
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1303:DoNotPassLiteralsAsLocalizedParameters")]
 
 [assembly: SuppressMessage("Style",
 	"IDE1005:Delegate invocation can be simplified.",

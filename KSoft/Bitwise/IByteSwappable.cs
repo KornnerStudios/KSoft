@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -13,6 +14,7 @@ namespace KSoft.Bitwise
 	{
 		int SizeOf { get; }
 
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		short[] ByteSwapCodes { get; }
 	};
 	[Contracts.ContractClassFor(typeof(IByteSwappable))]

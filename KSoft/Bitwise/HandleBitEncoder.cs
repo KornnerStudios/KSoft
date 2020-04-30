@@ -1,4 +1,5 @@
-﻿using Contracts = System.Diagnostics.Contracts;
+﻿using System;
+using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -11,6 +12,7 @@ namespace KSoft.Bitwise
 	/// <remarks>Bits are written from the LSB to the MSB</remarks>
 	[System.Diagnostics.DebuggerDisplay("Bits = {m64}, BitIndex = {mBitIndex}")]
 	public partial struct HandleBitEncoder
+		: IEquatable<HandleBitEncoder>
 	{
 		IntegerUnion mBits;
 		int mBitIndex;
@@ -23,9 +25,7 @@ namespace KSoft.Bitwise
 		}
 
 		/// <summary>How many bits have actually been consumed by the handle data</summary>
-		public int UsedBitCount { get {
-			return mBitIndex;
-		} }
+		public int UsedBitCount => mBitIndex;
 
 		/// <summary>Get the entire handle's value represented in 32-bits</summary>
 		/// <returns></returns>
@@ -57,24 +57,25 @@ namespace KSoft.Bitwise
 		{
 			if (obj is HandleBitEncoder o)
 			{
-				return mBitIndex == o.mBitIndex &&
-					mBits.u64 == o.mBits.u64;
+				return this.Equals(o);
 			}
 
 			return false;
 		}
-		public override int GetHashCode()
-		{
-			return (int)GetCombinedHandle();
-		}
+		public bool Equals(HandleBitEncoder other) =>
+			mBitIndex == other.mBitIndex &&
+			mBits.u64 == other.mBits.u64;
+		public static bool operator ==(HandleBitEncoder x, HandleBitEncoder y) => x.Equals(y);
+		public static bool operator !=(HandleBitEncoder x, HandleBitEncoder y) => !x.Equals(y);
+
+		public override int GetHashCode() => (int)GetCombinedHandle();
+
 		/// <summary>"[{<see cref="GetHandle64()"/>} @ {CurrentBitIndex}]</summary>
 		/// <returns></returns>
 		/// <remarks>Handle value is formatted to a 16-character hex string</remarks>
-		public override string ToString()
-		{
-			return string.Format(Util.InvariantCultureInfo,
+		public override string ToString() =>
+			string.Format(Util.InvariantCultureInfo,
 				"[{0} @ {1}]", mBits.u64.ToString("X16", Util.InvariantCultureInfo), mBitIndex.ToString(Util.InvariantCultureInfo));
-		}
 		#endregion
 	};
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -48,6 +49,7 @@ namespace KSoft
 		public static readonly EnumComparer<TEnum> Instance;
 
 		/// <summary>Initializes the <see cref="EnumComparer{TEnum}"/> class by generating the GetHashCode and Equals methods.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumComparer()
 		{
 			Reflection.EnumUtils.AssertTypeIsEnum(kEnumType);
@@ -74,9 +76,9 @@ namespace KSoft
 		public bool Equals(TEnum x, TEnum y)	{ return kEqualsMethod(x, y); }
 
 		/// <summary>Returns a hash code for the specified object.</summary>
-		/// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param>
+		/// <param name="obj">The <see cref="System.Object"/> for which a hash code is to be returned.</param>
 		/// <returns>A hash code for the specified object.</returns>
-		/// <exception cref="T:System.ArgumentNullException">
+		/// <exception cref="System.ArgumentNullException">
 		/// The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.
 		/// </exception>
 		public int GetHashCode(TEnum obj)		{ return kGetHashCodeMethod(obj); }

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Test
 {
@@ -14,15 +15,18 @@ namespace KSoft.Test
 		};
 
 		[TestMethod]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void Enum_FlagsSansAttributeTest()
 		{
-			try {
+			try
+			{
 				FlagsEnumSansAttribute e = FlagsEnumSansAttribute.Flag0;
 				// The below statement should throw a TypeInitializationException
 				EnumFlags.Add(ref e, FlagsEnumSansAttribute.Flag2);
 
 				Assert.Fail("EnumFlags didn't fail on an Enum without a Flags attribute!");
-			} catch (System.Exception ex) {
+			} catch (System.Exception ex)
+			{
 				Assert.IsInstanceOfType(ex.InnerException, typeof(System.NotSupportedException));
 			}
 		}

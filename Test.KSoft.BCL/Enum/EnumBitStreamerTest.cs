@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.IO.Test
 {
@@ -6,7 +7,7 @@ namespace KSoft.IO.Test
 	using TypeCodeStreamer32 = EnumBitStreamer<System.TypeCode, int>;
 	using TypeCodeStreamer64 = EnumBitStreamer<System.TypeCode, long>;
 	using UInt32EnumStreamer = EnumBitStreamer<EnumBinaryStreamerTest.UInt32Enum>;
-	using NoneSentinelEncodedEnumStreamer = EnumBitStreamerWithOptions<EnumBitStreamerTest.NoneSentinelEncodedEnum, 
+	using NoneSentinelEncodedEnumStreamer = EnumBitStreamerWithOptions<EnumBitStreamerTest.NoneSentinelEncodedEnum,
 		EnumBitStreamerTest.EnumBinaryStreamerBase1Options>;
 
 	[TestClass]
@@ -159,6 +160,7 @@ namespace KSoft.IO.Test
 			Two,
 			Three,
 		};
+		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
 		internal class EnumBinaryStreamerBase1Options : EnumBitStreamerOptions
 		{
 			public override bool UseNoneSentinelEncoding { get { return true; } }

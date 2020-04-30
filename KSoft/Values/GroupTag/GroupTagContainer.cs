@@ -47,20 +47,21 @@ namespace KSoft.Values
 		#endregion
 
 		#region Find collections
-		protected GroupTagCollection mTagCollection;
+		protected GroupTagCollection TagCollection { get; private set; }
 		void FindStaticGroupsProperty(string collectionName = null)
 		{
 			if (string.IsNullOrEmpty(collectionName)) collectionName = kDefaultName;
 
 			var pi = mHost.GetProperty(collectionName, BindingFlags.Public | BindingFlags.Static);
 			if (pi == null) throw new ArgumentException(
-				string.Format("[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName),
-				"container");
+				string.Format(Util.InvariantCultureInfo,
+					"[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName),
+					nameof(collectionName));
 
-			mTagCollection = pi.GetValue(null, null) as GroupTagCollection;
+			TagCollection = pi.GetValue(null, null) as GroupTagCollection;
 		}
 
-		protected IEnumerable<KeyValuePair<string, GroupTagCollection>> mAllCollections;
+		private IEnumerable<KeyValuePair<string, GroupTagCollection>> mAllCollections;
 		void FindAllStaticGroupFields()
 		{
 			var pis = mHost.GetProperties(BindingFlags.Public | BindingFlags.Static);
@@ -85,9 +86,9 @@ namespace KSoft.Values
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
 			if (attr.Length != 1)
-				throw new ArgumentException(string.Format("[{0}] doesn't have a ", container.FullName), "container");
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
 
-			return (attr[0] as GroupTagContainerAttribute).mTagCollection;
+			return (attr[0] as GroupTagContainerAttribute).TagCollection;
 		}
 		/// <summary>Get all <see cref="GroupTagCollection"/> property values from a group tag container</summary>
 		/// <param name="container">Type which acts as a <see cref="GroupTagCollection"/> container</param>
@@ -104,7 +105,7 @@ namespace KSoft.Values
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
 			if (attr.Length != 1)
-				throw new ArgumentException(string.Format("[{0}] doesn't have a ", container.FullName), "container");
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
 
 			return (attr[0] as GroupTagContainerAttribute).mAllCollections;
 		}

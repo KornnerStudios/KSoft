@@ -1,5 +1,4 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
+﻿using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -38,14 +37,18 @@ namespace KSoft.Bitwise
 				Add(f);
 		}
 
-		/// <summary>Implicitly case an unsigned integer into a <see cref="Flags32"/> representation</summary>
+		/// <summary>Implicitly cast an <see cref="Flags32"/> to its unsigned integer representation</summary>
+		public uint ToUInt32()
+		{
+			return this.mValue;
+		}
+		/// <summary>Implicitly cast an <see cref="Flags32"/> to its unsigned integer representation</summary>
 		/// <param name="value"></param>
-		/// <returns><paramref name="value"/> as a <see cref="Flags32"/> object</returns>
 		public static implicit operator uint(Flags32 value)
 		{
 			Contract.Requires(value != null);
 
-			return value.mValue;
+			return value.ToUInt32();
 		}
 
 		/// <summary>Construct a flags value from a 32-bit bit-vector</summary>
@@ -116,7 +119,7 @@ namespace KSoft.Bitwise
 		/// <returns>Returns a 8 character hexadecimal value in a string</returns>
 		public override string ToString()
 		{
-			return mValue.ToString("X8");
+			return mValue.ToString("X8", Util.InvariantCultureInfo);
 		}
 		#endregion
 	};

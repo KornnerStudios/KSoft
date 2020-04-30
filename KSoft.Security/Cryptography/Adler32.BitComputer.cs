@@ -9,6 +9,7 @@ namespace KSoft.Security.Cryptography
 {
 	partial class Adler32
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct BitComputer
 		{
 			uint s1, s2;

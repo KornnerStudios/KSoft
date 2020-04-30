@@ -98,7 +98,9 @@ namespace KSoft.Bitwise
 		} }
 
 		#region Ctors
-		BitFieldTraits(bool dummy, int bitCount, int bitIndex)
+		BitFieldTraits(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			bool dummy, int bitCount, int bitIndex)
 		{
 			mBitCount = (byte)bitCount;
 			mBitIndex = (byte)bitIndex;

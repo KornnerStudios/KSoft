@@ -12,30 +12,17 @@ using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Reflection
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces",
+		Justification="I don't care about System.Web.Util")]
 	public static partial class Util
 	{
 		[Contracts.Pure]
-		public static bool IsEnumType(object maybeType)
-		{
-			var type = maybeType as Type;
-			if (type == null)
-				return false;
-
-			return type.IsEnum;
-		}
+		public static bool IsEnumType(object maybeType) =>
+			maybeType is Type type && type.IsEnum;
 
 		[Contracts.Pure]
-		public static bool IsEnumTypeOrNull(object maybeType)
-		{
-			if (maybeType == null)
-				return true;
-
-			var type = maybeType as Type;
-			if (type == null)
-				return false;
-
-			return type.IsEnum;
-		}
+		public static bool IsEnumTypeOrNull(object maybeType) =>
+			maybeType == null || IsEnumType(maybeType);
 
 		[Contracts.Pure]
 		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
@@ -49,13 +36,13 @@ namespace KSoft.Reflection
 
 		const string kDelegateInvokeMethodName = "Invoke";
 		// http://www.codeproject.com/Tips/441743/A-look-at-marshalling-delegates-in-NET
-		public static T GetDelegateForFunctionPointer<T>(IntPtr ptr, Interop.CallingConvention callConv)
+		public static T GetDelegateForFunctionPointer<T>(IntPtr nativePtr, Interop.CallingConvention callConv)
 			where T : class
 		{
 			Contract.Requires<ArgumentException>(typeof(T).IsSubclassOf(typeof(Delegate)));
-			Contract.Requires<ArgumentNullException>(ptr != IntPtr.Zero);
+			Contract.Requires<ArgumentNullException>(nativePtr != IntPtr.Zero);
 			Contract.Requires<ArgumentException>(callConv != Interop.CallingConvention.ThisCall,
-				"TODO: ThisCall's require a different implementation");
+				"TODO: ThisCall's require a different implementation"); // #TODO
 
 			Contract.Ensures(Contract.Result<T>() != null);
 
@@ -101,9 +88,9 @@ namespace KSoft.Reflection
 
 			// Generate the IL for Calli's entry pointer (pushed to the stack)
 			if (Environment.Is64BitProcess)
-				il.Emit(Reflect.Emit.OpCodes.Ldc_I8, ptr.ToInt64());
+				il.Emit(Reflect.Emit.OpCodes.Ldc_I8, nativePtr.ToInt64());
 			else
-				il.Emit(Reflect.Emit.OpCodes.Ldc_I4, ptr.ToInt32());
+				il.Emit(Reflect.Emit.OpCodes.Ldc_I4, nativePtr.ToInt32());
 
 			il.EmitCalli(Reflect.Emit.OpCodes.Calli, callConv, ret_type, param_types);
 			il.Emit(Reflect.Emit.OpCodes.Ret);

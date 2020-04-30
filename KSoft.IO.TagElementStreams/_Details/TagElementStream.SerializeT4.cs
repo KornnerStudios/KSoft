@@ -139,7 +139,7 @@ namespace KSoft.IO
 			else if (IsWriting) WriteCursor(value, numBase);
 		}
 
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, string >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, string >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -147,13 +147,13 @@ namespace KSoft.IO
 				var value = default( string );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (string)property.GetValue(obj, null) );
+				WriteCursor( (string)property.GetValue(theObj, null) );
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, char >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, char >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -161,13 +161,13 @@ namespace KSoft.IO
 				var value = default( char );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (char)property.GetValue(obj, null) );
+				WriteCursor( (char)property.GetValue(theObj, null) );
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, bool >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, bool >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -175,13 +175,13 @@ namespace KSoft.IO
 				var value = default( bool );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (bool)property.GetValue(obj, null) );
+				WriteCursor( (bool)property.GetValue(theObj, null) );
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, float >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, float >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -189,13 +189,13 @@ namespace KSoft.IO
 				var value = default( float );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (float)property.GetValue(obj, null) );
+				WriteCursor( (float)property.GetValue(theObj, null) );
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, double >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, double >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -203,14 +203,14 @@ namespace KSoft.IO
 				var value = default( double );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (double)property.GetValue(obj, null) );
+				WriteCursor( (double)property.GetValue(theObj, null) );
 		}
 
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -218,13 +218,13 @@ namespace KSoft.IO
 				var value = default( byte );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (byte)property.GetValue(obj, null) , numBase);
+				WriteCursor( (byte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -232,13 +232,13 @@ namespace KSoft.IO
 				var value = default( sbyte );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (sbyte)property.GetValue(obj, null) , numBase);
+				WriteCursor( (sbyte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -246,13 +246,13 @@ namespace KSoft.IO
 				var value = default( ushort );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (ushort)property.GetValue(obj, null) , numBase);
+				WriteCursor( (ushort)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -260,13 +260,13 @@ namespace KSoft.IO
 				var value = default( short );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (short)property.GetValue(obj, null) , numBase);
+				WriteCursor( (short)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -274,13 +274,13 @@ namespace KSoft.IO
 				var value = default( uint );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (uint)property.GetValue(obj, null) , numBase);
+				WriteCursor( (uint)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -288,13 +288,13 @@ namespace KSoft.IO
 				var value = default( int );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (int)property.GetValue(obj, null) , numBase);
+				WriteCursor( (int)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -302,13 +302,13 @@ namespace KSoft.IO
 				var value = default( ulong );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (ulong)property.GetValue(obj, null) , numBase);
+				WriteCursor( (ulong)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -316,14 +316,14 @@ namespace KSoft.IO
 				var value = default( long );
 				ReadCursor( ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (long)property.GetValue(obj, null) , numBase);
+				WriteCursor( (long)property.GetValue(theObj, null) , numBase);
 		}
 
-		public void StreamCursor<T>( T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		public void StreamCursor<T>( T theObj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
 		{
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -331,11 +331,11 @@ namespace KSoft.IO
 				var value = default( Values.KGuid );
 				ReadCursor( ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteCursor( (Values.KGuid)property.GetValue(obj, null) );
+				WriteCursor( (Values.KGuid)property.GetValue(theObj, null) );
 		}
 		#endregion
 
@@ -507,7 +507,7 @@ namespace KSoft.IO
 			else if (IsWriting) WriteElement(name, value, numBase);
 		}
 
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, string >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, string >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -517,13 +517,13 @@ namespace KSoft.IO
 				var value = default( string );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (string)property.GetValue(obj, null) );
+				WriteElement(name, (string)property.GetValue(theObj, null) );
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, char >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, char >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -533,13 +533,13 @@ namespace KSoft.IO
 				var value = default( char );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (char)property.GetValue(obj, null) );
+				WriteElement(name, (char)property.GetValue(theObj, null) );
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, bool >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, bool >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -549,13 +549,13 @@ namespace KSoft.IO
 				var value = default( bool );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (bool)property.GetValue(obj, null) );
+				WriteElement(name, (bool)property.GetValue(theObj, null) );
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, float >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, float >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -565,13 +565,13 @@ namespace KSoft.IO
 				var value = default( float );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (float)property.GetValue(obj, null) );
+				WriteElement(name, (float)property.GetValue(theObj, null) );
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, double >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, double >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -581,14 +581,14 @@ namespace KSoft.IO
 				var value = default( double );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (double)property.GetValue(obj, null) );
+				WriteElement(name, (double)property.GetValue(theObj, null) );
 		}
 
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -598,13 +598,13 @@ namespace KSoft.IO
 				var value = default( byte );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (byte)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (byte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -614,13 +614,13 @@ namespace KSoft.IO
 				var value = default( sbyte );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (sbyte)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (sbyte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -630,13 +630,13 @@ namespace KSoft.IO
 				var value = default( ushort );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (ushort)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (ushort)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -646,13 +646,13 @@ namespace KSoft.IO
 				var value = default( short );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (short)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (short)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -662,13 +662,13 @@ namespace KSoft.IO
 				var value = default( uint );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (uint)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (uint)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -678,13 +678,13 @@ namespace KSoft.IO
 				var value = default( int );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (int)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (int)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -694,13 +694,13 @@ namespace KSoft.IO
 				var value = default( ulong );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (ulong)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (ulong)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -710,14 +710,14 @@ namespace KSoft.IO
 				var value = default( long );
 				ReadElement(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (long)property.GetValue(obj, null) , numBase);
+				WriteElement(name, (long)property.GetValue(theObj, null) , numBase);
 		}
 
-		public void StreamElement<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		public void StreamElement<T>(TName name, T theObj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -727,11 +727,11 @@ namespace KSoft.IO
 				var value = default( Values.KGuid );
 				ReadElement(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteElement(name, (Values.KGuid)property.GetValue(obj, null) );
+				WriteElement(name, (Values.KGuid)property.GetValue(theObj, null) );
 		}
 		#endregion
 
@@ -994,7 +994,7 @@ namespace KSoft.IO
 			return executed;
 		}
 
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, string >> propExpr , Predicate<string> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, string >> propExpr , Predicate<string> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1009,15 +1009,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (string)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (string)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, char >> propExpr , Predicate<char> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, char >> propExpr , Predicate<char> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1032,15 +1032,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (char)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (char)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, bool >> propExpr , Predicate<bool> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, bool >> propExpr , Predicate<bool> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1055,15 +1055,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (bool)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (bool)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, float >> propExpr , Predicate<float> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, float >> propExpr , Predicate<float> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1078,15 +1078,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (float)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (float)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, double >> propExpr , Predicate<double> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, double >> propExpr , Predicate<double> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1101,16 +1101,16 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (double)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (double)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
 
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, byte >> propExpr , Predicate<byte> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, byte >> propExpr , Predicate<byte> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1125,15 +1125,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (byte)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (byte)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, sbyte >> propExpr , Predicate<sbyte> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, sbyte >> propExpr , Predicate<sbyte> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1148,15 +1148,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (sbyte)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (sbyte)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, ushort >> propExpr , Predicate<ushort> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, ushort >> propExpr , Predicate<ushort> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1171,15 +1171,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (ushort)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (ushort)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, short >> propExpr , Predicate<short> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, short >> propExpr , Predicate<short> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1194,15 +1194,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (short)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (short)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, uint >> propExpr , Predicate<uint> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, uint >> propExpr , Predicate<uint> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1217,15 +1217,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (uint)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (uint)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, int >> propExpr , Predicate<int> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, int >> propExpr , Predicate<int> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1240,15 +1240,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (int)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (int)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, ulong >> propExpr , Predicate<ulong> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, ulong >> propExpr , Predicate<ulong> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1263,15 +1263,15 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (ulong)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (ulong)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, long >> propExpr , Predicate<long> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, long >> propExpr , Predicate<long> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1286,16 +1286,16 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (long)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteElementOptOnTrue(name, (long)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
 
-		public bool StreamElementOpt<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
+		public bool StreamElementOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1310,11 +1310,11 @@ namespace KSoft.IO
 				executed = ReadElementOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteElementOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);
+				executed = WriteElementOptOnTrue(name, (Values.KGuid)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
@@ -1488,7 +1488,7 @@ namespace KSoft.IO
 			else if (IsWriting) WriteAttribute(name, value, numBase);
 		}
 
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, string >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, string >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1498,13 +1498,13 @@ namespace KSoft.IO
 				var value = default( string );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (string)property.GetValue(obj, null) );
+				WriteAttribute(name, (string)property.GetValue(theObj, null) );
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, char >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, char >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1514,13 +1514,13 @@ namespace KSoft.IO
 				var value = default( char );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (char)property.GetValue(obj, null) );
+				WriteAttribute(name, (char)property.GetValue(theObj, null) );
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, bool >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, bool >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1530,13 +1530,13 @@ namespace KSoft.IO
 				var value = default( bool );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (bool)property.GetValue(obj, null) );
+				WriteAttribute(name, (bool)property.GetValue(theObj, null) );
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, float >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, float >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1546,13 +1546,13 @@ namespace KSoft.IO
 				var value = default( float );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (float)property.GetValue(obj, null) );
+				WriteAttribute(name, (float)property.GetValue(theObj, null) );
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, double >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, double >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1562,14 +1562,14 @@ namespace KSoft.IO
 				var value = default( double );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (double)property.GetValue(obj, null) );
+				WriteAttribute(name, (double)property.GetValue(theObj, null) );
 		}
 
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, byte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1579,13 +1579,13 @@ namespace KSoft.IO
 				var value = default( byte );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (byte)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (byte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, sbyte >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1595,13 +1595,13 @@ namespace KSoft.IO
 				var value = default( sbyte );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (sbyte)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (sbyte)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, ushort >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1611,13 +1611,13 @@ namespace KSoft.IO
 				var value = default( ushort );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (ushort)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (ushort)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, short >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1627,13 +1627,13 @@ namespace KSoft.IO
 				var value = default( short );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (short)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (short)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, uint >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1643,13 +1643,13 @@ namespace KSoft.IO
 				var value = default( uint );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (uint)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (uint)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, int >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1659,13 +1659,13 @@ namespace KSoft.IO
 				var value = default( int );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (int)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (int)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, ulong >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1675,13 +1675,13 @@ namespace KSoft.IO
 				var value = default( ulong );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (ulong)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (ulong)property.GetValue(theObj, null) , numBase);
 		}
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, long >> propExpr  , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1691,14 +1691,14 @@ namespace KSoft.IO
 				var value = default( long );
 				ReadAttribute(name, ref value , numBase);
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (long)property.GetValue(obj, null) , numBase);
+				WriteAttribute(name, (long)property.GetValue(theObj, null) , numBase);
 		}
 
-		public void StreamAttribute<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
+		public void StreamAttribute<T>(TName name, T theObj, Exprs.Expression<Func<T, Values.KGuid >> propExpr  )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1708,11 +1708,11 @@ namespace KSoft.IO
 				var value = default( Values.KGuid );
 				ReadAttribute(name, ref value );
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				WriteAttribute(name, (Values.KGuid)property.GetValue(obj, null) );
+				WriteAttribute(name, (Values.KGuid)property.GetValue(theObj, null) );
 		}
 		#endregion
 
@@ -1975,7 +1975,7 @@ namespace KSoft.IO
 			return executed;
 		}
 
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, string >> propExpr , Predicate<string> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, string >> propExpr , Predicate<string> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -1990,15 +1990,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (string)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (string)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, char >> propExpr , Predicate<char> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, char >> propExpr , Predicate<char> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2013,15 +2013,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (char)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (char)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, bool >> propExpr , Predicate<bool> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, bool >> propExpr , Predicate<bool> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2036,15 +2036,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (bool)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (bool)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, float >> propExpr , Predicate<float> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, float >> propExpr , Predicate<float> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2059,15 +2059,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (float)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (float)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, double >> propExpr , Predicate<double> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, double >> propExpr , Predicate<double> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2082,16 +2082,16 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (double)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (double)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}
 
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, byte >> propExpr , Predicate<byte> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, byte >> propExpr , Predicate<byte> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2106,15 +2106,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (byte)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (byte)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, sbyte >> propExpr , Predicate<sbyte> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, sbyte >> propExpr , Predicate<sbyte> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2129,15 +2129,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (sbyte)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (sbyte)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, ushort >> propExpr , Predicate<ushort> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, ushort >> propExpr , Predicate<ushort> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2152,15 +2152,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (ushort)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (ushort)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, short >> propExpr , Predicate<short> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, short >> propExpr , Predicate<short> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2175,15 +2175,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (short)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (short)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, uint >> propExpr , Predicate<uint> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, uint >> propExpr , Predicate<uint> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2198,15 +2198,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (uint)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (uint)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, int >> propExpr , Predicate<int> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, int >> propExpr , Predicate<int> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2221,15 +2221,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (int)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (int)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, ulong >> propExpr , Predicate<ulong> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, ulong >> propExpr , Predicate<ulong> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2244,15 +2244,15 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (ulong)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (ulong)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, long >> propExpr , Predicate<long> predicate = null , NumeralBase numBase=kDefaultRadix)
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, long >> propExpr , Predicate<long> predicate = null , NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2267,16 +2267,16 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value , numBase);
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (long)property.GetValue(obj, null) , predicate, numBase);
+				executed = WriteAttributeOptOnTrue(name, (long)property.GetValue(theObj, null) , predicate, numBase);
 
 			return executed;
 		}
 
-		public bool StreamAttributeOpt<T>(TName name, T obj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
+		public bool StreamAttributeOpt<T>(TName name, T theObj, Exprs.Expression<Func<T, Values.KGuid >> propExpr , Predicate<Values.KGuid> predicate = null )
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -2291,11 +2291,11 @@ namespace KSoft.IO
 				executed = ReadAttributeOpt(name, ref value );
 				if (executed)
 				{
-					property.SetValue(obj, value, null);
+					property.SetValue(theObj, value, null);
 				}
 			}
 			else if (IsWriting)
-				executed = WriteAttributeOptOnTrue(name, (Values.KGuid)property.GetValue(obj, null) , predicate);
+				executed = WriteAttributeOptOnTrue(name, (Values.KGuid)property.GetValue(theObj, null) , predicate);
 
 			return executed;
 		}

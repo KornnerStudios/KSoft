@@ -15,9 +15,9 @@ namespace KSoft.WPF.WindowsForms
 			return new Win32WindowHandleWrapper(handle);
 		}
 
-		public static Win32WindowHandleWrapper FromDependencyObject(DependencyObject obj)
+		public static Win32WindowHandleWrapper FromDependencyObject(DependencyObject theObj)
 		{
-			var parentWindow = Window.GetWindow(obj);
+			var parentWindow = Window.GetWindow(theObj);
 
 			return FromWindow(parentWindow);
 		}

@@ -8,6 +8,7 @@ using Matrix4x4 = System.Numerics.Matrix4x4;
 
 namespace KSoft
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 	public static partial class TypeExtensionsMath
 	{
 		#region Read Real types

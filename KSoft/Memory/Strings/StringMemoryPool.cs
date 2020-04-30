@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -20,8 +21,12 @@ namespace KSoft.Memory.Strings
 	/// information is streamed. Otherwise use the default
 	/// <see cref="IO.IEndianStreamable"/> implementation to stream this class
 	/// </remarks>
-	public partial class StringMemoryPool : IO.IEndianStreamable, IO.IEndianStreamSerializable,
-		ICollection<string>, IEnumerable<string>
+	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+	public partial class StringMemoryPool
+		: IO.IEndianStreamable
+		, IO.IEndianStreamSerializable
+		, ICollection<string>
+		, IEnumerable<string>
 	{
 		/// <summary>Default amount of entry memory allocated for use</summary>
 		const int kEntryStartCount = 64;
@@ -58,7 +63,7 @@ namespace KSoft.Memory.Strings
 		}
 		#endregion
 
-		bool UseStringToIndex { get { return !Settings.AllowDuplicates; } }
+		bool UseStringToIndex => !Settings.AllowDuplicates;
 
 		void InitializeCollections(int capacity)
 		{
@@ -188,6 +193,7 @@ namespace KSoft.Memory.Strings
 		/// <remarks>
 		/// Code contracts will cause an assert if the address doesn't start a new string
 		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
 		public string this[Values.PtrHandle address]	{ get { return Get(address); } }
 		#endregion
 

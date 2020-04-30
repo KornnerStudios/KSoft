@@ -42,6 +42,7 @@ namespace KSoft.Memory.Strings
 		kNumberOf,
 	};
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 	public enum StringStorageLengthPrefix : byte
 	{
 		/// <remarks>This is what the CLR uses</remarks>

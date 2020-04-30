@@ -40,12 +40,14 @@ namespace KSoft.Bitwise
 		// ArrayStart, {Count}, {Elements}, ArrayEnd
 		internal const int kMinumumNumberOfDefinitionBsCodes = 4;
 
+		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct BsDefinition
 			: IByteSwappable
 		{
 			readonly string kName;
 			public override string ToString()	{ return kName; }
 			readonly short[] kBsCodes;
+			[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 			public short[] ByteSwapCodes		{ get { return kBsCodes; } }
 			readonly int kSizeOf;
 			public int SizeOf					{ get { return kSizeOf; } }

@@ -65,12 +65,12 @@ namespace KSoft
 
 		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
-		public static TRet NullOr<T, TRet>(this T obj, Func<T, TRet> func, TRet elseValue = default(TRet))
+		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default(TRet))
 			where T : class
 		{
 			Contract.Requires/*<ArgumentNullException>*/(func != null);
 
-			return obj != null ? func(obj) : elseValue;
+			return theObj != null ? func(theObj) : elseValue;
 		}
 		#endregion
 
@@ -260,22 +260,22 @@ namespace KSoft
 		/// </summary>
 		/// <typeparam name="T">Reference type implementing <see cref="IO.IEndianStreamable"/></typeparam>
 		/// <param name="s"></param>
-		/// <param name="obj"></param>
-		public static void ReadObject<T>(this IO.EndianReader s, T obj)
+		/// <param name="theObj"></param>
+		public static void ReadObject<T>(this IO.EndianReader s, T theObj)
 			where T : class, IO.IEndianStreamable
 		{
-			obj.Read(s);
+			theObj.Read(s);
 		}
 		/// <summary>
 		/// Write a serializable object to an endian stream
 		/// </summary>
 		/// <typeparam name="T">Reference type implementing <see cref="IO.IEndianStreamable"/></typeparam>
 		/// <param name="s"></param>
-		/// <param name="obj"></param>
-		public static void WriteObject<T>(this IO.EndianWriter s, T obj)
+		/// <param name="theObj"></param>
+		public static void WriteObject<T>(this IO.EndianWriter s, T theObj)
 			where T : class, IO.IEndianStreamable
 		{
-			obj.Write(s);
+			theObj.Write(s);
 		}
 		#endregion
 		#endregion

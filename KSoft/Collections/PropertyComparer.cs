@@ -24,12 +24,18 @@ namespace KSoft.Collections.Generic
 		void ValidateProperty(Type type, bool checkPropertyOwner = false)
 		{
 			if (!mProperty.CanRead)
-				throw new MemberAccessException(string.Format("{0}'s property '{1}' can't be read!",
+			{
+				throw new MemberAccessException(string.Format(Util.InvariantCultureInfo,
+					"{0}'s property '{1}' can't be read!",
 					type.Name, mProperty.Name));
+			}
 
 			if (checkPropertyOwner && mProperty.DeclaringType != type)
-				throw new MissingMemberException(string.Format("Property '{1}' is not a member of {0}!",
+			{
+				throw new MissingMemberException(string.Format(Util.InvariantCultureInfo,
+					"Property '{1}' is not a member of {0}!",
 					type.Name, mProperty.Name));
+			}
 		}
 
 		#region Ctor
@@ -63,19 +69,29 @@ namespace KSoft.Collections.Generic
 			{
 				var properties = type.GetProperties();
 				if (properties.Length > 0)
+				{
 					mProperty = properties[0];
+				}
 				else
-					throw new MissingMemberException(string.Format("{0} does not contain any properties",
+				{
+					throw new MissingMemberException(string.Format(Util.InvariantCultureInfo,
+						"{0} does not contain any properties",
 						type.Name));
+				}
 			}
 			else
 			{
 				var prop = type.GetProperty(propertyName);
 				if (prop != null)
+				{
 					mProperty = prop;
+				}
 				else
-					throw new MissingMemberException(string.Format("{0} does not contain a property named '{1}'",
+				{
+					throw new MissingMemberException(string.Format(Util.InvariantCultureInfo,
+						"{0} does not contain a property named '{1}'",
 						type.Name, propertyName));
+				}
 			}
 
 			mDirection = direction;

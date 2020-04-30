@@ -8,6 +8,8 @@ namespace KSoft.Debug
 		/// <summary>Tracer for the <see cref="KSoft"/> namespace</summary>
 		public static Diag.TraceSource KSoft		{ get; } = new	Diag.TraceSource("KSoft",				Diag.SourceLevels.All);
 		/// <summary>Tracer for the <see cref="KSoft.IO"/> namespace</summary>
+		public static Diag.TraceSource Collections	{ get; } = new	Diag.TraceSource("KSoft.Collections",	Diag.SourceLevels.All);
+		/// <summary>Tracer for the <see cref="KSoft.IO"/> namespace</summary>
 		public static Diag.TraceSource IO			{ get; } = new	Diag.TraceSource("KSoft.IO",			Diag.SourceLevels.All);
 		/// <summary>Tracer for the <see cref="KSoft.LowLevel"/> namespace</summary>
 		public static Diag.TraceSource LowLevel		{ get; } = new	Diag.TraceSource("KSoft.LowLevel",		Diag.SourceLevels.All);

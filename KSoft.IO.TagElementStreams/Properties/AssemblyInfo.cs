@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -28,3 +29,9 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.*")]
+
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1062:ValidateArgumentsOfPublicMethods",
+	Justification = "CodeContracts generally handle this already")]
+[assembly: SuppressMessage("Microsoft.Design",
+	"CA1303:DoNotPassLiteralsAsLocalizedParameters")]

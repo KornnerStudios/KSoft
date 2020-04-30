@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft
@@ -8,7 +9,9 @@ namespace KSoft
 	static partial class TestLibrary
 	{
 		[AssemblyInitialize]
-		public static void AssemblyInitialize(TestContext context)
+		public static void AssemblyInitialize(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			TestContext context)
 		{
 			KSoft.Program.Initialize();
 		}

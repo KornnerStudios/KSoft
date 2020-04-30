@@ -23,6 +23,7 @@ namespace KSoft.WPF.Controls
 		}
 
 		#region Value
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		public double Value
 		{
 			get { return (double)GetValue(ValueProperty); }

@@ -140,7 +140,7 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 <# if(type.Code==TypeCode.String) { #>
 			if (predicate != string.IsNullOrEmpty && value == null)
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 <# } #>
 
 			bool result = IgnoreWritePredicates || !predicate(value);
@@ -229,7 +229,7 @@ namespace KSoft.IO
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
 <# if(type.Code==TypeCode.String) { #>
 			if (predicate != string.IsNullOrEmpty && value == null)
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 <# } #>
 
 			bool result = IgnoreWritePredicates || !predicate(value);

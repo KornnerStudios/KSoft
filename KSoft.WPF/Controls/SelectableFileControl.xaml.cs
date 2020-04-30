@@ -16,7 +16,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
 		}
-		public static DependencyProperty TextProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
 			nameof(Text),
 			typeof(string), typeof(SelectableFileControl),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -28,7 +28,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(DescriptionProperty); }
 			set { SetValue(DescriptionProperty, value); }
 		}
-		public static DependencyProperty DescriptionProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register(
 			nameof(Description),
 			typeof(string), typeof(SelectableFileControl));
 		#endregion
@@ -39,7 +39,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(InitialDirectoryProperty); }
 			set { SetValue(InitialDirectoryProperty, value); }
 		}
-		public static DependencyProperty InitialDirectoryProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty InitialDirectoryProperty = DependencyProperty.Register(
 			nameof(InitialDirectory),
 			typeof(string), typeof(SelectableFileControl));
 		#endregion
@@ -50,7 +50,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(FileFilterProperty); }
 			set { SetValue(FileFilterProperty, value); }
 		}
-		public static DependencyProperty FileFilterProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty FileFilterProperty = DependencyProperty.Register(
 			nameof(FileFilter),
 			typeof(string), typeof(SelectableFileControl),
 			new PropertyMetadata("*.*"));
@@ -62,7 +62,7 @@ namespace KSoft.WPF.Controls
 			get { return (bool)GetValue(CheckFileExistsProperty); }
 			set { SetValue(CheckFileExistsProperty, value); }
 		}
-		public static DependencyProperty CheckFileExistsProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty CheckFileExistsProperty = DependencyProperty.Register(
 			nameof(CheckFileExists),
 			typeof(bool), typeof(SelectableFileControl));
 		#endregion

@@ -274,8 +274,9 @@ namespace KSoft.Values
 		/// <returns>"[0x<see cref="Handle"/>]u32]" or "[0x<see cref="Handle"/>]u64"]</returns>
 		public override string ToString()
 		{
-			return string.Format("[0x{0}{1}]",
-				!Is64bit ? u32.ToString("X8") : u64.ToString("X16"),
+			return string.Format(Util.InvariantCultureInfo,
+				"[0x{0}{1}]",
+				!Is64bit ? u32.ToString("X8", Util.InvariantCultureInfo) : u64.ToString("X16", Util.InvariantCultureInfo),
 				!Is64bit ? "u32" : "u64");
 		}
 		#endregion
@@ -285,26 +286,31 @@ namespace KSoft.Values
 		/// <summary>Explicit cast to a <see cref="Boolean"/>, returning whether <paramref name="value"/> is null or not</summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>Whether <paramref name="value"/> is null or not</returns>
-		public static explicit operator bool(PtrHandle value)	{ return value.u64 == 0; }
+		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
+		public static explicit operator bool(PtrHandle value)	=> value.u64 == 0;
 
+		public uint ToUInt32()									=> u32;
 		/// <summary>Explicit cast to a <see cref="UInt32"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 32-bit integer</returns>
-		public static explicit operator uint(PtrHandle value)	{ return value.u32; }
+		public static explicit operator uint(PtrHandle value)	=> value.ToUInt32();
 
+		public long ToInt64()									=> (long)u64;
 		/// <summary>Explicit cast to a <see cref="Int64"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 64-bit integer</returns>
-		public static explicit operator long(PtrHandle value)	{ return (long)value.u64; }
+		public static explicit operator long(PtrHandle value)	=> value.ToInt64();
 
+		public ulong ToUInt64()									=> u64;
 		/// <summary>Explicit cast to a <see cref="UInt64"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 64-bit integer</returns>
-		public static explicit operator ulong(PtrHandle value)	{ return value.u64; }
+		public static explicit operator ulong(PtrHandle value)	=> value.ToUInt64();
 
 		/// <summary>Explicit cast to a <see cref="Shell.ProcessorSize"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address size of <paramref name="value"/></returns>
+		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator Shell.ProcessorSize(PtrHandle value)	{ return value.Size; }
 
 		/// <summary>Convert this address to a <see cref="UIntPtr"/></summary>
@@ -362,7 +368,7 @@ namespace KSoft.Values
 		/// <param name="lhs">left-hand value for operation expression</param>
 		/// <param name="rhs">right-hand value for operation expression</param>
 		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
-		public static PtrHandle operator +(PtrHandle lhs, PtrHandle rhs)
+		public static PtrHandle Add(PtrHandle lhs, PtrHandle rhs)
 		{
 			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
 
@@ -372,15 +378,35 @@ namespace KSoft.Values
 		/// <param name="lhs">left-hand value for operation expression</param>
 		/// <param name="rhs">right-hand value for operation expression</param>
 		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
-		public static PtrHandle operator +(PtrHandle lhs, uint rhs)
+		public static PtrHandle operator +(PtrHandle lhs, PtrHandle rhs)
+		{
+			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
+
+			return Add(lhs, rhs);
+		}
+
+		/// <summary>Perform mathematical operation (Add)</summary>
+		/// <param name="lhs">left-hand value for operation expression</param>
+		/// <param name="rhs">right-hand value for operation expression</param>
+		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
+		public static PtrHandle Add(PtrHandle lhs, uint rhs)
 		{
 			return new PtrHandle(lhs.Is64bit, lhs.Handle + rhs);
 		}
+		/// <summary>Perform mathematical operation (Add)</summary>
+		/// <param name="lhs">left-hand value for operation expression</param>
+		/// <param name="rhs">right-hand value for operation expression</param>
+		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
+		public static PtrHandle operator +(PtrHandle lhs, uint rhs)
+		{
+			return Add(lhs, rhs);
+		}
+
 		/// <summary>Perform mathematical operation (Subtract)</summary>
 		/// <param name="lhs">left-hand value for operation expression</param>
 		/// <param name="rhs">right-hand value for operation expression</param>
 		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
-		public static PtrHandle operator -(PtrHandle lhs, PtrHandle rhs)
+		public static PtrHandle Subtract(PtrHandle lhs, PtrHandle rhs)
 		{
 			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
 
@@ -390,9 +416,28 @@ namespace KSoft.Values
 		/// <param name="lhs">left-hand value for operation expression</param>
 		/// <param name="rhs">right-hand value for operation expression</param>
 		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
-		public static PtrHandle operator -(PtrHandle lhs, uint rhs)
+		public static PtrHandle operator -(PtrHandle lhs, PtrHandle rhs)
+		{
+			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
+
+			return Subtract(lhs, rhs);
+		}
+
+		/// <summary>Perform mathematical operation (Subtract)</summary>
+		/// <param name="lhs">left-hand value for operation expression</param>
+		/// <param name="rhs">right-hand value for operation expression</param>
+		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
+		public static PtrHandle Subtract(PtrHandle lhs, uint rhs)
 		{
 			return new PtrHandle(lhs.Is64bit, lhs.Handle - rhs);
+		}
+		/// <summary>Perform mathematical operation (Subtract)</summary>
+		/// <param name="lhs">left-hand value for operation expression</param>
+		/// <param name="rhs">right-hand value for operation expression</param>
+		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
+		public static PtrHandle operator -(PtrHandle lhs, uint rhs)
+		{
+			return Subtract(lhs, rhs);
 		}
 		#endregion
 		#endregion

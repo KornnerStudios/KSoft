@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,6 +12,7 @@ namespace KSoft.WPF.Controls
 	public partial class BitVectorControl : UserControl
 	{
 		#region BitItems
+		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public ObservableCollection<BitItemModel> BitItems
 		{
 			get { return (ObservableCollection<BitItemModel>)GetValue(BitItemsProperty); }

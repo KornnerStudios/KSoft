@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -11,7 +12,8 @@ namespace KSoft.IO
 	/// Helper type for exposing the <see cref="TagElementStream.StreamElementBegin(string)">StreamElementBegin</see> and
 	/// <see cref="TagElementStream.StreamElementEnd()">StreamElementEnd</see> in a way which works with the C# "using" statements
 	/// </summary>
-	/// <remarks>If a null element name is given, skips the bookmarking process entiring</remarks>
+	/// <remarks>If a null element name is given, skips the bookmarking process entirely</remarks>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct TagElementStreamBookmark<TDoc, TCursor, TName> : IDisposable
 		where TDoc : class
 		where TCursor : class
@@ -20,8 +22,15 @@ namespace KSoft.IO
 		TCursor mOldCursor;
 
 		#region Null
-		TagElementStreamBookmark(bool dummy) { mStream = null; mOldCursor = null; }
+		TagElementStreamBookmark(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			bool dummy)
+		{
+			mStream = null;
+			mOldCursor = null;
+		}
 
+		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 		public static  TagElementStreamBookmark<TDoc, TCursor, TName> Null { get {
 			return new TagElementStreamBookmark<TDoc, TCursor, TName>(dummy:true);
 		} }
@@ -60,6 +69,7 @@ namespace KSoft.IO
 	/// Helper type for exposing the <see cref="TagElementStream.SaveCursor()">SaveCursor</see> and
 	/// <see cref="TagElementStream.RestoreCursor()">RestoreCursor</see> in a way which works with the C# "using" statements
 	/// </summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct TagElementStreamReadBookmark<TDoc, TCursor, TName> : IDisposable
 		where TDoc : class
 		where TCursor : class

@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -46,6 +47,9 @@ namespace KSoft.Bitwise
 		/// <typeparam name="TEnum">Enumeration type to encode</typeparam>
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="encoder">Encoder for <typeparamref name="TEnum"/> objects</param>
+		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
+			Justification ="Pretty sure this is a CA bug",
+			Scope = "method", Target = "BitEncode")]
 		public void Encode<#= bittable_type.SizeOfInBits #><TEnum>(TEnum value, EnumBitEncoder<#= bittable_type.SizeOfInBits #><TEnum> encoder)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -61,6 +65,9 @@ namespace KSoft.Bitwise
 		/// <summary>Bit encode a value into this handle</summary>
 		/// <param name="value">Value to encode</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
+		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
+			Justification ="Pretty sure this is a CA bug",
+			Scope = "method", Target = "BitEncode")]
 		public void Encode<#= bittable_type.SizeOfInBits #>(<#= bittable_type.Keyword #> value, <#= bittable_type.Keyword #> bitMask)
 		{
 			Contract.Requires<ArgumentException>(bitMask != 0);

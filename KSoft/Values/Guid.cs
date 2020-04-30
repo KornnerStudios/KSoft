@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -46,6 +47,7 @@ namespace KSoft.Values
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public struct KGuid
 		: IO.IEndianStreamable, IO.IEndianStreamSerializable
 		, IComparable, IComparable<KGuid>, IComparable<Guid>
@@ -92,6 +94,7 @@ namespace KSoft.Values
 			public static readonly Func<Guid, byte>[] GetData4;
 			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[] SetData4;
 
+			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static SysGuid()
 			{
 				GetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
@@ -140,7 +143,7 @@ namespace KSoft.Values
 		[Interop.FieldOffset(0)] ulong mDataHi;
 		[Interop.FieldOffset(8)] ulong mDataLo;
 
-		public Guid ToGuid() { return mData; }
+		public Guid ToGuid() => mData;
 
 		public long MostSignificantBits { get {
 			ulong result = (uint)SysGuid.GetData1(mData);
@@ -160,9 +163,7 @@ namespace KSoft.Values
 		} }
 
 		#region Version and Variant
-		public UuidVersion Version { get {
-			return (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift);
-		} }
+		public UuidVersion Version { get => (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift); }
 
 		public UuidVariant Variant { get {
 			int raw = SysGuid.GetData4[0](mData) >> kVariantBitShift;
@@ -219,9 +220,9 @@ namespace KSoft.Values
 		#endregion
 
 		#region Ctor
-		public KGuid(Guid guid)	{ mDataHi=mDataLo=0; mData = guid; }
-		public KGuid(byte[] b)	{ mDataHi=mDataLo=0; mData = new Guid(b); }
-		public KGuid(string g)	{ mDataHi=mDataLo=0; mData = new Guid(g); }
+		public KGuid(Guid actualGuid)	{ mDataHi=mDataLo=0; mData = actualGuid; }
+		public KGuid(byte[] b)			{ mDataHi=mDataLo=0; mData = new Guid(b); }
+		public KGuid(string g)			{ mDataHi=mDataLo=0; mData = new Guid(g); }
 		public KGuid(long msb, long lsb)
 		{
 			mData = Guid.Empty;
@@ -248,22 +249,25 @@ namespace KSoft.Values
 
 		#region ToString
 		/// <see cref="Guid.ToString()"/>
-		public override string ToString()								{ return mData.ToString(); }
+		public override string ToString()								=> mData.ToString();
 		/// <see cref="Guid.ToString(string)"/>
-		public string ToString(string format)							{ return mData.ToString(format); }
+		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
+		public string ToString(string format)							=> mData.ToString(format);
 		/// <see cref="Guid.ToString(string, IFormatProvider)"/>
-		public string ToString(string format, IFormatProvider provider)	{ return mData.ToString(format, provider); }
+		public string ToString(string format, IFormatProvider provider)	=> mData.ToString(format, provider);
 
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
 		/// </summary>
 		/// <returns></returns>
-		internal string ToStringNoStyle()								{ return mData.ToString(kFormatNoStyle); }
+		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
+		internal string ToStringNoStyle()								=> mData.ToString(kFormatNoStyle);
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <returns></returns>
-		internal string ToStringHyphenated()							{ return mData.ToString(kFormatHyphenated); }
+		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
+		internal string ToStringHyphenated()							=> mData.ToString(kFormatHyphenated);
 		#endregion
 
 		#region IEndianStreamable Members
@@ -312,17 +316,17 @@ namespace KSoft.Values
 
 			throw new InvalidCastException(obj.GetType().ToString());
 		}
-		public int CompareTo(KGuid other)	{ return mData.CompareTo(other.mData); }
-		public int CompareTo(Guid other)	{ return mData.CompareTo(other); }
+		public int CompareTo(KGuid other)	=> mData.CompareTo(other.mData);
+		public int CompareTo(Guid other)	=> mData.CompareTo(other);
 		#endregion
 
 		#region IEquatable Members
 		public override bool Equals(object obj)
 		{
-			if (obj is KGuid)
-				return Equals(this, (KGuid)obj);
-			else if (obj is Guid)
-				return Equals((Guid)obj);
+			if (obj is KGuid kg)
+				return Equals(this, kg);
+			else if (obj is Guid g)
+				return Equals(g);
 
 			return false;
 		}
@@ -335,11 +339,11 @@ namespace KSoft.Values
 				x.mDataHi == y.mDataHi &&
 				x.mDataLo == y.mDataLo;
 		}
-		public bool Equals(KGuid other)			{ return Equals(this, other); }
-		public bool Equals(Guid other)			{ return mData == other; }
+		public bool Equals(KGuid other)		=> Equals(this, other);
+		public bool Equals(Guid other)		=> mData == other;
 
-		public override int GetHashCode()	{ return mData.GetHashCode(); }
-		public int GetHashCode(KGuid obj)	{ return obj.GetHashCode(); }
+		public override int GetHashCode()	=> mData.GetHashCode();
+		public int GetHashCode(KGuid obj)	=> obj.GetHashCode();
 
 		public static bool operator ==(KGuid a, KGuid b)
 		{
@@ -378,48 +382,30 @@ namespace KSoft.Values
 			throw new InvalidCastException(x.GetType().ToString());
 		}
 
-		public int Compare(KGuid x, KGuid y)
-		{
-			return x.CompareTo(y);
-		}
+		public int Compare(KGuid x, KGuid y) => x.CompareTo(y);
 		#endregion
 
-		public static KGuid Empty { get { return new KGuid(); } }
-		public bool IsEmpty { get { return mDataHi == 0 && mDataLo == 0; } }
-		public bool IsNotEmpty { get { return mDataHi != 0 || mDataLo != 0; } }
+		public static KGuid Empty { get => new KGuid(); }
+		public bool IsEmpty { get => mDataHi == 0 && mDataLo == 0; }
+		public bool IsNotEmpty { get => mDataHi != 0 || mDataLo != 0; }
 
-		public static KGuid NewGuid()
-		{
-			return new KGuid(Guid.NewGuid());
-		}
+		public static KGuid NewGuid() => new KGuid(Guid.NewGuid());
 
 		#region Parse
-		public static KGuid Parse(string input)
-		{
-			return new KGuid(Guid.Parse(input));
-		}
-		public static KGuid ParseExact(string input, string format)
-		{
-			return new KGuid(Guid.ParseExact(input, format));
-		}
+		public static KGuid Parse(string input) => new KGuid(Guid.Parse(input));
+		public static KGuid ParseExact(string input, string format) => new KGuid(Guid.ParseExact(input, format));
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactNoStyle(string input)
-		{
-			return new KGuid(Guid.ParseExact(input, kFormatNoStyle));
-		}
+		internal static KGuid ParseExactNoStyle(string input) => new KGuid(Guid.ParseExact(input, kFormatNoStyle));
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactHyphenated(string input)
-		{
-			return new KGuid(Guid.ParseExact(input, kFormatHyphenated));
-		}
+		internal static KGuid ParseExactHyphenated(string input) => new KGuid(Guid.ParseExact(input, kFormatHyphenated));
 
 		public static bool TryParse(string input, out KGuid result)
 		{
@@ -443,21 +429,12 @@ namespace KSoft.Values
 			result = Empty;
 			return false;
 		}
-		internal static bool TryParseExactNoStyle(string input, out KGuid result)
-		{
-			return TryParseExact(input, kFormatNoStyle, out result);
-		}
-		internal static bool TryParseExactHyphenated(string input, out KGuid result)
-		{
-			return TryParseExact(input, kFormatHyphenated, out result);
-		}
+		internal static bool TryParseExactNoStyle(string input, out KGuid result) => TryParseExact(input, kFormatNoStyle, out result);
+		internal static bool TryParseExactHyphenated(string input, out KGuid result) => TryParseExact(input, kFormatHyphenated, out result);
 		#endregion
 
 		#region Byte Utils
-		public byte[] ToByteArray()
-		{
-			return mData.ToByteArray();
-		}
+		public byte[] ToByteArray() => mData.ToByteArray();
 
 		public void ToByteBuffer(byte[] buffer, int index = 0)
 		{

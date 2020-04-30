@@ -37,13 +37,14 @@ namespace KSoft.Security.Cryptography.Test
 			string inputString,
 			string expectedHashByteString)
 		{
-			var tiger = TigerHashBase.Create(algName);
-
-			var input = System.Text.Encoding.ASCII.GetBytes(inputString);
-			var hash = tiger.ComputeHash(input);
-			Assert.AreEqual(
-				expectedHashByteString.ToUpper(),
-				KSoft.Text.Util.ByteArrayToString(hash));
+			using (var tiger = TigerHashBase.Create(algName))
+			{
+				var input = System.Text.Encoding.ASCII.GetBytes(inputString);
+				var hash = tiger.ComputeHash(input);
+				Assert.AreEqual(
+					expectedHashByteString.ToUpper(KSoft.Util.InvariantCultureInfo),
+					KSoft.Text.Util.ByteArrayToString(hash));
+			}
 		}
 	};
 }

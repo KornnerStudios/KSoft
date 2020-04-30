@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Text
 {
@@ -109,7 +110,12 @@ namespace KSoft.Text
 		/// <param name="bytes">The byte array to contain the resulting sequence of bytes</param>
 		/// <param name="byteIndex">The index at which to start writing the resulting sequence of bytes</param>
 		/// <returns>Number of prefix bytes written into <paramref name="bytes"/></returns>
-		int EncodeStringStorageTypePrefixData(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
+		int EncodeStringStorageTypePrefixData(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			char[] chars,
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			int charIndex,
+			int charCount, byte[] bytes, int byteIndex)
 		{
 			switch (mStorage.Type)
 			{
@@ -139,7 +145,14 @@ namespace KSoft.Text
 		/// <param name="bytes">The byte array to contain the resulting sequence of bytes</param>
 		/// <param name="byteIndex">The index at which to start writing the resulting sequence of postfix bytes</param>
 		/// <returns>The actual number of bytes written into <paramref name="bytes"/></returns>
-		int EncodeStringStorageTypePostfixData(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
+		int EncodeStringStorageTypePostfixData(
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			char[] chars,
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			int charIndex,
+			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			int charCount,
+			byte[] bytes, int byteIndex)
 		{
 			switch (mStorage.Type)
 			{

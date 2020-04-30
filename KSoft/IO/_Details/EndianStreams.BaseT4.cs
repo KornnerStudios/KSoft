@@ -33,7 +33,7 @@ namespace KSoft.IO
 		/// <remarks>If <paramref name="newOrder"/> is the same as <see cref="ByteOrder"/> nothing will happen</remarks>
 		public void ChangeByteOrder(Shell.EndianFormat newOrder)
 		{
-			if(newOrder != ByteOrder)
+			if (newOrder != ByteOrder)
 			{
 				ByteOrder = newOrder;
 				mRequiresByteSwap = !mRequiresByteSwap;
@@ -106,41 +106,39 @@ namespace KSoft.IO
 		#region Seek
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek32(uint offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek32(uint offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek32(uint offset, SeekOrigin origin)	{ Seek(offset, origin); }
+		public void Seek32(uint offset, SeekOrigin origin)	=> Seek(offset, origin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek32(int offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek32(int offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek32(int offset, SeekOrigin origin)	{ Seek(offset, origin); }
+		public void Seek32(int offset, SeekOrigin origin)	=> Seek(offset, origin);
 
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek(long offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek(long offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek(long offset, SeekOrigin origin)	{ base.BaseStream.Seek(offset, origin); }
+		public void Seek(long offset, SeekOrigin origin)	=> base.BaseStream.Seek(offset, origin);
 		#endregion
 
 		#region PositionPtr
 		/// <summary>Get the current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
-		public Values.PtrHandle GetPositionPtr(Shell.ProcessorSize ptrSize)
-		{
-			return new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
-		}
+		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
+			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
+
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
-		public Values.PtrHandle PositionPtr { get {
-			return new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
-		} }
+		public Values.PtrHandle PositionPtr =>
+			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 	};
@@ -175,7 +173,7 @@ namespace KSoft.IO
 		/// <remarks>If <paramref name="newOrder"/> is the same as <see cref="ByteOrder"/> nothing will happen</remarks>
 		public void ChangeByteOrder(Shell.EndianFormat newOrder)
 		{
-			if(newOrder != ByteOrder)
+			if (newOrder != ByteOrder)
 			{
 				ByteOrder = newOrder;
 				mRequiresByteSwap = !mRequiresByteSwap;
@@ -248,41 +246,39 @@ namespace KSoft.IO
 		#region Seek
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek32(uint offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek32(uint offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek32(uint offset, SeekOrigin origin)	{ Seek(offset, origin); }
+		public void Seek32(uint offset, SeekOrigin origin)	=> Seek(offset, origin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek32(int offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek32(int offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek32(int offset, SeekOrigin origin)	{ Seek(offset, origin); }
+		public void Seek32(int offset, SeekOrigin origin)	=> Seek(offset, origin);
 
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to the beginning of the stream</summary>
 		/// <param name="offset">Offset to seek to</param>
-		public void Seek(long offset)						{ Seek(offset, SeekOrigin.Begin); }
+		public void Seek(long offset)						=> Seek(offset, SeekOrigin.Begin);
 		/// <summary>Moves the stream cursor to <paramref name="offset"/> relative to <paramref name="origin"/></summary>
 		/// <param name="offset">Offset to seek to</param>
 		/// <param name="origin">Origin to base seek operation</param>
-		public void Seek(long offset, SeekOrigin origin)	{ base.BaseStream.Seek(offset, origin); }
+		public void Seek(long offset, SeekOrigin origin)	=> base.BaseStream.Seek(offset, origin);
 		#endregion
 
 		#region PositionPtr
 		/// <summary>Get the current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
-		public Values.PtrHandle GetPositionPtr(Shell.ProcessorSize ptrSize)
-		{
-			return new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
-		}
+		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
+			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
+
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
-		public Values.PtrHandle PositionPtr { get {
-			return new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
-		} }
+		public Values.PtrHandle PositionPtr =>
+			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 	};
@@ -293,41 +289,41 @@ namespace KSoft
 {
 	partial class TypeExtensions
 	{
-		public static void Read(this IO.EndianReader s, out bool value)		{ value = s.ReadBoolean(); }
-		public static void Write(this bool value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out bool value)	=> value = s.ReadBoolean();
+		public static void Write(this bool value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out char value)		{ value = s.ReadChar(); }
-		public static void Write(this char value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out char value)	=> value = s.ReadChar();
+		public static void Write(this char value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out byte value)		{ value = s.ReadByte(); }
-		public static void Write(this byte value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out byte value)	=> value = s.ReadByte();
+		public static void Write(this byte value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out sbyte value)		{ value = s.ReadSByte(); }
-		public static void Write(this sbyte value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out sbyte value)	=> value = s.ReadSByte();
+		public static void Write(this sbyte value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out ushort value)		{ value = s.ReadUInt16(); }
-		public static void Write(this ushort value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out ushort value)	=> value = s.ReadUInt16();
+		public static void Write(this ushort value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out short value)		{ value = s.ReadInt16(); }
-		public static void Write(this short value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out short value)	=> value = s.ReadInt16();
+		public static void Write(this short value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out uint value)		{ value = s.ReadUInt32(); }
-		public static void Write(this uint value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out uint value)	=> value = s.ReadUInt32();
+		public static void Write(this uint value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out int value)		{ value = s.ReadInt32(); }
-		public static void Write(this int value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out int value)	=> value = s.ReadInt32();
+		public static void Write(this int value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out ulong value)		{ value = s.ReadUInt64(); }
-		public static void Write(this ulong value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out ulong value)	=> value = s.ReadUInt64();
+		public static void Write(this ulong value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out long value)		{ value = s.ReadInt64(); }
-		public static void Write(this long value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out long value)	=> value = s.ReadInt64();
+		public static void Write(this long value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out float value)		{ value = s.ReadSingle(); }
-		public static void Write(this float value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out float value)	=> value = s.ReadSingle();
+		public static void Write(this float value, IO.EndianWriter s)		=> s.Write(value);
 
-		public static void Read(this IO.EndianReader s, out double value)		{ value = s.ReadDouble(); }
-		public static void Write(this double value, IO.EndianWriter s)		{ s.Write(value); }
+		public static void Read(this IO.EndianReader s, out double value)	=> value = s.ReadDouble();
+		public static void Write(this double value, IO.EndianWriter s)		=> s.Write(value);
 
 	};
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -96,6 +97,7 @@ namespace KSoft.Debug
 	public class KSoftFileLogTraceListener
 		: TraceListener
 	{
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static KSoftFileLogTraceListener()
 		{
 			var prop_names = Enum.GetNames(typeof(Property)).ToList();
@@ -112,13 +114,9 @@ namespace KSoft.Debug
 			private int mReferenceCount;
 			private bool mDisposed;
 
-			internal bool IsInUse { get {
-				return this.mStream != null;
-			} }
+			internal bool IsInUse { get => this.mStream != null; }
 
-			internal long FileSize { get {
-				return this.mStream.BaseStream.Length;
-			} }
+			internal long FileSize { get => this.mStream.BaseStream.Length; }
 
 			internal ReferencedStream(StreamWriter stream)
 			{
@@ -459,7 +457,7 @@ namespace KSoft.Debug
 			set
 			{
 				this.DemandWritePermission();
-				ValidateDiskSpaceExhaustedOptionEnumValue(value, "value");
+				ValidateDiskSpaceExhaustedOptionEnumValue(value, nameof(value));
 				this.mDiskSpaceExhaustedBehavior = value;
 				this.mPropertiesSet.Set(Property.DiskSpaceExhaustedBehavior);
 			}
@@ -598,6 +596,7 @@ namespace KSoft.Debug
 		}
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private ReferencedStream mStream;
 		private ReferencedStream ListenerStream
 		{
@@ -709,10 +708,7 @@ namespace KSoft.Debug
 		} }
 
 		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		protected override string[] GetSupportedAttributes()
-		{
-			return mSupportedAttributes;
-		}
+		protected override string[] GetSupportedAttributes() => mSupportedAttributes;
 
 		#region TemporaryBuffer
 		private StringBuilder mTemporaryBuffer = new StringBuilder();
@@ -944,10 +940,7 @@ namespace KSoft.Debug
 		}
 		#endregion
 
-		bool IsEnabled(TraceOptions opts)
-		{
-			return (opts & TraceOutputOptions) != 0;
-		}
+		bool IsEnabled(TraceOptions opts) => (opts & TraceOutputOptions) != 0;
 
 		#region Trace methods
 		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
@@ -1137,7 +1130,7 @@ namespace KSoft.Debug
 			return result;
 		}
 
-		private object GetDataEntryForTrace(object data)
+		private static object GetDataEntryForTrace(object data)
 		{
 			if (data == null)
 				return data;
@@ -1321,9 +1314,9 @@ namespace KSoft.Debug
 			}
 			throw new Exception("ApplicationLog_FreeSpaceError");
 		}
-		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+		static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
 			out long lpFreeBytesAvailable,
 			out long lpTotalNumberOfBytes,
 			out long lpTotalNumberOfFreeBytes);
@@ -1365,20 +1358,11 @@ namespace KSoft.Debug
 		#endregion
 
 		#region Date stuff
-		private bool DayChanged()
-		{
-			return DateTime.Compare(this.mDay.AddDays((double)this.mDays), DateTime.Now.Date) != 0;
-		}
+		private bool DayChanged() => DateTime.Compare(this.mDay.AddDays((double)this.mDays), DateTime.Now.Date) != 0;
 
-		private bool WeekChanged()
-		{
-			return DateTime.Compare(this.mFirstDayOfWeek.Date, GetFirstDayOfWeek(DateTime.Now.Date)) != 0;
-		}
+		private bool WeekChanged() => DateTime.Compare(this.mFirstDayOfWeek.Date, GetFirstDayOfWeek(DateTime.Now.Date)) != 0;
 
-		private static DateTime GetFirstDayOfWeek(DateTime checkDate)
-		{
-			return checkDate.AddDays(checked(DayOfWeek.Sunday - checkDate.DayOfWeek)).Date;
-		}
+		private static DateTime GetFirstDayOfWeek(DateTime checkDate) => checkDate.AddDays(checked(DayOfWeek.Sunday - checkDate.DayOfWeek)).Date;
 
 		private void HandleDateChange()
 		{

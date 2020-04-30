@@ -41,7 +41,7 @@ namespace KSoft.Reflection
 				case 16: return typeof(Action<,,,,,,,,,,,,,,,>);
 
 				default:
-					throw new Debug.UnreachableException(paramCount.ToString());
+					throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo));
 			}
 		}
 		static Type GetDynamicDelegateFuncType(int paramCount)
@@ -67,7 +67,7 @@ namespace KSoft.Reflection
 				case 16: return typeof(Func<,,,,,,,,,,,,,,,,>);
 
 				default:
-					throw new Debug.UnreachableException(paramCount.ToString());
+					throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo));
 			}
 		}
 		static Type GetDynamicDelegateType(bool hasResult, int paramCount)
@@ -127,7 +127,8 @@ namespace KSoft.Reflection
 			var method = type.GetMethod(methodName, bindingAttr, null, method_params, null);
 
 			if (method == null)
-				throw new InvalidOperationException(string.Format("Couldn't find a method in {0} named '{1}' ({2})",
+				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
+					"Couldn't find a method in {0} named '{1}' ({2})",
 					type, methodName, bindingAttr));
 
 			var param_this =Expr.Parameter(type, kThisName);
@@ -159,7 +160,8 @@ namespace KSoft.Reflection
 			#region func_method_info validation
 			if (!func_method_info.ReturnType.IsAssignableFrom(type))
 			{
-				string msg = string.Format("Generation failed: {0} returns a {1} which isn't assignable from {2}",
+				string msg = string.Format(KSoft.Util.InvariantCultureInfo,
+					"Generation failed: {0} returns a {1} which isn't assignable from {2}",
 					func_type, func_method_info.ReturnType, type);
 				throw new InvalidOperationException(msg);
 			}
@@ -180,7 +182,8 @@ namespace KSoft.Reflection
 				if (param_names.Length == 0)
 					param_names.Append("<no-parameters>");
 
-				string msg = string.Format("Generation failed: {0} has no ctor which matches the bindings '{1}' and takes the following parameter types: {2}",
+				string msg = string.Format(KSoft.Util.InvariantCultureInfo,
+					"Generation failed: {0} has no ctor which matches the bindings '{1}' and takes the following parameter types: {2}",
 					type, bindingAttr, param_names);
 
 				throw new InvalidOperationException(msg);

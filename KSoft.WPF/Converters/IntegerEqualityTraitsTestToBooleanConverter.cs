@@ -69,7 +69,7 @@ namespace KSoft.WPF.Converters
 		{
 			if (value.TryGetTypeCode().IsSigned())
 			{
-				long lhs = System.Convert.ToInt64(value);
+				long lhs = System.Convert.ToInt64(value, Util.InvariantCultureInfo);
 				bool test = PerformTest(lhs);
 				return test;
 			}

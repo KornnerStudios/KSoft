@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -11,6 +12,7 @@ namespace KSoft.Collections
 	using StringSegmentEnumerator = StringSegment.Enumerator;
 
 	// #TODO how is this better or different compared to StringSegment Microsoft.Extensions.Primitives.dll?
+	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public partial struct StringSegment
 		: IReadOnlyList<char>
 		, IEquatable<StringSegment>

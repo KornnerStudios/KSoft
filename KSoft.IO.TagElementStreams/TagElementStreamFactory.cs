@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -19,6 +20,7 @@ namespace KSoft.IO
 		public delegate dynamic OpenFromStreamDelegate(TagElementStreamFormat format, System.IO.Stream sourceStream,
 			FileAccess permissions, object owner = null);
 
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
 		public sealed class RegisteredFormat
 		{
 			public string Name { get; private set; }
@@ -188,6 +190,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static TagElementStreamFactory()
 		{
 			gRegisteredFormats = new Dictionary<TagElementStreamFormat, RegisteredFormat>();

@@ -8,7 +8,7 @@ namespace KSoft.IO
 {
 	using BitSet = Collections.BitSet;
 
-	public partial class TagElementStreamDefaultSerializer
+	partial class TagElementStreamDefaultSerializer
 	{
 		public delegate int SerializeBitToTagElementStreamDelegate<TDoc, TCursor, TContext>(
 			TagElementStream<TDoc, TCursor, string> s, BitSet bitset, int bitIndex, TContext ctxt)
@@ -39,7 +39,7 @@ namespace KSoft.IO
 					{
 						bit_index = streamElement(s, @this, TypeExtensions.kNoneInt32, ctxt);
 						if (bit_index.IsNone())
-							s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+							s.ThrowReadException(new System.IO.InvalidDataException(string.Format(Util.InvariantCultureInfo,
 								"Element is not a valid {0} value", elementName)));
 
 						@this[bit_index] = true;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -33,7 +34,8 @@ namespace KSoft.Collections
 		public int Data { get { return (int)mWord; } }
 
 		/// <summary>Length in bits. Always returns 32</summary>
-		public int Length			{ get { return kNumberOfBits; } }
+		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic")]
+		public int Length	{ get { return kNumberOfBits; } }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality		{ get { return Bits.BitCount(mWord); } }
 		/// <summary>Number of bits set to false</summary>
@@ -66,6 +68,23 @@ namespace KSoft.Collections
 		public static bool operator !=(BitVector32 x, BitVector32 y)
 		{
 			return !x.Equals(y);
+		}
+
+		public static bool operator <(BitVector32 left, BitVector32 right)
+		{
+			return left.CompareTo(right) < 0;
+		}
+		public static bool operator <=(BitVector32 left, BitVector32 right)
+		{
+			return left.CompareTo(right) <= 0;
+		}
+		public static bool operator >(BitVector32 left, BitVector32 right)
+		{
+			return left.CompareTo(right) > 0;
+		}
+		public static bool operator >=(BitVector32 left, BitVector32 right)
+		{
+			return left.CompareTo(right) >= 0;
 		}
 
 		public override int GetHashCode()
@@ -246,6 +265,11 @@ namespace KSoft.Collections
 		{
 			return new BitVector32(mWord & vector.mWord);
 		}
+		[Contracts.Pure]
+		public BitVector32 BitwiseAnd(BitVector32 vector)
+		{
+			return new BitVector32(mWord & vector.mWord);
+		}
 		/// <summary>Clears all of the bits in this vector whose corresponding bit is set in the specified vector</summary>
 		/// <param name="vector">vector with which to mask this vector</param>
 		/// <returns></returns>
@@ -262,6 +286,11 @@ namespace KSoft.Collections
 		{
 			return new BitVector32(mWord | vector.mWord);
 		}
+		[Contracts.Pure]
+		public BitVector32 BitwiseOr(BitVector32 vector)
+		{
+			return new BitVector32(mWord | vector.mWord);
+		}
 		/// <summary>Bit XOR this vector with another</summary>
 		/// <param name="vector">Vector with the bits to XOR with</param>
 		/// <returns></returns>
@@ -275,6 +304,11 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		[Contracts.Pure]
 		public BitVector32 Not()
+		{
+			return new BitVector32(~mWord);
+		}
+		[Contracts.Pure]
+		public BitVector32 OnesComplement()
 		{
 			return new BitVector32(~mWord);
 		}
@@ -348,7 +382,6 @@ namespace KSoft.Collections
 		#endregion
 
 		#region Enumerators impls
-		[Serializable]
 		public struct StateEnumerator
 			: IEnumerator< bool >
 		{
@@ -392,7 +425,6 @@ namespace KSoft.Collections
 			}
 		};
 
-		[Serializable]
 		public struct StateFilterEnumerator
 			: IEnumerator< int >
 		{
@@ -460,7 +492,7 @@ namespace KSoft.Collections
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
-				throw new ArgumentOutOfRangeException("bit", bit,
+				throw new ArgumentOutOfRangeException(nameof(bit), bit,
 					"Enum member is out of range for indexing");
 			}
 		}
@@ -506,7 +538,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 
@@ -547,7 +580,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 
@@ -680,7 +714,8 @@ namespace KSoft.Collections
 		public long Data { get { return (long)mWord; } }
 
 		/// <summary>Length in bits. Always returns 64</summary>
-		public int Length			{ get { return kNumberOfBits; } }
+		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic")]
+		public int Length	{ get { return kNumberOfBits; } }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality		{ get { return Bits.BitCount(mWord); } }
 		/// <summary>Number of bits set to false</summary>
@@ -713,6 +748,23 @@ namespace KSoft.Collections
 		public static bool operator !=(BitVector64 x, BitVector64 y)
 		{
 			return !x.Equals(y);
+		}
+
+		public static bool operator <(BitVector64 left, BitVector64 right)
+		{
+			return left.CompareTo(right) < 0;
+		}
+		public static bool operator <=(BitVector64 left, BitVector64 right)
+		{
+			return left.CompareTo(right) <= 0;
+		}
+		public static bool operator >(BitVector64 left, BitVector64 right)
+		{
+			return left.CompareTo(right) > 0;
+		}
+		public static bool operator >=(BitVector64 left, BitVector64 right)
+		{
+			return left.CompareTo(right) >= 0;
 		}
 
 		public override int GetHashCode()
@@ -893,6 +945,11 @@ namespace KSoft.Collections
 		{
 			return new BitVector64(mWord & vector.mWord);
 		}
+		[Contracts.Pure]
+		public BitVector64 BitwiseAnd(BitVector64 vector)
+		{
+			return new BitVector64(mWord & vector.mWord);
+		}
 		/// <summary>Clears all of the bits in this vector whose corresponding bit is set in the specified vector</summary>
 		/// <param name="vector">vector with which to mask this vector</param>
 		/// <returns></returns>
@@ -909,6 +966,11 @@ namespace KSoft.Collections
 		{
 			return new BitVector64(mWord | vector.mWord);
 		}
+		[Contracts.Pure]
+		public BitVector64 BitwiseOr(BitVector64 vector)
+		{
+			return new BitVector64(mWord | vector.mWord);
+		}
 		/// <summary>Bit XOR this vector with another</summary>
 		/// <param name="vector">Vector with the bits to XOR with</param>
 		/// <returns></returns>
@@ -922,6 +984,11 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		[Contracts.Pure]
 		public BitVector64 Not()
+		{
+			return new BitVector64(~mWord);
+		}
+		[Contracts.Pure]
+		public BitVector64 OnesComplement()
 		{
 			return new BitVector64(~mWord);
 		}
@@ -995,7 +1062,6 @@ namespace KSoft.Collections
 		#endregion
 
 		#region Enumerators impls
-		[Serializable]
 		public struct StateEnumerator
 			: IEnumerator< bool >
 		{
@@ -1039,7 +1105,6 @@ namespace KSoft.Collections
 			}
 		};
 
-		[Serializable]
 		public struct StateFilterEnumerator
 			: IEnumerator< int >
 		{
@@ -1107,7 +1172,7 @@ namespace KSoft.Collections
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
-				throw new ArgumentOutOfRangeException("bit", bit,
+				throw new ArgumentOutOfRangeException(nameof(bit), bit,
 					"Enum member is out of range for indexing");
 			}
 		}
@@ -1153,7 +1218,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 
@@ -1194,7 +1260,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 

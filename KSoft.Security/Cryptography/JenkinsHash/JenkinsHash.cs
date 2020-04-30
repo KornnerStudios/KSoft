@@ -12,7 +12,7 @@ namespace KSoft.Security.Cryptography
 	{
 		static uint HashChar(uint hash, char c)
 		{
-			c = char.ToLower(c);
+			c = char.ToLowerInvariant(c);
 			if (c == '\\') c = '/';
 
 			hash += (byte)c;

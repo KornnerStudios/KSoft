@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -73,7 +74,7 @@ namespace KSoft.IO
 			int capacity = EnumUtils.kSupportedTypeCodes.Length;
 			int unsigned_capacity = capacity >> 1; // number of unsigned types should be half the total types
 
-			// NOTE: The EnumComparer<TypeCode> may not be needed for .NET 4 environments:
+			// #NOTE: The EnumComparer<TypeCode> may not be needed for .NET 4 environments:
 			// http://www.codeproject.com/Messages/3968802/Re-What-about-Net-4-0.aspx
 			kReadMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
 			kWriteMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
@@ -85,6 +86,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitStreamerBase()
 		{
 			kBitStreamType = typeof(IO.BitStream);
@@ -109,6 +111,7 @@ namespace KSoft.IO
 			/// <remarks>Will be null for signed types</remarks>
 			public static readonly MethodInfo kBitSwap;
 
+			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static StreamType()
 			{
 				TypeCode c = Type.GetTypeCode(typeof(TStreamType));

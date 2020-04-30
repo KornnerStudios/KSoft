@@ -1,19 +1,22 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace KSoft.Bitwise
 {
 	/// <summary>Unionized value of a UInt32 and a Single</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct SingleUnion
 	{
+		[SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		[FieldOffset(0)] public uint Integer;
 		[FieldOffset(0)] public float Real;
 
-		public SingleUnion(uint integer)
+		public SingleUnion(uint unsignedInteger)
 		{
 			this.Real = 0;
-			this.Integer = integer;
+			this.Integer = unsignedInteger;
 		}
 		public SingleUnion(float real)
 		{
@@ -23,15 +26,18 @@ namespace KSoft.Bitwise
 	};
 	/// <summary>Unionized value of a UInt64 and a Double</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct DoubleUnion
 	{
+		[SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		[FieldOffset(0)] public ulong Integer;
 		[FieldOffset(0)] public double Real;
 
-		public DoubleUnion(ulong integer)
+		public DoubleUnion(ulong unsignedInteger)
 		{
 			this.Real = 0;
-			this.Integer = integer;
+			this.Integer = unsignedInteger;
 		}
 		public DoubleUnion(double real)
 		{
@@ -42,6 +48,8 @@ namespace KSoft.Bitwise
 
 	/// <summary>Unionized value of a UInt64 and a UInt32</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IntegerUnion
 	{
 		[FieldOffset(0)] public ulong u64;

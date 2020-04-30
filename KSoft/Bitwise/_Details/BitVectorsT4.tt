@@ -5,6 +5,7 @@
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -44,7 +45,8 @@ namespace KSoft.Collections
 		public <#= sign_keyword #> Data { get { return (<#= sign_keyword #>)mWord; } }
 
 		/// <summary>Length in bits. Always returns <#= bittable_type.SizeOfInBits #></summary>
-		public int Length			{ get { return kNumberOfBits; } }
+		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic")]
+		public int Length	{ get { return kNumberOfBits; } }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality		{ get { return Bits.BitCount(mWord); } }
 		/// <summary>Number of bits set to false</summary>
@@ -77,6 +79,23 @@ namespace KSoft.Collections
 		public static bool operator !=(<#= typename #> x, <#= typename #> y)
 		{
 			return !x.Equals(y);
+		}
+
+		public static bool operator <(<#= typename #> left, <#= typename #> right)
+		{
+			return left.CompareTo(right) < 0;
+		}
+		public static bool operator <=(<#= typename #> left, <#= typename #> right)
+		{
+			return left.CompareTo(right) <= 0;
+		}
+		public static bool operator >(<#= typename #> left, <#= typename #> right)
+		{
+			return left.CompareTo(right) > 0;
+		}
+		public static bool operator >=(<#= typename #> left, <#= typename #> right)
+		{
+			return left.CompareTo(right) >= 0;
 		}
 
 		public override int GetHashCode()
@@ -214,6 +233,11 @@ namespace KSoft.Collections
 		{
 			return new <#= typename #>(mWord & vector.mWord);
 		}
+		[Contracts.Pure]
+		public <#= typename #> BitwiseAnd(<#= typename #> vector)
+		{
+			return new <#= typename #>(mWord & vector.mWord);
+		}
 		/// <summary>Clears all of the bits in this vector whose corresponding bit is set in the specified vector</summary>
 		/// <param name="vector">vector with which to mask this vector</param>
 		/// <returns></returns>
@@ -230,6 +254,11 @@ namespace KSoft.Collections
 		{
 			return new <#= typename #>(mWord | vector.mWord);
 		}
+		[Contracts.Pure]
+		public <#= typename #> BitwiseOr(<#= typename #> vector)
+		{
+			return new <#= typename #>(mWord | vector.mWord);
+		}
 		/// <summary>Bit XOR this vector with another</summary>
 		/// <param name="vector">Vector with the bits to XOR with</param>
 		/// <returns></returns>
@@ -243,6 +272,11 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		[Contracts.Pure]
 		public <#= typename #> Not()
+		{
+			return new <#= typename #>(~mWord);
+		}
+		[Contracts.Pure]
+		public <#= typename #> OnesComplement()
 		{
 			return new <#= typename #>(~mWord);
 		}
@@ -306,7 +340,6 @@ namespace KSoft.Collections
 <#		var enum_type_name = enum_def.Name + "Enumerator";
 		var enum_result_keyword = enum_def.ResultCodeDef.Keyword;
 #>
-		[Serializable]
 		public struct <#= enum_type_name #>
 			: IEnumerator< <#= enum_result_keyword #> >
 		{
@@ -390,7 +423,7 @@ namespace KSoft.Collections
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
-				throw new ArgumentOutOfRangeException("bit", bit,
+				throw new ArgumentOutOfRangeException(nameof(bit), bit,
 					"Enum member is out of range for indexing");
 			}
 		}
@@ -436,7 +469,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 
@@ -477,7 +511,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 

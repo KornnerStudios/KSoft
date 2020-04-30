@@ -14,12 +14,8 @@ namespace KSoft.IO
 	public sealed partial class EndianReader : BinaryReader, IKSoftBinaryStream, IKSoftEndianStream
 	{
 		#region BinaryReader Accessors
-		static readonly Reflection.Util.ReferenceTypeMemberSetterDelegate<BinaryReader, Stream> kSetBaseStream;
-
-		static EndianReader()
-		{
-			kSetBaseStream = Reflection.Util.GenerateReferenceTypeMemberSetter<BinaryReader, Stream>("m_stream");
-		}
+		static readonly Reflection.Util.ReferenceTypeMemberSetterDelegate<BinaryReader, Stream> kSetBaseStream =
+			Reflection.Util.GenerateReferenceTypeMemberSetter<BinaryReader, Stream>("m_stream");
 		#endregion
 
 		// #REVIEW: .NET 4.5: BinaryReader has 'bool leaveOpen' ctor
@@ -317,8 +313,11 @@ namespace KSoft.IO
 		{
 			// There are going to be issues if we try to read back a willy nilly char array string
 			if (s.Type == Memory.Strings.StringStorageType.CharArray && !s.IsFixedLength && length <= 0)
-				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}, {1}",
-					s.ToString(), length.ToString()));
+			{
+				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
+					"Provided string storage and length is invalid for Endian streaming: {0}, {1}",
+					s.ToString(), length.ToString(Util.InvariantCultureInfo)));
+			}
 		}
 		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
@@ -392,11 +391,11 @@ namespace KSoft.IO
 			return ptr;
 		}
 		/// <summary>Read a pointer value from the stream with no postprocessing to the result</summary>
-		/// <param name="ptr">Handle to stream the value into</param>
-		public void ReadRawPointer(ref Values.PtrHandle ptr)
+		/// <param name="ptrHandle">Handle to stream the value into</param>
+		public void ReadRawPointer(ref Values.PtrHandle ptrHandle)
 		{
-			if (!ptr.Is64bit)	ptr.u32 = ReadUInt32();
-			else				ptr.u64 = ReadUInt64();
+			if (!ptrHandle.Is64bit)	ptrHandle.u32 = ReadUInt32();
+			else					ptrHandle.u64 = ReadUInt64();
 		}
 
 		/// <summary>Read a pointer value from the stream</summary>
@@ -432,7 +431,7 @@ namespace KSoft.IO
 			return ptr;
 		}
 		/// <summary>Read a pointer value from the stream</summary>
-		/// <param name="ptr">Handle to stream the value into</param>
+		/// <param name="ptrHandle">Handle to stream the value into</param>
 		/// <remarks>
 		/// After the value is read from the stream, <see cref="BaseAddress"/> is subtracted.
 		///
@@ -440,21 +439,21 @@ namespace KSoft.IO
 		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
-		public void ReadPointer(ref Values.PtrHandle ptr)
+		public void ReadPointer(ref Values.PtrHandle ptrHandle)
 		{
-			if (!ptr.Is64bit)
+			if (!ptrHandle.Is64bit)
 			{
-				ptr.u32 = ReadUInt32();
+				ptrHandle.u32 = ReadUInt32();
 
-				if (ptr.u32 != 0)
-					ptr.u32 -= BaseAddress.u32;
+				if (ptrHandle.u32 != 0)
+					ptrHandle.u32 -= BaseAddress.u32;
 			}
 			else
 			{
-				ptr.u64 = ReadUInt64();
+				ptrHandle.u64 = ReadUInt64();
 
-				if (ptr.u64 != 0)
-					ptr.u64 -= BaseAddress.u64;
+				if (ptrHandle.u64 != 0)
+					ptrHandle.u64 -= BaseAddress.u64;
 			}
 		}
 
@@ -473,7 +472,7 @@ namespace KSoft.IO
 			return ReadPointer(BaseAddress.Size);
 		}
 		/// <summary>Read a pointer value from the stream (size inherited from <see cref="BaseAddress"/>)</summary>
-		/// <param name="ptr">Handle to initialize and stream the value into</param>
+		/// <param name="ptrHandle">Handle to initialize and stream the value into</param>
 		/// <remarks>
 		/// After the value is read from the stream, <see cref="BaseAddress"/> is subtracted.
 		///
@@ -481,11 +480,11 @@ namespace KSoft.IO
 		/// a correct relative-virtual-address. Otherwise, set <see cref="BaseAddress"/>
 		/// to zero to get the pure pointer value.
 		/// </remarks>
-		public void ReadPointerViaBaseAddress(out Values.PtrHandle ptr)
+		public void ReadPointerViaBaseAddress(out Values.PtrHandle ptrHandle)
 		{
-			ptr = new Values.PtrHandle(BaseAddress.Size);
+			ptrHandle = new Values.PtrHandle(BaseAddress.Size);
 
-			ReadPointer(ref ptr);
+			ReadPointer(ref ptrHandle);
 		}
 		#endregion
 

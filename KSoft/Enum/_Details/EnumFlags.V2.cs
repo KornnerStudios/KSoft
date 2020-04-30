@@ -13,27 +13,18 @@ namespace KSoft
 		/// </summary>
 		static class V2
 		{
-			public static readonly ModifyDelegate kAddFlags, kRemoveFlags;
-			public static readonly ModifyByRefDelegate kAddFlagsByRef, kRemoveFlagsByRef;
-
-			public static readonly ModifyCondDelegate kModifyFlags;
-			public static readonly ModifyByRefCondDelegate kModifyFlagsByRef;
-
-			public static readonly ReadDelegate kTestFlags;
-
-			static V2()
-			{
-				kAddFlags = GenerateAddFlagsMethod();
-				kAddFlagsByRef = GenerateAddFlagsMethodByRef();
-
+			public static readonly ModifyDelegate
+				kAddFlags = GenerateAddFlagsMethod(),
 				kRemoveFlags = GenerateRemoveFlagsMethod();
+			public static readonly ModifyByRefDelegate
+				kAddFlagsByRef = GenerateAddFlagsMethodByRef(),
 				kRemoveFlagsByRef = GenerateRemoveFlagsMethodByRef();
 
-				kModifyFlags = GenerateModifyFlagsMethod();
-				kModifyFlagsByRef = GenerateModifyFlagsMethodByRef();
+			public static readonly ModifyCondDelegate kModifyFlags = GenerateModifyFlagsMethod();
+			public static readonly ModifyByRefCondDelegate kModifyFlagsByRef = GenerateModifyFlagsMethodByRef();
 
-				kTestFlags = GenerateTestFlagsMethod();
-			}
+			public static readonly ReadDelegate kTestFlags = GenerateTestFlagsMethod();
+
 
 			static Expr GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{

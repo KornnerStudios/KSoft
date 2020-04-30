@@ -435,7 +435,7 @@ namespace MiniJSON {
             // KM00 start
             private StringBuilder mParseStringBuffer;
             private char[] mParseStringHexBuffer;
-            private bool IsHexDigit(char c)
+            private static bool IsHexDigit(char c)
             {
                 return
                     (c >= '0' && c <= '9') ||
@@ -661,8 +661,8 @@ namespace MiniJSON {
         /// </summary>
         /// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
-            return Serializer.Serialize(obj, prettyPrint, numPrettyPrintLevels);
+        public static string Serialize(object theObj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
+            return Serializer.Serialize(theObj, prettyPrint, numPrettyPrintLevels);
         }
 
         sealed class Serializer {
@@ -798,7 +798,7 @@ namespace MiniJSON {
                             builder.Append(c);
                         } else {
                             builder.Append("\\u");
-                            builder.Append(codepoint.ToString("x4"));
+                            builder.Append(codepoint.ToString("x4", Util.InvariantCultureInfo)); // KM00
                         }
                         break;
                     }
@@ -826,7 +826,7 @@ namespace MiniJSON {
                 } else if (value is double
                     || value is decimal) {
                     // KM00 changed to ToStringInvariant with recommended round trip specifier
-                    builder.Append(Convert.ToDouble(value).ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
+                    builder.Append(Convert.ToDouble(value, Util.InvariantCultureInfo).ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
                 } else {
                     SerializeString(value.ToString());
                 }

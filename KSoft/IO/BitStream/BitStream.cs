@@ -9,8 +9,10 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.IO
 {
 	[System.Diagnostics.DebuggerDisplay("Bit/Length = {BitLength}/{Length}, Bit = {BitPosition}")]
-	public partial class BitStream : IKSoftStream, IKSoftStreamModeable,
-		IDisposable
+	public partial class BitStream
+		: IKSoftStream
+		, IKSoftStreamModeable
+		, IDisposable
 	{
 		static BitStream()
 		{
@@ -35,9 +37,7 @@ namespace KSoft.IO
 		int mCacheBitsStreamedCount;
 
 		/// <summary>Number of bits still left in <see cref="mCache"/> that can be read/written</summary>
-		int CacheBitsRemaining	{ get {
-			return kWordBitCount - mCacheBitIndex;
-		} }
+		int CacheBitsRemaining	{ get => kWordBitCount - mCacheBitIndex; }
 		#endregion
 
 		#region IKSoftStream
@@ -49,7 +49,7 @@ namespace KSoft.IO
 		/// <summary>Name for this bitstream, or an empty string</summary>
 		public string StreamName			{ get; private set; }
 		/// <returns><see cref="StreamName"/></returns>
-		public override string ToString()	{ return StreamName; }
+		public override string ToString()	=> StreamName;
 		#endregion
 
 		#region IKSoftStreamModeable
@@ -72,8 +72,8 @@ namespace KSoft.IO
 				mStreamMode = value;
 			}
 		} }
-		public bool IsReading { get { return mStreamMode == FileAccess.Read; } }
-		public bool IsWriting { get { return mStreamMode == FileAccess.Write; } }
+		public bool IsReading { get => mStreamMode == FileAccess.Read; }
+		public bool IsWriting { get => mStreamMode == FileAccess.Write; }
 		#endregion
 
 		/// <summary>Access operations to throw exceptions on when they result in overflows</summary>
@@ -86,16 +86,14 @@ namespace KSoft.IO
 
 		/// <summary>Byte length of the bitstream or <see cref="BaseStream"/>'s Length</summary>
 		/// <exception cref="NotSupportedException"><see cref="BaseStream"/> does not support seeking</exception>
-		public long Length { get {
-			return mEndPosition > 0
+		public long Length { get =>
+			mEndPosition > 0
 				? mEndPosition
 				: BaseStream.Length;
-		} }
+		}
 		/// <summary>Number of bits in the bitstream</summary>
 		/// <exception cref="NotSupportedException"><see cref="BaseStream"/> does not support seeking</exception>
-		public long BitLength { get {
-			return (Length - mStartPosition) * Bits.kByteBitCount;
-		} }
+		public long BitLength { get => (Length - mStartPosition) * Bits.kByteBitCount; }
 		/// <summary>Current bit index within the bitstream</summary>
 		/// <exception cref="NotSupportedException"><see cref="BaseStream"/> does not support seeking</exception>
 		public long BitPosition	{ get {
@@ -106,11 +104,11 @@ namespace KSoft.IO
 				: position - mCacheBitsStreamedCount;
 		} }
 
-		bool IsEndOfStream { get {
-			return CanSeek
+		bool IsEndOfStream { get =>
+			CanSeek
 				? BaseStream.Position >= Length
 				: false;
-		} }
+		}
 
 		internal void SeekToStart()
 		{
@@ -169,40 +167,41 @@ namespace KSoft.IO
 		}
 
 		#region IDisposable Members
-		public void Dispose()
+		protected virtual void Dispose(bool disposing)
 		{
-			if (BaseStream != null)
+			if (disposing && BaseStream != null)
 			{
-				if(IsWriting)
+				if (IsWriting)
 					FlushCache();
 
-				if(BaseStreamOwner)
+				if (BaseStreamOwner)
 					BaseStream.Dispose();
 
 				BaseStream = null;
 				StreamPermissions = 0;
 			}
 		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 		#endregion
 
 		#region Stream-like interfaces
-		public bool CanRead		{ get { return StreamPermissions.CanRead(); } }
-		public bool CanWrite	{ get { return StreamPermissions.CanWrite(); } }
-		public bool CanSeek		{ get { return BaseStream.CanSeek; } }
+		public bool CanRead		{ get => StreamPermissions.CanRead(); }
+		public bool CanWrite	{ get => StreamPermissions.CanWrite(); }
+		public bool CanSeek		{ get => BaseStream.CanSeek; }
 
-		public void Close()		{ this.Dispose(); }
-		public void Flush()		{ this.FlushCache(); }
+		public void Close()		=> this.Dispose();
+		public void Flush()		=> this.FlushCache();
 		#endregion
 
 		#region Boolean
-		public void Read(out bool value)
-		{
-			value = ReadBoolean();
-		}
-		public void Write(bool value)
-		{
-			WriteWord(value ? 1U : 0U, Bits.kBooleanBitCount);
-		}
+		public void Read(out bool value) => value = ReadBoolean();
+
+		public void Write(bool value) => WriteWord(value ? 1U : 0U, Bits.kBooleanBitCount);
 		#endregion
 
 		#region Single
@@ -212,14 +211,9 @@ namespace KSoft.IO
 
 			return Bitwise.ByteSwap.SingleFromUInt32(data);
 		}
-		public void Read(out float value)
-		{
-			value = ReadSingle();
-		}
-		public void Write(float value)
-		{
-			Write(Bitwise.ByteSwap.SingleToUInt32(value), Bits.kInt32BitCount);
-		}
+		public void Read(out float value) => value = ReadSingle();
+
+		public void Write(float value) => Write(Bitwise.ByteSwap.SingleToUInt32(value), Bits.kInt32BitCount);
 		#endregion
 
 		#region Double
@@ -229,14 +223,9 @@ namespace KSoft.IO
 
 			return BitConverter.Int64BitsToDouble(data);
 		}
-		public void Read(out double value)
-		{
-			value = ReadDouble();
-		}
-		public void Write(double value)
-		{
-			Write(BitConverter.DoubleToInt64Bits(value), Bits.kInt32BitCount);
-		}
+		public void Read(out double value) => value = ReadDouble();
+
+		public void Write(double value) => Write(BitConverter.DoubleToInt64Bits(value), Bits.kInt32BitCount);
 		#endregion
 
 		#region DateTime
@@ -279,8 +268,11 @@ namespace KSoft.IO
 		{
 			// There are going to be issues if we try to read back a willy nilly char array string
 			if (s.Type == Memory.Strings.StringStorageType.CharArray && !s.IsFixedLength && length <= 0)
-				throw new InvalidDataException(string.Format("Provided string storage and length is invalid for Endian streaming: {0}, {1}",
-					s.ToString(), length.ToString()));
+			{
+				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
+					"Provided string storage and length is invalid for Endian streaming: {0}, {1}",
+					s.ToString(), length.ToString(Util.InvariantCultureInfo)));
+			}
 		}
 
 		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>

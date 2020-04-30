@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.ComponentModel;
 
 namespace KSoft.WPF.ViewModels
 {
+	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public class DockManagerViewModel
 		: ObjectModel.BasicViewModel
 		, IEnumerable<DockWindowViewModel>
 	{
 		#region Documents
 		ObservableCollection<DockWindowViewModel> mDocuments;
+		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public ObservableCollection<DockWindowViewModel> Documents
 		{
 			get { return mDocuments; }
@@ -21,6 +24,7 @@ namespace KSoft.WPF.ViewModels
 
 		#region Anchorables
 		ObservableCollection<object> mAnchorables;
+		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public ObservableCollection<object> Anchorables
 		{
 			get { return mAnchorables; }

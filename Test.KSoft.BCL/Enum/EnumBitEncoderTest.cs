@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Test
@@ -64,6 +65,9 @@ namespace KSoft.Test
 		#endregion
 
 		#region 32-bit tests
+		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
+			Justification = "Pretty sure this is a CA bug",
+			Scope = "method", Target = "BitEncode")]
 		void Test32Helper<TEnum, TEnumInformal>(TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 			where TEnumInformal : struct, IComparable, IFormattable, IConvertible
@@ -162,6 +166,9 @@ namespace KSoft.Test
 		#endregion
 
 		#region 64-bit tests
+		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
+			Justification = "Pretty sure this is a CA bug",
+			Scope = "method", Target = "BitEncode")]
 		static void Test64Helper<TEnum, TEnumInformal>(TEnum value)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 			where TEnumInformal : struct, IComparable, IFormattable, IConvertible
@@ -260,6 +267,9 @@ namespace KSoft.Test
 		#endregion
 
 		[TestMethod]
+		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
+			Justification ="Pretty sure this is a CA bug",
+			Scope = "method", Target = "BitEncode")]
 		public void Enum_BitEncoderHashCode32Test()
 		{
 			var ss = new Memory.Strings.StringStorage(

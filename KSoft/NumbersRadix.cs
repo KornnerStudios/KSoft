@@ -7,6 +7,7 @@ namespace KSoft
 	{
 		Binary	= 2,
 		Octal	= 8,
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		Decimal = 10,
 		Hex		= 16,
 	};
@@ -17,6 +18,7 @@ namespace KSoft
 	{
 		Binary	= NumeralBase.Binary,
 		Octal	= NumeralBase.Octal,
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1720:IdentifiersShouldNotContainTypeNames")]
 		Decimal = NumeralBase.Decimal,
 		Hex		= NumeralBase.Hex,
 		Base36	= 36,

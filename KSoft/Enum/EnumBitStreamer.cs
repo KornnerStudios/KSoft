@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Expr = System.Linq.Expressions.Expression;
 
@@ -96,6 +97,7 @@ namespace KSoft.IO
 		public static readonly IEnumBitStreamer<TEnum> Instance;
 
 		/// <summary>Initializes the <see cref="EnumBitStreamer{TEnum}"/> class by generating the IO methods.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitStreamer()
 		{
 			var generation_args = new MethodGenerationArgs();

@@ -27,7 +27,7 @@ namespace KSoft.Security.Cryptography
 
 		public new static CrcHash16 Create(string algName)
 		{
-			return (CrcHash16)System.Security.Cryptography.CryptoConfig.CreateFromName(kAlgorithmName);
+			return (CrcHash16)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
 		}
 		public new static CrcHash16 Create()
 		{

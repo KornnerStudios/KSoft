@@ -9,6 +9,7 @@ namespace KSoft.Values
 {
 	/// <summary>Describes how a value is compared for equality</summary>
 	[System.Reflection.Obfuscation(Exclude=false, ApplyToMembers=false)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1717:OnlyFlagsEnumsShouldHavePluralNames")]
 	public enum EqualityTraits : byte
 	{
 		NotEqual = 0,
@@ -44,10 +45,9 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		static bool ValidInequalityBits(this Values.EqualityTraits value)
-		{
-			return (value & Values.EqualityTraits.kInequalityMask) != Values.EqualityTraits.kInequalityMask;
-		}
+		static bool ValidInequalityBits(this Values.EqualityTraits value) =>
+			(value & Values.EqualityTraits.kInequalityMask) != Values.EqualityTraits.kInequalityMask;
+
 		[Contracts.Pure]
 		static Values.EqualityTraits GetEqualityBits(this Values.EqualityTraits value)
 		{
@@ -67,33 +67,27 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static bool IsNotEqual(this Values.EqualityTraits value)
-		{
+		public static bool IsNotEqual(this Values.EqualityTraits value) =>
 			// Ignores inequality state (the Equal bit is the only thing that really matters)
-			return value.GetEqualityBits() == Values.EqualityTraits.NotEqual;
-		}
+			value.GetEqualityBits() == Values.EqualityTraits.NotEqual;
+
 		/// <summary>Can the comparison be considered equal?</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static bool IsEqual(this Values.EqualityTraits value)
-		{
+		public static bool IsEqual(this Values.EqualityTraits value) =>
 			// Ignores inequality state (the Equal bit is the only thing that really matters)
-			return value.GetEqualityBits() == Values.EqualityTraits.Equal;
-		}
+			value.GetEqualityBits() == Values.EqualityTraits.Equal;
 
 		[Contracts.Pure]
-		public static bool IsLessThan(this Values.EqualityTraits value)
-		{
+		public static bool IsLessThan(this Values.EqualityTraits value) =>
 			// Ignores equality state (the LessThan bit is the only thing that really matters)
-			return value.GetInequalityBits() == Values.EqualityTraits.LessThan;
-		}
+			value.GetInequalityBits() == Values.EqualityTraits.LessThan;
+
 		[Contracts.Pure]
-		public static bool IsGreaterThan(this Values.EqualityTraits value)
-		{
+		public static bool IsGreaterThan(this Values.EqualityTraits value) =>
 			// Ignores equality state (the GreaterThan bit is the only thing that really matters)
-			return value.GetInequalityBits() == Values.EqualityTraits.GreaterThan;
-		}
+			value.GetInequalityBits() == Values.EqualityTraits.GreaterThan;
 
 		[Contracts.Pure]
 		public static bool IsLessThanOrEqual(this Values.EqualityTraits value)

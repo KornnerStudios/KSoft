@@ -82,6 +82,10 @@ namespace BKSystem.IO
 	/// <seealso cref="int"/>
 	/// <seealso cref="byte"/>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0018:Inline variable declaration")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1507")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1716")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2225")]
 	public class BitStream : Stream
 	{
 		public FileAccess StreamMode { get; set; }
@@ -96,7 +100,7 @@ namespace BKSystem.IO
 		///		include the "BitStream.resx" resource file in projects using the
 		///		<see cref="BitStream"/> class.
 		/// </remarks>
-		sealed class BitStreamResources
+		static class BitStreamResources
 		{
 			#region Fields [20051116]
 			/// <summary>
@@ -134,6 +138,7 @@ namespace BKSystem.IO
 			/// <remarks>
 			///		.
 			/// </remarks>
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2002:DoNotLockOnObjectsWithWeakIdentity", Justification="I don't give a rat's donky about this code")]
 			static void InitialiseResourceManager()
 			{
 				if (_resman == null)

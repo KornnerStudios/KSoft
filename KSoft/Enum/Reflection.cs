@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -71,10 +72,11 @@ namespace KSoft.Reflection
 			if (!TypeIsSupported(Type.GetTypeCode(kUnderlyingType)))
 			{
 				var message =
-					string.Format("The underlying type of the type parameter {0} is {1}. " +
-								  "Enum Utils only supports Enums with underlying type of " +
-								  "SByte, Byte, Int16, UInt16, Int32, UInt32, Int64, or UInt64.",
-								  kEnumType, kUnderlyingType);
+					string.Format(KSoft.Util.InvariantCultureInfo,
+						"The underlying type of the type parameter {0} is {1}. " +
+						"Enum Utils only supports Enums with underlying type of " +
+						"SByte, Byte, Int16, UInt16, Int32, UInt32, Int64, or UInt64.",
+						kEnumType, kUnderlyingType);
 				throw new NotSupportedException(message);
 			}
 		}
@@ -90,8 +92,9 @@ namespace KSoft.Reflection
 			if (theType.IsEnum)
 				return;
 
-			var message = string.Format("The type parameter {0} is not an Enum. Enum Utils supports Enums only.",
-							  theType);
+			var message = string.Format(KSoft.Util.InvariantCultureInfo,
+				"The type parameter {0} is not an Enum. Enum Utils supports Enums only.",
+				theType);
 			throw new NotSupportedException(message);
 		}
 
@@ -104,8 +107,9 @@ namespace KSoft.Reflection
 			if (theType.GetCustomAttribute<FlagsAttribute>() != null)
 				return;
 
-			var message = string.Format("The Enum type parameter {0} is not annotated as being a Flags Enum (via FlagsAttribute).",
-							  theType);
+			var message = string.Format(KSoft.Util.InvariantCultureInfo,
+				"The Enum type parameter {0} is not annotated as being a Flags Enum (via FlagsAttribute).",
+				theType);
 			throw new NotSupportedException(message);
 		}
 
@@ -222,21 +226,23 @@ namespace KSoft.Reflection
 		}
 		#endregion
 	};
-	public sealed class EnumUtil<TEnum> : EnumUtilBase<TEnum>
+	public sealed class EnumUtil<TEnum>: EnumUtilBase<TEnum>
 		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
 		/// <summary>Enum type we're dealing with</summary>
-		public static Type EnumType					{ get { return kEnumType; } }
+		public static Type EnumType					{ get => kEnumType; }
 		/// <summary>Enum (by-reference) type we're dealing with</summary>
-		public static Type EnumTypeByRef			{ get { return kEnumTypeByRef; } }
+		public static Type EnumTypeByRef			{ get => kEnumTypeByRef; }
 		/// <summary><see cref="EnumType"/>'s integer type used to represent its raw value</summary>
-		public static Type UnderlyingType			{ get { return kUnderlyingType; } }
-		public static TypeCode UnderlyingTypeCode	{ get { return kUnderlyingTypeCode; } }
+		public static Type UnderlyingType			{ get => kUnderlyingType; }
+		public static TypeCode UnderlyingTypeCode	{ get => kUnderlyingTypeCode; }
 		/// <summary>Does the underlying enumeration have a <see cref="FlagsAttribute"/>?</summary>
-		public static bool IsFlags					{ get { return kIsFlags; } }
+		public static bool IsFlags					{ get => kIsFlags; }
 
-		public static string[] Names				{ get { return kEnumNames; } }
-		public static TEnum[] Values				{ get { return kEnumValues; } }
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
+		public static string[] Names				{ get => kEnumNames; }
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
+		public static TEnum[] Values				{ get => kEnumValues; }
 
 		static EnumUtil()
 		{

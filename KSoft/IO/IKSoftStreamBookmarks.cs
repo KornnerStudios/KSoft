@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -9,6 +10,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.IO
 {
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.Owner"/></summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamOwnerBookmark : IDisposable
 	{
 		IKSoftStream mStream;
@@ -37,6 +39,7 @@ namespace KSoft.IO
 	};
 
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.UserData"/></summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamUserDataBookmark : IDisposable
 	{
 		IKSoftStream mStream;
@@ -65,6 +68,7 @@ namespace KSoft.IO
 	};
 
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStreamModeable.StreamMode"/></summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamModeBookmark : IDisposable
 	{
 		IKSoftStreamModeable mStream;

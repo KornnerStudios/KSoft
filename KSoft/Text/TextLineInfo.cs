@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -19,9 +20,7 @@ namespace KSoft.Text
 	[Contracts.ContractClassFor(typeof(ITextLineInfo))]
 	abstract class ITextLineInfoContract : ITextLineInfo
 	{
-		public bool HasLineInfo { get {
-			throw new NotImplementedException();
-		} }
+		public bool HasLineInfo => throw new NotImplementedException();
 
 		public int LineNumber { get {
 			Contract.Ensures(Contract.Result<int>() >= 0);
@@ -35,16 +34,22 @@ namespace KSoft.Text
 		} }
 	};
 
-	public struct TextLineInfo : ITextLineInfo, IComparable<ITextLineInfo>, IEquatable<ITextLineInfo>
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
+	[SuppressMessage("Microsoft.Design", "CA1066:EquatableAnalyzer",
+		Justification="This is a bug. This CLEARLY implements IEquatable<ITextLineInfo>")]
+	public struct TextLineInfo
+		: ITextLineInfo
+		, IComparable<ITextLineInfo>
+		, IEquatable<ITextLineInfo>
 	{
 		public static readonly TextLineInfo Empty = new TextLineInfo();
 
 		readonly int mLineNumber, mLinePosition;
 
-		public bool HasLineInfo	{ get { return mLineNumber > 0; } }
+		public bool HasLineInfo		=> mLineNumber > 0;
 
-		public int LineNumber	{ get { return mLineNumber; } }
-		public int LinePosition	{ get { return mLinePosition; } }
+		public int LineNumber		=> mLineNumber;
+		public int LinePosition		=> mLinePosition;
 
 		public TextLineInfo(int lineNumber, int linePosition)
 		{
@@ -59,9 +64,7 @@ namespace KSoft.Text
 			Contract.Requires<ArgumentNullException>(otherLineInfo != null);
 		}
 
-		public bool IsEmpty { get {
-			return LineNumber == 0 && LinePosition == 0;
-		} }
+		public bool IsEmpty => LineNumber == 0 && LinePosition == 0;
 
 		public int CompareTo(ITextLineInfo other)
 		{
@@ -71,36 +74,20 @@ namespace KSoft.Text
 				return LineNumber - other.LineNumber;
 		}
 
-		public bool Equals(ITextLineInfo other)
-		{
-			return LineNumber == other.LineNumber &&
-				LinePosition == other.LinePosition;
-		}
+		public bool Equals(ITextLineInfo other) =>
+			LineNumber == other.LineNumber &&
+			LinePosition == other.LinePosition;
 
-		public override bool Equals(object obj)
-		{
-			if(obj != null && obj is ITextLineInfo)
-			{
-				var other = (ITextLineInfo)obj;
+		public override bool Equals(object obj) =>
+			obj is ITextLineInfo other && Equals(other);
 
-				return Equals(other);
-			}
-
-			return false;
-		}
-
-		public override int GetHashCode()
-		{
-			return LineNumber.GetHashCode() ^ LinePosition.GetHashCode();
-		}
+		public override int GetHashCode() =>
+			LineNumber.GetHashCode() ^ LinePosition.GetHashCode();
 
 		#region ToString
 		/// <summary>Returns a verbose string of the line/column values</summary>
 		/// <returns></returns>
-		public override string ToString()
-		{
-			return ToString(this, true);
-		}
+		public override string ToString() => ToString(this, true);
 
 		const string kNoLineInfoString = "<no line info>";
 
@@ -115,8 +102,9 @@ namespace KSoft.Text
 			if (!lineInfo.HasLineInfo)
 				return kNoLineInfoString;
 
-			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
-				lineInfo.LineNumber.ToString());
+			return string.Format(KSoft.Util.InvariantCultureInfo,
+				verboseString ? k_format_string_verbose : k_format_string,
+				lineInfo.LineNumber.ToString(KSoft.Util.InvariantCultureInfo));
 		}
 		public static string ToString<T>(T lineInfo, bool verboseString)
 			where T : Text.ITextLineInfo
@@ -129,9 +117,16 @@ namespace KSoft.Text
 			if (!lineInfo.HasLineInfo)
 				return kNoLineInfoString;
 
-			return string.Format(verboseString ? k_format_string_verbose : k_format_string,
-				lineInfo.LineNumber.ToString(), lineInfo.LinePosition.ToString());
+			return string.Format(KSoft.Util.InvariantCultureInfo,
+				verboseString ? k_format_string_verbose : k_format_string,
+				lineInfo.LineNumber.ToString(KSoft.Util.InvariantCultureInfo),
+				lineInfo.LinePosition.ToString(KSoft.Util.InvariantCultureInfo));
 		}
+		#endregion
+
+		#region Operators
+		public static bool operator ==(TextLineInfo a, TextLineInfo b) => a.Equals(b);
+		public static bool operator !=(TextLineInfo a, TextLineInfo b) => !(a == b);
 		#endregion
 	};
 }

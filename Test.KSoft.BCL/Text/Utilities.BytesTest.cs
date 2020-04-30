@@ -5,7 +5,7 @@ namespace KSoft.Text.Test
 {
 	partial class UtilitiesTest
 	{
-		public static class Strings
+		static class StringConstants
 		{
 			// 1337BEEF
 			public static readonly byte[] kDataBytes = {
@@ -26,25 +26,25 @@ namespace KSoft.Text.Test
 		public void Text_ByteArraysUtilTest()
 		{
 			// Test case: Entire byte array
-			var test_value = Util.ByteArrayToString(Strings.kDataBytes);
-			Assert.AreEqual(Strings.kDataString, test_value);
+			var test_value = Util.ByteArrayToString(StringConstants.kDataBytes);
+			Assert.AreEqual(StringConstants.kDataString, test_value);
 			// Test case: Partial byte array (explicit start)
-			test_value = Util.ByteArrayToString(Strings.kDataBytes, 1);
-			Assert.AreEqual(Strings.kDataString.Substring(2), test_value);
+			test_value = Util.ByteArrayToString(StringConstants.kDataBytes, 1);
+			Assert.AreEqual(StringConstants.kDataString.Substring(2), test_value);
 			// Test case: Partial byte array (explicit range)
-			test_value = Util.ByteArrayToString(Strings.kDataBytes, 1, 2);
-			Assert.AreEqual(Strings.kDataString.Substring(2, 4), test_value);
+			test_value = Util.ByteArrayToString(StringConstants.kDataBytes, 1, 2);
+			Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), test_value);
 			// #TODO_UNITTEST: Test ByteArrayToStream
 
 
-			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(Strings.kDataStringLong);
+			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(StringConstants.kDataStringLong);
 			if (true) // Test the byte converter for strings of hex digits
 			{
 				test_value = Util.ByteArrayToString(test_data);
 				test_data = Util.ByteStringToArray(test_value);
 			}
 			test_value = Util.ByteArrayToAlignedString(test_data);
-			Assert.AreEqual(Strings.kDataStringAsAlignedByteString, test_value);
+			Assert.AreEqual(StringConstants.kDataStringAsAlignedByteString, test_value);
 			// #TODO_UNITTEST: Test ByteArrayToAlignedOutput
 		}
 

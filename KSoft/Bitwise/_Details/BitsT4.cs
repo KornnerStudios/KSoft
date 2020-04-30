@@ -21,13 +21,27 @@ namespace KSoft
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
 
 			if (wordBitSize == kByteBitCount && kBitmaskLookup8 != null)
+			{
 				lut = kBitmaskLookup8;
+			}
 			else
 			{
 				lut = new byte[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
 					lut[x] = (byte)(byte.MaxValue >> shift);
 			}
+		}
+		/// <summary>Generate an 8-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static byte[] BitmaskByteLookUpTableGenerate(int wordBitSize)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kByteBitCount);
+
+			BitmaskLookUpTableGenerate(wordBitSize, out byte[] lut);
+
+			return lut;
 		}
 
 		/// <summary>Generate an 16-bit bit count to bitmask table</summary>
@@ -40,13 +54,27 @@ namespace KSoft
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
 
 			if (wordBitSize == kUInt16BitCount && kBitmaskLookup16 != null)
+			{
 				lut = kBitmaskLookup16;
+			}
 			else
 			{
 				lut = new ushort[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
 					lut[x] = (ushort)(ushort.MaxValue >> shift);
 			}
+		}
+		/// <summary>Generate an 16-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static ushort[] BitmaskUInt16LookUpTableGenerate(int wordBitSize)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt16BitCount);
+
+			BitmaskLookUpTableGenerate(wordBitSize, out ushort[] lut);
+
+			return lut;
 		}
 
 		/// <summary>Generate an 32-bit bit count to bitmask table</summary>
@@ -59,13 +87,27 @@ namespace KSoft
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
 
 			if (wordBitSize == kUInt32BitCount && kBitmaskLookup32 != null)
+			{
 				lut = kBitmaskLookup32;
+			}
 			else
 			{
 				lut = new uint[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
 					lut[x] = (uint)(uint.MaxValue >> shift);
 			}
+		}
+		/// <summary>Generate an 32-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static uint[] BitmaskUInt32LookUpTableGenerate(int wordBitSize)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt32BitCount);
+
+			BitmaskLookUpTableGenerate(wordBitSize, out uint[] lut);
+
+			return lut;
 		}
 
 		/// <summary>Generate an 64-bit bit count to bitmask table</summary>
@@ -78,13 +120,27 @@ namespace KSoft
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
 
 			if (wordBitSize == kUInt64BitCount && kBitmaskLookup64 != null)
+			{
 				lut = kBitmaskLookup64;
+			}
 			else
 			{
 				lut = new ulong[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
 					lut[x] = (ulong)(ulong.MaxValue >> shift);
 			}
+		}
+		/// <summary>Generate an 64-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static ulong[] BitmaskUInt64LookUpTableGenerate(int wordBitSize)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt64BitCount);
+
+			BitmaskLookUpTableGenerate(wordBitSize, out ulong[] lut);
+
+			return lut;
 		}
 
 		#endregion

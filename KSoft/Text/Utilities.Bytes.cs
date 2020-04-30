@@ -9,6 +9,8 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Text
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces",
+		Justification="I don't care about System.Web.Util")]
 	partial class Util
 	{
 		/// <summary>Determine the string <see cref="Encoding"/> based on the byte-order-marks in a buffer</summary>
@@ -92,7 +94,7 @@ namespace KSoft.Text
 
 			StringBuilder sb = new StringBuilder(count * 2);
 			for (int x = startIndex; x < (startIndex+count); x++)
-				sb.Append(data[x].ToString("X2"));
+				sb.Append(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
 
 			return sb.ToString();
 		}
@@ -112,7 +114,7 @@ namespace KSoft.Text
 			Contract.Requires((startIndex+count) <= data.Length);
 
 			for (int x = startIndex; x < (startIndex+count); x++)
-				stream.Write(data[x].ToString("X2"));
+				stream.Write(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
 		}
 		/// <summary>Converts an array of bytes to a hex string</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
@@ -267,10 +269,10 @@ namespace KSoft.Text
 
 			int index = 0;
 			for (int b = 0; b < blocks; b++, index+=digitsPerLine)
-				sb.AppendFormat("{0}{1}{2}", padding, ByteArrayToString(data, index, digitsPerLine), new_line);
+				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index, digitsPerLine), new_line);
 
 			if (leftovers > 0)
-				sb.AppendFormat("{0}{1}{2}", padding, ByteArrayToString(data, index), new_line);
+				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index), new_line);
 
 			return sb.ToString();
 		}
@@ -311,41 +313,39 @@ namespace KSoft.Text
 		/// <summary>Convert a radix into an acceptable NumberBase usable with the CharToX converters</summary>
 		/// <param name="radix">Base we're converting from. Can be up to 36.</param>
 		/// <returns>0 if <paramref name="radix"/> can't be converted</returns>
-		public static NumeralBase ToAcceptableNumberBase(int radix)
-		{
-			return radix > 36 || radix < 0 ? 0 : (NumeralBase)radix;
-		}
+		public static NumeralBase ToAcceptableNumberBase(int radix) =>
+			radix > 36 || radix < 0 ? 0 : (NumeralBase)radix;
 
 		/// <summary>Convert the byte digit character to the byte value it represents</summary>
 		/// <param name="c">Byte digit char up to base-36</param>
 		/// <returns></returns>
 		/// <remarks>Upper ('A') and lower ('a') case char digits map to the same int values</remarks>
-		public static int CharToAnyDigit(char c)	{ return kCharToByteLookup36[(byte)c]; }
+		public static int CharToAnyDigit(char c)	=> kCharToByteLookup36[(byte)c];
 		/// <summary>Checks if the byte digit character is any valid representable value</summary>
 		/// <param name="c">Byte digit char up to base-36</param>
 		/// <returns></returns>
 		/// <remarks>Upper ('A') and lower ('a') case char digits map to the same int values</remarks>
-		public static bool CharIsAnyDigit(char c)	{ return kCharIsDigitLookup62[(byte)c]; }
+		public static bool CharIsAnyDigit(char c)	=> kCharIsDigitLookup62[(byte)c];
 
 		/// <summary>Convert the byte digit character to the byte value it represents</summary>
 		/// <param name="c">Byte digit char up to base-62</param>
 		/// <returns></returns>
 		/// <remarks>"Extended" char digits map different int values for upper ('A') and lower ('a') case</remarks>
-		public static int CharToAnyDigitExtended(char c)	{ return kCharToByteLookup62[(byte)c]; }
+		public static int CharToAnyDigitExtended(char c)	=> kCharToByteLookup62[(byte)c];
 		/// <summary>Checks if the byte digit character is any valid representable value</summary>
 		/// <param name="c">Byte digit char up to base-62</param>
 		/// <returns></returns>
 		/// <remarks>"Extended" char digits map different int values for upper ('A') and lower ('a') case</remarks>
-		public static bool CharIsAnyDigitExtended(char c)	{ return kCharIsDigitLookup62[(byte)c]; }
+		public static bool CharIsAnyDigitExtended(char c)	=> kCharIsDigitLookup62[(byte)c];
 
 		/// <summary>Convert the byte digit character to the byte value it represents</summary>
 		/// <param name="c">Byte digit char up to base-16</param>
 		/// <returns></returns>
-		public static int CharToDigit(char c)		{ return kCharToByteLookup16[(byte)c]; }
+		public static int CharToDigit(char c)		=> kCharToByteLookup16[(byte)c];
 		/// <summary>Checks if the byte digit character is any valid representable value</summary>
 		/// <param name="c">Byte digit char up to base-16</param>
 		/// <returns></returns>
-		public static bool CharIsDigit(char c)		{ return kCharIsDigitLookup16[(byte)c]; }
+		public static bool CharIsDigit(char c)		=> kCharIsDigitLookup16[(byte)c];
 
 		/// <summary>Convert a character into the byte digit it represents</summary>
 		/// <param name="c">Character representing the byte digit</param>

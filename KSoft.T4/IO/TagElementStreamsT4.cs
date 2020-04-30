@@ -75,7 +75,7 @@ namespace KSoft.T4
 
 			string method_name = subject.ToString();
 			ttFile.WriteLine(
-				"public {5} Stream{0}<T>({2} T obj, Exprs.Expression<Func<T, {1} >> propExpr {3} {4})",
+				"public {5} Stream{0}<T>({2} T theObj, Exprs.Expression<Func<T, {1} >> propExpr {3} {4})",
 				method_name,
 				codeDef.Keyword,
 				hasTNameParam.UseStringOrEmpty("TName name,"),
@@ -117,13 +117,13 @@ namespace KSoft.T4
 				if (is_opt)
 					ttFile.WriteLine("if (executed)");
 				using (var cb2 = ttFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
-					ttFile.WriteLine("property.SetValue(obj, value, null);");
+					ttFile.WriteLine("property.SetValue(theObj, value, null);");
 			}
 
 			ttFile.WriteLine("else if (IsWriting)");
 			using (var cb1 = ttFile.EnterCodeBlock())
 			{
-				ttFile.WriteLine("{2}Write{0}{3}({4} ({1})property.GetValue(obj, null) {5}{6});",
+				ttFile.WriteLine("{2}Write{0}{3}({4} ({1})property.GetValue(theObj, null) {5}{6});",
 					method_name,									// 0
 					codeDef.Keyword,								// 1
 					is_opt.UseStringOrEmpty("executed = "),			// 2

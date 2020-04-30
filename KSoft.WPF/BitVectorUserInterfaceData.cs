@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -11,6 +12,7 @@ namespace KSoft.WPF
 {
 	public sealed class BitVectorUserInterfaceData : IBitVectorUserInterfaceData
 	{
+		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		public sealed class BitUserInterfaceData
 		{
 			public string DisplayName;
@@ -40,7 +42,7 @@ namespace KSoft.WPF
 		{
 			var info = mBitInfo[bitIndex];
 
-			return info != null ? info.DisplayName : bitIndex.ToString();
+			return info != null ? info.DisplayName : bitIndex.ToString(KSoft.Util.InvariantCultureInfo);
 		}
 
 		public string GetDescription(int bitIndex)
@@ -116,7 +118,7 @@ namespace KSoft.WPF
 			int highest_index = explicitNumberOfBits - 1;
 			foreach (var bit_field_info in bit_field_infos)
 			{
-				int bit_index = Convert.ToInt32(bit_field_info.GetRawConstantValue());
+				int bit_index = Convert.ToInt32(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
 				if (bit_index < 0)
 					continue;
 
@@ -167,7 +169,7 @@ namespace KSoft.WPF
 			int highest_index = explicitNumberOfBits - 1;
 			foreach (var bit_field_info in bit_field_infos)
 			{
-				ulong flag = Convert.ToUInt64(bit_field_info.GetRawConstantValue());
+				ulong flag = Convert.ToUInt64(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
 				if (Bits.BitCount(flag) > 0)
 					continue;
 

@@ -255,20 +255,28 @@ namespace KSoft.Bitwise.Test
 
 		private void AssertBytesAreEqual(int bitCount, ulong expectedValue, byte[] buffer, ref int bufferIndex)
 		{
+			var invariant_culture_info = KSoft.Util.InvariantCultureInfo;
+
 			switch (bitCount)
 			{
 				case Bits.kInt16BitCount:
-					Assert.AreEqual(unchecked((ushort)expectedValue).ToString("X4"), BitConverter.ToUInt16(buffer, bufferIndex).ToString("X4"));
+					Assert.AreEqual(
+						unchecked((ushort)expectedValue).ToString("X4", invariant_culture_info),
+						BitConverter.ToUInt16(buffer, bufferIndex).ToString("X4", invariant_culture_info));
 					bufferIndex += sizeof(ushort);
 					break;
 
 				case Bits.kInt32BitCount:
-					Assert.AreEqual(unchecked((uint)expectedValue).ToString("X8"), BitConverter.ToUInt32(buffer, bufferIndex).ToString("X8"));
+					Assert.AreEqual(
+						unchecked((uint)expectedValue).ToString("X8", invariant_culture_info),
+						BitConverter.ToUInt32(buffer, bufferIndex).ToString("X8", invariant_culture_info));
 					bufferIndex += sizeof(uint);
 					break;
 
 				case Bits.kInt64BitCount:
-					Assert.AreEqual(unchecked((ulong)expectedValue).ToString("X16"), BitConverter.ToUInt64(buffer, bufferIndex).ToString("X16"));
+					Assert.AreEqual(
+						unchecked((ulong)expectedValue).ToString("X16", invariant_culture_info),
+						BitConverter.ToUInt64(buffer, bufferIndex).ToString("X16", invariant_culture_info));
 					bufferIndex += sizeof(ulong);
 					break;
 			}

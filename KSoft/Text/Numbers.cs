@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -47,17 +48,17 @@ namespace KSoft
 					return false;
 
 				detailsException = new ArgumentException
-					("Input null or empty", "s");
+					("Input null or empty", nameof(s));
 				break;
 
 			case ParseErrorType.InvalidValue:
 				detailsException = new ArgumentException(string.Format
-					("Couldn't parse '{0}'", s), "s");
+					(Util.InvariantCultureInfo, "Couldn't parse '{0}'", s), nameof(s));
 				break;
 
 			case ParseErrorType.InvalidStartIndex:
-				detailsException = new ArgumentOutOfRangeException(string.Format
-					("'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
+				detailsException = new ArgumentOutOfRangeException(nameof(s), string.Format
+					(Util.InvariantCultureInfo, "'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
 				break;
 
 			default:
@@ -86,13 +87,13 @@ namespace KSoft
 		}
 
 
+		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct StringListDesc
 		{
 			public const char kDefaultSeparator = ',';
 			public const char kDefaultTerminator = ';';
-			public static StringListDesc Default { get {
-				return new StringListDesc(kDefaultSeparator);
-			} }
+			public static StringListDesc Default { get => new StringListDesc(kDefaultSeparator); }
 
 			public string Digits;
 			public NumbersRadix Radix;
@@ -125,7 +126,7 @@ namespace KSoft
 
 				// using StringSegment and its Enumerator won't allocate any reference types
 				var sseg = new Collections.StringSegment(values);
-				foreach(char c in sseg)
+				foreach (char c in sseg)
 				{
 					if (c == Separator)
 						count++;

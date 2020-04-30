@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 #if CONTRACTS_FULL_SHIM
@@ -38,6 +39,7 @@ namespace KSoft.IO
 
 		/// <summary>Name of the underlying stream this object is interfacing with</summary>
 		/// <remarks>So if this endian stream is interfacing with a file, this will be it's name</remarks>
+		[SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
 		public string StreamName { get {
 				 if (IsReading) return Reader.StreamName;
 			else if (IsWriting) return Writer.StreamName;
@@ -140,15 +142,12 @@ namespace KSoft.IO
 		/// <summary>Get the current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
-		public Values.PtrHandle GetPositionPtr(Shell.ProcessorSize ptrSize)
-		{
-			return new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
-		}
+		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
+			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
-		public Values.PtrHandle PositionPtr { get {
-			return new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
-		} }
+		public Values.PtrHandle PositionPtr =>
+			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 
@@ -751,15 +750,15 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		public EndianStream StreamObjectMethods<T>(T obj, Action<EndianReader, T> read, Action<EndianWriter, T> write)
+		public EndianStream StreamObjectMethods<T>(T theObj, Action<EndianReader, T> read, Action<EndianWriter, T> write)
 			where T : class
 		{
-			Contract.Requires(obj != null);
+			Contract.Requires(theObj != null);
 			Contract.Requires(read != null);
 			Contract.Requires(write != null);
 
-				 if (IsReading) read (Reader, obj);
-			else if (IsWriting) write(Writer, obj);
+				 if (IsReading) read (Reader, theObj);
+			else if (IsWriting) write(Writer, theObj);
 
 			return this;
 		}

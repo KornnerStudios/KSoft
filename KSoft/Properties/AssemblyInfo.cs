@@ -38,6 +38,8 @@ using System.Runtime.InteropServices;
 [assembly: SuppressMessage("Microsoft.Design",
 	"CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 [assembly: SuppressMessage("Microsoft.Design",
+	"CA1028:EnumStorageShouldBeInt32")]
+[assembly: SuppressMessage("Microsoft.Design",
 	"CA1034:NestedTypesShouldNotBeVisible",
 	Justification = "Because I do this all over the place")]
 [assembly: SuppressMessage("Microsoft.Design",

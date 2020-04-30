@@ -10,6 +10,8 @@ using Exprs = System.Linq.Expressions;
 
 namespace KSoft.ObjectModel
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces",
+		Justification="I don't care about System.Web.Util")]
 	public static class Util
 	{
 		// based on System.Windows.Data.Binding.IndexerName in PresentationFramework.dll
@@ -63,7 +65,7 @@ namespace KSoft.ObjectModel
 
 			if (list == null && throwOnError)
 			{
-				throw new InvalidOperationException(string.Format(
+				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
 					"Tried to get Collection's underling Items as a List<{0}> but it is a {1}",
 					typeof(T), items?.GetType()));
 			}

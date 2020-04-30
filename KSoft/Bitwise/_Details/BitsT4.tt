@@ -29,13 +29,27 @@ namespace KSoft
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
 
 			if (wordBitSize == k<#= bittable_type.Code #>BitCount && kBitmaskLookup<#= bittable_type.SizeOfInBits #> != null)
+			{
 				lut = kBitmaskLookup<#= bittable_type.SizeOfInBits #>;
+			}
 			else
 			{
 				lut = new <#= bittable_type.Keyword #>[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
 					lut[x] = (<#= bittable_type.Keyword #>)(<#= bittable_type.Keyword #>.MaxValue >> shift);
 			}
+		}
+		/// <summary>Generate an <#= bittable_type.SizeOfInBits #>-bit bit count to bitmask table</summary>
+		/// <param name="wordBitSize">Number of bits to generate a table for</param>
+		/// <param name="lut">Bitmask look up table</param>
+		/// <remarks>Treat <paramref name="lut"/> as <b>read-only</b></remarks>
+		public static <#= bittable_type.Keyword #>[] Bitmask<#= bittable_type.Code #>LookUpTableGenerate(int wordBitSize)
+		{
+			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= k<#= bittable_type.Code #>BitCount);
+
+			BitmaskLookUpTableGenerate(wordBitSize, out <#= bittable_type.Keyword #>[] lut);
+
+			return lut;
 		}
 
 <# } #>

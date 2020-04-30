@@ -31,12 +31,13 @@ namespace KSoft
 			Reflection.EnumUtils.AssertTypeIsEnum(t);
 
 			if (!ValidateTypeIsNotEncoderDisabled(t))
-				throw new ArgumentException(string.Format(
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"EnumBitEncoder can't operate on enumerations with an EnumBitEncoderDisableAttribute! {0}",
 					t.FullName));
 		}
 
 		[System.Diagnostics.Conditional("TRACE")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		protected static void ProcessMembers_DebugCheckMemberName(Type t, bool isFlags, string memberName)
 		{
 			if (isFlags && (memberName == kEnumNumberOfMemberName || memberName == kEnumMaxMemberName))

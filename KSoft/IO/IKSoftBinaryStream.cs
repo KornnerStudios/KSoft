@@ -61,7 +61,7 @@ namespace KSoft.IO
 		/// <summary>Get the current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
-		Values.PtrHandle GetPositionPtr(Shell.ProcessorSize ptrSize);
+		Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize);
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
 		Values.PtrHandle PositionPtr { get; }

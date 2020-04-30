@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -14,10 +15,11 @@ namespace KSoft.Shell
 
 	/// <summary>Represents a platform definition</summary>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
-	public struct Platform :
-		IComparer<Platform>, System.Collections.IComparer,
-		IComparable<Platform>, IComparable,
-		IEquatable<Platform>
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
+	public struct Platform
+		: IComparer<Platform>, System.Collections.IComparer
+		, IComparable<Platform>, IComparable
+		, IEquatable<Platform>
 	{
 		#region Constants
 		// nesting these into a static class makes them run before the struct's static ctor...
@@ -35,14 +37,14 @@ namespace KSoft.Shell
 
 		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
 		/// <remarks>10 bits at last count</remarks>
-		public static int BitCount { get { return Constants.kLastBitField.FieldsBitCount; } }
-		public static uint Bitmask { get { return Constants.kLastBitField.FieldsBitmask.u32; } }
+		public static int BitCount { get => Constants.kLastBitField.FieldsBitCount; }
+		public static uint Bitmask { get => Constants.kLastBitField.FieldsBitmask.u32; }
 		#endregion
 
 		#region Internal Value
 		[Interop.FieldOffset(0)] readonly uint mHandle;
 
-		internal uint Handle { get { return mHandle; } }
+		internal uint Handle { get => mHandle; }
 
 		static void InitializeHandle(out uint handle,
 			PlatformType platformType, Processor processorType)
@@ -89,25 +91,23 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is Platform)
-				return this.mHandle == ((Platform)obj).mHandle;
+			if (obj is Platform p)
+				return this.mHandle == p.mHandle;
 
 			return false;
 		}
 		/// <summary>Returns a unique 32-bit identifier for this object based on its exposed properties</summary>
 		/// <returns></returns>
 		/// <see cref="Object.GetHashCode"/>
-		public override int GetHashCode()
-		{
-			return (int)mHandle;
-		}
+		public override int GetHashCode() => (int)mHandle;
 		/// <summary>Returns a string representation of this object</summary>
 		/// <returns>"[<see cref="Type"/>\t<see cref="ProcessorType.ToString()"/>]"</returns>
 		public override string ToString()
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			return string.Format("[{0}\t{1}]",
+			return string.Format(Util.InvariantCultureInfo,
+				"[{0}\t{1}]",
 				Type.ToString(),
 				ProcessorType.ToString()
 				);
@@ -119,10 +119,7 @@ namespace KSoft.Shell
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public int Compare(Platform x, Platform y)
-		{
-			return Platform.StaticCompare(x, y);
-		}
+		public int Compare(Platform x, Platform y) => Platform.StaticCompare(x, y);
 		/// <summary>See <see cref="IComparer{T}.Compare"/></summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
@@ -140,10 +137,7 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="IComparable{T}.CompareTo"/></summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public int CompareTo(Platform other)
-		{
-			return Platform.StaticCompare(this, other);
-		}
+		public int CompareTo(Platform other) => Platform.StaticCompare(this, other);
 		/// <summary>See <see cref="IComparable{T}.CompareTo"/></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
@@ -159,10 +153,12 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="IEquatable{T}.Equals"/></summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public bool Equals(Platform other)
-		{
-			return this.mHandle == other.mHandle;
-		}
+		public bool Equals(Platform other) => this.mHandle == other.mHandle;
+		#endregion
+
+		#region Operators
+		public static bool operator ==(Platform a, Platform b) => a.Equals(b);
+		public static bool operator !=(Platform a, Platform b) => !(a == b);
 		#endregion
 
 
@@ -250,6 +246,8 @@ namespace KSoft.Shell
 			internal static readonly bool kIsMonoRuntime;
 			internal static readonly Platform kEnvironment;
 
+			[SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static OperatingEnvironment()
 			{
 				kIsMonoRuntime = System.Type.GetType("Mono.Runtime") != null;
@@ -263,8 +261,9 @@ namespace KSoft.Shell
 					case 8: size = ProcessorSize.x64; break;
 
 					default:
-						throw new Debug.UnreachableException(string.Format("Pointer Size: {0}",
-							IntPtr.Size.ToString()));
+						throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
+							"Pointer Size: {0}",
+							IntPtr.Size.ToString(Util.InvariantCultureInfo)));
 				}
 
 				Contract.Assume(System.Environment.OSVersion != null);
@@ -299,20 +298,17 @@ namespace KSoft.Shell
 					// #REVIEW: iPod maybe?
 
 					default:
-						throw new Debug.UnreachableException(string.Format("PlatformID: {0}",
+						throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
+							"PlatformID: {0}",
 							System.Environment.OSVersion.Platform.ToString()));
 				}
 			}
 		};
 
 		/// <summary>Is the current .NET runtime Mono based, or Microsoft?</summary>
-		public static bool IsMonoRuntime  { get {
-			return OperatingEnvironment.kIsMonoRuntime;
-		} }
+		public static bool IsMonoRuntime  { get => OperatingEnvironment.kIsMonoRuntime; }
 		/// <summary>Get the library's platform definition for the current operating environment</summary>
-		public static Platform Environment { get {
-			return OperatingEnvironment.kEnvironment;
-		} }
+		public static Platform Environment { get => OperatingEnvironment.kEnvironment; }
 		#endregion
 	};
 }

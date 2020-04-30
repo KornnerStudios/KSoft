@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -9,6 +10,7 @@ namespace KSoft.Bitwise
 {
 	partial class ByteSwap
 	{
+		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct Swapper
 		{
 			readonly short[] kCodes;

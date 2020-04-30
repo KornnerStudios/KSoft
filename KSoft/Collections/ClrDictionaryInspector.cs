@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -29,6 +30,8 @@ namespace KSoft.Collections
 		const string kEntryValueName = "value";
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct DicEntry
 		{
 			public int HashCode; // only the lower 31 bits of the actual hash code
@@ -36,8 +39,8 @@ namespace KSoft.Collections
 			public TKey Key;
 			public TValue Value;
 
-			public bool IsFree { get { return HashCode.IsNone(); } }
-			public bool IsLast { get { return NextEntryIndex.IsNone(); } }
+			public bool IsFree { get => HashCode.IsNone(); }
+			public bool IsLast { get => NextEntryIndex.IsNone(); }
 
 			public DicEntry GetNext(ClrDictionaryInspector<TKey, TValue> inspector)
 			{
@@ -47,8 +50,6 @@ namespace KSoft.Collections
 				return inspector.Entries[NextEntryIndex];
 			}
 		};
-
-		private static readonly IReadOnlyList<int> kEmptyBuckets = new int[0];
 
 		#region Dictionary getters
 		static readonly Func<Dictionary<TKey, TValue>, int[]> kGetDicBuckets;
@@ -65,12 +66,15 @@ namespace KSoft.Collections
 		static readonly Func<object, TValue> kGetEntryValue;
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static ClrDictionaryInspector()
 		{
 			// implementations are totally different...
 			if (Shell.Platform.IsMonoRuntime)
-				throw new PlatformNotSupportedException(
-					typeof(ClrDictionaryInspector<TKey, TValue>).Name + " doesn't support Mono");
+			{
+				Debug.Trace.Collections.TraceDataSansId(System.Diagnostics.TraceEventType.Critical,
+					nameof(ClrDictionaryInspector<TKey, TValue>) + " does not support Mono");
+			}
 
 			// "If a nested type is generic, this method returns its generic type definition. This is true even if the enclosing generic type is a closed constructed type."
 			var dic_entry_type = typeof(Dictionary<TKey, TValue>)
@@ -145,7 +149,7 @@ namespace KSoft.Collections
 		public IReadOnlyList<int> Buckets { get {
 			var buckets = kGetDicBuckets(mDic);
 
-			return buckets ?? kEmptyBuckets;
+			return buckets ?? Array.Empty<int>();
 		} }
 		public IReadOnlyList<DicEntry> Entries { get {
 			if (mEntries == null)
@@ -153,14 +157,13 @@ namespace KSoft.Collections
 
 			return mEntries;
 		} }
-		public int Count { get { return kGetDicCount(mDic); } }
-		private int Version { get { return kGetDicVersion(mDic); } }
-		public int FreeList { get { return kGetDicFreeList(mDic); } }
-		public int FreeCount { get { return kGetDicFreeCount(mDic); } }
+		public int Count { get => kGetDicCount(mDic); }
+		private int Version { get => kGetDicVersion(mDic); }
+		public int FreeList { get => kGetDicFreeList(mDic); }
+		public int FreeCount { get => kGetDicFreeCount(mDic); }
 
-		public IEnumerable<int> BucketsInUse { get {
-			return Buckets.Where(b => b >= 0);
-		} }
+		public IEnumerable<int> BucketsInUse { get => Buckets.Where(b => b >= 0); }
+
 		public IEnumerable<DicEntry> GetEntriesInBucket(int bucketIndex)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(bucketIndex >= 0 && bucketIndex < Buckets.Count);

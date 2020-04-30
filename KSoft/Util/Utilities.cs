@@ -43,14 +43,9 @@ namespace KSoft
 		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
 
 		#region static EmptyArray
-		private static object[] gEmptyArray;
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
-		public static object[] EmptyArray { get {
-			if (gEmptyArray == null)
-				gEmptyArray = new object[] { };
-
-			return gEmptyArray;
-		} }
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
+		public static object[] EmptyArray { get => Array.Empty<object>(); }
 		#endregion
 
 		#region static GetNullException function ptr
@@ -73,7 +68,7 @@ namespace KSoft
 			return gFalseObject;
 		} }
 
-		public static object gTrueObject;
+		private static object gTrueObject;
 		/// <summary>true boolean pre-boxed to an object</summary>
 		public static object TrueObject { get {
 			if (gTrueObject == null)
@@ -92,16 +87,16 @@ namespace KSoft
 		/// <summary>Object which can be disposed of without limit and is thread safe</summary>
 		public static readonly IDisposable NullDisposable = new NullDisposableImpl();
 
-		/// <summary>If <paramref name="obj"/> isn't already null, calls its Dispose and nulls the reference</summary>
+		/// <summary>If <paramref name="theObj"/> isn't already null, calls its Dispose and nulls the reference</summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="obj"></param>
-		public static void DisposeAndNull<T>(ref T obj)
+		/// <param name="theObj"></param>
+		public static void DisposeAndNull<T>(ref T theObj)
 			where T : class, IDisposable
 		{
-			if (obj != null)
+			if (theObj != null)
 			{
-				obj.Dispose();
-				obj = null;
+				theObj.Dispose();
+				theObj = null;
 			}
 		}
 		#endregion
@@ -137,7 +132,9 @@ namespace KSoft
 		/// <param name="time_t">The <b>time_t</b> numerical value</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public static DateTime ConvertDateTimeFromUnixTime(long time_t)
+		public static DateTime ConvertDateTimeFromUnixTime(
+			[SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
+			long time_t)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(time_t >= 0);
 

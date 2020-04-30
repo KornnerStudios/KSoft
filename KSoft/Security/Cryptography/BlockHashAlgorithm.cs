@@ -13,7 +13,7 @@ namespace KSoft.Security.Cryptography
 	{
 		byte[] mBlockBuffer;
 
-		protected long mTotalBytesProcessed;
+		protected long TotalBytesProcessed { get; private set; }
 
 		/// <summary>The size in bytes of an individual block.</summary>
 		public int BlockSize { get { return mBlockBuffer.Length; } }
@@ -50,7 +50,7 @@ namespace KSoft.Security.Cryptography
 		{
 			Array.Clear(mBlockBuffer, 0, mBlockBuffer.Length);
 			BlockBytesRemaining = 0;
-			mTotalBytesProcessed = 0;
+			TotalBytesProcessed = 0;
 		}
 
 		/// <summary>Performs the hash algorithm on the data provided.</summary>
@@ -75,7 +75,7 @@ namespace KSoft.Security.Cryptography
 					int i = BlockSize - BlockBytesRemaining;
 					Array.Copy(array, startIndex, mBlockBuffer, BlockBytesRemaining, i);
 					ProcessBlock(mBlockBuffer, 0, 1);
-					mTotalBytesProcessed += BlockSize;
+					TotalBytesProcessed += BlockSize;
 					BlockBytesRemaining = 0;
 					startIndex += i;
 					count -= i;
@@ -86,7 +86,7 @@ namespace KSoft.Security.Cryptography
 			if (count >= BlockSize)
 			{
 				ProcessBlock(array, startIndex, count / BlockSize);
-				mTotalBytesProcessed += count - count % BlockSize;
+				TotalBytesProcessed += count - count % BlockSize;
 			}
 
 			// If we still have some bytes left, store them for later.

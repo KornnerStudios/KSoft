@@ -25,6 +25,8 @@ namespace KSoft.IO
 		}
 		static ParseErrorType ParseVerifyResult(ParseErrorType result, bool parseResult)
 		{
+			Util.MarkUnusedVariable(ref result);
+
 			return parseResult
 				? ParseErrorType.None
 				: ParseErrorType.InvalidValue;
@@ -47,12 +49,12 @@ namespace KSoft.IO
 					return false;
 
 				detailsException = new ArgumentException
-					("Input null or empty", "input");
+					("Input null or empty", nameof(input));
 				break;
 
 			case ParseErrorType.InvalidValue:
 				detailsException = new ArgumentException(string.Format
-					("Couldn't parse \"{0}\"", input), "input");
+					(Util.InvariantCultureInfo, "Couldn't parse \"{0}\"", input), nameof(input));
 				break;
 
 			default:
@@ -92,7 +94,7 @@ namespace KSoft.IO
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
 			{
-				// #HACK Fucking HaloWars data has floats with C-based 'f' suffix
+				// #HACK HaloWars data has floats with C-based 'f' suffix
 				char last_char = input[input.Length - 1];
 				if (last_char == 'f' || last_char == 'F')
 					input = input.Substring(0, input.Length - 1);
@@ -121,6 +123,7 @@ namespace KSoft.IO
 
 		/// <summary>Sets the node that the current read operation is querying</summary>
 		/// <remarks>It should be assumed that this isn't reset after the current read successfully finishes</remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1044:PropertiesShouldNotBeWriteOnly")]
 		protected object ReadErrorNode { set {
 			// and in fact, this property can't be used to set mReadErrorNode to null with this assert.
 			// TextStream implementations should only ever need to set the node and forget
@@ -130,16 +133,13 @@ namespace KSoft.IO
 		} }
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/></summary>
 		/// <param name="detailsException">The details (inner) exception of what went wrong</param>
-		public sealed override void ThrowReadException(Exception detailsException)
-		{
+		public sealed override void ThrowReadException(Exception detailsException) =>
 			mReadErrorState.ThrowReadExeception(detailsException);
-		}
-		public Text.TextLineInfo TryGetLastReadLineInfo()
-		{
-			return IsReading && mReadErrorState.LastReadLineInfo != null
+
+		public Text.TextLineInfo TryGetLastReadLineInfo() =>
+			IsReading && mReadErrorState.LastReadLineInfo != null
 				? new Text.TextLineInfo(mReadErrorState.LastReadLineInfo)
 				: Text.TextLineInfo.Empty;
-		}
 
 		/// <summary>Argument value for noThrow to throw exceptions</summary>
 		const bool kThrowExcept = false;
@@ -155,7 +155,7 @@ namespace KSoft.IO
 			if (result == TagElementStreamParseEnumResult.FailedMemberNotFound &&
 				ExceptionOnEnumParseFail)
 			{
-				ThrowReadException(new System.IO.InvalidDataException(string.Format(
+				ThrowReadException(new System.IO.InvalidDataException(string.Format(KSoft.Util.InvariantCultureInfo,
 					"'{0}' is not a member of {1}",
 					enumString, typeof(TEnum) )));
 			}
@@ -171,7 +171,7 @@ namespace KSoft.IO
 			if (result == TagElementStreamParseEnumResult.FailedMemberNotFound &&
 				ExceptionOnEnumParseFail)
 			{
-				ThrowReadException(new System.IO.InvalidDataException(string.Format(
+				ThrowReadException(new System.IO.InvalidDataException(string.Format(KSoft.Util.InvariantCultureInfo,
 					"'{0}' is not a member of {1}",
 					enumString, typeof(TEnum))));
 			}
@@ -183,28 +183,20 @@ namespace KSoft.IO
 		#region ReadElement impl
 		protected abstract string GetInnerText(TCursor n);
 
-		protected override void ReadElementEnum<TEnum>(TCursor n, ref TEnum enumValue)
-		{
+		protected override void ReadElementEnum<TEnum>(TCursor n, ref TEnum enumValue) =>
 			ReadEnumInternal(GetInnerText(n), ref enumValue);
-		}
-		protected override void ReadElementEnum<TEnum>(TCursor n, ref int enumValue)
-		{
+		protected override void ReadElementEnum<TEnum>(TCursor n, ref int enumValue) =>
 			ReadEnumInternal<TEnum>(GetInnerText(n), ref enumValue);
-		}
 
-		protected override void ReadElement(TCursor n, ref Values.KGuid value)
-		{
+		protected override void ReadElement(TCursor n, ref Values.KGuid value) =>
 			value = Values.KGuid.ParseExact(GetInnerText(n), mGuidFormatString);
-		}
 		#endregion
 
 		/// <summary>Interpret the Name of <see cref="Cursor"/> as a member of <typeparamref name="TEnum"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
-		public override void ReadCursorName<TEnum>(ref TEnum enumValue)
-		{
+		public override void ReadCursorName<TEnum>(ref TEnum enumValue) =>
 			ReadEnumInternal(CursorName, ref enumValue);
-		}
 
 		#region ReadAttribute
 		/// <summary>Streams out the attribute data of <paramref name="name"/></summary>
@@ -212,19 +204,13 @@ namespace KSoft.IO
 		/// <returns></returns>
 		protected abstract string ReadAttribute(string name);
 
-		public override void ReadAttributeEnum<TEnum>(string name, ref TEnum enumValue)
-		{
+		public override void ReadAttributeEnum<TEnum>(string name, ref TEnum enumValue) =>
 			ReadEnumInternal(ReadAttribute(name), ref enumValue);
-		}
-		public override void ReadAttributeEnum<TEnum>(string name, ref int enumValue)
-		{
+		public override void ReadAttributeEnum<TEnum>(string name, ref int enumValue) =>
 			ReadEnumInternal<TEnum>(ReadAttribute(name), ref enumValue);
-		}
 
-		public override void ReadAttribute(string name, ref Values.KGuid value)
-		{
+		public override void ReadAttribute(string name, ref Values.KGuid value) =>
 			value = Values.KGuid.ParseExact(ReadAttribute(name), mGuidFormatString);
-		}
 		#endregion
 
 		#region ReadElementOpt

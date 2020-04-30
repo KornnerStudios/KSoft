@@ -61,3 +61,10 @@ namespace KSoft
 		}
 	};
 };
+
+namespace KSoft.IO
+{
+	public static partial class TagElementStreamDefaultSerializer
+	{
+	};
+};

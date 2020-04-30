@@ -17,6 +17,7 @@ namespace KSoft.Security.Cryptography
 			readonly uint mXorOut;
 
 			public uint Polynomial { get { return mPolynomial; } }
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 			public uint[] CrcTable { get { return mCrcTable; } }
 			public uint InitialValue { get { return mInitialValue; } }
 			public uint XorIn { get { return mXorIn; } }

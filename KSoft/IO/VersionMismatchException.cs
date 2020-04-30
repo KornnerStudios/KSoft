@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.IO
 {
+	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
+	[SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
 	public partial class VersionMismatchException
 		: Exception
 	{
@@ -24,6 +26,8 @@ namespace KSoft.IO
 		}
 	};
 
+	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
+	[SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
 	public partial class VersionOutOfRangeException
 		: Exception
 	{

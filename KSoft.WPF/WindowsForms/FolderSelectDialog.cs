@@ -53,22 +53,25 @@ namespace KSoft.WPF.WindowsForms
 
 		static ShowDialogResult ShowXpDialog(IntPtr ownerHandle, string initialDirectory, string title)
 		{
-			var folderBrowserDialog = new FolderBrowserDialog
-			{
-				Description = title,
-				SelectedPath = initialDirectory,
-				ShowNewFolderButton = true
-			};
 			var dialogResult = new ShowDialogResult();
-			if (folderBrowserDialog.ShowDialog(new Win32WindowHandleWrapper(ownerHandle)) == DialogResult.OK)
+			using (var folderBrowserDialog = new FolderBrowserDialog
+				{
+					Description = title,
+					SelectedPath = initialDirectory,
+					ShowNewFolderButton = true
+				})
 			{
-				dialogResult.Result = true;
-				dialogResult.FileName = folderBrowserDialog.SelectedPath;
+				if (folderBrowserDialog.ShowDialog(new Win32WindowHandleWrapper(ownerHandle)) == DialogResult.OK)
+				{
+					dialogResult.Result = true;
+					dialogResult.FileName = folderBrowserDialog.SelectedPath;
+				}
 			}
 			return dialogResult;
 		}
 
 		[Flags]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1712:DoNotPrefixEnumValuesWithTypeName")]
 		internal enum FOS : uint
 		{
 			FOS_PICKFOLDERS = 0x00000020,
@@ -111,9 +114,9 @@ namespace KSoft.WPF.WindowsForms
 					Title = title
 				};
 
-				var iFileDialog = gCreateVistaDialogMethodInfo.Invoke(openFileDialog, new object[] { });
+				var iFileDialog = gCreateVistaDialogMethodInfo.Invoke(openFileDialog, Util.EmptyArray);
 				gOnBeforeVistaDialogMethodInfo.Invoke(openFileDialog, new[] { iFileDialog });
-				gSetOptionsMethodInfo.Invoke(iFileDialog, new object[] { (uint) gGetOptionsMethodInfo.Invoke(openFileDialog, new object[] { }) | kOptionFlags });
+				gSetOptionsMethodInfo.Invoke(iFileDialog, new object[] { (uint) gGetOptionsMethodInfo.Invoke(openFileDialog, Util.EmptyArray) | kOptionFlags });
 				var adviseParametersWithOutputConnectionToken = new[] { gVistaDialogEventsConstructorInfo.Invoke(new object[] { openFileDialog }), 0U };
 				gAdviseMethodInfo.Invoke(iFileDialog, adviseParametersWithOutputConnectionToken);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -9,6 +10,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.IO
 {
 	/// <summary>Forces the stream to seek to the end of the virtual buffer when disposed</summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamWithVirtualBufferCleanup : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer mStream;
@@ -40,6 +42,7 @@ namespace KSoft.IO
 		}
 	};
 	/// <summary>Temporarily bookmarks a stream's VirtualBuffer properties</summary>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamWithVirtualBufferBookmark : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer mStream;
@@ -69,6 +72,7 @@ namespace KSoft.IO
 	/// </summary>
 	/// <see cref="IKSoftStreamWithVirtualBufferBookmark"/>
 	/// <see cref="IKSoftStreamWithVirtualBufferCleanup"/>
+	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct IKSoftStreamWithVirtualBufferAndBookmark : IDisposable
 	{
 		IKSoftStreamWithVirtualBufferBookmark mBookmark;

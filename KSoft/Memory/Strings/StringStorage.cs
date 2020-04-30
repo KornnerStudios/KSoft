@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -10,6 +11,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.Memory.Strings
 {
 	/// <summary>String storage definition</summary>
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public struct StringStorage : //IO.IEndianStreamable,
 		IEquatable<StringStorage>, IEqualityComparer<StringStorage>,
 		IComparer<StringStorage>, IComparable<StringStorage>,
@@ -177,8 +179,8 @@ namespace KSoft.Memory.Strings
 		/// False if <paramref name="obj"/> is not a <see cref="StringStorage"/></returns>
 		public override bool Equals(object obj)
 		{
-			if(obj is StringStorage)
-				return this.Equals((StringStorage)obj);
+			if (obj is StringStorage s)
+				return this.Equals(s);
 
 			return false;
 		}
@@ -190,10 +192,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <see cref="int CompareTo(StringStorage)"/>
-		public int Compare(StringStorage x, StringStorage y)
-		{
-			return x.CompareTo(y);
-		}
+		public int Compare(StringStorage x, StringStorage y) => x.CompareTo(y);
 		/// <summary>Compare this with another <see cref="StringStorage"/> object for similar serializer values</summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
@@ -220,7 +219,8 @@ namespace KSoft.Memory.Strings
 				else
 					return ((int)mWidthType) - ((int)other.mWidthType);
 			}
-			else return ((int)mType) - ((int)other.mType);
+			else
+				return ((int)mType) - ((int)other.mType);
 		}
 
 		/// <summary></summary>
@@ -228,96 +228,80 @@ namespace KSoft.Memory.Strings
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <see cref="int Compare(StringStorage, StringStorage)"/>
-		public int Compare(object x, object y)
-		{
-			return Compare((StringStorage)x, (StringStorage)y);
-		}
+		public int Compare(object x, object y) => Compare((StringStorage)x, (StringStorage)y);
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		/// <see cref="int CompareTo(StringStorage)"/>
-		public int CompareTo(object obj)
-		{
-			return CompareTo((StringStorage)obj);
-		}
+		public int CompareTo(object obj) => CompareTo((StringStorage)obj);
+		#endregion
+
+		#region Operators
+		public static bool operator ==(StringStorage a, StringStorage b) => a.Equals(b);
+		public static bool operator !=(StringStorage a, StringStorage b) => !(a == b);
 		#endregion
 
 
 		#region CString
-		static readonly StringStorage kCStringAscii;
+		static readonly StringStorage kCStringAscii = new StringStorage(StringStorageWidthType.Ascii, StringStorageType.CString);
 		/// <summary>Get a storage definition for a regular CString format ASCII string</summary>
 		public static StringStorage CStringAscii { get { return kCStringAscii; } }
 
-		static readonly StringStorage kCStringUTF8;
+		static readonly StringStorage kCStringUTF8 = new StringStorage(StringStorageWidthType.UTF8, StringStorageType.CString);
 		/// <summary>Get a storage definition for a regular CString format ASCII string</summary>
 		public static StringStorage CStringUtf8 { get { return kCStringUTF8; } }
 
-		static readonly StringStorage kCStringUnicode;
+		static readonly StringStorage kCStringUnicode = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString);
 		/// <summary>Get a storage definition for a CString format Unicode string</summary>
 		public static StringStorage CStringUnicode { get { return kCStringUnicode; } }
 
-		static readonly StringStorage kCStringUnicodeBE;
+		static readonly StringStorage kCStringUnicodeBE = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString, Shell.EndianFormat.Big);
 		/// <summary>Get a storage definition for a CString format Unicode string (big endian)</summary>
 		public static StringStorage CStringUnicodeBigEndian { get { return kCStringUnicodeBE; } }
 		#endregion
 
 		#region String
-		static readonly StringStorage kStringAscii;
+		static readonly StringStorage kStringAscii = new StringStorage(StringStorageWidthType.Ascii, StringStorageType.CharArray);
 		/// <summary>Get a storage definition for a string of ASCII characters</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage AsciiString { get { return kStringAscii; } }
 
-		static readonly StringStorage kStringUTF8;
+		static readonly StringStorage kStringUTF8 = new StringStorage(StringStorageWidthType.UTF8, StringStorageType.CharArray);
 		/// <summary>Get a storage definition for a string of ASCII characters</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage Utf8String { get { return kStringUTF8; } }
 
-		static readonly StringStorage kStringUnicode;
+		static readonly StringStorage kStringUnicode = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CharArray);
 		/// <summary>Get a storage definition for a string of Unicode characters</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage UnicodeString { get { return kStringUnicode; } }
 
-		static readonly StringStorage kStringUnicodeBE;
+		static readonly StringStorage kStringUnicodeBE = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CharArray, Shell.EndianFormat.Big);
 		/// <summary>Get a storage definition for a string of Unicode characters (big endian)</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage UnicodeStringBigEndian { get { return kStringUnicodeBE; } }
 		#endregion
 
-		// #TODO: struct cctors are flaky, need a different method of defining this
-		internal static readonly StringStorage[] kStorageTypesList;
-		static StringStorage()
-		{
-			kCStringAscii = new StringStorage(StringStorageWidthType.Ascii, StringStorageType.CString);
-			kStringAscii = new StringStorage(StringStorageWidthType.Ascii, StringStorageType.CharArray);
-			kCStringUTF8 = new StringStorage(StringStorageWidthType.UTF8, StringStorageType.CString);
-			kStringUTF8 = new StringStorage(StringStorageWidthType.UTF8, StringStorageType.CharArray);
-			kCStringUnicode = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString);
-			kStringUnicode = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CharArray);
+		internal static readonly StringStorage[] kStorageTypesList = new StringStorage[] {
+			// Ascii
+			kCStringAscii,
+			/* Clr */ new StringStorage(StringStorageWidthType.Ascii, StringStorageLengthPrefix.Int7),
+			kStringAscii,
 
-			kCStringUnicodeBE = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString, Shell.EndianFormat.Big);
-			kStringUnicodeBE = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CharArray, Shell.EndianFormat.Big);
+			// Unicode
+			kCStringUnicode,
+			/* Clr */ new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int7),
+			kStringUnicode,
 
-			kStorageTypesList = new StringStorage[] {
-				// Ascii
-				kCStringAscii,
-				/* Clr */ new StringStorage(StringStorageWidthType.Ascii, StringStorageLengthPrefix.Int7),
-				kStringAscii,
+			// UTF8
+			kCStringUTF8,
+			/* Clr */ new StringStorage(StringStorageWidthType.UTF8, StringStorageLengthPrefix.Int7),
+			kStringUTF8,
 
-				// Unicode
-				kCStringUnicode,
-				/* Clr */ new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int7),
-				kStringUnicode,
-
-				// UTF8
-				kCStringUTF8,
-				/* Clr */ new StringStorage(StringStorageWidthType.UTF8, StringStorageLengthPrefix.Int7),
-				kStringUTF8,
-
-				// Unicode-BE
-				kCStringUnicodeBE,
-				/* Clr */ new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int7, Shell.EndianFormat.Big),
-				kStringUnicodeBE,
-			};
-		}
+			// Unicode-BE
+			kCStringUnicodeBE,
+			/* Clr */ new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int7, Shell.EndianFormat.Big),
+			kStringUnicodeBE,
+		};
 	};
 }

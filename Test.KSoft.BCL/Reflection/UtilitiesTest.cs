@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Reflect = System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -131,6 +132,7 @@ namespace KSoft.Reflection.Test
 			private string ValueNoSetter { get { return mValueReadonly; } }
 		};
 		// ReSharper disable once ClassNeverInstantiated.Local
+		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
 		class MemberSetterTestClass
 		{
 #pragma warning disable 649
@@ -194,6 +196,7 @@ namespace KSoft.Reflection.Test
 		{
 			private bool PrivateFunc(int value)
 			{
+				KSoft.Util.MarkUnusedVariable(ref value);
 				return true;
 			}
 		};
@@ -215,6 +218,8 @@ namespace KSoft.Reflection.Test
 		#endregion
 
 		#region GenerateConstructorFunc
+		[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
 		internal class TestGenerateConstructorFuncClass
 		{
 			private TestGenerateConstructorFuncClass()

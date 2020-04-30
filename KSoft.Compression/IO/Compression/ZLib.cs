@@ -9,6 +9,9 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.IO.Compression
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+		"CA1062:ValidateArgumentsOfPublicMethods",
+		Justification = "CodeContracts generally handle this already")]
 	public static class ZLib
 	{
 		const int kSizeOfHeader = sizeof(ushort);

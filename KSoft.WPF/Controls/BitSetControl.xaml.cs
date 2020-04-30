@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,6 +14,7 @@ namespace KSoft.WPF.Controls
 	public partial class BitSetControl : UserControl
 	{
 		#region BitItems
+		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public ObservableCollection<BitItemModel> BitItems
 		{
 			get { return (ObservableCollection<BitItemModel>)GetValue(BitItemsProperty); }
@@ -47,6 +49,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region BitVector
+		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public Collections.BitSet BitVector
 		{
 			get { return (Collections.BitSet)GetValue(BitVectorProperty); }
@@ -86,7 +89,7 @@ namespace KSoft.WPF.Controls
 			int bit_index = bitModel.BitIndex;
 			if (bit_index >= bit_vector.Length)
 			{
-				throw new ArgumentOutOfRangeException(string.Format(
+				throw new ArgumentOutOfRangeException(string.Format(Util.InvariantCultureInfo,
 					"Vector length is {0} which is less than the number of bits needed to represent one or more items. #{1} can't be updated ({2})",
 					bit_vector.Length, bit_index, bitModel.DisplayName));
 			}
@@ -116,7 +119,7 @@ namespace KSoft.WPF.Controls
 
 					if (bit_index >= newBits.Length)
 					{
-						throw new ArgumentOutOfRangeException(string.Format(
+						throw new ArgumentOutOfRangeException(string.Format(Util.InvariantCultureInfo,
 							"newBits length is {0} which is less than the number of bits needed to represent one or more items. #{1} can't be updated ({2})",
 							newBits.Length, bit_index, bit_model.DisplayName));
 					}

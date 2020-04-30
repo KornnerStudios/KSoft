@@ -17,12 +17,12 @@ namespace KSoft.IO
 <# foreach (var word_type in BitwiseT4.BittableTypesInt32) { #>
 		#region <#= word_type.Code #> ctors
 		public VersionMismatchException(string dataDescription, <#= word_type.Keyword #> found)
-			: base(string.Format("Invalid '{0}' version '{1}'!", dataDescription, found))
+			: base(string.Format(Util.InvariantCultureInfo, "Invalid '{0}' version '{1}'!", dataDescription, found))
 		{
 			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
 		}
 		public VersionMismatchException(string dataDescription, <#= word_type.Keyword #> expected, <#= word_type.Keyword #> found)
-			: base(string.Format(kDescFormat, dataDescription, expected, found, VersionCompareDesc(expected, found)))
+			: base(string.Format(Util.InvariantCultureInfo, kDescFormat, dataDescription, expected, found, VersionCompareDesc(expected, found)))
 		{
 			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
 		}
@@ -34,7 +34,7 @@ namespace KSoft.IO
 <#	string hex_format = "\"" + word_type.ToStringHexFormat + "\"";
 #>
 		public VersionMismatchException(Stream s, <#= word_type.Keyword #> expected, <#= word_type.Keyword #> found) :
-			this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expected, found), expected.ToString(<#= hex_format #>), found.ToString(<#= hex_format #>))
+			this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expected, found), expected.ToString(<#= hex_format #>, Util.InvariantCultureInfo), found.ToString(<#= hex_format #>, Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}
@@ -65,7 +65,7 @@ namespace KSoft.IO
 			, <#= word_type.Keyword #> expectedMin
 			, <#= word_type.Keyword #> expectedMax
 			, <#= word_type.Keyword #> found)
-			: base(string.Format(kDescFormat, dataDescription, expectedMin, expectedMax, found, VersionCompareDesc(expectedMin, expectedMax, found)))
+			: base(string.Format(Util.InvariantCultureInfo, kDescFormat, dataDescription, expectedMin, expectedMax, found, VersionCompareDesc(expectedMin, expectedMax, found)))
 		{
 			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
 		}
@@ -80,7 +80,7 @@ namespace KSoft.IO
 			, <#= word_type.Keyword #> expectedMin
 			, <#= word_type.Keyword #> expectedMax
 			, <#= word_type.Keyword #> found)
-			: this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expectedMin, expectedMax, found), expectedMin.ToString(<#= hex_format #>), expectedMax.ToString(<#= hex_format #>), found.ToString(<#= hex_format #>))
+			: this(s.Position - <#= word_type.SizeOfInBytes #>, VersionCompareDesc(expectedMin, expectedMax, found), expectedMin.ToString(<#= hex_format #>, Util.InvariantCultureInfo), expectedMax.ToString(<#= hex_format #>, Util.InvariantCultureInfo), found.ToString(<#= hex_format #>, Util.InvariantCultureInfo))
 		{
 			Contract.Requires(s != null);
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -27,9 +28,32 @@ namespace KSoft
 		// https://en.wikipedia.org/wiki/De_Bruijn_sequence
 
 		#region MultiplyDeBruijnBitPosition
-		static readonly byte[]	kMultiplyDeBruijnBitPositionHighestBitSet32,
-								kMultiplyDeBruijnBitPositionLeadingZeros32,
-								kMultiplyDeBruijnBitPositionTrailingZeros32;
+		static readonly byte[] kMultiplyDeBruijnBitPositionHighestBitSet32 = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
+		static readonly byte[] kMultiplyDeBruijnBitPositionLeadingZeros32 = GenerateMultiplyDeBruijnBitPositionLeadingZeros32();
+		static readonly byte[] kMultiplyDeBruijnBitPositionTrailingZeros32 = new byte[kInt32BitCount]
+		{
+			0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+			31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+		};
+
+		static byte[] GenerateMultiplyDeBruijnBitPositionHighestBitSet32()
+		{
+			return new byte[kInt32BitCount]
+			{
+				0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+				8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+			};
+		}
+
+		static byte[] GenerateMultiplyDeBruijnBitPositionLeadingZeros32()
+		{
+			var src = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
+			var dst = new byte[kInt32BitCount];
+			for (int x = 0; x < dst.Length; x++)
+				dst[x] = (byte)(src[x]+1);
+
+			return dst;
+		}
 		#endregion
 
 		#region Contract messages
@@ -42,35 +66,9 @@ namespace KSoft
 		const string kGetBitmaskFlag_MaxValueOutOfRangeMessage = kGetMaxEnumBits_MaxValueOutOfRangeMessage;
 		#endregion
 
-		static Bits()
-		{
-			#region kBitmaskLookup
-			BitmaskLookUpTableGenerate(Bits.kByteBitCount,  out kBitmaskLookup8);
-			BitmaskLookUpTableGenerate(Bits.kInt16BitCount, out kBitmaskLookup16);
-			BitmaskLookUpTableGenerate(Bits.kInt32BitCount, out kBitmaskLookup32);
-			BitmaskLookUpTableGenerate(Bits.kInt64BitCount, out kBitmaskLookup64);
-			#endregion
-
-			#region MultiplyDeBruijnBitPosition
-			kMultiplyDeBruijnBitPositionHighestBitSet32 = new byte[kInt32BitCount]
-			{
-				0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
-				8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
-			};
-
-			kMultiplyDeBruijnBitPositionLeadingZeros32 = new byte[kInt32BitCount];
-			for (int x = 0; x < kMultiplyDeBruijnBitPositionLeadingZeros32.Length; x++)
-				kMultiplyDeBruijnBitPositionLeadingZeros32[x] = (byte)(kMultiplyDeBruijnBitPositionHighestBitSet32[x]+1);
-
-			kMultiplyDeBruijnBitPositionTrailingZeros32 = new byte[kInt32BitCount]
-			{
-				0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-				31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-			};
-			#endregion
-		}
-
 		#region Memory/ArrayCopy
+		// #REVIEW: Does #DOTNET5 enable us to change this to a class and use stackalloc?
+		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct MemoryCopier<TDst, TSrc>
 			where TDst : struct
 			where TSrc : struct
@@ -83,12 +81,18 @@ namespace KSoft
 				var src_type = typeof(TSrc);
 
 				if (!dst_type.IsPrimitive)
-					throw new ArgumentException("Destination type isn't a primitive type",
+				{
+					Debug.Trace.LowLevel.TraceDataSansId(System.Diagnostics.TraceEventType.Critical,
+						nameof(MemoryCopier<TDst, TSrc>) + ": Destination type is not a primitive type",
 						dst_type.FullName);
+				}
 
 				if (!src_type.IsPrimitive)
-					throw new ArgumentException("Source type isn't a primitive type",
+				{
+					Debug.Trace.LowLevel.TraceDataSansId(System.Diagnostics.TraceEventType.Critical,
+						nameof(MemoryCopier<TDst, TSrc>) + ": Source type is not a primitive type",
 						src_type.FullName);
+				}
 			}
 
 			readonly int mDstTypeSize;
@@ -97,7 +101,9 @@ namespace KSoft
 			public int DestinationTypeSize { get { return mDstTypeSize; } }
 			public int SourceTypeSize { get { return mSrcTypeSize; } }
 
-			public MemoryCopier(bool dummy)
+			public MemoryCopier(
+				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				bool dummy)
 			{
 				mDstTypeSize = LowLevel.Util.Unmanaged.SizeOf<TDst>();
 				mSrcTypeSize = LowLevel.Util.Unmanaged.SizeOf<TSrc>();
@@ -121,7 +127,7 @@ namespace KSoft
 				int src_copy_count_in_bytes = mSrcTypeSize * srcCopyCount;
 
 				if (src_copy_count_in_bytes > dst_buffer_local_size_in_bytes)
-					throw new ArgumentOutOfRangeException("srcCopyCount", srcCopyCount,
+					throw new ArgumentOutOfRangeException(nameof(srcCopyCount), srcCopyCount,
 						"total source memory to copy exceeds the memory available in destination");
 
 				Buffer.BlockCopy(src, srcOffset,

@@ -73,7 +73,9 @@ namespace DouglasCrockford.JsMin
 		const int EOF = -1;
 
 		private StringBuilder _sb;
+		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private StringReader _reader;
+		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private StringWriter _writer;
 
 		private int _theA;

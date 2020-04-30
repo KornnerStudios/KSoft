@@ -40,6 +40,7 @@ namespace KSoft
 		public static readonly int kBitCount;
 
 		#region Static Initialize
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		static void ProcessMembers(Type t, out uint maxValue, out bool hasNone)
 		{
 			maxValue = uint.MaxValue;
@@ -74,6 +75,7 @@ namespace KSoft
 
 					if (int_value < TypeExtensions.kNoneInt32)
 					{
+						// CA2208
 						throw new ArgumentOutOfRangeException(nameof(TEnum),
 							string.Format(Util.InvariantCultureInfo,
 								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
@@ -122,6 +124,7 @@ namespace KSoft
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitEncoder32()
 		{
 			Type t = typeof(TEnum);
@@ -388,6 +391,7 @@ namespace KSoft
 		public static readonly int kBitCount;
 
 		#region Static Initialize
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		static void ProcessMembers(Type t, out ulong maxValue, out bool hasNone)
 		{
 			maxValue = ulong.MaxValue;
@@ -423,6 +427,7 @@ namespace KSoft
 
 					if (int_value < TypeExtensions.kNoneInt64)
 					{
+						// CA2208
 						throw new ArgumentOutOfRangeException(nameof(TEnum),
 							string.Format(Util.InvariantCultureInfo,
 								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
@@ -471,6 +476,7 @@ namespace KSoft
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitEncoder64()
 		{
 			Type t = typeof(TEnum);

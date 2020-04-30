@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -17,7 +18,9 @@ namespace KSoft.Values
 		, IO.IEndianStreamable
 	{
 		/// <summary>Compare two <see cref="GroupTagData"/> objects by their <see cref="GroupTagData.Name"/> properties</summary>
-		class ByNameComparer : System.Collections.IComparer, System.Collections.Generic.IComparer<GroupTagData>
+		class ByNameComparer
+			: System.Collections.IComparer
+			, System.Collections.Generic.IComparer<GroupTagData>
 		{
 			public int Compare(object x, object y)
 			{
@@ -35,36 +38,33 @@ namespace KSoft.Values
 			}
 		};
 
+		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		protected abstract GroupTagData[] BaseGroupTags { get; }
 
 		/// <summary>Get the group tag which represents null</summary>
 		public abstract GroupTagData NullGroupTag { get; }
 
-		#region Guid
-		protected readonly KGuid mGuid = KGuid.Empty;
 		/// <summary>Guid for this group tag collection</summary>
-		public KGuid Guid { get { return mGuid; } }
-		#endregion
+		public KGuid Uuid { get; private set; } = KGuid.Empty;
 
 		/// <summary>Does this instance represent an empty collection of the concrete GroupTagData type?</summary>
-		/// <remarks>If the Guid is not zero, but there are no GroupTags, this will return false</remarks>
-		public bool IsEmpty { get {
-			return BaseGroupTags.Length == 0 && Guid == KGuid.Empty;
-		} }
+		/// <remarks>If the Uuid is not zero, but there are no GroupTags, this will return false</remarks>
+		public bool IsEmpty { get => BaseGroupTags.Length == 0 && Uuid == KGuid.Empty; }
 
 		protected GroupTagCollection(GroupTagData[] groups)
 		{
 			Contract.Requires(Array.TrueForAll(groups, Predicates.IsNotNull));
 		}
-		protected GroupTagCollection(GroupTagData[] groups, KGuid guid) : this(groups)
+		protected GroupTagCollection(GroupTagData[] groups, KGuid uuid) : this(groups)
 		{
-			mGuid = guid;
+			Uuid = uuid;
 		}
 
 		#region Indexers
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
 		[Contracts.Pure]
+		[SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
 		public string this[char[] tag] { get {
 			Contract.Requires(tag != null);
 			Contract.Requires(tag.Length == NullGroupTag.Tag.Length,
@@ -177,7 +177,7 @@ namespace KSoft.Values
 		#endregion
 
 		/// <summary>Sort the collection by the names of the group tags</summary>
-		public void Sort() { Array.Sort<GroupTagData>(BaseGroupTags, new ByNameComparer()); }
+		public void Sort() => Array.Sort<GroupTagData>(BaseGroupTags, new ByNameComparer());
 
 		/// <summary>Does the collection contain multiple elements which share the same group tag and\or name?</summary>
 		/// <returns></returns>
@@ -208,31 +208,19 @@ namespace KSoft.Values
 		#endregion
 
 		#region IReadOnlyList<GroupTagData> Members
-		public GroupTagData this[int index]
-		{
-			get { return BaseGroupTags[index]; }
-		}
-		public int Count
-		{
-			get { return BaseGroupTags.Length; }
-		}
+		public GroupTagData this[int index] { get => BaseGroupTags[index]; }
+		public int Count { get => BaseGroupTags.Length; }
 		#endregion
 
 		#region IEnumerable<GroupTagData> Members
-		public IEnumerator<GroupTagData> GetEnumerator()
-		{
-			return (IEnumerator<GroupTagData>)BaseGroupTags.GetEnumerator();
-		}
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return BaseGroupTags.GetEnumerator();
-		}
+		public IEnumerator<GroupTagData> GetEnumerator() => (IEnumerator<GroupTagData>)BaseGroupTags.GetEnumerator();
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => BaseGroupTags.GetEnumerator();
 		#endregion
 	};
 	[Contracts.ContractClassFor(typeof(GroupTagCollection))]
 	abstract class GroupTagCollectionContract : GroupTagCollection
 	{
-		protected GroupTagCollectionContract() : base(null) { throw new NotImplementedException(); }
+		protected GroupTagCollectionContract() : base(null) => throw new NotImplementedException();
 
 		protected override GroupTagData[] BaseGroupTags { get {
 			Contract.Ensures(Contract.Result<GroupTagData[]>() != null);

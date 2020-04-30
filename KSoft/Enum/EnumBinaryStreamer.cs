@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
@@ -54,7 +55,7 @@ namespace KSoft.IO
 		{
 			int capacity = EnumUtils.kSupportedTypeCodes.Length;
 
-			// NOTE: The EnumComparer<TypeCode> may not be needed for .NET 4 environments:
+			// #NOTE: The EnumComparer<TypeCode> may not be needed for .NET 4 environments:
 			// http://www.codeproject.com/Messages/3968802/Re-What-about-Net-4-0.aspx
 			kReadMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
 			kWriteMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
@@ -64,6 +65,7 @@ namespace KSoft.IO
 		}
 		#endregion
 
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBinaryStreamerBase()
 		{
 			kBinaryReaderType = typeof(BinaryReader);
@@ -86,6 +88,7 @@ namespace KSoft.IO
 			/// <summary><typeparamref name="TStreamType"/>'s Write method in <see cref="BinaryWriter"/></summary>
 			public static readonly MethodInfo kWrite;
 
+			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static StreamType()
 			{
 				TypeCode c = Type.GetTypeCode(typeof(TStreamType));
@@ -270,6 +273,7 @@ namespace KSoft.IO
 		public static readonly IEnumEndianStreamer<TEnum> Instance;
 
 		/// <summary>Initializes the <see cref="EnumBinaryStreamer{TEnum}"/> class by generating the IO methods.</summary>
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBinaryStreamer()
 		{
 			var generation_args = new MethodGenerationArgs();

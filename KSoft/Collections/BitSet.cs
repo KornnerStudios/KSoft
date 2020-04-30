@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using KSoft.Bitwise;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -24,6 +25,8 @@ namespace KSoft.Collections
 
 	[System.Diagnostics.DebuggerDisplay("Length = {Length}, Cardinality = {Cardinality}")]
 	[Serializable, System.Runtime.InteropServices.ComVisible(true)]
+	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
+	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public sealed partial class BitSet
 		: ICollection<bool>, System.Collections.ICollection
 		, IReadOnlyBitSet
@@ -45,6 +48,7 @@ namespace KSoft.Collections
 
 		static readonly Func<TWord, byte> kCountZerosForNextBit;
 
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static BitSet()
 		{
 			bool success = Bits.GetBitConstants(typeof(TWord),
@@ -106,13 +110,13 @@ namespace KSoft.Collections
 		#endregion
 
 		/// <summary>Size of a single implementation word, in bytes, used in the internal array to represent this bit set</summary>
-		public int UnderlyingWordSize { get { return sizeof(TWord); } }
+		public int UnderlyingWordSize { get => sizeof(TWord); }
 		/// <summary>Number of implementation words <b>used</b> in the internal array to represent this bit set</summary>
 		/// <remarks>
 		/// This differs from <see cref="LengthInWords"/> as the internal array can be larger than needed due to downsizing
 		/// without calling <see cref="TrimExcess"/>
 		/// </remarks>
-		public int UnderlyingWordCount { get { return mArray.Length; } }
+		public int UnderlyingWordCount { get => mArray.Length; }
 
 		/// <summary>Can <see cref="Length"/> be adjusted?</summary>
 		public bool FixedLength { get; set; }
@@ -180,16 +184,16 @@ namespace KSoft.Collections
 		/// This differs from <see cref="UnderlyingWordCount"/> as it only considers the absolute least amounts of words needed
 		/// and ignores any extra space that may have been accumulated from length downsizing without a call to <see cref="TrimExcess"/>
 		/// </remarks>
-		public int LengthInWords { get { return kVectorLengthInT(mLength); } }
+		public int LengthInWords { get => kVectorLengthInT(mLength); }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality { get; private set; }
 		/// <summary>Number of bits set to false</summary>
-		public int CardinalityZeros { get { return Length - Cardinality; } }
+		public int CardinalityZeros { get => Length - Cardinality; }
 
 		/// <summary>Are all the bits in this set currently false?</summary>
-		public bool IsAllClear { get { return Cardinality == 0; } }
+		public bool IsAllClear { get => Cardinality == 0; }
 
-		int IReadOnlyBitSet.Version { get { return mVersion; } }
+		int IReadOnlyBitSet.Version { get => mVersion; }
 
 		#region Ctor
 		#region InitializeArray
@@ -289,22 +293,18 @@ namespace KSoft.Collections
 			mVersion = set.mVersion;
 			FixedLength = set.FixedLength;
 		}
-		public object Clone()	{ return new BitSet(this); }
+		public object Clone()	=> new BitSet(this);
 		#endregion
 
 		#region RecalculateCardinality
 		/// <summary>Update <see cref="Cardinality"/> for an individual word in the underlying array</summary>
 		/// <param name="wordIndex"></param>
-		void RecalculateCardinalityRound(int wordIndex)
-		{
-			Cardinality += Bits.BitCount(mArray[wordIndex]);
-		}
+		void RecalculateCardinalityRound(int wordIndex)		=> Cardinality += Bits.BitCount(mArray[wordIndex]);
+
 		/// <summary>Undo a previous <see cref="RecalculateCardinalityRound"/> for an individual word in the underlying array</summary>
 		/// <param name="wordIndex"></param>
-		void RecalculateCardinalityUndoRound(int wordIndex)
-		{
-			Cardinality -= Bits.BitCount(mArray[wordIndex]);
-		}
+		void RecalculateCardinalityUndoRound(int wordIndex)	=> Cardinality -= Bits.BitCount(mArray[wordIndex]);
+
 		void RecalculateCardinalityFinishRounds(int startWordIndex)
 		{
 			for (int x = startWordIndex, word_count = LengthInWords; x < word_count; x++)
@@ -410,17 +410,12 @@ namespace KSoft.Collections
 		/// <summary>Get the value of a specific bit, without performing and bounds checking on the bit index</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
-		bool GetInternal(int bitIndex)
-		{
-			return GetInternal(bitIndex, out int index, out TWord bitmask);
-		}
+		bool GetInternal(int bitIndex) => GetInternal(bitIndex, out int index, out TWord bitmask);
+
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
-		public bool Get(int bitIndex)
-		{
-			return GetInternal(bitIndex);
-		}
+		public bool Get(int bitIndex) => GetInternal(bitIndex);
 
 		void SetInternal(int wordIndex, TWord bitmask, bool value)
 		{
@@ -533,12 +528,9 @@ namespace KSoft.Collections
 				: TypeExtensions.kNone;
 		}
 
-		public StateEnumerator GetEnumerator()
-		{ return new StateEnumerator(this); }
-		IEnumerator<bool> IEnumerable<bool>.GetEnumerator()
-		{ return new StateEnumerator(this); }
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{ return new StateEnumerator(this); }
+		public StateEnumerator GetEnumerator() => new StateEnumerator(this);
+		IEnumerator<bool> IEnumerable<bool>.GetEnumerator() => new StateEnumerator(this);
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => new StateEnumerator(this);
 		#endregion
 
 		#region Bit Operations
@@ -804,17 +796,17 @@ namespace KSoft.Collections
 			return mSyncRoot;
 		} }
 		/// <summary>returns <see cref="Cardinality"/></summary>
-		int ICollection<bool>.Count					{ get { return Cardinality; } }
+		int ICollection<bool>.Count					{ get => Cardinality; }
 		/// <summary>returns <see cref="Cardinality"/></summary>
-		int IReadOnlyCollection<bool>.Count			{ get { return Cardinality; } }
+		int IReadOnlyCollection<bool>.Count			{ get => Cardinality; }
 		/// <summary>returns <see cref="Cardinality"/></summary>
-		int System.Collections.ICollection.Count	{ get { return Cardinality; } }
-		public bool IsReadOnly						{ get { return false; } }
-		bool System.Collections.ICollection.IsSynchronized { get { return false; } }
+		int System.Collections.ICollection.Count	{ get => Cardinality; }
+		public bool IsReadOnly						{ get => false; }
+		bool System.Collections.ICollection.IsSynchronized { get => false; }
 
-		void ICollection<bool>.Add(bool item)		{ throw new NotSupportedException(); }
-		bool ICollection<bool>.Contains(bool item)	{ throw new NotSupportedException(); }
-		bool ICollection<bool>.Remove(bool item)	{ throw new NotSupportedException(); }
+		void ICollection<bool>.Add(bool item)		=> throw new NotSupportedException();
+		bool ICollection<bool>.Contains(bool item)	=> throw new NotSupportedException();
+		bool ICollection<bool>.Remove(bool item)	=> throw new NotSupportedException();
 		#endregion
 
 		/// <summary>Resizes the underlying storage to the minimal size needed to represent the current <see cref="Length"/></summary>
@@ -828,7 +820,7 @@ namespace KSoft.Collections
 
 		/// <summary>Set all the bits to zero; doesn't modify <see cref="Length"/></summary>
 		[System.Diagnostics.DebuggerStepThrough]
-		public void Clear() { SetAll(false); }
+		public void Clear() => SetAll(false);
 
 		#region CopyTo
 		public void CopyTo(bool[] array, int arrayIndex)
@@ -847,7 +839,7 @@ namespace KSoft.Collections
 			else if (array is bool[])
 				CopyTo((bool[])array, arrayIndex);
 			else
-				throw new ArgumentException(string.Format("Array type unsupported {0}", array.GetType()));
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "Array type unsupported {0}", array.GetType()));
 		}
 		#endregion
 
@@ -864,7 +856,7 @@ namespace KSoft.Collections
 		#region IComparable<IReadOnlyBitSet> Members
 		public int CompareTo(IReadOnlyBitSet other)
 		{
-			if(Length == other.Length)
+			if (Length == other.Length)
 				return Cardinality - other.Cardinality;
 
 			return Length - other.Length;
@@ -922,7 +914,7 @@ namespace KSoft.Collections
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
-				throw new ArgumentOutOfRangeException("bit", bit,
+				throw new ArgumentOutOfRangeException(nameof(bit), bit,
 					"Enum member is out of range for indexing");
 			}
 		}
@@ -960,7 +952,8 @@ namespace KSoft.Collections
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
-				throw new ArgumentOutOfRangeException("maxCount", string.Format("{0}/{1} is invalid",
+				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
+					"{0}/{1} is invalid",
 					maxCount, maxCountValue));
 			}
 

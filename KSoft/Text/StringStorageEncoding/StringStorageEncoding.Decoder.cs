@@ -31,7 +31,7 @@ namespace KSoft.Text
 			else if ((char_count - 3) <= Bitwise.Encoded7BitInt.kMaxValue3Bytes)	return byteCount - 3;
 			else if ((char_count - 4) <= Bitwise.Encoded7BitInt.kMaxValue4Bytes)	return byteCount - 4;
 			else
-				throw new Debug.UnreachableException(char_count.ToString());
+				throw new Debug.UnreachableException(char_count.ToString(KSoft.Util.InvariantCultureInfo));
 		}
 		/// <summary>Calculate the estimated character byte count of a raw <see cref="StringStorageType.Pascal"/> string</summary>
 		/// <param name="byteCount">Raw string's byte count</param>
@@ -249,7 +249,7 @@ namespace KSoft.Text
 				result &= characters[offset  ] == 0;
 			}
 			else
-				throw new Debug.UnreachableException(mNullCharacterSize.ToString());
+				throw new Debug.UnreachableException(mNullCharacterSize.ToString(KSoft.Util.InvariantCultureInfo));
 
 			return result;
 		}
@@ -482,7 +482,7 @@ namespace KSoft.Text
 		}
 		#endregion
 		#region CharArray
-		int ReadStrCharArrayGetRealCountSingleByte(byte[] bytes)
+		static int ReadStrCharArrayGetRealCountSingleByte(byte[] bytes)
 		{
 			if(bytes[bytes.Length-1] == 0) // padded string case
 			{

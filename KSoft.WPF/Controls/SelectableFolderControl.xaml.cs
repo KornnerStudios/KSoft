@@ -18,7 +18,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
 		}
-		public static DependencyProperty TextProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
 			nameof(Text),
 			typeof(string), typeof(SelectableFolderControl),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -30,7 +30,7 @@ namespace KSoft.WPF.Controls
 			get { return (string)GetValue(DescriptionProperty); }
 			set { SetValue(DescriptionProperty, value); }
 		}
-		public static DependencyProperty DescriptionProperty = DependencyProperty.Register(
+		public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register(
 			nameof(Description),
 			typeof(string), typeof(SelectableFolderControl));
 		#endregion

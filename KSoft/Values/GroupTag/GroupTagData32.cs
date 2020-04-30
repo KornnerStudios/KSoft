@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -57,8 +58,8 @@ namespace KSoft.Values
 		/// <summary>Initialize a 32-bit group tag with a <see cref="Guid"/></summary>
 		/// <param name="groupTag">Four character code string</param>
 		/// <param name="name">Name of this group tag</param>
-		/// <param name="guid">Guid for this group tag</param>
-		public GroupTagData32(string groupTag, string name, KGuid guid) : base(groupTag, name, guid, kExpectedTagLength)
+		/// <param name="uuid">Guid for this group tag</param>
+		public GroupTagData32(string groupTag, string name, KGuid uuid) : base(groupTag, name, uuid, kExpectedTagLength)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
@@ -92,6 +93,7 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in integer form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator TagWord(GroupTagData32 value)
 		{
 			Contract.Requires(value != null);
@@ -104,14 +106,9 @@ namespace KSoft.Values
 		/// Takes another four character code and performs a check on it against this object's tag to see if they are completely equal</summary>
 		/// <param name="other"></param>
 		/// <returns>True if equal to this</returns>
-		public override bool Test(char[] other)
-		{
-			return GroupTagData32.Test(Tag, other);
-		}
+		public override bool Test(char[] other) => GroupTagData32.Test(Tag, other);
 		/// <summary>Is this <see cref="GroupTagData32"/> equal to the "null" equivalent value?</summary>
-		public override bool IsNull	{ get {
-			return object.ReferenceEquals(this, Null);
-		} }
+		public override bool IsNull	=> object.ReferenceEquals(this, Null);
 
 		#region IEquatable & IEqualityComparer Members
 		/// <summary>Compares this to another <see cref="GroupTagData32"/> object testing their <see cref="ID"/> fields for equality
@@ -120,8 +117,8 @@ namespace KSoft.Values
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
 		public override bool Equals(GroupTagData obj)
 		{
-			if(obj is GroupTagData32)
-				return mID == (obj as GroupTagData32).mID;
+			if (obj is GroupTagData32 g)
+				return mID == g.mID;
 
 			return false;
 		}
@@ -131,10 +128,10 @@ namespace KSoft.Values
 		/// <summary>Moves the stream ahead by the sizeof a four character code (4 bytes)</summary>
 		/// <param name="s"></param>
 		/// <remarks>Doesn't actually read any data from the stream, only seeks forward</remarks>
-		public override void Read(IO.EndianReader s)	{ s.Seek(sizeof(TagWord), System.IO.SeekOrigin.Current); }
+		public override void Read(IO.EndianReader s)	=> s.Seek(sizeof(TagWord), System.IO.SeekOrigin.Current);
 		/// <summary>Writes this tag group's four character code</summary>
 		/// <param name="s"></param>
-		public override void Write(IO.EndianWriter s)	{ s.WriteTag32(mID); }
+		public override void Write(IO.EndianWriter s)	=> s.WriteTag32(mID);
 		#endregion
 
 
@@ -235,7 +232,7 @@ namespace KSoft.Values
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);
 
-			if(tag == null)
+			if (tag == null)
 				tag = new char[4];
 
 			if (isBigEndian)
@@ -275,14 +272,14 @@ namespace KSoft.Values
 		/// <summary>Initialize a 32-bit group tag attribute</summary>
 		/// <param name="groupTag">Four character code string</param>
 		/// <param name="name">Name of this group tag</param>
-		/// <param name="guid"><see cref="Guid"/> for this group tag</param>
-		public GroupTagData32Attribute(string groupTag, string name, string guid)
+		/// <param name="uuid"><see cref="Guid"/> for this group tag</param>
+		public GroupTagData32Attribute(string groupTag, string name, string uuid)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(groupTag));
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires(groupTag.Length == GroupTagData32.kExpectedTagLength);
 
-			GroupTag = new GroupTagData32(groupTag, name, new KGuid(guid));
+			GroupTag = new GroupTagData32(groupTag, name, new KGuid(uuid));
 		}
 	};
 }

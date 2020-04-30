@@ -22,14 +22,8 @@ namespace KSoft.Security.Cryptography
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.TigerHash";
 
-		public new static TigerHash Create(string algName)
-		{
-			return (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(kAlgorithmName);
-		}
-		public new static TigerHash Create()
-		{
-			return Create(kAlgorithmName);
-		}
+		public new static TigerHash Create(string algName) => (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
+		public new static TigerHash Create() => Create(kAlgorithmName);
 		#endregion
 
 		public TigerHash()
@@ -51,14 +45,8 @@ namespace KSoft.Security.Cryptography
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.TigerHash2";
 
-		public new static TigerHash Create(string algName)
-		{
-			return (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(kAlgorithmName);
-		}
-		public new static TigerHash Create()
-		{
-			return Create(kAlgorithmName);
-		}
+		public new static TigerHash Create(string algName) => (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
+		public new static TigerHash Create() => Create(kAlgorithmName);
 		#endregion
 
 		public TigerHash2()
@@ -89,8 +77,8 @@ namespace KSoft.Security.Cryptography
 		public new static TigerHashBase Create(string algName)
 		{
 			Contract.Requires(
-				TigerHash .kAlgorithmName.Equals(algName) ||
-				TigerHash2.kAlgorithmName.Equals(algName));
+				TigerHash .kAlgorithmName.Equals(algName, StringComparison.InvariantCulture) ||
+				TigerHash2.kAlgorithmName.Equals(algName, StringComparison.InvariantCulture));
 
 			return (TigerHashBase)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
 		}
@@ -248,7 +236,7 @@ namespace KSoft.Security.Cryptography
 			mRegs[2] += c;
 		}
 
-		void CopyBlock(byte[] inputBuffer, int inputOffset, int blockIndex)
+		void CopyBlock(byte[] inputBuffer, int inputOffset)
 		{
 			int remaining_bytes = inputBuffer.Length - inputOffset;
 			int input_count = System.Math.Min(BlockSize, remaining_bytes);
@@ -263,7 +251,7 @@ namespace KSoft.Security.Cryptography
 		{
 			for (int block_index = 0, block_offset_in_input = inputOffset; block_index < blockCount; block_index++, block_offset_in_input += BlockSize)
 			{
-				CopyBlock(inputBuffer, block_offset_in_input, block_index);
+				CopyBlock(inputBuffer, block_offset_in_input);
 
 				ProcessWords();
 			}
@@ -278,7 +266,7 @@ namespace KSoft.Security.Cryptography
 		{
 			// it's okay to modify inputBuffer here since it's the final block and it's actually BlockHashAlgorithm's internal buffer
 
-			ulong msg_bit_length = ((ulong)mTotalBytesProcessed + (ulong)inputCount) << 3;
+			ulong msg_bit_length = ((ulong)TotalBytesProcessed + (ulong)inputCount) << 3;
 
 			if (inputOffset > 0 && inputCount > 0)
 			{

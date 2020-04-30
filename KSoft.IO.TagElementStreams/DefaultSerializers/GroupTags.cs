@@ -7,7 +7,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.IO
 {
-	public partial class TagElementStreamDefaultSerializer
+	partial class TagElementStreamDefaultSerializer
 	{
 		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
 			ref Values.GroupTagData32 value)
@@ -24,7 +24,7 @@ namespace KSoft.IO
 				: value.Name;
 			var guid = reading
 				? Values.KGuid.Empty
-				: value.Guid;
+				: value.Uuid;
 
 			s.StreamAttribute("tag", ref group_tag);
 			s.StreamAttributeOpt("guid", ref guid, Predicates.IsNotEmpty);
@@ -79,7 +79,7 @@ namespace KSoft.IO
 
 			var guid = reading
 				? Values.KGuid.Empty
-				: collection.Guid;
+				: collection.Uuid;
 			var tags = reading
 				? null
 				// HACK: GroupTags is exposed as a IReadOnlyList, but at the time of this writing is implemented

@@ -45,7 +45,7 @@ namespace KSoft
 		#region kBitmaskLookup
 <# foreach (var num_type in BitwiseT4.BittableTypes_Unsigned) { #>
 		/// <summary>Bit count to bit-mask look up table for <#= num_type.SizeOfInBits #>-bit words</summary>
-		public static readonly <#= num_type.Keyword #>[] kBitmaskLookup<#= num_type.SizeOfInBits #>;
+		public static readonly <#= num_type.Keyword #>[] kBitmaskLookup<#= num_type.SizeOfInBits #> = Bitmask<#= num_type.Code #>LookUpTableGenerate(k<#= num_type.Code #>BitCount);
 
 <# } #>
 		#endregion
