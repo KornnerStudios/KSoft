@@ -60,6 +60,7 @@ namespace KSoft.IO
 					yield return attr.Name;
 		} }
 
+		[SuppressMessage("Microsoft.Design", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public override bool ElementsExists(string name)
 		{
 			if (Cursor == null)
@@ -69,7 +70,10 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 
-			return n != null && n.Value.IsNotNullOrEmpty();
+			return n != null
+				// #REVIEW CA1820: When I changed this to IsNotNullOrEmpty, it broke pretty much everything. Need to evaluate dropping the n.Value check altogether.
+				// Eg, in KSoft.Blam.Engine.EngineRegistry.SerializePrototypes, when trying to read "Engines", the XmlElement is not null but the Value is very much null (only contains other elements)
+				&& n.Value != string.Empty;
 		}
 
 		public override bool ElementsExist { get { return Cursor != null && Cursor.HasChildNodes; } }
