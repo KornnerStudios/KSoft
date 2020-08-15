@@ -34,6 +34,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <!-- https://github.com/dotnet/roslyn-analyzers/issues/2003: when going from 2_9_8 to 2_9_9 I started getting threw an exception of type 'System.InvalidOperationException' with message 'Feature 'Flow-Analysis' is disabled.'. -->
+    <Features>flow-analysis</Features>
 
     <CodeContractsEnableRuntimeChecking>$(MicrosoftCodeContractsInstalled)</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
