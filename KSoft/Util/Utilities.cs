@@ -443,6 +443,46 @@ namespace KSoft
 			return trimmed;
 		}
 
+		#region FullNameOf
+		public static string FullNameOf(string nameof0, string nameof1)
+		{
+			return
+				nameof0 +
+				"." +
+				nameof1;
+		}
+		public static string FullNameOf(string nameof0, string nameof1, string nameof2)
+		{
+			return
+				nameof0 +
+				"." +
+				nameof1 +
+				"." +
+				nameof2;
+		}
+		public static string FullNameOf(string nameof0, string nameof1, string nameof2, params string[] nameofArray)
+		{
+			string fullnameof = FullNameOf(nameof0, nameof1, nameof2);
+
+			if (nameofArray.IsNullOrEmpty())
+			{
+				foreach (string nameof_substring in nameofArray)
+				{
+					fullnameof += "." + nameof_substring;
+				}
+			}
+
+			return fullnameof;
+		}
+
+		public static string FullNameOfThis(string nameof1)
+			=> FullNameOf("this", nameof1);
+		public static string FullNameOfThis(string nameof1, string nameof2)
+			=> FullNameOf("this", nameof1, nameof2);
+		public static string FullNameOfThis(string nameof1, string nameof2, params string[] nameofArray)
+			=> FullNameOf("this", nameof1, nameof2, nameofArray);
+		#endregion
+
 		/// <summary>
 		/// Emulate .NET's Enum.TryParse. Only real difference is we by default IGNORE CASE, and they don't
 		/// </summary>

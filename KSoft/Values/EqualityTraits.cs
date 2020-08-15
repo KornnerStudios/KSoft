@@ -9,7 +9,7 @@ namespace KSoft.Values
 {
 	/// <summary>Describes how a value is compared for equality</summary>
 	[System.Reflection.Obfuscation(Exclude=false, ApplyToMembers=false)]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1717:OnlyFlagsEnumsShouldHavePluralNames")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1717:OnlyFlagsEnumsShouldHavePluralNames")]
 	public enum EqualityTraits : byte
 	{
 		NotEqual = 0,
