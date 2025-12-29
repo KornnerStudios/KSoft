@@ -100,16 +100,26 @@ namespace KSoft.Reflection.Test
 		}
 		#endregion
 
+		#region GenerateLiteralMemberGetterTest
+		internal class ClassContainingDefaultFileStreamBufferSizeLiteral
+		{
+			protected const int DefaultFileStreamBufferSize = 4096;
+		};
+		// .net9 update: apparently after .netframework, the IL for *private* const fields changed
+		// to no longer generate FieldInfos.
 		[TestMethod]
 		public void Reflection_GenerateLiteralMemberGetterTest()
 		{
 			// DefaultBufferSize is a property, at least in .NET 4.5+
+			// .net9 update: above is now a const, just like the below value.
 			const string kLiteralName = "DefaultFileStreamBufferSize";
 
-			var literalFieldInfo = typeof(System.IO.StreamReader).GetField(
+			// .net9 update: apparently after .netframework, the IL for *private* const fields changed
+			// to no longer generate FieldInfos.
+			Type typeContainingLiteral = typeof(/*System.IO.StreamReader*/ClassContainingDefaultFileStreamBufferSizeLiteral);
+			var literalFieldInfo = typeContainingLiteral.GetField(
 				kLiteralName,
 				Reflect.BindingFlags.Static |
-				Reflect.BindingFlags.Instance |
 				Reflect.BindingFlags.NonPublic |
 				Reflect.BindingFlags.IgnoreCase |
 				Reflect.BindingFlags.FlattenHierarchy);
@@ -117,10 +127,12 @@ namespace KSoft.Reflection.Test
 			Assert.IsTrue(literalFieldInfo.IsLiteral);
 
 			// internal const int DefaultBufferSize
-			var kDefaultBufferSize = Util.GenerateStaticFieldGetter<System.IO.StreamReader, int>(kLiteralName);
+			var kDefaultBufferSize = Util.GenerateStaticFieldGetter</*System.IO.StreamReader*/ClassContainingDefaultFileStreamBufferSizeLiteral, int>(
+				kLiteralName);
 
 			Assert.AreEqual(4096, kDefaultBufferSize());
 		}
+		#endregion
 
 		#region Generate MemberSetter fail tests
 		struct MemberSetterTestStruct

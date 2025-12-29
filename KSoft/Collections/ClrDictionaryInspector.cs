@@ -12,15 +12,21 @@ using Reflect = System.Reflection;
 
 namespace KSoft.Collections
 {
+	using DicEntryHashCodeType = uint;
+
+	// I forget what even sparked the need for this class. Because I could?
+	// It *does* end up exercising KSoft reflection and expression utils quite a bit, so there's that.
 	public sealed class ClrDictionaryInspector<TKey, TValue>
 	{
 		#region Dictionary field names
-		const string kDicBucketsName = "buckets";
-		const string kDicEntriesName = "entries";
-		const string kDicCountName = "count";
-		const string kDicVersionName = "version";
-		const string kDicFreeListName = "freeList";
-		const string kDicFreeCountName = "freeCount";
+		// post-netframework, the names have underscore prefixes
+		const string kDicBucketsName = "_buckets";
+		const string kDictGetBucketName = "GetBucket";
+		const string kDicEntriesName = "_entries";
+		const string kDicCountName = "_count";
+		const string kDicVersionName = "_version";
+		const string kDicFreeListName = "_freeList";
+		const string kDicFreeCountName = "_freeCount";
 		#endregion
 		#region Dictionary.Entry field names
 		const string kEntryTypeName = "Entry";
@@ -34,12 +40,17 @@ namespace KSoft.Collections
 		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct DicEntry
 		{
-			public int HashCode; // only the lower 31 bits of the actual hash code
+			public DicEntryHashCodeType HashCode; // only the lower 31 bits of the actual hash code
+			/// <summary>
+			/// 0-based index of next entry in chain: -1 means end of chain
+			/// also encodes whether this entry _itself_ is part of the free list by changing sign and subtracting 3,
+			/// so -2 means end of free list, -3 means index 0 but on free list, -4 means index 1 but on free list, etc.
+			/// </summary>
 			public int NextEntryIndex;
 			public TKey Key;
 			public TValue Value;
 
-			public bool IsFree { get => HashCode.IsNone(); }
+//			public bool IsFree { get => HashCode.IsNone(); }
 			public bool IsLast { get => NextEntryIndex.IsNone(); }
 
 			public DicEntry GetNext(ClrDictionaryInspector<TKey, TValue> inspector)
@@ -52,7 +63,11 @@ namespace KSoft.Collections
 		};
 
 		#region Dictionary getters
+		private delegate ref int DicGetBucketDelegate(DicEntryHashCodeType hashCode);
+		private delegate ref int DicGetBucketDelegateWithThis(Dictionary<TKey, TValue> @this, DicEntryHashCodeType hashCode);
+
 		static readonly Func<Dictionary<TKey, TValue>, int[]> kGetDicBuckets;
+		static readonly /*Func<Dictionary<TKey, TValue>, DicEntryHashCodeType>*/DicGetBucketDelegateWithThis kCallDictGetBucket;
 		static readonly Func<Dictionary<TKey, TValue>, Array> kGetDicEntries;
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicCount;
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicVersion;
@@ -60,7 +75,7 @@ namespace KSoft.Collections
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicFreeCount;
 		#endregion
 		#region Dictionary.Entry getters
-		static readonly Func<object, int> kGetEntryHashCode;
+		static readonly Func<object, DicEntryHashCodeType> kGetEntryHashCode;
 		static readonly Func<object, int> kGetEntryNextEntryIndex;
 		static readonly Func<object, TKey> kGetEntryKey;
 		static readonly Func<object, TValue> kGetEntryValue;
@@ -85,6 +100,12 @@ namespace KSoft.Collections
 			#region Dictionary getters
 			kGetDicBuckets =
 				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, int[]>(kDicBucketsName);
+			kCallDictGetBucket =
+				Reflection.Util.GenerateObjectMethodProxy<
+					Dictionary<TKey, TValue>,
+					DicGetBucketDelegateWithThis,
+					DicGetBucketDelegate>(
+						kDictGetBucketName);
 			kGetDicEntries =
 				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, Array>(kDicEntriesName);
 			kGetDicCount =
@@ -98,7 +119,7 @@ namespace KSoft.Collections
 			#endregion
 			#region Dictionary.Entry getters
 			kGetEntryHashCode =
-				Reflection.Util.GenerateMemberGetter<int>(dic_entry_type, kEntryHashCodeName);
+				Reflection.Util.GenerateMemberGetter<DicEntryHashCodeType>(dic_entry_type, kEntryHashCodeName);
 			kGetEntryNextEntryIndex =
 				Reflection.Util.GenerateMemberGetter<int>(dic_entry_type, kEntryNextEntryIndexName);
 			kGetEntryKey =
@@ -174,8 +195,9 @@ namespace KSoft.Collections
 
 		public IEnumerable<DicEntry> EntryCollisions(TKey key)
 		{
-			int hash_code = mDic.Comparer.GetHashCode(key) & 0x7FFFFFFF;
-			int target_bucket = hash_code % Buckets.Count;
+			//int hash_code = mDic.Comparer.GetHashCode(key) & 0x7FFFFFFF;
+			DicEntryHashCodeType hash_code = (DicEntryHashCodeType)mDic.Comparer.GetHashCode(key);
+			int target_bucket = /*hash_code % Buckets.Count*/kCallDictGetBucket(mDic, hash_code);
 
 #if false // result as entry indices
 			for (int x = Buckets[target_bucket]; x >= 0; x = Entries[x].NextEntryIndex)

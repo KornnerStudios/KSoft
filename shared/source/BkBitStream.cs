@@ -3190,7 +3190,9 @@ namespace BKSystem.IO
 			this.Position = 0;
 
 			byte [] abytBits = new byte [this.Length8];
-			this.ReadExactly(abytBits);
+			// I reverted the change of this from ReadExactly, as the Length8 value can be larger,
+			// and ReadExactly will throw an exception on EOF.
+			_ = this.Read(abytBits, 0, (int)this.Length8);
 
 			if (this.Position % 8 != 0)
 				abytBits[abytBits.Length - 1] <<= (byte)(8 - (this.Position % 8));
