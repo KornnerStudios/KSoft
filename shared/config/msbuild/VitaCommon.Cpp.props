@@ -2,7 +2,7 @@
 <Project>
 
   <PropertyGroup Label="Globals">
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <!-- <TargetFrameworkVersion>v4.8</TargetFrameworkVersion> -->
   </PropertyGroup>
 
   <PropertyGroup>

@@ -26,7 +26,7 @@ namespace KSoft.IO.Compression
 
 			// decompress the data and fill in the result array
 			result = new byte[length];
-			dec.Read(result, 0, result.Length);
+			dec.ReadExactly(result);
 
 			return result;
 		}

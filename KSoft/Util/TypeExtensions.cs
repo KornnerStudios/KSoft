@@ -293,7 +293,7 @@ namespace KSoft
 			{
 				case MS.StringStorageWidthType.Ascii:	return Encoding.ASCII;
 				case MS.StringStorageWidthType.Unicode:	return Encoding.Unicode;
-				case MS.StringStorageWidthType.UTF7:	return Encoding.UTF7;
+//				case MS.StringStorageWidthType.UTF7:	return Encoding.UTF7;
 				case MS.StringStorageWidthType.UTF8:	return Encoding.UTF8;
 				case MS.StringStorageWidthType.UTF32:	return Encoding.UTF32;
 
@@ -314,7 +314,7 @@ namespace KSoft
 
 			if		(enc is ASCIIEncoding)				return MS.StringStorageWidthType.Ascii;
 			else if (enc is UnicodeEncoding)			return MS.StringStorageWidthType.Unicode;
-			else if (enc is UTF7Encoding)				return MS.StringStorageWidthType.UTF7;
+//			else if (enc is UTF7Encoding)				return MS.StringStorageWidthType.UTF7;
 			else if (enc is UTF8Encoding)				return MS.StringStorageWidthType.UTF8;
 			else if (enc is UTF32Encoding)				return MS.StringStorageWidthType.UTF32;
 			else if (enc is Text.StringStorageEncoding)	return (enc as Text.StringStorageEncoding).Storage.WidthType;
@@ -336,7 +336,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool IsVariableWidth(this MS.StringStorageWidthType type)
 		{
-			return	type == MS.StringStorageWidthType.UTF7 ||
+//			return	type == MS.StringStorageWidthType.UTF7 ||
+			return
 					type == MS.StringStorageWidthType.UTF8;
 		}
 		#endregion

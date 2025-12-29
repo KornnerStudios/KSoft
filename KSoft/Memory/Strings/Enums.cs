@@ -11,9 +11,13 @@ namespace KSoft.Memory.Strings
 		/// <remarks>http://en.wikipedia.org/wiki/UTF-16/UCS-2</remarks>
 		Unicode,
 
+// SYSLIB0001: 'Encoding.UTF7' is obsolete: 'The UTF-7 encoding is insecure and should not be used. Consider using UTF-8 instead.' (https://aka.ms/dotnet-warnings/SYSLIB0001)
+#if false
 		/// <summary>UTF-7. Not fully tested.</summary>
 		/// <remarks>http://en.wikipedia.org/wiki/UTF-7</remarks>
+		[Obsolete("The UTF-7 encoding is insecure and should not be used. Consider using UTF-8 instead.", false)]
 		UTF7,
+#endif
 		/// <summary>UTF-8. Not fully tested.</summary>
 		/// <remarks>http://en.wikipedia.org/wiki/UTF-8</remarks>
 		UTF8,

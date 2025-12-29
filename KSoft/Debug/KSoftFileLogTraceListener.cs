@@ -8,10 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Permissions;
+//using System.Security.Permissions;
 using System.Text;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using Microsoft.VisualBasic.Logging;
+using static System.Net.Mime.MediaTypeNames;
+
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -403,7 +405,7 @@ namespace KSoft.Debug
 					this.CustomLocation = property;
 				}
 				string fullPath = Path.GetFullPath(this.mCustomLocation);
-				new FileIOPermission(FileIOPermissionAccess.PathDiscovery, fullPath).Demand();
+//				new FileIOPermission(FileIOPermissionAccess.PathDiscovery, fullPath).Demand();
 				return fullPath;
 			}
 			set
@@ -611,7 +613,19 @@ namespace KSoft.Debug
 		private int mDays;
 		private DateTime mFirstDayOfWeek;
 
-		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
+		// HACK: dotnet workarounds for System.Windows.Forms.Application properties
+		static string Application_ExecutablePath =>
+			System.Reflection.Assembly.GetExecutingAssembly().Location;
+		static string Application_UserAppDataPath =>
+			Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+		static string Application_CommonAppDataPath =>
+			Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+
+		//		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
 		public KSoftFileLogTraceListener(string name) : base(name)
 		{
 			this.mLocation = LogFileLocation.LocalUserApplicationDirectory;
@@ -619,20 +633,20 @@ namespace KSoft.Debug
 			this.mAppend = true;
 			this.mIncludeHostName = false;
 			this.mDiskSpaceExhaustedBehavior = DiskSpaceExhaustedOption.DiscardMessages;
-			this.mBaseFileName = Path.GetFileNameWithoutExtension(Application.ExecutablePath);
+			this.mBaseFileName = Path.GetFileNameWithoutExtension(Application_ExecutablePath);
 			this.mLogFileDateStamp = LogFileCreationScheduleOption.None;
 			this.mMaxFileSize = 5000000L;
 			this.mReserveDiskSpace = 10000000L;
 			this.mDelimiter = "\t";
 			this.mEncoding = Encoding.UTF8;
-			this.mCustomLocation = Application.UserAppDataPath;
+			this.mCustomLocation = Application_UserAppDataPath;
 			this.mDay = DateTime.Now.Date;
 			this.mDays = 0;
 			this.mFirstDayOfWeek = GetFirstDayOfWeek(mDay);
 			this.mPropertiesSet = new Collections.BitVector32();
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
+//		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
 		public KSoftFileLogTraceListener() : this(nameof(KSoftFileLogTraceListener))
 		{
 		}
@@ -658,7 +672,7 @@ namespace KSoft.Debug
 			{
 				this.EnsureStreamIsOpen();
 				string fullFileName = this.mFullFileName;
-				new FileIOPermission(FileIOPermissionAccess.PathDiscovery, fullFileName).Demand();
+//				new FileIOPermission(FileIOPermissionAccess.PathDiscovery, fullFileName).Demand();
 				return fullFileName;
 			}
 		}
@@ -671,18 +685,18 @@ namespace KSoft.Debug
 				path = Path.GetTempPath();
 				break;
 			case LogFileLocation.LocalUserApplicationDirectory:
-				path = Application.UserAppDataPath;
+				path = Application_UserAppDataPath;
 				break;
 			case LogFileLocation.CommonApplicationDirectory:
-				path = Application.CommonAppDataPath;
+				path = Application_CommonAppDataPath;
 				break;
 			case LogFileLocation.ExecutableDirectory:
-				path = Path.GetDirectoryName(Application.ExecutablePath);
+				path = Path.GetDirectoryName(Application_ExecutablePath);
 				break;
 			case LogFileLocation.Custom:
 				if (this.CustomLocation.IsNullOrEmpty())
 				{
-					path = Application.UserAppDataPath;
+					path = Application_UserAppDataPath;
 				}
 				else
 				{
@@ -690,7 +704,7 @@ namespace KSoft.Debug
 				}
 				break;
 			default:
-				path = Application.UserAppDataPath;
+				path = Application_UserAppDataPath;
 				break;
 			}
 			string text = this.BaseFileName;
@@ -707,7 +721,7 @@ namespace KSoft.Debug
 			return Path.Combine(path, text);
 		} }
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		protected override string[] GetSupportedAttributes() => mSupportedAttributes;
 
 		#region TemporaryBuffer
@@ -751,7 +765,7 @@ namespace KSoft.Debug
 		}
 		#endregion
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void Write(string message)
 		{
 			try
@@ -775,7 +789,7 @@ namespace KSoft.Debug
 			}
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void WriteLine(string message)
 		{
 			try
@@ -943,7 +957,7 @@ namespace KSoft.Debug
 		bool IsEnabled(TraceOptions opts) => (opts & TraceOutputOptions) != 0;
 
 		#region Trace methods
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, message, null, null, null))
@@ -1012,7 +1026,7 @@ namespace KSoft.Debug
 #endif
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, format, args, null, null))
@@ -1041,7 +1055,7 @@ namespace KSoft.Debug
 #endif
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, data, null))
@@ -1067,7 +1081,7 @@ namespace KSoft.Debug
 #endif
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, data))
@@ -1147,7 +1161,7 @@ namespace KSoft.Debug
 		}
 
 		#region Stream stuff
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void Flush()
 		{
 			if (this.mStream != null)
@@ -1156,12 +1170,12 @@ namespace KSoft.Debug
 			}
 		}
 
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void Close()
 		{
 			this.Dispose(true);
 		}
-		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
+//		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -1213,7 +1227,7 @@ namespace KSoft.Debug
 							{
 								if (this.Append)
 								{
-									new FileIOPermission(FileIOPermissionAccess.Write, fullPath2).Demand();
+//									new FileIOPermission(FileIOPermissionAccess.Write, fullPath2).Demand();
 									referencedStream.AddReference();
 									this.mFullFileName = fullPath2;
 									ReferencedStream result = referencedStream;
@@ -1307,7 +1321,7 @@ namespace KSoft.Debug
 		private long GetFreeDiskSpace()
 		{
 			string pathRoot = Path.GetPathRoot(Path.GetFullPath(this.FullLogFileName));
-			new FileIOPermission(FileIOPermissionAccess.PathDiscovery, pathRoot).Demand();
+//			new FileIOPermission(FileIOPermissionAccess.PathDiscovery, pathRoot).Demand();
 			if (GetDiskFreeSpaceEx(pathRoot, out long num, out long num2, out long num3) && num > -1L)
 			{
 				return num;
@@ -1325,7 +1339,7 @@ namespace KSoft.Debug
 		private void DemandWritePermission()
 		{
 			string directoryName = Path.GetDirectoryName(this.LogFileName);
-			new FileIOPermission(FileIOPermissionAccess.Write, directoryName).Demand();
+//			new FileIOPermission(FileIOPermissionAccess.Write, directoryName).Demand();
 		}
 
 		private Encoding GetFileEncoding(string fileName)

@@ -94,7 +94,7 @@ namespace KSoft.Test
 				bits = 0; bit_index = 0;
 				ebe_formal.BitEncode(value, ref bits, ref bit_index);
 				// Test if anything was actually encoded
-				Assert.AreNotEqual(0, bits);
+				Assert.AreNotEqual(0u, bits);
 				// Test for the proper increment of the cursor
 				Assert.AreEqual(EnumBitEncoder32<TEnum>.kBitCount, bit_index);
 
@@ -115,7 +115,7 @@ namespace KSoft.Test
 				bits = 0; bit_index = bit_index_offset;
 				ebe_formal.BitEncode(value, ref bits, ref bit_index);
 				// Test if anything was actually encoded
-				Assert.AreNotEqual(0, bits);
+				Assert.AreNotEqual(0u, bits);
 				// Test for the proper increment of the cursor
 				Assert.AreEqual(bit_index_offset + EnumBitEncoder32<TEnum>.kBitCount, bit_index);
 
@@ -195,7 +195,7 @@ namespace KSoft.Test
 				bits = 0; bit_index = 0;
 				ebe_formal.BitEncode(value, ref bits, ref bit_index);
 				// Test if anything was actually encoded
-				Assert.AreNotEqual(0, bits);
+				Assert.AreNotEqual(0u, bits);
 				// Test for the proper increment of the cursor
 				Assert.AreEqual(EnumBitEncoder64<TEnum>.kBitCount, bit_index);
 
@@ -216,7 +216,7 @@ namespace KSoft.Test
 				bits = 0; bit_index = bit_index_offset;
 				ebe_formal.BitEncode(value, ref bits, ref bit_index);
 				// Test if anything was actually encoded
-				Assert.AreNotEqual(0, bits);
+				Assert.AreNotEqual(0u, bits);
 				// Test for the proper increment of the cursor
 				Assert.AreEqual(bit_index_offset + EnumBitEncoder64<TEnum>.kBitCount, bit_index);
 

@@ -10,7 +10,7 @@ For C#, you have to add it:
 
 	<PropertyGroup>
 		<!--REMINDER: MSBuildProjectDirectory doesn't include final backslash-->
-		<VitaRootDir Condition=" '$(VitaRootDir)' == '' ">$(MSBuildProjectDirectory)\..\..\</VitaRootDir>
+		<VitaRootDir Condition=" '$(VitaRootDir)' == '' ">$([System.IO.Path]::GetFullPath( '$(MSBuildProjectDirectory)\..\..\' ))</VitaRootDir>
 
 		<VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">KSoft.BCL</VitaSolutionFamily>
 		<VitaUseSolutionFamilyDirs>true</VitaUseSolutionFamilyDirs>

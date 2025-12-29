@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyConfiguration(
+/*[assembly: AssemblyConfiguration(
 #if DEBUG
 	"Debug"
 #else
 	"Release"
 #endif
-)]
-[assembly: AssemblyCompany("KornnerStudios")]
+)]*/
+//[assembly: AssemblyCompany("KornnerStudios")]
 
-[assembly: AssemblyCopyright("Copyright © 2020")]
+//[assembly: AssemblyCopyright("Copyright © 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -51,7 +51,10 @@ namespace KSoft.Text
 				// NOTE: Our UTF-7 detection doesn't test a 4th byte for 0x38,0x39,0x2B or 0x2F.
 				// One of those are suppose to follow in UTF7 BOMs
 				if (b0 == 0x2B && b1 == 0x2F && b2 == 0x76)
-					enc = Encoding.UTF7;
+				{
+//					enc = Encoding.UTF7;
+					throw new NotSupportedException("UTF7 is not supported with the move to dotnet");
+				}
 				else if (b0 == 0xEF && b1 == 0xBB && b2 == 0xBF)
 					enc = Encoding.UTF8;
 			}

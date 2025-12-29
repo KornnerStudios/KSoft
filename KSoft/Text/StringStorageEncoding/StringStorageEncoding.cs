@@ -58,8 +58,8 @@ namespace KSoft.Text
 				case StringStorageWidthType.Unicode:mBaseEncoding = new UnicodeEncoding(big_endian, use_bom, throw_on_invalid);
 					mNullCharacterSize = UnicodeEncoding.CharSize; // #REVIEW: should we really do this?
 					break;
-				case StringStorageWidthType.UTF7:	mBaseEncoding = new UTF7Encoding(!throw_on_invalid);
-					break;
+//				case StringStorageWidthType.UTF7:	mBaseEncoding = new UTF7Encoding(!throw_on_invalid);
+//					break;
 				case StringStorageWidthType.UTF8:	mBaseEncoding = new UTF8Encoding(use_bom, throw_on_invalid);
 					break;
 				case StringStorageWidthType.UTF32:	mBaseEncoding = new UTF32Encoding(big_endian, use_bom, throw_on_invalid);

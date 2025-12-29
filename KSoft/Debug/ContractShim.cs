@@ -37,7 +37,7 @@ namespace System.Diagnostics.ContractsShim
 		//     The conditional expression to test.
 		[Conditional("DEBUG")]
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Assert(bool condition)
 		{
 			System.Diagnostics.Debug.Assert(condition);
@@ -55,7 +55,7 @@ namespace System.Diagnostics.ContractsShim
 		//     A message to display if the condition is not met.
 		[Conditional("CONTRACTS_FULL_SHIM")]
 		[Conditional("DEBUG")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Assert(bool condition, string userMessage)
 		{
 			System.Diagnostics.Debug.Assert(condition, userMessage);
@@ -70,7 +70,7 @@ namespace System.Diagnostics.ContractsShim
 		//     The conditional expression to assume true.
 		[Conditional("DEBUG")]
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Assume(bool condition)
 		{
 			System.Diagnostics.Debug.Assert(condition);
@@ -89,7 +89,7 @@ namespace System.Diagnostics.ContractsShim
 		//     The message to post if the assumption fails.
 		[Conditional("DEBUG")]
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Assume(bool condition, string userMessage)
 		{
 			System.Diagnostics.Debug.Assert(condition, userMessage);
@@ -99,7 +99,7 @@ namespace System.Diagnostics.ContractsShim
 		//     Marks the end of the contract section when a method's contracts contain only
 		//     preconditions in the if-then-throw form.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static void EndContractBlock()
 		{
 			// do nothing
@@ -114,7 +114,7 @@ namespace System.Diagnostics.ContractsShim
 		//     System.Diagnostics.Contracts.Contract.ValueAtReturn``1(``0@), and System.Diagnostics.Contracts.Contract.Result``1
 		//     values.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Ensures(bool condition)
 		{
 			// #TODO something
@@ -133,7 +133,7 @@ namespace System.Diagnostics.ContractsShim
 		//   userMessage:
 		//     The message to display if the expression is not true.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Ensures(bool condition, string userMessage)
 		{
 			// #TODO something
@@ -148,7 +148,7 @@ namespace System.Diagnostics.ContractsShim
 		//   condition:
 		//     The conditional expression to test.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Invariant(bool condition)
 		{
 			System.Diagnostics.Debug.Assert(condition);
@@ -165,7 +165,7 @@ namespace System.Diagnostics.ContractsShim
 		//   userMessage:
 		//     The message to display if the condition is false.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Invariant(bool condition, string userMessage)
 		{
 			System.Diagnostics.Debug.Assert(condition, userMessage);
@@ -185,7 +185,7 @@ namespace System.Diagnostics.ContractsShim
 		//
 		// Returns:
 		//     The value of the parameter or field at the start of a method or property.
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static T OldValue<T>(T value)
 		{
 			return value;
@@ -199,7 +199,7 @@ namespace System.Diagnostics.ContractsShim
 		//   condition:
 		//     The conditional expression to test.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Requires(bool condition)
 		{
 			if (!condition)
@@ -219,7 +219,7 @@ namespace System.Diagnostics.ContractsShim
 		//   userMessage:
 		//     The message to display if the condition is false.
 		[Conditional("CONTRACTS_FULL_SHIM")]
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Requires(bool condition, string userMessage)
 		{
 			if (!condition)
@@ -239,7 +239,7 @@ namespace System.Diagnostics.ContractsShim
 		// Type parameters:
 		//   TException:
 		//     The exception to throw if the condition is false.
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Requires<TException>(bool condition) where TException : Exception
 		{
 			if (!condition)
@@ -263,7 +263,7 @@ namespace System.Diagnostics.ContractsShim
 		// Type parameters:
 		//   TException:
 		//     The exception to throw if the condition is false.
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
 		{
 			if (!condition)
@@ -284,7 +284,7 @@ namespace System.Diagnostics.ContractsShim
 		//
 		// Returns:
 		//     Return value of the enclosing method or property.
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static T Result<T>() { return default(T); }
 #endif
 #if true // #HORRIBLE_SHIM. Can't use for non-out params without breaking things!
@@ -303,7 +303,7 @@ namespace System.Diagnostics.ContractsShim
 		//
 		// Returns:
 		//     The output value of the out parameter.
-		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+//		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static T ValueAtReturn<T>(out T value)
 		{
 			value = default(T);

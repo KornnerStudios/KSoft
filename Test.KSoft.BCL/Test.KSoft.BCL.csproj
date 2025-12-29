@@ -1,74 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90C78A94-73EC-46FA-8F1A-F744764D5E65}</ProjectGuid>
-    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Test.KSoft.BCL</RootNamespace>
     <AssemblyName>Test.KSoft.BCL</AssemblyName>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
-  <Import Project="$(MSBuildProjectDirectory)\..\KSoft.BCL.props" />
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.9\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.9\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\build\Microsoft.NetFramework.Analyzers.props')" />
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\build\Microsoft.NetCore.Analyzers.props')" />
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\build\Microsoft.CodeQuality.Analyzers.props')" />
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
   <ItemGroup>
-    <Reference Include="System" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
   </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
   <ItemGroup>
     <Compile Include="..\shared\source\BkBitStream.cs">
       <Link>IO\BkBitStream.cs</Link>
     </Compile>
-    <Compile Include="Bitwise\BitsTest.cs" />
-    <Compile Include="Collections\BitVectorsTest.cs" />
-    <Compile Include="Bitwise\ByteSwapTest.cs" />
-    <Compile Include="Bitwise\Single24Test.cs" />
-    <Compile Include="Collections\BitSetTest.cs" />
-    <Compile Include="Collections\ClrDictionaryInspectorTest.cs" />
-    <Compile Include="Enum\EnumBinaryStreamerTest.cs" />
-    <Compile Include="Enum\EnumBitEncoderTest.cs" />
-    <Compile Include="Enum\EnumBitStreamerTest.cs" />
-    <Compile Include="Enum\EnumComparerTest.cs" />
-    <Compile Include="Enum\EnumFlagsTest.cs" />
-    <Compile Include="Enum\EnumValueTest.cs" />
-    <Compile Include="IO\BitStreamTest.cs" />
-    <Compile Include="IO\JsonNodeTest.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Reflection\UtilitiesTest.cs" />
-    <Compile Include="Security\Cryptography\JenkinsHashTest.cs" />
-    <Compile Include="Security\Cryptography\TigerHashTest.cs" />
-    <Compile Include="Shell\PlatformTest.cs" />
-    <Compile Include="Text\NumbersTest.cs" />
-    <Compile Include="Text\RadixEncodingTest.cs" />
-    <Compile Include="Text\StringStorageEncodingTest.cs" />
-    <Compile Include="Text\Utilities.BytesTest.cs" />
-    <Compile Include="Text\UtilitiesTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\UtilitiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
@@ -85,67 +33,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Math\" />
-    <Folder Include="Memory\" />
-    <Folder Include="Values\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Bitwise\OrderedTests_ByteSwap.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\analyzers\dotnet\cs\Humanizer.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
-    <Analyzer Include="$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
-  </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.9\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.CodeQuality.Analyzers.2.9.9\build\Microsoft.CodeQuality.Analyzers.props'))" />
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.NetCore.Analyzers.2.9.9\build\Microsoft.NetCore.Analyzers.props'))" />
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.NetFramework.Analyzers.2.9.9\build\Microsoft.NetFramework.Analyzers.props'))" />
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.9\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.9\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
-    <Error Condition="!Exists('$(VitaNugetPackagesDir)\Microsoft.DotNet.Analyzers.Compatibility.0.2.12-alpha\build\Microsoft.DotNet.Analyzers.Compatibility.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(VitaNugetPackagesDir)\Microsoft.DotNet.Analyzers.Compatibility.0.2.12-alpha\build\Microsoft.DotNet.Analyzers.Compatibility.targets'))" />
-  </Target>
-  <Import Project="$(VitaNugetPackagesDir)\Microsoft.DotNet.Analyzers.Compatibility.0.2.12-alpha\build\Microsoft.DotNet.Analyzers.Compatibility.targets" Condition="Exists('$(VitaNugetPackagesDir)\Microsoft.DotNet.Analyzers.Compatibility.0.2.12-alpha\build\Microsoft.DotNet.Analyzers.Compatibility.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

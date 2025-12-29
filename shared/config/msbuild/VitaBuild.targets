@@ -5,7 +5,7 @@
     <BuildDependsOn>
       VitaVerifyDirectX;
       VitaVerifyXenonSDK;
-	  VitaVerifyCppBoost;
+      VitaVerifyCppBoost;
       $(BuildDependsOn)
     </BuildDependsOn>
   </PropertyGroup>

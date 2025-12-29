@@ -774,7 +774,7 @@ namespace BKSystem.IO
 			long lCurrentPos = bits.Position;
 			bits.Position = 0;
 
-			bits.Read(abytBits, 0, (int)bits.Length);
+			bits.ReadExactly(abytBits);
 
 			bits.Position = lCurrentPos;
 
@@ -3190,7 +3190,7 @@ namespace BKSystem.IO
 			this.Position = 0;
 
 			byte [] abytBits = new byte [this.Length8];
-			this.Read(abytBits, 0, (int)this.Length8);
+			this.ReadExactly(abytBits);
 
 			if (this.Position % 8 != 0)
 				abytBits[abytBits.Length - 1] <<= (byte)(8 - (this.Position % 8));
