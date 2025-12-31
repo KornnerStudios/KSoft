@@ -26,7 +26,7 @@ namespace KSoft.IO
 		static void InitializeBitmaskLookUpTable(out TWord[] table)
 		{
 			bool success = Bits.GetBitConstants(typeof(TWord),
-				out int word_byte_count, out int word_bit_count, out int word_bit_shift, out int word_bit_mod);
+				out int _, out int _, out int _, out int _);
 			Contract.Assert(success, "TWord is an invalid type for BitStream");
 
 			Bits.BitmaskLookUpTableGenerate(kWordBitCount, out table);
@@ -59,7 +59,9 @@ namespace KSoft.IO
 			}
 
 			if (byte_count != -1 && ThrowOnOverflow.CanRead())
+			{
 				throw new System.IO.EndOfStreamException("Tried to read more bits than the stream has/can see");
+			}
 		}
 		/// <summary>Flush the cache to <see cref="BaseStream"/> with <see cref="kWordByteCount"/> or fewer bytes bytes</summary>
 		void FlushCache()
@@ -90,7 +92,9 @@ namespace KSoft.IO
 			}
 
 			if (byte_count != -1 && ThrowOnOverflow.CanWrite())
+			{
 				throw new System.IO.EndOfStreamException("Tried to write more bits than the stream has/can see");
+			}
 
 			mCache = 0;
 			mCacheBitIndex = 0;

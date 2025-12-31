@@ -19,7 +19,7 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
-    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
 		/// <summary>Serialize an <see cref="System.<#= prim_typename #>"/> to/from the stream</summary>
 		/// <param name="value">value to serialize</param>
@@ -37,11 +37,11 @@ namespace KSoft.IO
 			Contract.Requires(bitCount <= Bits.k<#= prim_typename #>BitCount);
 
 <#		if (is_signed) { #>
-				 if (IsReading) value = Read<#= prim_typename #>(bitCount, signExtend);
+				 if (IsReading) { value = Read<#= prim_typename #>(bitCount, signExtend); }
 <#		} else { #>
-				 if (IsReading) value = Read<#= prim_typename #>(bitCount);
+				 if (IsReading) { value = Read<#= prim_typename #>(bitCount); }
 <#		} #>
-			else if (IsWriting) Write(value, bitCount);
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -56,8 +56,8 @@ namespace KSoft.IO
 		/// <returns>Returns this instance</returns>
 		public BitStream Stream(ref <#= prim_keyword #> value)
 		{
-				 if (IsReading) value = Read<#= prim_typename #>();
-			else if (IsWriting) Write(value);
+				 if (IsReading) { value = Read<#= prim_typename #>(); }
+			else if (IsWriting) { Write(value); }
 
 			return this;
 		}
@@ -68,7 +68,7 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
-    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
 		public BitStream StreamFixedArray(<#= prim_keyword #>[] array,
 			int elementBitSize = Bits.k<#= prim_typename #>BitCount
@@ -81,9 +81,9 @@ namespace KSoft.IO
 			Contract.Requires(elementBitSize <= Bits.k<#= prim_typename #>BitCount);
 
 <#		if (is_signed) { #>
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 <#		} else { #>
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 <#		} #>
 
 			return this;
@@ -97,7 +97,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(array != null);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x]);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -109,7 +109,7 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
-    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
 		public BitStream StreamArray(ref <#= prim_keyword #>[] array,
 			int lengthBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
@@ -126,12 +126,14 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new <#= prim_keyword #>[count];
+			}
 
 <#		if (is_signed) { #>
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 <#		} else { #>
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 <#		} #>
 
 			return this;
@@ -151,9 +153,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new <#= bittable_type.Keyword #>[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x]);
+			for (int x = 0; x < count; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -165,7 +169,7 @@ namespace KSoft.IO
 <# foreach (var bittable_type in BitwiseT4.BitStreambleIntegerTypes) { #>
 <#	var prim_keyword = bittable_type.Keyword;
 	var prim_typename = bittable_type.Code;
-    bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
+	bool is_signed = bittable_type.IsInteger && ((NumberCodeDefinition)bittable_type).IsSigned;
 #>
 		public BitStream StreamElements(ICollection< <#= prim_keyword #> > list,
 			int countBitSize, int elementBitSize = Bits.k<#= prim_typename #>BitCount
@@ -196,7 +200,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -227,7 +233,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value);
+				}
 			}
 
 			return this;

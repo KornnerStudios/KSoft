@@ -13,7 +13,7 @@ namespace KSoft.IO
 	/// <remarks>For stream character encoding, when no explicit encoding is provided, <see cref="System.Text.UTF8Encoding"/> is assumed</remarks>
 	public sealed partial class EndianWriter : BinaryWriter, IKSoftBinaryStream, IKSoftEndianStream
 	{
-		public new static readonly EndianWriter Null = new EndianWriter();
+		public new static readonly EndianWriter Null = new();
 
 		// .NET 4.5: BinaryWriter has 'bool leaveOpen' ctor
 		#region Ctor
@@ -89,10 +89,8 @@ namespace KSoft.IO
 			Contract.Requires(byteCount > 0);
 
 			// Write 32 bit blocks, then any odd bytes
-			for (; byteCount >= 4; byteCount -= 4)
-													base.Write(uint.MinValue);
-			for (; byteCount > 0; --byteCount)
-													base.Write(byte.MinValue);
+			for (; byteCount >= 4; byteCount -= 4)	{ base.Write(uint.MinValue); }
+			for (; byteCount > 0; --byteCount)		{ base.Write(byte.MinValue); }
 		}
 		public void Pad8()	{ base.Write(byte.MinValue); }
 		public void Pad16()	{ base.Write(ushort.MinValue); }

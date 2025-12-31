@@ -36,8 +36,10 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.Read<#= word_type.Code #>();
-			if (version != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 <# } #>

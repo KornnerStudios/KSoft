@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 #if CONTRACTS_FULL_SHIM
@@ -39,7 +38,6 @@ namespace KSoft.IO
 
 		/// <summary>Name of the underlying stream this object is interfacing with</summary>
 		/// <remarks>So if this endian stream is interfacing with a file, this will be it's name</remarks>
-		[SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
 		public string StreamName { get {
 				 if (IsReading) return Reader.StreamName;
 			else if (IsWriting) return Writer.StreamName;

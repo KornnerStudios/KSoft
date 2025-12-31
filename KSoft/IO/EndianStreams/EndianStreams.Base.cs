@@ -26,7 +26,9 @@ namespace KSoft.IO
 			{
 				// If we're not the owner, don't let BinaryReader dispose it
 				if (!BaseStreamOwner)
+				{
 					kSetBaseStream(this, null);
+				}
 			}
 
 			Owner = null;
@@ -50,7 +52,10 @@ namespace KSoft.IO
 			if (align_size > 0)
 			{
 				while (align_size-- > 0)
+				{
 					BaseStream.WriteByte(byte.MinValue);
+				}
+
 				return true;
 			}
 
@@ -62,7 +67,9 @@ namespace KSoft.IO
 			if (disposing)
 			{
 				if (!BaseStreamOwner)
+				{
 					base.OutStream = Stream.Null;
+				}
 			}
 
 			Owner = null;

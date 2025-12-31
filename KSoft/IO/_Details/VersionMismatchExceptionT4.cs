@@ -68,7 +68,9 @@ namespace KSoft.IO
 
 			var version = s.ReadByte();
 			if (version != expected)
+			{
 				throw new VersionMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, ushort expected)
@@ -77,7 +79,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt16();
 			if (version != expected)
+			{
 				throw new VersionMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, uint expected)
@@ -86,7 +90,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt32();
 			if (version != expected)
+			{
 				throw new VersionMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, ulong expected)
@@ -95,7 +101,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt64();
 			if (version != expected)
+			{
 				throw new VersionMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		#endregion
@@ -172,7 +180,9 @@ namespace KSoft.IO
 
 			var version = s.ReadByte();
 			if (version < expectedMin || version > expectedMax)
+			{
 				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+			}
 
 			return version;
 		}
@@ -185,7 +195,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt16();
 			if (version < expectedMin || version > expectedMax)
+			{
 				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+			}
 
 			return version;
 		}
@@ -198,7 +210,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt32();
 			if (version < expectedMin || version > expectedMax)
+			{
 				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+			}
 
 			return version;
 		}
@@ -211,7 +225,9 @@ namespace KSoft.IO
 
 			var version = s.ReadUInt64();
 			if (version < expectedMin || version > expectedMax)
+			{
 				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+			}
 
 			return version;
 		}

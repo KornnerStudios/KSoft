@@ -70,8 +70,7 @@ namespace KSoft.IO
 			#region IDisposable Members
 			public void Dispose()
 			{
-				if (mStream != null)
-					mStream.ChangeByteOrder(mOldByteOrder);
+				mStream?.ChangeByteOrder(mOldByteOrder);
 			}
 			#endregion
 		};
@@ -93,7 +92,9 @@ namespace KSoft.IO
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)
 		{
 			if (switchTo == this.ByteOrder)
+			{
 				return Util.NullDisposable;
+			}
 
 			return new EndianFormatSwitchBlock(this, true);
 		}
@@ -133,12 +134,12 @@ namespace KSoft.IO
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
 		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
-			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
+			new(ptrSize, (ulong)BaseStream.Position);
 
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
 		public Values.PtrHandle PositionPtr =>
-			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
+			new(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 	};
@@ -210,8 +211,7 @@ namespace KSoft.IO
 			#region IDisposable Members
 			public void Dispose()
 			{
-				if (mStream != null)
-					mStream.ChangeByteOrder(mOldByteOrder);
+				mStream?.ChangeByteOrder(mOldByteOrder);
 			}
 			#endregion
 		};
@@ -233,7 +233,9 @@ namespace KSoft.IO
 		public IDisposable BeginEndianSwitch(Shell.EndianFormat switchTo)
 		{
 			if (switchTo == this.ByteOrder)
+			{
 				return Util.NullDisposable;
+			}
 
 			return new EndianFormatSwitchBlock(this, true);
 		}
@@ -273,12 +275,12 @@ namespace KSoft.IO
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
 		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
-			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
+			new(ptrSize, (ulong)BaseStream.Position);
 
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
 		public Values.PtrHandle PositionPtr =>
-			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
+			new(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 	};

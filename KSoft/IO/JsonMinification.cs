@@ -24,18 +24,16 @@ SOFTWARE.
 */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 
 namespace DouglasCrockford.JsMin
 {
 	/// <summary>
 	/// The exception that is thrown when a minification of asset code by JSMin is failed
 	/// </summary>
-	[SuppressMessage("Microsoft.Design", "CA1032")]
-	[SuppressMessage("Microsoft.Design", "CA2237")]
 	public sealed class JsMinificationException : Exception
 	{
 		/// <summary>
@@ -73,9 +71,9 @@ namespace DouglasCrockford.JsMin
 		const int EOF = -1;
 
 		private StringBuilder _sb;
-		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
+		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private StringReader _reader;
-		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
+		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private StringWriter _writer;
 
 		private int _theA;
@@ -87,7 +85,7 @@ namespace DouglasCrockford.JsMin
 		/// <summary>
 		/// Synchronizer of minification
 		/// </summary>
-		private readonly object _minificationSynchronizer = new object();
+		private readonly Lock _minificationSynchronizer = new();
 
 
 		public void Dispose()

@@ -20,8 +20,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kCharBitCount);
 
-				 if (IsReading) value = ReadChar(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadChar(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -34,8 +34,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
-				 if (IsReading) value = ReadByte(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadByte(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -50,8 +50,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kSByteBitCount);
 
-				 if (IsReading) value = ReadSByte(bitCount, signExtend);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadSByte(bitCount, signExtend); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -64,8 +64,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kUInt16BitCount);
 
-				 if (IsReading) value = ReadUInt16(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadUInt16(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -80,8 +80,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kInt16BitCount);
 
-				 if (IsReading) value = ReadInt16(bitCount, signExtend);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadInt16(bitCount, signExtend); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -94,8 +94,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kUInt32BitCount);
 
-				 if (IsReading) value = ReadUInt32(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadUInt32(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -110,8 +110,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kInt32BitCount);
 
-				 if (IsReading) value = ReadInt32(bitCount, signExtend);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadInt32(bitCount, signExtend); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -124,8 +124,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kUInt64BitCount);
 
-				 if (IsReading) value = ReadUInt64(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadUInt64(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -140,8 +140,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
 
-				 if (IsReading) value = ReadInt64(bitCount, signExtend);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadInt64(bitCount, signExtend); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -151,8 +151,8 @@ namespace KSoft.IO
 		/// <returns>Returns this instance</returns>
 		public BitStream Stream(ref bool value)
 		{
-				 if (IsReading) value = ReadBoolean();
-			else if (IsWriting) Write(value);
+				 if (IsReading) { value = ReadBoolean(); }
+			else if (IsWriting) { Write(value); }
 
 			return this;
 		}
@@ -161,8 +161,8 @@ namespace KSoft.IO
 		/// <returns>Returns this instance</returns>
 		public BitStream Stream(ref float value)
 		{
-				 if (IsReading) value = ReadSingle();
-			else if (IsWriting) Write(value);
+				 if (IsReading) { value = ReadSingle(); }
+			else if (IsWriting) { Write(value); }
 
 			return this;
 		}
@@ -171,8 +171,8 @@ namespace KSoft.IO
 		/// <returns>Returns this instance</returns>
 		public BitStream Stream(ref double value)
 		{
-				 if (IsReading) value = ReadDouble();
-			else if (IsWriting) Write(value);
+				 if (IsReading) { value = ReadDouble(); }
+			else if (IsWriting) { Write(value); }
 
 			return this;
 		}
@@ -186,7 +186,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kCharBitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -197,7 +197,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kByteBitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -209,7 +209,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kSByteBitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -220,7 +220,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kUInt16BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -232,7 +232,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kInt16BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -243,7 +243,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kUInt32BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -255,7 +255,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kInt32BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -266,7 +266,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kUInt64BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -278,7 +278,7 @@ namespace KSoft.IO
 			Contract.Requires(array != null);
 			Contract.Requires(elementBitSize <= Bits.kInt64BitCount);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -287,7 +287,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(array != null);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x]);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -295,7 +295,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(array != null);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x]);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -303,7 +303,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(array != null);
 
-			for (int x = 0; x < array.Length; x++) Stream(ref array[x]);
+			for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -323,9 +323,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new char[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -341,9 +343,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new byte[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -360,9 +364,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new sbyte[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -378,9 +384,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new ushort[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -397,9 +405,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new short[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -415,9 +425,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new uint[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -434,9 +446,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new int[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -452,9 +466,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new ulong[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize); }
 
 			return this;
 		}
@@ -471,9 +487,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new long[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x], elementBitSize, signExtend);
+			for (int x = 0; x < count; x++) { Stream(ref array[x], elementBitSize, signExtend); }
 
 			return this;
 		}
@@ -488,9 +506,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new bool[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x]);
+			for (int x = 0; x < count; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -504,9 +524,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new float[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x]);
+			for (int x = 0; x < count; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -520,9 +542,11 @@ namespace KSoft.IO
 			Stream(ref count, lengthBitSize);
 
 			if (IsReading)
+			{
 				array = new double[count];
+			}
 
-			for (int x = 0; x < count; x++) Stream(ref array[x]);
+			for (int x = 0; x < count; x++) { Stream(ref array[x]); }
 
 			return this;
 		}
@@ -552,7 +576,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -579,7 +605,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -607,7 +635,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -634,7 +664,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -662,7 +694,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -689,7 +723,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -717,7 +753,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -744,7 +782,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -772,7 +812,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value, elementBitSize);
+				}
 			}
 
 			return this;
@@ -798,7 +840,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value);
+				}
 			}
 
 			return this;
@@ -823,7 +867,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value);
+				}
 			}
 
 			return this;
@@ -848,7 +894,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var value in list)
+				{
 					Write(value);
+				}
 			}
 
 			return this;

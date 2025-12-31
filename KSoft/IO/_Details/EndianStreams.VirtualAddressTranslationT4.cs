@@ -11,7 +11,9 @@ namespace KSoft.IO
 		void VerifyVAT()
 		{
 			if (mVAT == null)
+			{
 				throw new InvalidOperationException("VAT uninitialized");
+			}
 		}
 		/// <summary>Initialize the VAT with a specific handle size and initial table capacity</summary>
 		/// <param name="vaSize">Handle size</param>
@@ -52,7 +54,9 @@ namespace KSoft.IO
 			VerifyVAT();
 
 			if (mVAT.Count == 1)
+			{
 				throw new InvalidOperationException("Pop underflow");
+			}
 
 			return mVAT.PopPhysicalAddress();
 		}
@@ -68,7 +72,9 @@ namespace KSoft.IO
 		void VerifyVAT()
 		{
 			if (mVAT == null)
+			{
 				throw new InvalidOperationException("VAT uninitialized");
+			}
 		}
 		/// <summary>Initialize the VAT with a specific handle size and initial table capacity</summary>
 		/// <param name="vaSize">Handle size</param>
@@ -109,7 +115,9 @@ namespace KSoft.IO
 			VerifyVAT();
 
 			if (mVAT.Count == 1)
+			{
 				throw new InvalidOperationException("Pop underflow");
+			}
 
 			return mVAT.PopPhysicalAddress();
 		}

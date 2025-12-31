@@ -46,7 +46,9 @@ namespace KSoft.IO
 
 			ReadWord(out TWord word, bitCount);
 			if (signExtend && bitCount != Bits.kSByteBitCount)
+			{
 				return (sbyte)Bits.SignExtend( (sbyte)word, bitCount );
+			}
 
 			return (sbyte)word;
 		}
@@ -74,7 +76,9 @@ namespace KSoft.IO
 
 			ReadWord(out TWord word, bitCount);
 			if (signExtend && bitCount != Bits.kInt16BitCount)
+			{
 				return (short)Bits.SignExtend( (short)word, bitCount );
+			}
 
 			return (short)word;
 		}
@@ -102,7 +106,9 @@ namespace KSoft.IO
 
 			ReadWord(out TWord word, bitCount);
 			if (signExtend && bitCount != Bits.kInt32BitCount)
+			{
 				return (int)Bits.SignExtend( (int)word, bitCount );
+			}
 
 			return (int)word;
 		}
@@ -119,7 +125,9 @@ namespace KSoft.IO
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
 			if (msb_bit_count > 0)
+			{
 				ReadWord(out msb_word, msb_bit_count);
+			}
 			ReadWord(out uint lsb_word, lsb_bit_count);
 
 			ulong word = (ulong)msb_word << lsb_bit_count;
@@ -142,13 +150,17 @@ namespace KSoft.IO
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
 			if (msb_bit_count > 0)
+			{
 				ReadWord(out msb_word, msb_bit_count);
+			}
 			ReadWord(out uint lsb_word, lsb_bit_count);
 
 			ulong word = (ulong)msb_word << lsb_bit_count;
 			word |= (ulong)lsb_word;
 			if (signExtend && bitCount != Bits.kInt64BitCount)
+			{
 				return (long)Bits.SignExtend( (long)word, bitCount );
+			}
 
 			return (long)word;
 		}

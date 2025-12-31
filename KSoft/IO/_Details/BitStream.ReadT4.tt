@@ -41,7 +41,9 @@ namespace KSoft.IO
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
 			if (msb_bit_count > 0)
+			{
 				ReadWord(out msb_word, msb_bit_count);
+			}
 			ReadWord(out uint lsb_word, lsb_bit_count);
 
 			ulong word = (ulong)msb_word << lsb_bit_count;
@@ -53,7 +55,9 @@ namespace KSoft.IO
 <#		if (is_signed) {
 #>
 			if (signExtend && bitCount != Bits.k<#= prim_typename #>BitCount)
+			{
 				return (<#= prim_keyword #>)Bits.SignExtend( (<#= prim_keyword #>)word, bitCount );
+			}
 <#		} #>
 
 			return (<#= prim_keyword #>)word;

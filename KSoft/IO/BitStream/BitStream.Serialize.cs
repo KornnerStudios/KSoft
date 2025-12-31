@@ -25,7 +25,9 @@ namespace KSoft.IO
 			where T : struct, IO.IBitStreamSerializable
 		{
 			if (IsReading)
+			{
 				value = new T();
+			}
 
 			value.Serialize(this);
 
@@ -37,7 +39,9 @@ namespace KSoft.IO
 			Contract.Requires(initializer != null);
 
 			if (IsReading)
+			{
 				value = initializer();
+			}
 
 			value.Serialize(this);
 
@@ -62,7 +66,9 @@ namespace KSoft.IO
 			Contract.Requires(initializer != null);
 
 			if (IsReading)
+			{
 				value = initializer();
+			}
 
 			value.Serialize(this);
 
@@ -76,8 +82,8 @@ namespace KSoft.IO
 			Contract.Requires(read != null);
 			Contract.Requires(write != null);
 
-				 if (IsReading) read(this);
-			else if (IsWriting) write(this);
+				 if (IsReading) { read(this); }
+			else if (IsWriting) { write(this); }
 
 			return this;
 		}
@@ -88,8 +94,8 @@ namespace KSoft.IO
 			Contract.Requires(read != null);
 			Contract.Requires(write != null);
 
-				 if (IsReading) read(context, this);
-			else if (IsWriting) write(context, this);
+				 if (IsReading) { read(context, this); }
+			else if (IsWriting) { write(context, this); }
 
 			return this;
 		}
@@ -102,7 +108,9 @@ namespace KSoft.IO
 			Contract.Requires(values != null);
 
 			for (int x = 0; x < values.Length; x++)
+			{
 				StreamValue(ref values[x]);
+			}
 
 			return this;
 		}
@@ -116,7 +124,9 @@ namespace KSoft.IO
 			Contract.Requires(initializer != null);
 
 			for (int x = 0; x < values.Length; x++)
+			{
 				StreamObject(ref values[x], initializer);
+			}
 
 			return this;
 		}
@@ -146,7 +156,9 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				foreach (var obj in list)
+				{
 					obj.Serialize(this);
+				}
 			}
 
 			return this;

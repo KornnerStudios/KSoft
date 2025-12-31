@@ -104,11 +104,8 @@ namespace KSoft.IO
 				: position - mCacheBitsStreamedCount;
 		} }
 
-		bool IsEndOfStream { get =>
-			CanSeek
-				? BaseStream.Position >= Length
-				: false;
-		}
+		bool IsEndOfStream =>
+			CanSeek && BaseStream.Position >= Length;
 
 		internal void SeekToStart()
 		{
@@ -154,10 +151,14 @@ namespace KSoft.IO
 					BaseStream.Seek(startPos, SeekOrigin.Begin);
 				}
 				else
+				{
 					mStartPosition = baseStream.Position;
+				}
 
 				if (endPos > 0)
+				{
 					mEndPosition = endPos;
+				}
 			}
 			else
 			{
@@ -172,10 +173,14 @@ namespace KSoft.IO
 			if (disposing && BaseStream != null)
 			{
 				if (IsWriting)
+				{
 					FlushCache();
+				}
 
 				if (BaseStreamOwner)
+				{
 					BaseStream.Dispose();
+				}
 
 				BaseStream = null;
 				StreamPermissions = 0;
@@ -255,8 +260,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(bitCount <= Bits.kInt64BitCount);
 
-				 if (IsReading) value = ReadDateTime(bitCount);
-			else if (IsWriting) Write(value, bitCount);
+				 if (IsReading) { value = ReadDateTime(bitCount); }
+			else if (IsWriting) { Write(value, bitCount); }
 
 			return this;
 		}
@@ -347,8 +352,8 @@ namespace KSoft.IO
 		public BitStream Stream(ref string value, Memory.Strings.StringStorage storage,
 			int maxLength = TypeExtensions.kNone)
 		{
-				 if (IsReading) value = ReadString(storage, maxLength: maxLength);
-			else if (IsWriting) Write(value, storage, maxLength: maxLength);
+				 if (IsReading) { value = ReadString(storage, maxLength: maxLength); }
+			else if (IsWriting) { Write(value, storage, maxLength: maxLength); }
 
 			return this;
 		}
@@ -362,8 +367,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(encoding != null);
 
-				 if (IsReading) value = ReadString(encoding, maxLength: maxLength);
-			else if (IsWriting) Write(value, encoding, maxLength: maxLength);
+				 if (IsReading) { value = ReadString(encoding, maxLength: maxLength); }
+			else if (IsWriting) { Write(value, encoding, maxLength: maxLength); }
 
 			return this;
 		}
@@ -392,7 +397,9 @@ namespace KSoft.IO
 #endif
 			{
 				for (int x = index; x < count; x++)
+				{
 					Read(out buffer[x], bitCount);
+				}
 			}
 		}
 		public void Write(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
@@ -413,7 +420,9 @@ namespace KSoft.IO
 #endif
 			{
 				for (int x = index; x < count; x++)
+				{
 					Write(buffer[x], bitCount);
+				}
 			}
 		}
 		public BitStream Stream(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
@@ -424,8 +433,8 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
-				 if (IsReading) Read( buffer, index, count, bitCount);
-			else if (IsWriting) Write(buffer, index, count, bitCount);
+				 if (IsReading) { Read( buffer, index, count, bitCount); }
+			else if (IsWriting) { Write(buffer, index, count, bitCount); }
 
 			return this;
 		}
@@ -438,7 +447,9 @@ namespace KSoft.IO
 			byte[] buffer = new byte[byteCount];
 
 			if (byteCount > 0)
+			{
 				Read(buffer, 0, byteCount);
+			}
 
 			return buffer;
 		}
@@ -449,7 +460,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (buffer.Length > 0)
+			{
 				Read(buffer, 0, buffer.Length, bitCount);
+			}
 
 			return buffer;
 		}
@@ -459,7 +472,9 @@ namespace KSoft.IO
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
 			if (buffer.Length > 0)
+			{
 				Write(buffer, 0, buffer.Length, bitCount);
+			}
 		}
 		#endregion
 	};

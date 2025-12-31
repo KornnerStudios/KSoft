@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -12,7 +11,6 @@ namespace KSoft.IO
 	/// <summary>
 	/// Records the current position of the stream, and returns the stream's cursor to that position when the context object is disposed
 	/// </summary>
-	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct StreamPositionContext : IDisposable
 	{
 		readonly long mPosition;

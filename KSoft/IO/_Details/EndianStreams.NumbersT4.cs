@@ -106,7 +106,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadByte();
+			}
 
 			return array;
 		}
@@ -126,7 +128,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<sbyte[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadSByte();
+			}
 
 			return array;
 		}
@@ -146,7 +150,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<ushort[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadUInt16();
+			}
 
 			return array;
 		}
@@ -166,7 +172,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<short[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadInt16();
+			}
 
 			return array;
 		}
@@ -186,7 +194,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<uint[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadUInt32();
+			}
 
 			return array;
 		}
@@ -206,7 +216,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<int[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadInt32();
+			}
 
 			return array;
 		}
@@ -226,7 +238,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<ulong[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadUInt64();
+			}
 
 			return array;
 		}
@@ -246,7 +260,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<long[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadInt64();
+			}
 
 			return array;
 		}
@@ -266,7 +282,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<float[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadSingle();
+			}
 
 			return array;
 		}
@@ -286,7 +304,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<double[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = ReadDouble();
+			}
 
 			return array;
 		}
@@ -393,7 +413,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -413,7 +435,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<sbyte[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -433,7 +457,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<ushort[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -453,7 +479,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<short[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -473,7 +501,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<uint[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -493,7 +523,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<int[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -513,7 +545,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<ulong[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -533,7 +567,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<long[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -553,7 +589,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<float[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -573,7 +611,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<double[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -592,80 +632,80 @@ namespace KSoft.IO
 	{
 		public EndianStream Stream(ref byte value)
 		{
-				 if (IsReading) value = Reader.ReadByte();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadByte(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref sbyte value)
 		{
-				 if (IsReading) value = Reader.ReadSByte();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadSByte(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref ushort value)
 		{
-				 if (IsReading) value = Reader.ReadUInt16();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadUInt16(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref short value)
 		{
-				 if (IsReading) value = Reader.ReadInt16();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadInt16(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref uint value)
 		{
-				 if (IsReading) value = Reader.ReadUInt32();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadUInt32(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref int value)
 		{
-				 if (IsReading) value = Reader.ReadInt32();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadInt32(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref ulong value)
 		{
-				 if (IsReading) value = Reader.ReadUInt64();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadUInt64(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref long value)
 		{
-				 if (IsReading) value = Reader.ReadInt64();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadInt64(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref float value)
 		{
-				 if (IsReading) value = Reader.ReadSingle();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadSingle(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
 
 		public EndianStream Stream(ref double value)
 		{
-				 if (IsReading) value = Reader.ReadDouble();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.ReadDouble(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
@@ -678,8 +718,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -696,8 +736,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -714,8 +754,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -732,8 +772,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -750,8 +790,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -768,8 +808,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -786,8 +826,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -804,8 +844,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -822,8 +862,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}
@@ -840,8 +880,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}

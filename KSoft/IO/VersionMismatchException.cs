@@ -15,7 +15,9 @@ namespace KSoft.IO
 			where T : struct, IComparable<T>
 		{
 			if (found.CompareTo(expected) > 0)
+			{
 				return "newer";
+			}
 
 			return "older";
 		}
@@ -36,13 +38,16 @@ namespace KSoft.IO
 
 		static string VersionCompareDesc<T>(
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			T expectedMin,
 			T expectedMax,
 			T found)
 			where T : struct, IComparable<T>
 		{
 			if (found.CompareTo(expectedMax) > 0)
+			{
 				return "newer";
+			}
 
 			return "older";
 		}

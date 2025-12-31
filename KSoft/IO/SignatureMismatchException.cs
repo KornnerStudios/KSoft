@@ -40,8 +40,10 @@ namespace KSoft.IO
 			Contract.Requires(!string.IsNullOrEmpty(expected));
 
 			string signature = s.ReadString(storage, expected.Length);
-			if (signature != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, signature);
+			if (signature != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, signature);
+			}
 		}
 		public static void Assert(IO.EndianReader s, string expected, Text.StringStorageEncoding encoding)
 		{
@@ -50,8 +52,10 @@ namespace KSoft.IO
 			Contract.Requires(encoding != null);
 
 			string signature = s.ReadString(encoding, expected.Length);
-			if (signature != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, signature);
+			if (signature != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, signature);
+			}
 		}
 		#endregion
 	};

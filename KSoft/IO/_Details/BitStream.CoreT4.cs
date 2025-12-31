@@ -25,7 +25,9 @@ namespace KSoft.IO
 
 				// If we consumed the rest of the cache after that last extraction
 				if (mCacheBitIndex == kWordBitCount && !IsEndOfStream)
+				{
 					FillCache();
+				}
 			}
 			else // else the cache only has a portion of the bits (or needs to be re-filled)
 			{
@@ -61,7 +63,9 @@ namespace KSoft.IO
 				mCacheBitIndex += bitCount;
 
 				if (mCacheBitIndex == kWordBitCount)
+				{
 					FlushCache();
+				}
 			}
 			else // else we have to split the cache writes between a flush
 			{
@@ -99,7 +103,9 @@ namespace KSoft.IO
 
 				// If we consumed the rest of the cache after that last extraction
 				if (mCacheBitIndex == kWordBitCount && !IsEndOfStream)
+				{
 					FillCache();
+				}
 			}
 			else // else the cache only has a portion of the bits (or needs to be re-filled)
 			{
@@ -135,7 +141,9 @@ namespace KSoft.IO
 				mCacheBitIndex += bitCount;
 
 				if (mCacheBitIndex == kWordBitCount)
+				{
 					FlushCache();
+				}
 			}
 			else // else we have to split the cache writes between a flush
 			{

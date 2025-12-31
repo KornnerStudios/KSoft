@@ -40,7 +40,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				array[x] = Read<#= num_type.Code #>();
+			}
 
 			return array;
 		}
@@ -85,7 +87,9 @@ namespace KSoft.IO
 			Contract.Ensures(Contract.Result<<#= num_type.Keyword #>[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
+			{
 				Write(array[x]);
+			}
 
 			return array;
 		}
@@ -108,8 +112,8 @@ namespace KSoft.IO
 #>
 		public EndianStream Stream(ref <#= num_type.Keyword #> value)
 		{
-				 if (IsReading) value = Reader.Read<#= num_type.Code #>();
-			else if (IsWriting) Writer.Write(value);
+				 if (IsReading) { value = Reader.Read<#= num_type.Code #>(); }
+			else if (IsWriting) { Writer.Write(value); }
 
 			return this;
 		}
@@ -126,8 +130,8 @@ namespace KSoft.IO
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(length >= 0);
 
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }
+			else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }
 
 			return this;
 		}

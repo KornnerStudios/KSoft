@@ -41,7 +41,7 @@ namespace KSoft.IO
 			"A Text stream reader implementation failed to set the LastReadLineInfo before a read took place. " +
 			"Guess what? Said read just failed";
 
-		private Exception GetLineInfoExceptionInternal()
+		private Text.TextLineInfoException GetLineInfoExceptionInternal()
 		{
 			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
 

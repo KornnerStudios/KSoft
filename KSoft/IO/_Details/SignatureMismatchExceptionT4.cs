@@ -50,8 +50,10 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.ReadByte();
-			if (version != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, ushort expected)
@@ -59,8 +61,10 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.ReadUInt16();
-			if (version != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, uint expected)
@@ -68,8 +72,10 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.ReadUInt32();
-			if (version != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		public static void Assert(IO.EndianReader s, ulong expected)
@@ -77,8 +83,10 @@ namespace KSoft.IO
 			Contract.Requires(s != null);
 
 			var version = s.ReadUInt64();
-			if (version != expected) throw new SignatureMismatchException(s.BaseStream,
-				expected, version);
+			if (version != expected)
+			{
+				throw new SignatureMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 		#endregion

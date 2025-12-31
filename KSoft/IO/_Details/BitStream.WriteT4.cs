@@ -92,8 +92,10 @@ namespace KSoft.IO
 			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
-			if(msb_bit_count > 0)
+			if (msb_bit_count > 0)
+			{
 				WriteWord(msb_word, msb_bit_count);
+			}
 			WriteWord(lsb_word, lsb_bit_count);
 		}
 		/// <summary>Read an <see cref="System.Int64"/> to the stream</summary>
@@ -108,8 +110,10 @@ namespace KSoft.IO
 			int msb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - Bits.kInt32BitCount : 0;
 			int lsb_bit_count = bitCount > Bits.kInt32BitCount ? bitCount - msb_bit_count : bitCount;
 
-			if(msb_bit_count > 0)
+			if (msb_bit_count > 0)
+			{
 				WriteWord(msb_word, msb_bit_count);
+			}
 			WriteWord(lsb_word, lsb_bit_count);
 		}
 	};

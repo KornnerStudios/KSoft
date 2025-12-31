@@ -69,8 +69,8 @@ namespace KSoft.IO
 	{
 		public void StreamVirtualAddress(ref Values.PtrHandle physicalAddress)
 		{
-				 if (IsReading) Reader.ReadVirtualAddress(out physicalAddress);
-			else if (IsWriting) Writer.WriteVirtualAddress(physicalAddress);
+				 if (IsReading) { Reader.ReadVirtualAddress(out physicalAddress); }
+			else if (IsWriting) { Writer.WriteVirtualAddress(physicalAddress); }
 		}
 	};
 }

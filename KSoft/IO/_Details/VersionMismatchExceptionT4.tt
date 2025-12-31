@@ -50,7 +50,9 @@ namespace KSoft.IO
 
 			var version = s.Read<#= word_type.Code #>();
 			if (version != expected)
+			{
 				throw new VersionMismatchException(s.BaseStream, expected, version);
+			}
 		}
 
 <# } #>
@@ -98,7 +100,9 @@ namespace KSoft.IO
 
 			var version = s.Read<#= word_type.Code #>();
 			if (version < expectedMin || version > expectedMax)
+			{
 				throw new VersionOutOfRangeException(s.BaseStream, expectedMin, expectedMax, version);
+			}
 
 			return version;
 		}
