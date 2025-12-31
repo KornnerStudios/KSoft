@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -13,7 +12,6 @@ namespace KSoft.Values
 	/// <summary>Base interface for Group Tag identifier definitions</summary>
 	[Contracts.ContractClass(typeof(GroupTagDataContract))]
 //	[System.ComponentModel.TypeConverter(typeof(GroupTagDataConverter))]
-	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public abstract class GroupTagData
 		: IO.IEndianStreamable
 		, IComparer<GroupTagData>, IComparable<GroupTagData>
@@ -43,7 +41,6 @@ namespace KSoft.Values
 		readonly char[] mTag;
 		/// <summary>The character code of this group</summary>
 		[System.ComponentModel.Browsable(false)]
-		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		public char[] Tag { get => mTag; }
 		/// <summary>Get the character code of this group as a string</summary>
 		public string TagString { get => mTagAsString; }
@@ -76,7 +73,9 @@ namespace KSoft.Values
 
 			mTag = new char[expectedLength];
 			for (int x = 0; x < mTag.Length; x++)
+			{
 				mTag[x] = (char)0xFF;
+			}
 
 			mTagAsString = new string(mTag);
 		}
@@ -164,7 +163,9 @@ namespace KSoft.Values
 		public override bool Equals(object obj)
 		{
 			if (obj is GroupTagData g)
+			{
 				return this.Equals(g);
+			}
 
 			return false;
 		}
@@ -187,7 +188,6 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in char[] form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator char[](GroupTagData value)
 		{
 			Contract.Requires(value != null);

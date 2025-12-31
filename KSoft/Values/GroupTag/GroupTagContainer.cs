@@ -23,7 +23,7 @@ namespace KSoft.Values
 		public const string kDefaultName = "Groups";
 
 		#region Ctor
-		Type mHost;
+		readonly Type mHost;
 		protected GroupTagContainerAttribute(Type container)
 		{
 			Contract.Requires(container != null);
@@ -50,13 +50,15 @@ namespace KSoft.Values
 		protected GroupTagCollection TagCollection { get; private set; }
 		void FindStaticGroupsProperty(string collectionName = null)
 		{
-			if (string.IsNullOrEmpty(collectionName)) collectionName = kDefaultName;
+			if (string.IsNullOrEmpty(collectionName)) { collectionName = kDefaultName; }
 
 			var pi = mHost.GetProperty(collectionName, BindingFlags.Public | BindingFlags.Static);
-			if (pi == null) throw new ArgumentException(
-				string.Format(Util.InvariantCultureInfo,
+			if (pi == null)
+			{
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName),
 					nameof(collectionName));
+			}
 
 			TagCollection = pi.GetValue(null, null) as GroupTagCollection;
 		}
@@ -86,7 +88,9 @@ namespace KSoft.Values
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
 			if (attr.Length != 1)
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
+			}
 
 			return (attr[0] as GroupTagContainerAttribute).TagCollection;
 		}
@@ -105,7 +109,9 @@ namespace KSoft.Values
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
 			if (attr.Length != 1)
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
+			}
 
 			return (attr[0] as GroupTagContainerAttribute).mAllCollections;
 		}

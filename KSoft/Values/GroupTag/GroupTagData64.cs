@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -18,7 +17,7 @@ namespace KSoft.Values
 
 		#region Null
 		/// <summary>Represents a null value for <see cref="GroupTagData64"/> objects</summary>
-		public static readonly GroupTagData64 Null = new GroupTagData64();
+		public static readonly GroupTagData64 Null = new();
 		GroupTagData64() : base(kExpectedTagLength)
 		{
 			mID = TagWord.MaxValue;
@@ -108,8 +107,10 @@ namespace KSoft.Values
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
 		public override bool Equals(object obj)
 		{
-			if(obj is GroupTagData64)
+			if (obj is GroupTagData64)
+			{
 				return mID == (obj as GroupTagData64).mID;
+			}
 
 			return false;
 		}
@@ -129,7 +130,6 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in integer form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator TagWord(GroupTagData64 value)
 		{
 			Contract.Requires(value != null);
@@ -153,7 +153,9 @@ namespace KSoft.Values
 		public override bool Equals(GroupTagData obj)
 		{
 			if (obj is GroupTagData64 g)
+			{
 				return mID == g.mID;
+			}
 
 			return false;
 		}
@@ -210,11 +212,15 @@ namespace KSoft.Values
 				tag1[1] == tag2[1] &&
 				tag1[2] == tag2[2] &&
 				tag1[3] == tag2[3])
+			{
 				if (tag1[4 + 0] == tag2[4 + 0] &&
 					tag1[4 + 1] == tag2[4 + 1] &&
 					tag1[4 + 2] == tag2[4 + 2] &&
 					tag1[4 + 3] == tag2[4 + 3])
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -238,7 +244,7 @@ namespace KSoft.Values
 					);
 			// low bits
 			value <<= 32;
-			value = (TagWord)(
+			value |= (uint)(
 						((byte)tag[4 + 0] << 24) |
 						((byte)tag[4 + 1] << 16) |
 						((byte)tag[4 + 2] << 8) |
@@ -246,7 +252,9 @@ namespace KSoft.Values
 					);
 
 			if (!System.BitConverter.IsLittleEndian)
+			{
 				Bitwise.ByteSwap.Swap(ref value);
+			}
 
 			return value;
 		}
@@ -269,7 +277,7 @@ namespace KSoft.Values
 					);
 			// low bits
 			value <<= 32;
-			value = (TagWord)(
+			value |= (uint)(
 						((byte)tag[4 + 0] << 24) |
 						((byte)tag[4 + 1] << 16) |
 						((byte)tag[4 + 2] << 8) |
@@ -277,7 +285,9 @@ namespace KSoft.Values
 					);
 
 			if (!System.BitConverter.IsLittleEndian)
+			{
 				Bitwise.ByteSwap.Swap(ref value);
+			}
 
 			return value;
 		}
@@ -295,7 +305,9 @@ namespace KSoft.Values
 			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);
 
 			if (tag == null)
+			{
 				tag = new char[kExpectedTagLength];
+			}
 
 			if (isBigEndian)
 			{

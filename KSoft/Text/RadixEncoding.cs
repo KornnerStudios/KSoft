@@ -83,7 +83,10 @@ namespace KSoft.Text
 
 			// Don't really have to do this, our code will build this result (empty string),
 			// but why not catch the condition before doing work?
-			if (bytes.Length == 0) return string.Empty;
+			if (bytes.Length == 0)
+			{
+				return string.Empty;
+			}
 
 			// if the array ends with zeros, having the capacity set to this will help us know how much
 			// 'padding' we will need to add
@@ -94,7 +97,9 @@ namespace KSoft.Text
 			// HACK: BigInteger uses the last byte as the 'sign' byte. If the byte's MSB is set,
 			// we need to pad the input with an extra 0 (ie, make it positive)
 			if (IntegerMath.IsSigned(bytes[bytes.Length-1]))
+			{
 				Array.Resize(ref bytes, bytes.Length+1);
+			}
 
 			var dividend = new BigInteger(bytes);
 			// IsZero's computation is less complex than evaluating "dividend > 0"
@@ -107,12 +112,18 @@ namespace KSoft.Text
 			}
 
 			if (kIncludeProceedingZeros)
+			{
 				for (int x = result.Count; x < result.Capacity; x++)
+				{
 					result.Add(kDigits[0]); // pad with the character that represents 'zero'
+				}
+			}
 
 			// orientate the characters in big-endian ordering
 			if (kEndian == Shell.EndianFormat.Little)
+			{
 				result.Reverse();
+			}
 			// If we didn't end up adding padding, ToArray will end up returning a TrimExcess'd array,
 			// so nothing wasted
 			return new string(result.ToArray());
@@ -133,7 +144,11 @@ namespace KSoft.Text
 			for (int x = startIndex; x < chars.Length; x++)
 			{
 				int i = kDigits.IndexOf(chars[x]);
-				if (i < 0) return null; // invalid character
+				if (i < 0)
+				{
+					return null; // invalid character
+				}
+
 				bi *= kRadixBig;
 				bi += i;
 			}
@@ -144,7 +159,12 @@ namespace KSoft.Text
 		{
 			int pad_count = 0;
 			for (int x = 0; x < chars.Length; x++, pad_count++)
-				if (chars[x] != kDigits[0]) break;
+			{
+				if (chars[x] != kDigits[0])
+				{
+					break;
+				}
+			}
 
 			var result = DecodeImpl(chars, pad_count);
 			DecodeImplPadResult(ref result, pad_count);
@@ -159,7 +179,11 @@ namespace KSoft.Text
 			for (int x = (chars.Length-1)-startIndex; x >= 0; x--)
 			{
 				int i = kDigits.IndexOf(chars[x]);
-				if (i < 0) return null; // invalid character
+				if (i < 0)
+				{
+					return null; // invalid character
+				}
+
 				bi *= kRadixBig;
 				bi += i;
 			}
@@ -170,7 +194,12 @@ namespace KSoft.Text
 		{
 			int pad_count = 0;
 			for (int x = chars.Length - 1; x >= 0; x--, pad_count++)
-				if (chars[x] != kDigits[0]) break;
+			{
+				if (chars[x] != kDigits[0])
+				{
+					break;
+				}
+			}
 
 			var result = DecodeImplReversed(chars, pad_count);
 			DecodeImplPadResult(ref result, pad_count);
@@ -193,9 +222,13 @@ namespace KSoft.Text
 			Contract.Requires<ArgumentNullException>(radixChars != null);
 
 			if (kEndian == Shell.EndianFormat.Big)
+			{
 				return kIncludeProceedingZeros ? DecodeImplReversedWithPadding(radixChars) : DecodeImplReversed(radixChars);
+			}
 			else
+			{
 				return kIncludeProceedingZeros ? DecodeImplWithPadding(radixChars) : DecodeImpl(radixChars);
+			}
 		}
 	};
 };

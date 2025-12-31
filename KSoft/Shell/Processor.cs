@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -16,8 +15,7 @@ namespace KSoft.Shell
 	/// <summary>Represents a processor definition</summary>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
 	[System.Diagnostics.DebuggerDisplay("IA = {InstructionSet}, WordSize = {ProcessorSize}, Endian = {ByteOrder}")]
-	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
-	public struct Processor :
+	public readonly struct Processor :
 		IComparer<Processor>, System.Collections.IComparer,
 		IComparable<Processor>, IComparable,
 		IEquatable<Processor>
@@ -28,11 +26,11 @@ namespace KSoft.Shell
 		static class Constants
 		{
 			public static readonly BitFieldTraits kByteOrderBitField =
-				new BitFieldTraits(BitEncoders.EndianFormat.BitCountTrait);
+				new(BitEncoders.EndianFormat.BitCountTrait);
 			public static readonly BitFieldTraits kProcessorSizeBitField =
-				new BitFieldTraits(BitEncoders.ProcessorSize.BitCountTrait, kByteOrderBitField);
+				new(BitEncoders.ProcessorSize.BitCountTrait, kByteOrderBitField);
 			public static readonly BitFieldTraits kInstructionSetBitField =
-				new BitFieldTraits(BitEncoders.InstructionSet.BitCountTrait, kProcessorSizeBitField);
+				new(BitEncoders.InstructionSet.BitCountTrait, kProcessorSizeBitField);
 
 			public static readonly BitFieldTraits kLastBitField =
 				kInstructionSetBitField;
@@ -100,8 +98,10 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is Processor)
-				return this.mHandle == ((Processor)obj).mHandle;
+			if (obj is Processor processor)
+			{
+				return this.mHandle == processor.mHandle;
+			}
 
 			return false;
 		}
@@ -186,31 +186,31 @@ namespace KSoft.Shell
 		}
 		#endregion
 
-		static readonly Processor kUndefined = new Processor(uint.MaxValue, BitFieldTraits.Empty);
+		static readonly Processor kUndefined = new(uint.MaxValue, BitFieldTraits.Empty);
 		/// <summary>Undefined processor definition</summary>
 		/// <remarks>Only use for comparison operations, don't query value properties. Results will be...undefined</remarks>
 		public static Processor Undefined		{ get => kUndefined; }
 
 		#region Intel
-		static readonly Processor kIntelx86 = new Processor(ProcessorSize.x32, EndianFormat.Little, InstructionSet.Intel);
+		static readonly Processor kIntelx86 = new(ProcessorSize.x32, EndianFormat.Little, InstructionSet.Intel);
 		/// <summary>Intel's x86 processor definition</summary>
 		public static Processor Intelx86		{ get { return kIntelx86; } }
 
-		static readonly Processor kIntelx64 = new Processor(ProcessorSize.x64, EndianFormat.Little, InstructionSet.Intel);
+		static readonly Processor kIntelx64 = new(ProcessorSize.x64, EndianFormat.Little, InstructionSet.Intel);
 		/// <summary>Intel's x64 processor definition</summary>
 		public static Processor Intelx64		{ get { return kIntelx64; } }
 		#endregion
 
 		#region PowerPc
-		static readonly Processor kPowerPc32 = new Processor(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
+		static readonly Processor kPowerPc32 = new(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC 32-bit processor definition</summary>
 		public static Processor PowerPc32		{ get { return kPowerPc32; } }
 
-		static readonly Processor kPowerPc64 = new Processor(ProcessorSize.x64, EndianFormat.Big, InstructionSet.PPC);
+		static readonly Processor kPowerPc64 = new(ProcessorSize.x64, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC 64-bit processor definition</summary>
 		public static Processor PowerPc64		{ get { return kPowerPc64; } }
 
-		static readonly Processor kPowerPcXenon = new Processor(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
+		static readonly Processor kPowerPcXenon = new(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC (Xenon) processor definition</summary>
 		/// <remarks>
 		/// Why is there a special Xenon definition? Because if I recall correctly, the Xenon is a 64-bit processor however

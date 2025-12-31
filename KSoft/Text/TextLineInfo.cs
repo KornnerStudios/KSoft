@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -34,15 +33,12 @@ namespace KSoft.Text
 		} }
 	};
 
-	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
-	[SuppressMessage("Microsoft.Design", "CA1066:EquatableAnalyzer",
-		Justification="This is a bug. This CLEARLY implements IEquatable<ITextLineInfo>")]
-	public struct TextLineInfo
+	public readonly struct TextLineInfo
 		: ITextLineInfo
 		, IComparable<ITextLineInfo>
 		, IEquatable<ITextLineInfo>
 	{
-		public static readonly TextLineInfo Empty = new TextLineInfo();
+		public static readonly TextLineInfo Empty = new();
 
 		readonly int mLineNumber, mLinePosition;
 
@@ -69,9 +65,13 @@ namespace KSoft.Text
 		public int CompareTo(ITextLineInfo other)
 		{
 			if (LineNumber == other.LineNumber)
+			{
 				return LinePosition - other.LinePosition;
+			}
 			else
+			{
 				return LineNumber - other.LineNumber;
+			}
 		}
 
 		public bool Equals(ITextLineInfo other) =>
@@ -100,7 +100,9 @@ namespace KSoft.Text
 				"Ln {0}";
 
 			if (!lineInfo.HasLineInfo)
+			{
 				return kNoLineInfoString;
+			}
 
 			return string.Format(KSoft.Util.InvariantCultureInfo,
 				verboseString ? k_format_string_verbose : k_format_string,
@@ -115,7 +117,9 @@ namespace KSoft.Text
 				"Ln {0}, Col {1}";
 
 			if (!lineInfo.HasLineInfo)
+			{
 				return kNoLineInfoString;
+			}
 
 			return string.Format(KSoft.Util.InvariantCultureInfo,
 				verboseString ? k_format_string_verbose : k_format_string,

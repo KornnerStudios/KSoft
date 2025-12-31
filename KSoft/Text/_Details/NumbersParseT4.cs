@@ -20,16 +20,22 @@ namespace KSoft
 			bool success = true;
 
 			if (radix == 16)
+			{
 				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+				{
 					pos += 2;
+				}
+			}
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < end && char.IsWhiteSpace(s[pos]))
+			while (pos < end && char.IsWhiteSpace(s[pos]))
+			{
 				++pos;
+			}
 
 
 
-			for(var radix_in_word = (uint)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for (var radix_in_word = (uint)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -90,12 +96,18 @@ namespace KSoft
 			bool success = true;
 
 			if (radix == 16)
+			{
 				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+				{
 					pos += 2;
+				}
+			}
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < end && char.IsWhiteSpace(s[pos]))
+			while (pos < end && char.IsWhiteSpace(s[pos]))
+			{
 				++pos;
+			}
 
 
 			bool negate = false;
@@ -107,10 +119,12 @@ namespace KSoft
 				negate = sign == '-';
 				// Skip the sign character
 				if (negate || sign == '+')
+				{
 					++pos;
+				}
 			}
 
-			for(var radix_in_word = (int)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for (var radix_in_word = (int)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -130,7 +144,9 @@ namespace KSoft
 
 			// Negate the result if anything was processed
 			if (negate)
+			{
 				result = -result;
+			}
 
 			return success;
 		}
@@ -174,16 +190,22 @@ namespace KSoft
 			bool success = true;
 
 			if (radix == 16)
+			{
 				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+				{
 					pos += 2;
+				}
+			}
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < end && char.IsWhiteSpace(s[pos]))
+			while (pos < end && char.IsWhiteSpace(s[pos]))
+			{
 				++pos;
+			}
 
 
 
-			for(var radix_in_word = (ulong)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for (var radix_in_word = (ulong)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -244,12 +266,18 @@ namespace KSoft
 			bool success = true;
 
 			if (radix == 16)
+			{
 				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+				{
 					pos += 2;
+				}
+			}
 
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < end && char.IsWhiteSpace(s[pos]))
+			while (pos < end && char.IsWhiteSpace(s[pos]))
+			{
 				++pos;
+			}
 
 
 			bool negate = false;
@@ -261,10 +289,12 @@ namespace KSoft
 				negate = sign == '-';
 				// Skip the sign character
 				if (negate || sign == '+')
+				{
 					++pos;
+				}
 			}
 
-			for(var radix_in_word = (long)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for (var radix_in_word = (long)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
@@ -284,7 +314,9 @@ namespace KSoft
 
 			// Negate the result if anything was processed
 			if (negate)
+			{
 				result = -result;
+			}
 
 			return success;
 		}
@@ -515,12 +547,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -541,12 +577,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -567,12 +607,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -593,12 +637,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -619,12 +667,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -645,12 +697,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -671,12 +727,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}
@@ -697,12 +757,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}

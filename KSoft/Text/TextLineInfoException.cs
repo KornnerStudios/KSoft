@@ -8,8 +8,6 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace KSoft.Text
 {
 	/// <summary>Exception for use as an inner exception when processing text files and there's line/column information available</summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
 	public class TextLineInfoException
 		: Exception
 		, ITextLineInfo
@@ -26,7 +24,9 @@ namespace KSoft.Text
 			Contract.Requires<ArgumentNullException>(lineInfo != null);
 
 			if (string.IsNullOrEmpty(streamName))
+			{
 				streamName = "<unknown text stream>";
+			}
 
 			mStreamName = streamName;
 			mLineInfo = new TextLineInfo(lineInfo);

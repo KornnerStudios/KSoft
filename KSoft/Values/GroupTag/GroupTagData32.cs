@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -18,7 +17,7 @@ namespace KSoft.Values
 
 		#region Null
 		/// <summary>Represents a null value for <see cref="GroupTagData32"/> objects</summary>
-		public static readonly GroupTagData32 Null = new GroupTagData32();
+		public static readonly GroupTagData32 Null = new();
 		GroupTagData32() : base(kExpectedTagLength)
 		{
 			mID = TagWord.MaxValue;
@@ -78,8 +77,10 @@ namespace KSoft.Values
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
 		public override bool Equals(object obj)
 		{
-			if(obj is GroupTagData32)
+			if (obj is GroupTagData32)
+			{
 				return mID == (obj as GroupTagData32).mID;
+			}
 
 			return false;
 		}
@@ -93,7 +94,6 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in integer form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator TagWord(GroupTagData32 value)
 		{
 			Contract.Requires(value != null);
@@ -118,7 +118,9 @@ namespace KSoft.Values
 		public override bool Equals(GroupTagData obj)
 		{
 			if (obj is GroupTagData32 g)
+			{
 				return mID == g.mID;
+			}
 
 			return false;
 		}
@@ -170,7 +172,9 @@ namespace KSoft.Values
 				tag1[1] == tag2[1] &&
 				tag1[2] == tag2[2] &&
 				tag1[3] == tag2[3])
+			{
 				return true;
+			}
 
 			return false;
 		}
@@ -193,7 +197,9 @@ namespace KSoft.Values
 				);
 
 			if (!System.BitConverter.IsLittleEndian)
+			{
 				Bitwise.ByteSwap.Swap(ref value);
+			}
 
 			return value;
 		}
@@ -215,7 +221,9 @@ namespace KSoft.Values
 				);
 
 			if (!System.BitConverter.IsLittleEndian)
+			{
 				Bitwise.ByteSwap.Swap(ref value);
+			}
 
 			return value;
 		}
@@ -233,7 +241,9 @@ namespace KSoft.Values
 			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);
 
 			if (tag == null)
+			{
 				tag = new char[4];
+			}
 
 			if (isBigEndian)
 			{

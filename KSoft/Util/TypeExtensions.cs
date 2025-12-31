@@ -65,7 +65,7 @@ namespace KSoft
 
 		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
-		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default(TRet))
+		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default)
 			where T : class
 		{
 			Contract.Requires/*<ArgumentNullException>*/(func != null);
@@ -81,23 +81,23 @@ namespace KSoft
 
 			// KSoft.Memory.Strings
 			public static readonly EnumBitEncoder32<MS.StringStorageWidthType>
-				StringStorageWidthType = new EnumBitEncoder32<MS.StringStorageWidthType>();
+				StringStorageWidthType = new();
 			public static readonly EnumBitEncoder32<MS.StringStorageType>
-				StringStorageType = new EnumBitEncoder32<MS.StringStorageType>();
+				StringStorageType = new();
 			public static readonly EnumBitEncoder32<MS.StringStorageLengthPrefix>
-				StringStorageLengthPrefix = new EnumBitEncoder32<MS.StringStorageLengthPrefix>();
+				StringStorageLengthPrefix = new();
 
 			// KSoft.Shell
 			public static readonly EnumBitEncoder32<Shell.EndianFormat>
-				EndianFormat = new EnumBitEncoder32<Shell.EndianFormat>();
+				EndianFormat = new();
 			public static readonly EnumBitEncoder32<Shell.ProcessorSize>
-				ProcessorSize = new EnumBitEncoder32<Shell.ProcessorSize>();
+				ProcessorSize = new();
 			public static readonly EnumBitEncoder32<Shell.ProcessorWordSize>
-				ProcessorWordSize = new EnumBitEncoder32<Shell.ProcessorWordSize>();
+				ProcessorWordSize = new();
 			public static readonly EnumBitEncoder32<Shell.InstructionSet>
-				InstructionSet = new EnumBitEncoder32<Shell.InstructionSet>();
+				InstructionSet = new();
 			public static readonly EnumBitEncoder32<Shell.PlatformType>
-				PlatformType = new EnumBitEncoder32<Shell.PlatformType>();
+				PlatformType = new();
 		};
 		#endregion
 
@@ -215,7 +215,9 @@ namespace KSoft
 				value = new Guid(a, b, c, d,e,f,g,h,i,j,k);
 			}
 			else
+			{
 				value = new Guid(s.ReadBytes(16));
+			}
 		}
 		public static void Write(this Guid value, IO.EndianWriter s, bool respectEndian = true)
 		{
@@ -347,32 +349,24 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<int>() >= -1);
 
-			switch (value)
+			return value switch
 			{
-			case Shell.ProcessorSize.x32:
-				return Bits.kInt32BitCount;
-			case Shell.ProcessorSize.x64:
-				return Bits.kInt64BitCount;
-
-			default:
-				return -1;
-			}
+				Shell.ProcessorSize.x32 => Bits.kInt32BitCount,
+				Shell.ProcessorSize.x64 => Bits.kInt64BitCount,
+				_ => -1,
+			};
 		}
 
 		public static int GetByteCount(Shell.ProcessorSize value)
 		{
 			Contract.Ensures(Contract.Result<int>() >= -1);
 
-			switch (value)
+			return value switch
 			{
-			case Shell.ProcessorSize.x32:
-				return sizeof(int);
-			case Shell.ProcessorSize.x64:
-				return sizeof(long);
-
-			default:
-				return -1;
-			}
+				Shell.ProcessorSize.x32 => sizeof(int),
+				Shell.ProcessorSize.x64 => sizeof(long),
+				_ => -1,
+			};
 		}
 
 		public static int GetBitCount(Shell.ProcessorWordSize value)

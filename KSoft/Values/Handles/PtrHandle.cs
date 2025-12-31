@@ -27,7 +27,6 @@ namespace KSoft.Values
 	/// <remarks>If you use the parameterless ctor, the pointer will be implicitly 32-bit</remarks>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size = PtrHandle.kSizeOf)]
 //	[System.ComponentModel.TypeConverter(typeof(PtrHandleConverter))]
-	[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 	public struct PtrHandle
 		: IO.IEndianStreamable
 		, IComparer<PtrHandle>, IComparable<PtrHandle>
@@ -69,6 +68,7 @@ namespace KSoft.Values
 		#region Fields
 		/// <summary>Address as a 64-bit integer</summary>
 		[System.Runtime.InteropServices.FieldOffset(0)]
+		[SuppressMessage("Style", "IDE0044:Add readonly modifier")]
 		ulong Handle;
 		/// <summary>Extra Pointer info field space</summary>
 		[System.Runtime.InteropServices.FieldOffset(8)]
@@ -99,13 +99,13 @@ namespace KSoft.Values
 		#endregion
 
 		/// <summary>The size of this pointer</summary>
-		public Shell.ProcessorSize Size { get { return !Is64bit ? Shell.ProcessorSize.x32 : Shell.ProcessorSize.x64; } }
+		public readonly Shell.ProcessorSize Size => !Is64bit ? Shell.ProcessorSize.x32 : Shell.ProcessorSize.x64;
 		/// <summary>Is this pointer not referencing anything?</summary>
-		public bool IsNull { get { return this.Handle == 0; } }
-		public bool IsNotNull { get { return this.Handle != 0; } }
+		public readonly bool IsNull => this.Handle == 0;
+		public readonly bool IsNotNull => this.Handle != 0;
 		/// <summary>Is this pointer the same as the Win32 API INVALID_HANDLE (or -1) value?</summary>
-		public bool IsInvalidHandle { get { return this.Handle == ulong.MaxValue || this.u32 == uint.MaxValue; } }
-		public bool IsNotInvalidHandle { get { return this.Handle != ulong.MaxValue || this.u32 != uint.MaxValue; } }
+		public readonly bool IsInvalidHandle => this.Handle == ulong.MaxValue || this.u32 == uint.MaxValue;
+		public readonly bool IsNotInvalidHandle => this.Handle != ulong.MaxValue || this.u32 != uint.MaxValue;
 
 		#region Ctor
 		PtrHandle(bool is64bit, ulong handle)
@@ -158,16 +158,16 @@ namespace KSoft.Values
 		/// <remarks>Number of bytes read depends on <see cref="Is64bit"/></remarks>
 		public void Read(IO.EndianReader s)
 		{
-			if (!Is64bit)	this.u32 = s.ReadUInt32();
-			else			this.u64 = s.ReadUInt64();
+			if (!Is64bit)	{ this.u32 = s.ReadUInt32(); }
+			else			{ this.u64 = s.ReadUInt64(); }
 		}
 		/// <summary>Stream the pointer data to a buffer</summary>
 		/// <param name="s"></param>
 		/// <remarks>Number of bytes written depends on <see cref="Is64bit"/></remarks>
-		public void Write(IO.EndianWriter s)
+		public readonly void Write(IO.EndianWriter s)
 		{
-			if (!Is64bit)	s.Write(this.u32);
-			else			s.Write(this.u64);
+			if (!Is64bit)	{ s.Write(this.u32); }
+			else			{ s.Write(this.u64); }
 		}
 		#endregion
 
@@ -182,10 +182,18 @@ namespace KSoft.Values
 		/// </returns>
 		public static int NonStrictCompare(PtrHandle x, PtrHandle y)
 		{
-			if (x.Handle == y.Handle)		return kComparisonEqual;
-
-			else if (x.Handle < y.Handle)	return kComparisonLess;
-			else							return kComparisonGreater;
+			if (x.Handle == y.Handle)
+			{
+				return kComparisonEqual;
+			}
+			else if (x.Handle < y.Handle)
+			{
+				return kComparisonLess;
+			}
+			else
+			{
+				return kComparisonGreater;
+			}
 		}
 
 		/// <summary>Compare two <see cref="PtrHandle"/> objects for similar size and address values</summary>
@@ -197,23 +205,23 @@ namespace KSoft.Values
 		/// <see cref="kComparisonGreater"/>: x is greater than y
 		/// <see cref="kComparisonEqual"/>: x is equal to y
 		/// </returns>
-		public int Compare(PtrHandle x, PtrHandle y)					{ return x.Is64bit == y.Is64bit ? NonStrictCompare(x, y) : kComparisonDifferentSize; }
+		public readonly int Compare(PtrHandle x, PtrHandle y)					{ return x.Is64bit == y.Is64bit ? NonStrictCompare(x, y) : kComparisonDifferentSize; }
 		/// <summary>Compare this with another <see cref="PtrHandle"/> object for similar size and address values</summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public int CompareTo(PtrHandle other)							{ return Compare(this, other); }
+		public readonly int CompareTo(PtrHandle other)							{ return Compare(this, other); }
 
 		/// <summary></summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <see cref=""/>
-		int System.Collections.IComparer.Compare(object x, object y)	{ return Compare((PtrHandle)x, (PtrHandle)y); }
+		readonly int System.Collections.IComparer.Compare(object x, object y)	{ return Compare((PtrHandle)x, (PtrHandle)y); }
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		/// <see cref=""/>
-		int IComparable.CompareTo(object obj)							{ return Compare(this, (PtrHandle)obj); }
+		readonly int IComparable.CompareTo(object obj)							{ return Compare(this, (PtrHandle)obj); }
 		#endregion
 
 		#region IEquatable & IEqualityComparer Members
@@ -226,22 +234,22 @@ namespace KSoft.Values
 		/// <summary>Compares this to another <see cref="PtrHandle"/> object testing their address fields for equality</summary>
 		/// <param name="other">other <see cref="PtrHandle"/> object</param>
 		/// <returns>true if both this object and <paramref name="other"/> are equal</returns>
-		public bool Equals(PtrHandle other)				{ return this == other; }
+		public readonly bool Equals(PtrHandle other)				{ return this == other; }
 		/// <summary>Compares two <see cref="PtrHandle"/> objects testing their address fields for equality</summary>
 		/// <param name="x">left-hand value for comparison expression</param>
 		/// <param name="y">right-hand value for comparison expression</param>
 		/// <returns>true if both <paramref name="x"/> and <paramref name="y"/> are equal</returns>
-		public bool Equals(PtrHandle x, PtrHandle y)	{ return x == y; }
+		public readonly bool Equals(PtrHandle x, PtrHandle y)	{ return x == y; }
 		/// <summary>Returns the hash code for this instance</summary>
 		/// <returns></returns>
-		public int GetHashCode(PtrHandle obj)			{ return obj.GetHashCode(); }
+		public readonly int GetHashCode(PtrHandle obj)			{ return obj.GetHashCode(); }
 		#endregion
 
 		#region Overrides
 		/// <summary>Compares two <see cref="PtrHandle"/> objects testing their address size and address value</summary>
 		/// <param name="obj">other <see cref="PtrHandle"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public override bool Equals(object obj)
+		public override readonly bool Equals(object obj)
 		{
 			if (obj is PtrHandle p)
 			{
@@ -253,11 +261,13 @@ namespace KSoft.Values
 
 		/// <summary>Returns the hash code for this instance</summary>
 		/// <returns></returns>
-		public override int GetHashCode()
+		public override readonly int GetHashCode()
 		{
 			// 32-bit cases
 			if (!Is64bit)
+			{
 				return u32.GetHashCode();
+			}
 
 			// 64-bit cases
 			int hi, lo;
@@ -272,7 +282,7 @@ namespace KSoft.Values
 
 		/// <summary>Converts this instance to a string</summary>
 		/// <returns>"[0x<see cref="Handle"/>]u32]" or "[0x<see cref="Handle"/>]u64"]</returns>
-		public override string ToString()
+		public override readonly string ToString()
 		{
 			return string.Format(Util.InvariantCultureInfo,
 				"[0x{0}{1}]",
@@ -286,22 +296,21 @@ namespace KSoft.Values
 		/// <summary>Explicit cast to a <see cref="Boolean"/>, returning whether <paramref name="value"/> is null or not</summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>Whether <paramref name="value"/> is null or not</returns>
-		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator bool(PtrHandle value)	=> value.u64 == 0;
 
-		public uint ToUInt32()									=> u32;
+		public readonly uint ToUInt32()									=> u32;
 		/// <summary>Explicit cast to a <see cref="UInt32"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 32-bit integer</returns>
 		public static explicit operator uint(PtrHandle value)	=> value.ToUInt32();
 
-		public long ToInt64()									=> (long)u64;
+		public readonly long ToInt64()									=> (long)u64;
 		/// <summary>Explicit cast to a <see cref="Int64"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 64-bit integer</returns>
 		public static explicit operator long(PtrHandle value)	=> value.ToInt64();
 
-		public ulong ToUInt64()									=> u64;
+		public readonly ulong ToUInt64()									=> u64;
 		/// <summary>Explicit cast to a <see cref="UInt64"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address as a 64-bit integer</returns>
@@ -310,7 +319,6 @@ namespace KSoft.Values
 		/// <summary>Explicit cast to a <see cref="Shell.ProcessorSize"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address size of <paramref name="value"/></returns>
-		[SuppressMessage("Microsoft.Design", "CA2225:OperatorOverloadsHaveNamedAlternates")]
 		public static explicit operator Shell.ProcessorSize(PtrHandle value)	{ return value.Size; }
 
 		/// <summary>Convert this address to a <see cref="UIntPtr"/></summary>
@@ -319,7 +327,7 @@ namespace KSoft.Values
 		/// On a 32-bit platform, <see cref="Handle"/> is too large to represent as
 		/// an <see cref="UIntPtr"/>.
 		/// </exception>
-		public System.UIntPtr ToUIntPtr() { return new System.UIntPtr(this.Handle); }
+		public readonly System.UIntPtr ToUIntPtr() { return new System.UIntPtr(this.Handle); }
 		#endregion
 
 		#region Boolean

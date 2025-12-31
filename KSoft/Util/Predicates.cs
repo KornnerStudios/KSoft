@@ -11,7 +11,9 @@ namespace KSoft
 		private static Predicate<bool> gIsFalse;
 		public static Predicate<bool> IsFalse { get {
 			if (gIsFalse == null)
+			{
 				gIsFalse = b => !b;
+			}
 
 			return gIsFalse;
 		} }
@@ -19,7 +21,9 @@ namespace KSoft
 		private static Predicate<bool> gIsTrue;
 		public static Predicate<bool> IsTrue { get {
 			if (gIsTrue == null)
+			{
 				gIsTrue = b => b;
+			}
 
 			return gIsTrue;
 		} }
@@ -29,7 +33,9 @@ namespace KSoft
 		private static Predicate<string> gIsNotNullOrEmpty;
 		public static Predicate<string> IsNotNullOrEmpty { get {
 			if (gIsNotNullOrEmpty == null)
+			{
 				gIsNotNullOrEmpty = s => !string.IsNullOrEmpty(s);
+			}
 
 			return gIsNotNullOrEmpty;
 		} }
@@ -39,7 +45,9 @@ namespace KSoft
 		private static Predicate<System.Collections.ICollection> gHasItems;
 		public static Predicate<System.Collections.ICollection> HasItems { get {
 			if (gHasItems == null)
+			{
 				gHasItems = coll => coll != null && coll.Count > 0;
+			}
 
 			return gHasItems;
 		} }
@@ -47,7 +55,9 @@ namespace KSoft
 		private static Predicate<Collections.IReadOnlyBitSet> gHasBits;
 		public static Predicate<Collections.IReadOnlyBitSet> HasBits { get {
 			if (gHasBits == null)
+			{
 				gHasBits = set => set != null && set.Cardinality > 0;
+			}
 
 			return gHasBits;
 		} }
@@ -58,9 +68,11 @@ namespace KSoft
 
 		[Pure, DebuggerStepThrough] public static bool True()				{ return true; }
 		[Pure, DebuggerStepThrough] public static bool False()				{ return false; }
-		[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+		//[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+		[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 		[Pure, DebuggerStepThrough] public static bool True<T>(T dummy)		{ return true; }
-		[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+		//[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+		[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 		[Pure, DebuggerStepThrough] public static bool False<T>(T dummy)	{ return false; }
 
 		[Pure, DebuggerStepThrough]

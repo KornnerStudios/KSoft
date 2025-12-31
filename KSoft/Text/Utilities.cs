@@ -18,7 +18,9 @@ namespace KSoft.Text
 			if (str == "1" ||
 				string.Compare(str, "true", StringComparison.OrdinalIgnoreCase)==0 ||
 				string.Compare(str, "on", StringComparison.OrdinalIgnoreCase)==0 )
+			{
 				return true;
+			}
 
 			return false;
 		}
@@ -57,7 +59,9 @@ namespace KSoft.Text
 		static DefaultTextParseErrorHandler gDefaultTextParseErrorHandler;
 		public static IHandleTextParseError DefaultTextParseErrorHandler { get {
 			if (gDefaultTextParseErrorHandler == null)
+			{
 				gDefaultTextParseErrorHandler = new DefaultTextParseErrorHandler();
+			}
 
 			return gDefaultTextParseErrorHandler;
 		} }

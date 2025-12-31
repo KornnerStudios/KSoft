@@ -29,13 +29,19 @@ namespace KSoft
 			bool success = true;
 
 			if (radix == 16)
+			{
 				if ((pos+2)<end && s[pos+0]=='0' && s[pos+1]=='x')
+				{
 					pos += 2;
+				}
+			}
 
 <#		if (NumbersT4.ParseShouldAllowLeadingWhite) { #>
 			// Skip any starting whitespace, avoids s.Trim() allocations
-			while(pos < end && char.IsWhiteSpace(s[pos]))
+			while (pos < end && char.IsWhiteSpace(s[pos]))
+			{
 				++pos;
+			}
 <#		} #>
 
 <#		if (NumbersT4.ParseShouldUseUppercaseCheck) { #>
@@ -52,16 +58,18 @@ namespace KSoft
 				negate = sign == '-';
 				// Skip the sign character
 				if (negate || sign == '+')
+				{
 					++pos;
+				}
 			}
 <#		} #>
 
-			for(var radix_in_word = (<#= prim_keyword #>)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
+			for (var radix_in_word = (<#= prim_keyword #>)radix; pos < end && !char.IsWhiteSpace(s[pos]); ++pos)
 			{
 				char digit = s[pos];
 
 <#		if (NumbersT4.ParseShouldUseUppercaseCheck) { #>
-				if(use_upper_case_variant) digit = char.ToUpper(digit);
+				if (use_upper_case_variant) { digit = char.ToUpper(digit); }
 <#		} #>
 
 				int x = digits.IndexOf(digit);
@@ -80,7 +88,9 @@ namespace KSoft
 <#		if (is_signed) { #>
 			// Negate the result if anything was processed
 			if (negate)
+			{
 				result = -result;
+			}
 <#		} #>
 
 			return success;
@@ -183,12 +193,16 @@ namespace KSoft
 				: ParseErrorType.None;
 
 			if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))
+			{
 				result = ParseErrorType.InvalidStartIndex;
+			}
 
 			if (result == ParseErrorType.None)
+			{
 				result = TryParse(s, out value, radix, startIndex, kBase64Digits)
 					? ParseErrorType.None
 					: ParseErrorType.InvalidValue;
+			}
 
 			return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);
 		}

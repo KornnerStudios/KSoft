@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -9,10 +8,6 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Xml
 {
-	[SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface")]
-	[SuppressMessage("Microsoft.Design", "CA1058:TypesShouldNotExtendCertainBaseTypes")]
-	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[SuppressMessage("Microsoft.Design", "CA3077:InsecureDTDProcessingInAPIDesign")]
 	public class XmlDocumentWithLocation : XmlDocument
 	{
 		IXmlLineInfo mLoadReader;
@@ -21,12 +16,13 @@ namespace KSoft.Xml
 
 		internal Text.TextLineInfo CurrentLineInfo { get {
 			if (mLoadReader != null && mLoadReader.HasLineInfo())
-				return new Text.TextLineInfo(mLoadReader.LineNumber, mLoadReader.LinePosition);
+				{
+					return new Text.TextLineInfo(mLoadReader.LineNumber, mLoadReader.LinePosition);
+				}
 
-			return Text.TextLineInfo.Empty;
+				return Text.TextLineInfo.Empty;
 		} }
 
-		[SuppressMessage("Microsoft.Design", "CA3075:InsecureDTDProcessing")]
 		public override void Load(string filename)
 		{
 			FileName = filename;
@@ -85,11 +81,17 @@ namespace KSoft.Xml
 			var loc_info = (Text.ITextLineInfo)node;
 
 			if (!loc_info.HasLineInfo)
+			{
 				return FileName;
+			}
 			else if (loc_info.LinePosition != 0)
+			{
 				return GetFileLocationStringWithColumn(loc_info, verboseString);
+			}
 			else
+			{
 				return GetFileLocationStringWithLineOnly(loc_info, verboseString);
+			}
 		}
 	};
 }

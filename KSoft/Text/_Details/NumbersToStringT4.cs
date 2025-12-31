@@ -63,8 +63,10 @@ namespace KSoft
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
 			Contract.Requires(startIndex.IsNoneOrPositive());
-			if(startIndex.IsNone())
+			if (startIndex.IsNone())
+			{
 				startIndex = sb.Length;
+			}
 
 			ToStringBuilder(sb, value, (int)radix, startIndex, digits);
 			return sb;
@@ -127,7 +129,9 @@ namespace KSoft
 			} while (value > 0);
 
 			if (is_signed)
+			{
 				sb.Add('-');
+			}
 
 			sb.Reverse(start_index, sb.Count-start_index);
 		}
@@ -158,8 +162,10 @@ namespace KSoft
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
 			Contract.Requires(startIndex.IsNoneOrPositive());
-			if(startIndex.IsNone())
+			if (startIndex.IsNone())
+			{
 				startIndex = sb.Length;
+			}
 
 			ToStringBuilder(sb, value, (int)radix, startIndex, digits);
 			return sb;
@@ -226,8 +232,10 @@ namespace KSoft
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
 			Contract.Requires(startIndex.IsNoneOrPositive());
-			if(startIndex.IsNone())
+			if (startIndex.IsNone())
+			{
 				startIndex = sb.Length;
+			}
 
 			ToStringBuilder(sb, value, (int)radix, startIndex, digits);
 			return sb;
@@ -290,7 +298,9 @@ namespace KSoft
 			} while (value > 0);
 
 			if (is_signed)
+			{
 				sb.Add('-');
+			}
 
 			sb.Reverse(start_index, sb.Count-start_index);
 		}
@@ -321,8 +331,10 @@ namespace KSoft
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
 			Contract.Requires(startIndex.IsNoneOrPositive());
-			if(startIndex.IsNone())
+			if (startIndex.IsNone())
+			{
 				startIndex = sb.Length;
+			}
 
 			ToStringBuilder(sb, value, (int)radix, startIndex, digits);
 			return sb;
@@ -419,15 +431,21 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
+					{
 						chars.Add(desc.Separator);
+					}
 					else
+					{
 						needs_separator = true;
+					}
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
 
 				if (writeTerminator != null && writeTerminator(values))
+				{
 					chars.Add(desc.Terminator);
+				}
 			}
 
 			return new string(chars.ToArray());
@@ -449,15 +467,21 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
+					{
 						chars.Add(desc.Separator);
+					}
 					else
+					{
 						needs_separator = true;
+					}
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
 
 				if (writeTerminator != null && writeTerminator(values))
+				{
 					chars.Add(desc.Terminator);
+				}
 			}
 
 			return new string(chars.ToArray());
@@ -479,15 +503,21 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
+					{
 						chars.Add(desc.Separator);
+					}
 					else
+					{
 						needs_separator = true;
+					}
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
 
 				if (writeTerminator != null && writeTerminator(values))
+				{
 					chars.Add(desc.Terminator);
+				}
 			}
 
 			return new string(chars.ToArray());
@@ -509,15 +539,21 @@ namespace KSoft
 				foreach (var value in values)
 				{
 					if (needs_separator)
+					{
 						chars.Add(desc.Separator);
+					}
 					else
+					{
 						needs_separator = true;
+					}
 
 					ToStringBuilder(chars, value, radix, desc.Digits);
 				}
 
 				if (writeTerminator != null && writeTerminator(values))
+				{
 					chars.Add(desc.Terminator);
+				}
 			}
 
 			return new string(chars.ToArray());

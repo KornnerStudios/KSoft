@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
@@ -37,47 +36,39 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool IsSigned(this TypeCode c)
 		{
-			switch (c)
+			return c switch
 			{
-				case TypeCode.SByte:
-				case TypeCode.Int16:
-				case TypeCode.Int32:
-				case TypeCode.Int64:
-					return true;
-
-				default:
-					return false;
-			}
+				TypeCode.SByte or TypeCode.Int16 or TypeCode.Int32 or TypeCode.Int64 => true,
+				_ => false,
+			};
 		}
 
 		[Contracts.Pure]
 		public static bool IsUnsigned(this TypeCode c)
 		{
-			switch (c)
+			return c switch
 			{
-				case TypeCode.Byte:
-				case TypeCode.UInt16:
-				case TypeCode.UInt32:
-				case TypeCode.UInt64:
-					return true;
-
-				default:
-					return false;
-			}
+				TypeCode.Byte or TypeCode.UInt16 or TypeCode.UInt32 or TypeCode.UInt64 => true,
+				_ => false,
+			};
 		}
 		#endregion
 
 		public static string ToStringInvariant(this float v, string format = null)
 		{
 			if (!string.IsNullOrEmpty(format))
+			{
 				return v.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+			}
 
 			return v.ToString(System.Globalization.CultureInfo.InvariantCulture);
 		}
 		public static string ToStringInvariant(this double v, string format = null)
 		{
 			if (!string.IsNullOrEmpty(format))
+			{
 				return v.ToString(format, System.Globalization.CultureInfo.InvariantCulture);
+			}
 
 			return v.ToString(System.Globalization.CultureInfo.InvariantCulture);
 		}
@@ -175,7 +166,9 @@ namespace KSoft
 		public static Exception GetOnlyExceptionOrAll(this AggregateException e)
 		{
 			if (e == null)
+			{
 				return null;
+			}
 
 			//e = e.ReallyFlatten();
 
@@ -246,16 +239,22 @@ namespace KSoft
 		public static string ToBasicString(this Exception e)
 		{
 			if (e == null)
+			{
 				return null;
+			}
 
-			if (!(e is AggregateException ae))
+			if (e is not AggregateException ae)
+			{
 				return e.Message;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var inner in ae.InnerExceptions)
 			{
 				if (inner.TargetSite == null)
+				{
 					continue;
+				}
 
 				sb.AppendLine(inner.Message);
 			}
@@ -265,16 +264,22 @@ namespace KSoft
 		public static string ToVerboseString(this Exception e)
 		{
 			if (e == null)
+			{
 				return null;
+			}
 
-			if (!(e is AggregateException ae))
+			if (e is not AggregateException ae)
+			{
 				return e.ToString();
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var inner in ae.InnerExceptions)
 			{
 				if (inner.TargetSite == null)
+				{
 					continue;
+				}
 
 				sb.AppendLine(inner.Message);
 				var trace = inner.GetKSoftStackTrace();
@@ -290,7 +295,9 @@ namespace KSoft
 			var list = new List<string>();
 			var trace = new System.Diagnostics.StackTrace(e, needFileInfo);
 			if (trace.FrameCount == 0)
+			{
 				return list;
+			}
 
 			var sb = new System.Text.StringBuilder(128);
 			for (int x = 0; x < trace.FrameCount; x++)
@@ -299,37 +306,45 @@ namespace KSoft
 
 				var mb = frame.GetMethod();
 				if (mb == null)
+				{
 					continue;
+				}
 
 				Type classType = mb.DeclaringType;
 				if (classType == null)
+				{
 					continue;
+				}
 
 				// Add namespace.classname:MethodName
 				string ns = classType.Namespace;
 				if (!string.IsNullOrEmpty(ns))
 				{
 					sb.Append(ns);
-					sb.Append(".");
+					sb.Append('.');
 				}
 
 				sb.Append(classType.Name);
-				sb.Append(":");
+				sb.Append(':');
 				sb.Append(mb.Name);
-				sb.Append("(");
+				sb.Append('(');
 
 				bool firstParam = true;
 				foreach (var param in mb.GetParameters())
 				{
 					if (firstParam)
+					{
 						firstParam = false;
+					}
 					else
+					{
 						sb.Append(", ");
+					}
 
 					sb.Append(param.ParameterType.Name);
 				}
 
-				sb.Append(")");
+				sb.Append(')');
 
 				string path = frame.GetFileName();
 				if (path.IsNotNullOrEmpty())
@@ -350,10 +365,10 @@ namespace KSoft
 					int lineNum = frame.GetFileLineNumber();
 					if (lineNum > 0)
 					{
-						sb.Append(":");
+						sb.Append(':');
 						sb.Append(lineNum);
 					}
-					sb.Append(")");
+					sb.Append(')');
 				}
 
 				list.Add(sb.ToString());
@@ -367,7 +382,9 @@ namespace KSoft
 		{
 			var list = GetKSoftStackTraceList(e, needFileInfo);
 			if (list.IsNullOrEmpty())
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder(512);
 			foreach (var line in list)
@@ -380,7 +397,6 @@ namespace KSoft
 		#endregion
 
 		#region String
-		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
 		public static string Format(this string format, params object[] args)
 		{
 			return string.Format(format, args);
@@ -418,7 +434,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool Contains(this string str, char c)
 		{
-			return !string.IsNullOrEmpty(str) && str.IndexOf(c) != -1;
+			return !string.IsNullOrEmpty(str) && str.Contains(c);
 		}
 
 		[Contracts.Pure]
@@ -427,7 +443,9 @@ namespace KSoft
 			Contract.Ensures(!string.IsNullOrEmpty(str) || Contract.Result<int>() == 0);
 
 			if (string.IsNullOrEmpty(str))
+			{
 				return 0;
+			}
 
 			int h = 0;
 			int x;
@@ -439,7 +457,10 @@ namespace KSoft
 			}
 			++end;
 			if (x < end)
+			{
 				h = (h << 5) - h + str[x];
+			}
+
 			return h;
 		}
 
@@ -452,10 +473,14 @@ namespace KSoft
 
 			int x;
 			for (x = 0; s != null && x < s.Length; x++)
+			{
 				buffer[x] = s[x];
+			}
 
 			if (s != null && x == maxBufferSize && nullTerminate)
+			{
 				buffer[x - 1] = '\0';
+			}
 
 			return buffer;
 		}
@@ -472,15 +497,19 @@ namespace KSoft
 			{
 				char c = s[x];
 				if (c < 0 || c > sbyte.MaxValue)
+				{
 					throw new System.IO.InvalidDataException(string.Format(KSoft.Util.InvariantCultureInfo,
 						"0x{0:X4} does not look like ASCII. #{1} in '{2}'",
 						(int)c, x, s));
+				}
 
 				buffer[x] = (byte)c;
 			}
 
 			if (s != null && x == maxBufferSize && nullTerminate)
+			{
 				buffer[x - 1] = 0;
+			}
 
 			return buffer;
 		}
@@ -498,7 +527,6 @@ namespace KSoft
 			return null;
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
 		public static string AddFormat(this ICollection<string> collection, string format, params object[] args)
 		{
 			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
@@ -516,7 +544,9 @@ namespace KSoft
 			, string valueSeperator = ",")
 		{
 			if (list.IsNullOrEmpty() || valueSeperator.IsNullOrEmpty())
+			{
 				return "";
+			}
 
 			return string.Join(valueSeperator, list.ToArray());
 		}
@@ -530,7 +560,9 @@ namespace KSoft
 			foreach (var str in list)
 			{
 				if (sb.Length > 0)
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(str);
 			}
@@ -556,13 +588,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (array == null || array.Length == 0)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in array)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToString());
 			}
@@ -579,8 +615,12 @@ namespace KSoft
 			var zero = new T();
 
 			for (int x = 0; x < array.Length; x++)
+			{
 				if (!array[x].Equals(zero))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -593,8 +633,12 @@ namespace KSoft
 			var zero = new T();
 
 			for (int x = 0; x < array.Length; x++)
+			{
 				if (!array[x].Equals(zero))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -606,13 +650,21 @@ namespace KSoft
 			Contract.Requires(lhsOffset < lhs.Length);
 
 			if (lhs == rhs)
+			{
 				return true;
+			}
 			else if (rhs.Length < (lhs.Length-lhsOffset))
+			{
 				return false;
+			}
 
 			for (int x = lhsOffset; x < (lhs.Length-lhsOffset); x++)
+			{
 				if (!rhs[x].Equals(lhs[x]))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -624,8 +676,12 @@ namespace KSoft
 			Contract.Requires<ArgumentNullException>(match != null);
 
 			for (int x = 0; x < array.Length; x++)
+			{
 				if (match(array[x]))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -647,7 +703,9 @@ namespace KSoft
 			{
 				var zero = default(T);
 				for (int x = 0; x < array.Length; x++)
+				{
 					array[x] = zero;
+				}
 			}
 			else
 			{
@@ -666,7 +724,9 @@ namespace KSoft
 			if (length <= loopThreshold)
 			{
 				for (int x = 0; x < array.Length; x++)
+				{
 					array[x] = fillValue;
+				}
 			}
 			else
 			{
@@ -811,12 +871,16 @@ namespace KSoft
 			Contract.Requires(converter != null);
 
 			if (list == null)
+			{
 				return null;
+			}
 
 			var array = new TOutput[list.Count];
 
 			for (int x = 0; x < array.Length; x++)
+			{
 				array[x] = converter(list[x]);
+			}
 
 			return array;
 		}
@@ -849,7 +913,9 @@ namespace KSoft
 			for (int x = startIndex; x < end_index; x++)
 			{
 				if (match(list[x]))
+				{
 					return x;
+				}
 			}
 
 			return TypeExtensions.kNone;
@@ -916,13 +982,21 @@ namespace KSoft
 			Contract.Requires(lhsOffset < lhs.Count);
 
 			if (lhs == rhs)
+			{
 				return true;
+			}
 			else if (rhs.Count < (lhs.Count - lhsOffset))
+			{
 				return false;
+			}
 
 			for (int x = lhsOffset; x < (lhs.Count - lhsOffset); x++)
+			{
 				if (!rhs[x].Equals(lhs[x]))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -934,13 +1008,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (e == null)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToString());
 			}
@@ -954,13 +1032,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (e == null)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToBinaryString());
 			}
@@ -974,13 +1056,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (e == null)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToLowerString());
 			}
@@ -995,13 +1081,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (e == null)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToStringInvariant(format));
 			}
@@ -1016,13 +1106,17 @@ namespace KSoft
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (e == null)
+			{
 				return string.Empty;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var obj in e)
 			{
 				if (sb.Length > 0 && valueSeperator.IsNotNullOrEmpty())
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(obj.ToStringInvariant(format));
 			}
@@ -1090,9 +1184,14 @@ namespace KSoft
 			bool result = true;
 
 			if (permissions.CanRead())
+			{
 				result &= s.CanRead;
+			}
+
 			if (permissions.CanWrite())
+			{
 				result &= s.CanWrite;
+			}
 
 			return result;
 		}
@@ -1102,7 +1201,9 @@ namespace KSoft
 			Contract.Requires(r != null);
 
 			if (!r.BaseStream.CanSeek)
+			{
 				return -1;
+			}
 
 			int b = r.ReadByte();
 			r.BaseStream.Seek(-sizeof(byte), System.IO.SeekOrigin.Current);
@@ -1123,9 +1224,13 @@ namespace KSoft
 			string result;
 
 			if (filePos <= uint.MaxValue)
+			{
 				result = filePos.ToString("X8", Util.InvariantCultureInfo);
+			}
 			else
+			{
 				result = filePos.ToString("X16", Util.InvariantCultureInfo);
+			}
 
 			return result;
 		}
@@ -1161,7 +1266,9 @@ namespace KSoft
 
 			long orig_pos = inputStream.Position;
 			if (offset.IsNotNone() && offset != orig_pos)
+			{
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
+			}
 
 			for (long bytes_remaining = count; bytes_remaining > 0; )
 			{
@@ -1171,16 +1278,22 @@ namespace KSoft
 				{
 					int n = inputStream.Read(buffer, num_bytes_read, (int)num_bytes_to_read);
 					if (n == 0)
+					{
 						break;
+					}
 
 					num_bytes_read += n;
 					num_bytes_to_read -= n;
 				} while (num_bytes_to_read > 0);
 
 				if (num_bytes_read > 0)
+				{
 					algo.TransformBlock(buffer, 0, num_bytes_read, null, 0);
+				}
 				else
+				{
 					break;
+				}
 
 				bytes_remaining -= num_bytes_read;
 			}
@@ -1188,7 +1301,9 @@ namespace KSoft
 			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
 
 			if (restorePosition)
+			{
 				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
+			}
 
 			return algo.Hash;
 		}
@@ -1211,7 +1326,9 @@ namespace KSoft
 
 			long orig_pos = inputStream.Position;
 			if (offset.IsNotNone() && offset != orig_pos)
+			{
 				inputStream.Seek(offset, System.IO.SeekOrigin.Begin);
+			}
 
 			for (long bytes_remaining = count; bytes_remaining > 0; )
 			{
@@ -1221,16 +1338,22 @@ namespace KSoft
 				{
 					int n = inputStream.Read(buffer, num_bytes_read, (int)num_bytes_to_read);
 					if (n == 0)
+					{
 						break;
+					}
 
 					num_bytes_read += n;
 					num_bytes_to_read -= n;
 				} while (num_bytes_to_read > 0);
 
 				if (num_bytes_read > 0)
+				{
 					algo.TransformBlock(buffer, 0, num_bytes_read, null, 0);
+				}
 				else
+				{
 					break;
+				}
 
 				bytes_remaining -= num_bytes_read;
 			}
@@ -1238,7 +1361,9 @@ namespace KSoft
 			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
 
 			if (restorePosition)
+			{
 				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
+			}
 
 			return algo.Hash;
 		}
@@ -1249,7 +1374,9 @@ namespace KSoft
 			object sender, PropertyChangedEventArgs args)
 		{
 			if (handler != null)
+			{
 				handler(sender, args);
+			}
 		}
 		public static void SafeNotify(this PropertyChangedEventHandler handler,
 			object sender, PropertyChangedEventArgs[] argsList, int startIndex = 0)
@@ -1270,7 +1397,9 @@ namespace KSoft
 			object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)
 		{
 			if (handler != null)
+			{
 				handler(sender, args);
+			}
 		}
 
 		// Based on http://www.codeproject.com/KB/cs/EventSafeTrigger.aspx
@@ -1278,7 +1407,9 @@ namespace KSoft
 			object sender, EventArgs eventArgs)
 		{
 			if (eventToTrigger != null)
+			{
 				eventToTrigger(sender, eventArgs);
+			}
 		}
 
 		public static void SafeTrigger<TEventArgs>(this EventHandler<TEventArgs> eventToTrigger,
@@ -1286,7 +1417,9 @@ namespace KSoft
 			where TEventArgs : EventArgs
 		{
 			if (eventToTrigger != null)
+			{
 				eventToTrigger(sender, eventArgs);
+			}
 		}
 
 		public static TReturnType SafeTrigger<TEventArgs, TReturnType>
@@ -1302,7 +1435,9 @@ namespace KSoft
 				return retrieveDataFunction(eventArgs);
 			}
 			else
-				return default(TReturnType);
+			{
+				return default;
+			}
 		}
 		#endregion
 
@@ -1381,16 +1516,24 @@ namespace KSoft
 			where T : struct, IEquatable<T>
 		{
 			if (theObj == null)
+			{
 				return false;
+			}
 
 			if (!overrideChecks)
+			{
 				if (field.Equals(value))
+				{
 					return false;
+				}
+			}
 
 			field = value;
 
 			if (handler != null)
+			{
 				handler(theObj, new PropertyChangedEventArgs(propertyName));
+			}
 
 			return true;
 		}
@@ -1402,16 +1545,24 @@ namespace KSoft
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			if (theObj == null)
+			{
 				return false;
+			}
 
 			if (!overrideChecks)
+			{
 				if (field.ToInt64(null) == value.ToInt64(null))
+				{
 					return false;
+				}
+			}
 
 			field = value;
 
 			if (handler != null)
+			{
 				handler(theObj, new PropertyChangedEventArgs(propertyName));
+			}
 
 			return true;
 		}
@@ -1423,23 +1574,31 @@ namespace KSoft
 			where T : class, IEquatable<T>
 		{
 			if (theObj == null)
+			{
 				return false;
+			}
 
 			if (!overrideChecks)
 			{
 				if (field == null)
 				{
 					if (value == null)
+					{
 						return false;
+					}
 				}
 				else if (field.Equals(value))
+				{
 					return false;
+				}
 			}
 
 			field = value;
 
 			if (handler != null)
+			{
 				handler(theObj, new PropertyChangedEventArgs(propertyName));
+			}
 
 			return true;
 		}
@@ -1450,16 +1609,24 @@ namespace KSoft
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
 			if (theObj == null)
+			{
 				return false;
+			}
 
 			if (!overrideChecks)
+			{
 				if (EqualityComparer<T>.Default.Equals(field, value))
+				{
 					return false;
+				}
+			}
 
 			field = value;
 
 			if (handler != null)
+			{
 				handler(theObj, new PropertyChangedEventArgs(propertyName));
+			}
 
 			return true;
 		}
@@ -1475,7 +1642,9 @@ namespace KSoft
 			private static Func<ObservableCollection<T>, IList<T>> gGetItems;
 			public static Func<ObservableCollection<T>, IList<T>> GetItems { get {
 				if (gGetItems == null)
+				{
 					gGetItems = Reflection.Util.GenerateMemberGetter<ObservableCollection<T>, IList<T>>("Items");
+				}
 
 				return gGetItems;
 			} }
@@ -1483,8 +1652,10 @@ namespace KSoft
 			private static OnPropertyChangedDelegateWithThis gOnPropertyChangedFunc;
 			public static OnPropertyChangedDelegateWithThis OnPropertyChangedFunc { get {
 				if (gOnPropertyChangedFunc == null)
+				{
 					gOnPropertyChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnPropertyChangedDelegateWithThis, OnPropertyChangedDelegate>
 						("OnPropertyChanged");
+				}
 
 				return gOnPropertyChangedFunc;
 			} }
@@ -1492,8 +1663,10 @@ namespace KSoft
 			private static OnCollectionChangedWithThis gOnCollectionChangedFunc;
 			public static OnCollectionChangedWithThis OnCollectionChangedFunc { get {
 				if (gOnCollectionChangedFunc == null)
+				{
 					gOnCollectionChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnCollectionChangedWithThis, OnCollectionChangedDelegate>
 						("OnCollectionChanged");
+				}
 
 				return gOnCollectionChangedFunc;
 			} }
@@ -1503,7 +1676,9 @@ namespace KSoft
 		public static bool ItemsIsGenericList<T>(this ObservableCollection<T> list)
 		{
 			if (list == null)
+			{
 				return false;
+			}
 
 			var items = ObservableCollectionHacks<T>.GetItems(list);
 

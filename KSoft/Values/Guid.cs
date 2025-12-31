@@ -47,7 +47,6 @@ namespace KSoft.Values
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=KGuid.kSizeOf)]
 	[Interop.ComVisible(true)]
 	[Serializable]
-	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public struct KGuid
 		: IO.IEndianStreamable, IO.IEndianStreamSerializable
 		, IComparable, IComparable<KGuid>, IComparable<Guid>
@@ -94,7 +93,6 @@ namespace KSoft.Values
 			public static readonly Func<Guid, byte>[] GetData4;
 			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[] SetData4;
 
-			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static SysGuid()
 			{
 				GetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
@@ -104,7 +102,7 @@ namespace KSoft.Values
 				GetData3 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData3Name);
 				SetData3 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	(kData3Name);
 
-				string[] kData4Names = { "_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k", };
+				string[] kData4Names = ["_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k"];
 				GetData4 = new Func<Guid, byte>[kData4Names.Length];
 				SetData4 = new Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[kData4Names.Length];
 
@@ -116,10 +114,10 @@ namespace KSoft.Values
 			}
 		};
 
-		public int Data1 { get { return SysGuid.GetData1(mData); } }
-		public int Data2 { get { return SysGuid.GetData2(mData); } }
-		public int Data3 { get { return SysGuid.GetData3(mData); } }
-		public long Data4 { get {
+		public readonly int Data1 { get { return SysGuid.GetData1(mData); } }
+		public readonly int Data2 { get { return SysGuid.GetData2(mData); } }
+		public readonly int Data3 { get { return SysGuid.GetData3(mData); } }
+		public readonly long Data4 { get {
 			byte	d = SysGuid.GetData4[0](mData), e = SysGuid.GetData4[1](mData),
 					f = SysGuid.GetData4[2](mData), g = SysGuid.GetData4[3](mData),
 					h = SysGuid.GetData4[4](mData), i = SysGuid.GetData4[5](mData),
@@ -133,19 +131,21 @@ namespace KSoft.Values
 			result |= h; result <<= Bits.kByteBitCount;
 			result |= i; result <<= Bits.kByteBitCount;
 			result |= j; result <<= Bits.kByteBitCount;
-			result = k;
+			result |= k;
 
 			return result;
 		} }
 		#endregion
 
 		[Interop.FieldOffset(0)] Guid mData;
+#pragma warning disable IDE0044 // Add readonly modifier
 		[Interop.FieldOffset(0)] ulong mDataHi;
 		[Interop.FieldOffset(8)] ulong mDataLo;
+#pragma warning restore IDE0044 // Add readonly modifier
 
-		public Guid ToGuid() => mData;
+		public readonly Guid ToGuid() => mData;
 
-		public long MostSignificantBits { get {
+		public readonly long MostSignificantBits { get {
 			ulong result = (uint)SysGuid.GetData1(mData);
 			result <<= Bits.kInt32BitCount;
 
@@ -156,33 +156,41 @@ namespace KSoft.Values
 
 			return (long)result;
 		} }
-		public long LeastSignificantBits { get {
+		public readonly long LeastSignificantBits { get {
 			long result = Data4;
 
 			return result;
 		} }
 
 		#region Version and Variant
-		public UuidVersion Version { get => (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift); }
+		public readonly UuidVersion Version => (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift);
 
-		public UuidVariant Variant { get {
+		public readonly UuidVariant Variant { get {
 			int raw = SysGuid.GetData4[0](mData) >> kVariantBitShift;
 
 			// Special condition due to the 'type' bits starting in the right-most (ie, MSB) bits,
 			// plus for NCS and Standard the lower two bits are documented in RFC as being 'don't care'
 			if ((raw >> 2) == 0)
-				return UuidVariant.NCS;
-			else if ((raw >> 2) == 1)
-				return UuidVariant.Standard;
-			else if (raw == 6)
-				return UuidVariant.Microsoft;
-			else // raw == 7
-				return UuidVariant.Reserved;
-		} }
+				{
+					return UuidVariant.NCS;
+				}
+				else if ((raw >> 2) == 1)
+				{
+					return UuidVariant.Standard;
+				}
+				else if (raw == 6)
+				{
+					return UuidVariant.Microsoft;
+				}
+				else // raw == 7
+				{
+					return UuidVariant.Reserved;
+				}
+			} }
 		#endregion
 
 		#region TimeBased properties
-		public long Timestamp { get {
+		public readonly long Timestamp { get {
 			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the Timestamp of a non-time-based GUID");
 
@@ -194,7 +202,7 @@ namespace KSoft.Values
 			return (long)result;
 		} }
 
-		public int ClockSequence { get {
+		public readonly int ClockSequence { get {
 			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the ClockSequence of a non-time-based GUID");
 
@@ -206,16 +214,18 @@ namespace KSoft.Values
 			return (hi << 8) | lo;
 		} }
 
-		public long Node { get {
+		public readonly long Node { get {
 			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
 				"Tried to get the Node of a non-time-based GUID");
 
 			long result = 0;
 
 			for (int x = 2; x < SysGuid.GetData4.Length; x++, result <<= Bits.kByteBitCount)
-				result |= SysGuid.GetData4[x](mData);
+				{
+					result |= SysGuid.GetData4[x](mData);
+				}
 
-			return result;
+				return result;
 		} }
 		#endregion
 
@@ -249,25 +259,22 @@ namespace KSoft.Values
 
 		#region ToString
 		/// <see cref="Guid.ToString()"/>
-		public override string ToString()								=> mData.ToString();
+		public override readonly string ToString()								=> mData.ToString();
 		/// <see cref="Guid.ToString(string)"/>
-		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
-		public string ToString(string format)							=> mData.ToString(format);
+		public readonly string ToString(string format)							=> mData.ToString(format);
 		/// <see cref="Guid.ToString(string, IFormatProvider)"/>
-		public string ToString(string format, IFormatProvider provider)	=> mData.ToString(format, provider);
+		public readonly string ToString(string format, IFormatProvider provider)=> mData.ToString(format, provider);
 
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
 		/// </summary>
 		/// <returns></returns>
-		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
-		internal string ToStringNoStyle()								=> mData.ToString(kFormatNoStyle);
+		internal readonly string ToStringNoStyle()								=> mData.ToString(kFormatNoStyle);
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <returns></returns>
-		[SuppressMessage("Microsoft.Design", "CA1305:SpecifyIFormatProvider")]
-		internal string ToStringHyphenated()							=> mData.ToString(kFormatHyphenated);
+		internal readonly string ToStringHyphenated()							=> mData.ToString(kFormatHyphenated);
 		#endregion
 
 		#region IEndianStreamable Members
@@ -278,10 +285,12 @@ namespace KSoft.Values
 			SysGuid.SetData3(ref mData, s.ReadInt16());
 
 			foreach (var data4 in SysGuid.SetData4)
+			{
 				data4(ref mData, s.ReadByte());
+			}
 		}
 
-		public void Write(IO.EndianWriter s)
+		public readonly void Write(IO.EndianWriter s)
 		{
 			int data1 = SysGuid.GetData1(mData);
 			short data2 = SysGuid.GetData2(mData);
@@ -292,46 +301,62 @@ namespace KSoft.Values
 			s.Write(data3);
 
 			foreach (var data4 in SysGuid.GetData4)
+			{
 				s.Write(data4(mData));
+			}
 		}
 
 		public void Serialize(IO.EndianStream s)
 		{
 			if (s.IsReading)
+			{
 				Read(s.Reader);
+			}
 			else if (s.IsWriting)
+			{
 				Write(s.Writer);
+			}
 		}
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(object obj)
+		public readonly int CompareTo(object obj)
 		{
 			if (obj == null)
+			{
 				return 1;
-			else if (obj is KGuid)
-				return CompareTo((KGuid)obj);
-			else if (obj is Guid)
-				return CompareTo((Guid)obj);
+			}
+			else if (obj is KGuid kguid)
+			{
+				return CompareTo(kguid);
+			}
+			else if (obj is Guid guid)
+			{
+				return CompareTo(guid);
+			}
 
 			throw new InvalidCastException(obj.GetType().ToString());
 		}
-		public int CompareTo(KGuid other)	=> mData.CompareTo(other.mData);
-		public int CompareTo(Guid other)	=> mData.CompareTo(other);
+		public readonly int CompareTo(KGuid other)	=> mData.CompareTo(other.mData);
+		public readonly int CompareTo(Guid other)	=> mData.CompareTo(other);
 		#endregion
 
 		#region IEquatable Members
-		public override bool Equals(object obj)
+		public override readonly bool Equals(object obj)
 		{
 			if (obj is KGuid kg)
+			{
 				return Equals(this, kg);
+			}
 			else if (obj is Guid g)
+			{
 				return Equals(g);
+			}
 
 			return false;
 		}
 
-		public bool Equals(KGuid x, KGuid y)
+		public readonly bool Equals(KGuid x, KGuid y)
 		{
 			// We don't compare using mData. System.Guid's Equals implementation compares each individual A...K field
 
@@ -339,11 +364,11 @@ namespace KSoft.Values
 				x.mDataHi == y.mDataHi &&
 				x.mDataLo == y.mDataLo;
 		}
-		public bool Equals(KGuid other)		=> Equals(this, other);
-		public bool Equals(Guid other)		=> mData == other;
+		public readonly bool Equals(KGuid other)		=> Equals(this, other);
+		public readonly bool Equals(Guid other)		=> mData == other;
 
-		public override int GetHashCode()	=> mData.GetHashCode();
-		public int GetHashCode(KGuid obj)	=> obj.GetHashCode();
+		public override readonly int GetHashCode()	=> mData.GetHashCode();
+		public readonly int GetHashCode(KGuid obj)	=> obj.GetHashCode();
 
 		public static bool operator ==(KGuid a, KGuid b)
 		{
@@ -360,52 +385,67 @@ namespace KSoft.Values
 		#endregion
 
 		#region IComparer<KGuid> Members
-		int System.Collections.IComparer.Compare(object x, object y)
+		readonly int System.Collections.IComparer.Compare(object x, object y)
 		{
 			if (x == y)
-				return 0;
-			if (x == null)
-				return -1;
-			if (y == null)
-				return 1;
-
-			if (x is KGuid)
 			{
-				if (y is KGuid)
-					return ((KGuid)x).CompareTo((KGuid)y);
-				if (y is Guid)
-					return ((KGuid)x).CompareTo((Guid)y);
+				return 0;
 			}
-			else if (x is Guid && y is KGuid)
-				return -((KGuid)y).CompareTo((Guid)x);
+
+			if (x == null)
+			{
+				return -1;
+			}
+
+			if (y == null)
+			{
+				return 1;
+			}
+
+			if (x is KGuid x_kguid)
+			{
+				if (y is KGuid y_kguid)
+				{
+					return x_kguid.CompareTo(y_kguid);
+				}
+
+				if (y is Guid y_guid)
+				{
+					return x_kguid.CompareTo(y_guid);
+				}
+			}
+			else if (x is Guid x_guid && y is KGuid y_kguid)
+			{
+				return -y_kguid.CompareTo(x_guid);
+			}
 
 			throw new InvalidCastException(x.GetType().ToString());
 		}
 
-		public int Compare(KGuid x, KGuid y) => x.CompareTo(y);
+		public readonly int Compare(KGuid x, KGuid y) => x.CompareTo(y);
 		#endregion
 
-		public static KGuid Empty { get => new KGuid(); }
-		public bool IsEmpty { get => mDataHi == 0 && mDataLo == 0; }
-		public bool IsNotEmpty { get => mDataHi != 0 || mDataLo != 0; }
+		public static KGuid Empty { get => new(); }
+		public readonly bool IsEmpty { get => mDataHi == 0 && mDataLo == 0; }
+		public readonly bool IsNotEmpty { get => mDataHi != 0 || mDataLo != 0; }
 
-		public static KGuid NewGuid() => new KGuid(Guid.NewGuid());
+		public static KGuid NewGuid() => new(Guid.NewGuid());
 
 		#region Parse
-		public static KGuid Parse(string input) => new KGuid(Guid.Parse(input));
-		public static KGuid ParseExact(string input, string format) => new KGuid(Guid.ParseExact(input, format));
+		public static KGuid Parse(string input) => new(Guid.Parse(input));
+		public static KGuid ParseExact(string input, string format) => new(Guid.ParseExact(input, format));
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactNoStyle(string input) => new KGuid(Guid.ParseExact(input, kFormatNoStyle));
+		internal static KGuid ParseExactNoStyle(string input) => new(Guid.ParseExact(input, kFormatNoStyle));
 		/// <summary>
 		/// 32 digits separated by hyphens: 00000000-0000-0000-0000-000000000000
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		internal static KGuid ParseExactHyphenated(string input) => new KGuid(Guid.ParseExact(input, kFormatHyphenated));
+		internal static KGuid ParseExactHyphenated(string input) => new(Guid.ParseExact(input, kFormatHyphenated));
 
 		public static bool TryParse(string input, out KGuid result)
 		{
@@ -434,9 +474,9 @@ namespace KSoft.Values
 		#endregion
 
 		#region Byte Utils
-		public byte[] ToByteArray() => mData.ToByteArray();
+		public readonly byte[] ToByteArray() => mData.ToByteArray();
 
-		public void ToByteBuffer(byte[] buffer, int index = 0)
+		public readonly void ToByteBuffer(byte[] buffer, int index = 0)
 		{
 			Contract.Requires<ArgumentNullException>(buffer != null);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
@@ -446,7 +486,9 @@ namespace KSoft.Values
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData2(mData)); index += sizeof(short);
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData3(mData)); index += sizeof(short);
 			for (int x = 0; x < 8; x++, index++)
+			{
 				buffer[x] = SysGuid.GetData4[x](mData);
+			}
 		}
 		#endregion
 	};

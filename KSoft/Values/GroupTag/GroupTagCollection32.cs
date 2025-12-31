@@ -52,7 +52,9 @@ namespace KSoft.Values
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
 			if (sort)
+			{
 				Sort();
+			}
 		}
 		/// <summary>Create a collection using an explicit list of group tags and a <see cref="Guid"/></summary>
 		/// <param name="uuid">Guid for this group tag collection</param>
@@ -63,7 +65,9 @@ namespace KSoft.Values
 			Contract.Requires<ArgumentNullException>(groupTags != null);
 
 			if (sort)
+			{
 				Sort();
+			}
 		}
 		#endregion
 

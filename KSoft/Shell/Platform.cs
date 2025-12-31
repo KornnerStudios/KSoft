@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -15,8 +14,7 @@ namespace KSoft.Shell
 
 	/// <summary>Represents a platform definition</summary>
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
-	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
-	public struct Platform
+	public readonly struct Platform
 		: IComparer<Platform>, System.Collections.IComparer
 		, IComparable<Platform>, IComparable
 		, IEquatable<Platform>
@@ -27,9 +25,9 @@ namespace KSoft.Shell
 		static class Constants
 		{
 			public static readonly BitFieldTraits kProcessorBitField =
-				new BitFieldTraits(Processor.BitCount);
+				new(Processor.BitCount);
 			public static readonly BitFieldTraits kPlatformTypeBitField =
-				new BitFieldTraits(BitEncoders.PlatformType.BitCountTrait, kProcessorBitField);
+				new(BitEncoders.PlatformType.BitCountTrait, kProcessorBitField);
 
 			public static readonly BitFieldTraits kLastBitField =
 				kPlatformTypeBitField;
@@ -92,7 +90,9 @@ namespace KSoft.Shell
 		public override bool Equals(object obj)
 		{
 			if (obj is Platform p)
+			{
 				return this.mHandle == p.mHandle;
+			}
 
 			return false;
 		}
@@ -193,49 +193,49 @@ namespace KSoft.Shell
 			'WIWI' - Nintendo Wii
 			'CUBE' - GameCube
 		*/
-		static readonly Platform kUndefined = new Platform(PlatformType.Undefined, Processor.Undefined);
+		static readonly Platform kUndefined = new(PlatformType.Undefined, Processor.Undefined);
 		/// <summary>Undefined platform</summary>
 		/// <remarks>Only use for comparison operations, don't query Processor properties. Results will be...undefined</remarks>
 		public static Platform Undefined { get { return kUndefined; } }
 
 		#region Windows
-		static readonly Platform kWin32 = new Platform(PlatformType.Windows, Processor.Intelx86);
+		static readonly Platform kWin32 = new(PlatformType.Windows, Processor.Intelx86);
 		/// <summary>Microsoft Windows 32-bit platform</summary>
 		public static Platform Win32 { get { return kWin32; } }
 
-		static readonly Platform kWin64 = new Platform(PlatformType.Windows, Processor.Intelx64);
+		static readonly Platform kWin64 = new(PlatformType.Windows, Processor.Intelx64);
 		/// <summary>Microsoft Windows 64-bit platform</summary>
 		public static Platform Win64 { get { return kWin64; } }
 		#endregion
 
 		#region Xbox
-		static readonly Platform kXbox1 = new Platform(PlatformType.Xbox, Processor.Intelx86);
+		static readonly Platform kXbox1 = new(PlatformType.Xbox, Processor.Intelx86);
 		/// <summary>Microsoft Xbox (Original) platform</summary>
 		public static Platform Xbox1 { get { return kXbox1; } }
 
-		static readonly Platform kXbox360 = new Platform(PlatformType.Xbox, Processor.PowerPcXenon);
+		static readonly Platform kXbox360 = new(PlatformType.Xbox, Processor.PowerPcXenon);
 		/// <summary>Microsoft Xbox 360 platform</summary>
 		public static Platform Xbox360 { get { return kXbox360; } }
 
-		static readonly Platform kXboxDurango = new Platform(PlatformType.Xbox, Processor.Intelx64);
+		static readonly Platform kXboxDurango = new(PlatformType.Xbox, Processor.Intelx64);
 		/// <summary>Microsoft Xbox One platform</summary>
 		public static Platform XboxDurango { get { return kXboxDurango; } }
 		#endregion
 
 		#region Mac
-		static readonly Platform kMac32 = new Platform(PlatformType.Mac, Processor.PowerPc32);
+		static readonly Platform kMac32 = new(PlatformType.Mac, Processor.PowerPc32);
 		/// <summary>Apple's Macintosh PowerPC 32-bit platform</summary>
 		public static Platform Mac32 { get { return kMac32; } }
 
-		static readonly Platform kMac64 = new Platform(PlatformType.Mac, Processor.PowerPc64);
+		static readonly Platform kMac64 = new(PlatformType.Mac, Processor.PowerPc64);
 		/// <summary>Apple's Macintosh PowerPC 64-bit platform</summary>
 		public static Platform Mac64 { get { return kMac64; } }
 
-		static readonly Platform kMacIntel32 = new Platform(PlatformType.Mac, Processor.Intelx86);
+		static readonly Platform kMacIntel32 = new(PlatformType.Mac, Processor.Intelx86);
 		/// <summary>Apple's Macintosh for Intel 32-bit platform</summary>
 		public static Platform MacIntel32 { get { return kMacIntel32; } }
 
-		static readonly Platform kMacIntel64 = new Platform(PlatformType.Mac, Processor.Intelx64);
+		static readonly Platform kMacIntel64 = new(PlatformType.Mac, Processor.Intelx64);
 		/// <summary>Apple's Macintosh for Intel 64-bit platform</summary>
 		public static Platform MacIntel64 { get { return kMacIntel64; } }
 		#endregion
@@ -246,8 +246,6 @@ namespace KSoft.Shell
 			internal static readonly bool kIsMonoRuntime;
 			internal static readonly Platform kEnvironment;
 
-			[SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
-			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static OperatingEnvironment()
 			{
 				kIsMonoRuntime = System.Type.GetType("Mono.Runtime") != null;

@@ -15,122 +15,124 @@ namespace KSoft.Xml
 		#region Constructors
 		public XmlSerializerWithDeserializeCallback(Type type)
 			: base(type)
-        {
-        }
+		{
+		}
 
-        public XmlSerializerWithDeserializeCallback(XmlTypeMapping xmlTypeMapping)
+		public XmlSerializerWithDeserializeCallback(XmlTypeMapping xmlTypeMapping)
 			: base(xmlTypeMapping)
-        {
-        }
+		{
+		}
 
-        public XmlSerializerWithDeserializeCallback(Type type, string defaultNamespace)
+		public XmlSerializerWithDeserializeCallback(Type type, string defaultNamespace)
 			: base(type, defaultNamespace)
-        {
-        }
+		{
+		}
 
-        public XmlSerializerWithDeserializeCallback(Type type, Type[] extraTypes)
+		public XmlSerializerWithDeserializeCallback(Type type, Type[] extraTypes)
 			: base(type, extraTypes)
-        {
-        }
+		{
+		}
 
-        public XmlSerializerWithDeserializeCallback(Type type, XmlAttributeOverrides overrides)
+		public XmlSerializerWithDeserializeCallback(Type type, XmlAttributeOverrides overrides)
 			: base(type, overrides)
-        {
-        }
+		{
+		}
 
-        public XmlSerializerWithDeserializeCallback(Type type, XmlRootAttribute root)
+		public XmlSerializerWithDeserializeCallback(Type type, XmlRootAttribute root)
 			: base(type, root)
-        {
-        }
+		{
+		}
 
 		public XmlSerializerWithDeserializeCallback(Type type, XmlAttributeOverrides overrides, Type[] extraTypes,
-            XmlRootAttribute root, string defaultNamespace)
+			XmlRootAttribute root, string defaultNamespace)
 			: base(type, overrides, extraTypes, root, defaultNamespace)
-        {
-        }
+		{
+		}
 
 		public XmlSerializerWithDeserializeCallback(Type type, XmlAttributeOverrides overrides, Type[] extraTypes,
-            XmlRootAttribute root, string defaultNamespace, string location)
-            : base(type, overrides, extraTypes, root, defaultNamespace, location)
-        {
-        }
+			XmlRootAttribute root, string defaultNamespace, string location)
+			: base(type, overrides, extraTypes, root, defaultNamespace, location)
+		{
+		}
 		#endregion
 
 #if false // CA5369:UseXMLReaderForDeserialize
 		public new object Deserialize(Stream stream)
-        {
-            var result = base.Deserialize(stream);
+		{
+			var result = base.Deserialize(stream);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 
-        public new object Deserialize(TextReader textReader)
-        {
-            var result = base.Deserialize(textReader);
+		public new object Deserialize(TextReader textReader)
+		{
+			var result = base.Deserialize(textReader);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 #endif
 
 		public new object Deserialize(XmlReader xmlReader)
-        {
-            var result = base.Deserialize(xmlReader);
+		{
+			var result = base.Deserialize(xmlReader);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 
 #if false // CA5369:UseXMLReaderForDeserialize
-        public new object Deserialize(XmlSerializationReader reader)
-        {
-            var result = base.Deserialize(reader);
+		public new object Deserialize(XmlSerializationReader reader)
+		{
+			var result = base.Deserialize(reader);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 #endif
 
 		public new object Deserialize(XmlReader xmlReader, string encodingStyle)
-        {
-            var result = base.Deserialize(xmlReader, encodingStyle);
+		{
+			var result = base.Deserialize(xmlReader, encodingStyle);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 
-        public new object Deserialize(XmlReader xmlReader, XmlDeserializationEvents events)
-        {
-            var result = base.Deserialize(xmlReader, events);
+		public new object Deserialize(XmlReader xmlReader, XmlDeserializationEvents events)
+		{
+			var result = base.Deserialize(xmlReader, events);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 
-        public new object Deserialize(XmlReader xmlReader, string encodingStyle, XmlDeserializationEvents events)
-        {
-            var result = base.Deserialize(xmlReader, encodingStyle, events);
+		public new object Deserialize(XmlReader xmlReader, string encodingStyle, XmlDeserializationEvents events)
+		{
+			var result = base.Deserialize(xmlReader, encodingStyle, events);
 
-            CheckForDeserializationCallbacks(result);
+			CheckForDeserializationCallbacks(result);
 
-            return result;
-        }
+			return result;
+		}
 
 		public bool DontRecursivelyCheckForDeserializationCallbacks { get; set; }
 
-        private void CheckForDeserializationCallbacks(object deserializedObject)
-        {
+		private void CheckForDeserializationCallbacks(object deserializedObject)
+		{
 			var deserializedObjectType = deserializedObject.GetType();
 			// due to boxing, invoking the callback won't modify the original object
 			if (deserializedObjectType.IsValueType)
+			{
 				return;
+			}
 
 			if (deserializedObject is IDeserializationCallback deserializationCallback)
 			{
@@ -139,19 +141,22 @@ namespace KSoft.Xml
 			}
 
 			if (DontRecursivelyCheckForDeserializationCallbacks)
+			{
 				return;
+			}
 
 			var properties = deserializedObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 			var enumerableGenericType = typeof(IEnumerable<>);
 
-            foreach (var propertyInfo in properties)
-            {
+			foreach (var propertyInfo in properties)
+			{
 				var interfaceType = propertyInfo.PropertyType.GetInterface(enumerableGenericType.FullName);
 				if (interfaceType != null)
-                {
+				{
 					if (!interfaceType.GenericTypeArguments[0].IsValueType)
+					{
 						continue;
-
+					}
 
 					if (propertyInfo.GetValue(deserializedObject) is IEnumerable collection)
 					{
@@ -161,11 +166,11 @@ namespace KSoft.Xml
 						}
 					}
 				}
-                else
-                {
-                    CheckForDeserializationCallbacks(propertyInfo.GetValue(deserializedObject));
-                }
-            }
-        }
+				else
+				{
+					CheckForDeserializationCallbacks(propertyInfo.GetValue(deserializedObject));
+				}
+			}
+		}
 	}
 }

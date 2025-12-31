@@ -220,7 +220,9 @@ namespace KSoft.Text
 		{
 			//return mBaseEncoding.Equals(value);
 			if (value is StringStorageEncoding e)
+			{
 				return this.Equals(e);
+			}
 
 			return false;
 		}
@@ -263,7 +265,9 @@ namespace KSoft.Text
 			int cmp = mStorage.CompareTo(other.mStorage);
 
 			if (cmp == 0)
+			{
 				return ((int)mOptions) - ((int)other.mOptions);
+			}
 
 			return cmp;
 		}
@@ -276,7 +280,10 @@ namespace KSoft.Text
 		{
 			var encodings = new StringStorageEncoding[storageArray.Length];
 			for (int x = 0; x < encodings.Length; x++)
+			{
 				encodings[x] = new StringStorageEncoding(storageArray[x]);
+			}
+
 			return encodings;
 		}
 

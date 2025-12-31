@@ -23,7 +23,6 @@ namespace KSoft
 		public const string kIgnoreOverrideJust = "Validation performed in base method";
 	};
 
-	[SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces")]
 	public static partial class Util
 	{
 		// Based on http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx
@@ -37,6 +36,7 @@ namespace KSoft
 		/// <param name="unused"></param>
 		public static void MarkUnusedVariable<T>(
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			ref T unused)
 		{}
 
@@ -44,7 +44,6 @@ namespace KSoft
 
 		#region static EmptyArray
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
-		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		public static object[] EmptyArray { get => Array.Empty<object>(); }
 		#endregion
 
@@ -52,7 +51,9 @@ namespace KSoft
 		private static Func<Exception> gGetNullException;
 		internal static Func<Exception> GetNullException { get {
 			if (gGetNullException == null)
+			{
 				gGetNullException = () => null;
+			}
 
 			return gGetNullException;
 		} }
@@ -63,7 +64,9 @@ namespace KSoft
 		/// <summary>false boolean pre-boxed to an object</summary>
 		public static object FalseObject { get {
 			if (gFalseObject == null)
+			{
 				gFalseObject = (object)false;
+			}
 
 			return gFalseObject;
 		} }
@@ -72,7 +75,9 @@ namespace KSoft
 		/// <summary>true boolean pre-boxed to an object</summary>
 		public static object TrueObject { get {
 			if (gTrueObject == null)
+			{
 				gTrueObject = (object)true;
+			}
 
 			return gTrueObject;
 		} }
@@ -149,7 +154,7 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(value >= UnixTimeEpoch);
 
-			long time_t = 0;
+			long time_t;
 
 			// Subtract unix's epoch then rebase back into seconds
 			time_t = (value.ToFileTimeUtc() - UnixTimeEpoch.ToFileTimeUtc()) / 10000000;
@@ -206,8 +211,10 @@ namespace KSoft
 
 			// If they're not the same instance, or both null, either one of them is null or neither is.
 			// If x isn't null, then either y is null or they're two objects in which case they can be equated
-			if (!result && !(x is null))
+			if (!result && x is not null)
+			{
 				return x.Equals(y);
+			}
 
 			return result;
 		}
@@ -295,13 +302,15 @@ namespace KSoft
 		public static int CountNumberOfFormatArguments(string format)
 		{
 			if (string.IsNullOrEmpty(format))
+			{
 				return 0;
+			}
 
 			int highestAddressedIndex = -1;
 
 			int pos = 0;
 			int len = format.Length;
-			char ch = '\x0';
+			char ch;
 
 			while (true)
 			{
@@ -313,15 +322,21 @@ namespace KSoft
 					if (ch == '}')
 					{
 						if (pos < len && format[pos] == '}') // Treat as escape character for }}
+						{
 							pos++;
+						}
 						else
+						{
 							return CountNumberOfFormatArgumentsFormatError(pos);
+						}
 					}
 
 					if (ch == '{')
 					{
 						if (pos < len && format[pos] == '{') // Treat as escape character for {{
+						{
 							pos++;
+						}
 						else
 						{
 							pos--;
@@ -331,11 +346,15 @@ namespace KSoft
 				}
 
 				if (pos == len)
+				{
 					break;
+				}
 
 				pos++;
 				if (pos == len || (ch = format[pos]) < '0' || ch > '9')
+				{
 					return CountNumberOfFormatArgumentsFormatError(pos);
+				}
 
 				int index = 0;
 				do
@@ -343,7 +362,9 @@ namespace KSoft
 					index = index * 10 + ch - '0';
 					pos++;
 					if (pos == len)
+					{
 						return CountNumberOfFormatArgumentsFormatError(pos);
+					}
 
 					ch = format[pos];
 				} while (ch >= '0' && ch <= '9' && index < 1000000);
@@ -354,7 +375,9 @@ namespace KSoft
 				//	throw new FormatException(Environment.GetResourceString("Format_IndexOutOfRange"));
 
 				while (pos < len && (ch = format[pos]) == ' ')
+				{
 					pos++;
+				}
 
 				int width = 0;
 
@@ -362,34 +385,48 @@ namespace KSoft
 				{
 					pos++;
 					while (pos < len && format[pos] == ' ')
+					{
 						pos++;
+					}
 
 					if (pos == len)
+					{
 						return CountNumberOfFormatArgumentsFormatError(pos);
+					}
 
 					ch = format[pos];
 					if (ch == '-')
 					{
 						pos++;
 						if (pos == len)
+						{
 							return CountNumberOfFormatArgumentsFormatError(pos);
+						}
 
 						ch = format[pos];
 					}
 					if (ch < '0' || ch > '9')
+					{
 						return CountNumberOfFormatArgumentsFormatError(pos);
+					}
+
 					do
 					{
 						width = width * 10 + ch - '0';
 						pos++;
 						if (pos == len)
+						{
 							return CountNumberOfFormatArgumentsFormatError(pos);
+						}
+
 						ch = format[pos];
 					} while (ch >= '0' && ch <= '9' && width < 1000000);
 				}
 
 				while (pos < len && (ch = format[pos]) == ' ')
+				{
 					pos++;
+				}
 
 				if (ch == ':')
 				{
@@ -397,20 +434,29 @@ namespace KSoft
 					while (true)
 					{
 						if (pos == len)
+						{
 							return CountNumberOfFormatArgumentsFormatError(pos);
+						}
+
 						ch = format[pos];
 						pos++;
 						if (ch == '{')
 						{
 							if (pos < len && format[pos] == '{')  // Treat as escape character for {{
+							{
 								pos++;
+							}
 							else
+							{
 								return CountNumberOfFormatArgumentsFormatError(pos);
+							}
 						}
 						else if (ch == '}')
 						{
 							if (pos < len && format[pos] == '}')  // Treat as escape character for }}
+							{
 								pos++;
+							}
 							else
 							{
 								pos--;
@@ -421,7 +467,9 @@ namespace KSoft
 				}
 
 				if (ch != '}')
+				{
 					return CountNumberOfFormatArgumentsFormatError(pos);
+				}
 
 				pos++;
 			}
@@ -433,12 +481,16 @@ namespace KSoft
 		public static string[] Trim(string[] array)
 		{
 			if (array == null || array.Length == 0)
+			{
 				return array;
+			}
 
 			var trimmed = new string[array.Length];
 
 			for (int x = 0; x < array.Length; x++)
+			{
 				trimmed[x] = array[x].Trim();
+			}
 
 			return trimmed;
 		}
@@ -490,7 +542,7 @@ namespace KSoft
 			, bool ignoreCase = true)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
-			value = default(TEnum);
+			value = default;
 			return TryParseEnumOpt(str, ref value, ignoreCase);
 		}
 		/// <summary>
@@ -502,7 +554,9 @@ namespace KSoft
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			if (string.IsNullOrEmpty(str))
+			{
 				return false;
+			}
 
 #if false // #NOTE Unity implementation
 			try
@@ -543,7 +597,9 @@ namespace KSoft
 			list.RemoveAll(string.IsNullOrEmpty);
 
 			if (sort)
+			{
 				list.Sort();
+			}
 
 			return true;
 		}
@@ -562,7 +618,9 @@ namespace KSoft
 			list.AddRange(collection);
 
 			if (sort)
+			{
 				list.Sort();
+			}
 
 			return true;
 		}
@@ -582,8 +640,8 @@ namespace KSoft
 			Contract.Requires<ArgumentNullException>(toPath.IsNotNullOrEmpty());
 			Contract.Ensures(Contract.Result<string>()==toPath || fromPath.IsNotNullOrEmpty());
 
-			Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath));
-			Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath));
+			Uri fromUri = new(AppendDirectorySeparatorChar(fromPath));
+			Uri toUri = new(AppendDirectorySeparatorChar(toPath));
 
 			if (fromUri.Scheme != toUri.Scheme)
 			{

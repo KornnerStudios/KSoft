@@ -29,7 +29,7 @@ namespace KSoft.LowLevel.Util
 		{
 			Contract.Requires(nativePtr != IntPtr.Zero);
 
-			return (T)Marshal.PtrToStructure(nativePtr, typeof(T));
+			return Marshal.PtrToStructure<T>(nativePtr);
 		}
 
 		/// <summary>Copy an object into unmanaged memory</summary>

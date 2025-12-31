@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -38,7 +37,6 @@ namespace KSoft.Values
 			}
 		};
 
-		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		protected abstract GroupTagData[] BaseGroupTags { get; }
 
 		/// <summary>Get the group tag which represents null</summary>
@@ -64,7 +62,6 @@ namespace KSoft.Values
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
 		[Contracts.Pure]
-		[SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
 		public string this[char[] tag] { get {
 			Contract.Requires(tag != null);
 			Contract.Requires(tag.Length == NullGroupTag.Tag.Length,
@@ -74,8 +71,10 @@ namespace KSoft.Values
 			foreach (GroupTagData t in BaseGroupTags)
 			{
 				if (t.Test(tag))
-					return t.Name;
-			}
+					{
+						return t.Name;
+					}
+				}
 
 			return NullGroupTag.Name;
 		} }
@@ -139,7 +138,9 @@ namespace KSoft.Values
 
 			int index = FindGroupIndexByTag(groupTag);
 			if (index.IsNone())
+			{
 				return null;
+			}
 
 			return BaseGroupTags[index];
 		}
@@ -155,7 +156,9 @@ namespace KSoft.Values
 
 			int index = FindGroupIndexByTag(tagString);
 			if (index.IsNone())
+			{
 				return null;
+			}
 
 			return BaseGroupTags[index];
 		}
@@ -170,7 +173,9 @@ namespace KSoft.Values
 
 			int index = FindGroupIndex(groupName);
 			if (index.IsNone())
+			{
 				return null;
+			}
 
 			return BaseGroupTags[index];
 		}

@@ -39,37 +39,43 @@ namespace KSoft
 		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string s, int startIndex
 			, Text.IHandleTextParseError handler = null)
 		{
-			Exception detailsException = null;
+			Exception detailsException;
 
 			switch (errorType)
 			{
-			case ParseErrorType.NoInput:
-				if (noThrow)
-					return false;
+				case ParseErrorType.NoInput:
+					if (noThrow)
+					{
+						return false;
+					}
 
-				detailsException = new ArgumentException
-					("Input null or empty", nameof(s));
-				break;
+					detailsException = new ArgumentException
+						("Input null or empty", nameof(s));
+					break;
 
-			case ParseErrorType.InvalidValue:
-				detailsException = new ArgumentException(string.Format
-					(Util.InvariantCultureInfo, "Couldn't parse '{0}'", s), nameof(s));
-				break;
+				case ParseErrorType.InvalidValue:
+					detailsException = new ArgumentException(string.Format
+						(Util.InvariantCultureInfo, "Couldn't parse '{0}'", s), nameof(s));
+					break;
 
-			case ParseErrorType.InvalidStartIndex:
-				detailsException = new ArgumentOutOfRangeException(nameof(s), string.Format
-					(Util.InvariantCultureInfo, "'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
-				break;
+				case ParseErrorType.InvalidStartIndex:
+					detailsException = new ArgumentOutOfRangeException(nameof(s), string.Format
+						(Util.InvariantCultureInfo, "'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
+					break;
 
-			default:
-				return true;
+				default:
+					return true;
 			}
 
 			if (handler == null)
+			{
 				handler = Text.Util.DefaultTextParseErrorHandler;
+			}
 
 			if (noThrow == false)
+			{
 				handler.ThrowReadExeception(detailsException);
+			}
 
 			handler.LogReadExceptionWarning(detailsException);
 			return true;
@@ -87,13 +93,11 @@ namespace KSoft
 		}
 
 
-		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
-		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct StringListDesc
 		{
 			public const char kDefaultSeparator = ',';
 			public const char kDefaultTerminator = ';';
-			public static StringListDesc Default { get => new StringListDesc(kDefaultSeparator); }
+			public static StringListDesc Default => new(kDefaultSeparator);
 
 			public string Digits;
 			public NumbersRadix Radix;
@@ -118,7 +122,7 @@ namespace KSoft
 			}
 
 			[Contracts.Pure]
-			internal int PredictedCount(string values)
+			internal readonly int PredictedCount(string values)
 			{
 				Contract.Assume(values != null);
 
@@ -129,9 +133,13 @@ namespace KSoft
 				foreach (char c in sseg)
 				{
 					if (c == Separator)
+					{
 						count++;
+					}
 					else if (c == Terminator)
+					{
 						break;
+					}
 				}
 
 				return count;
@@ -173,7 +181,9 @@ namespace KSoft
 			public IEnumerable<T?> TryParse()
 			{
 				if (mValues == null)
+				{
 					return EmptyResult;
+				}
 
 				InitializeList();
 
@@ -183,7 +193,9 @@ namespace KSoft
 				{
 					// Skip any starting whitespace
 					while (start < value_length && char.IsWhiteSpace(mValues[start]))
+					{
 						++start;
+					}
 
 					int end = start;
 					int length = 0;
@@ -193,7 +205,9 @@ namespace KSoft
 						found_terminator = c == mDesc.Terminator;
 						// NOTE: TryParseImpl actually handles leading and trailing whitespace
 						if (c == mDesc.Separator || found_terminator)
+						{
 							break;
+						}
 
 						// NOTE: we wouldn't want to update length if we hit ws before the separator and the TryParseImpl assumes no ws
 						++length;
@@ -201,7 +215,9 @@ namespace KSoft
 					}
 
 					if (length > 0)
+					{
 						mList.Add(CreateItem(start, length));
+					}
 
 					start = end + 1;
 				}
