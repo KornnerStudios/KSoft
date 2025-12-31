@@ -18,13 +18,13 @@ namespace KSoft.Security.Cryptography
 		private long mCount;
 		private readonly bool mRestorePosition;
 
-		public Stream InputStream { get { return mInputStream; } }
-		public long StartOffset { get { return mStartOffset; } }
-		public long Count { get { return mCount; } }
+		public readonly Stream InputStream { get { return mInputStream; } }
+		public readonly long StartOffset { get { return mStartOffset; } }
+		public readonly long Count { get { return mCount; } }
 		/// <summary>
 		/// Does the input stream's current position get treated as the starting offset?
 		/// </summary>
-		public bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
+		public readonly bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
 
 		public StreamBlockHashComputer(T algo, Stream inputStream
 			, bool restorePosition = false)
@@ -57,7 +57,7 @@ namespace KSoft.Security.Cryptography
 			mCount = count;
 		}
 
-		public T Compute()
+		public readonly T Compute()
 		{
 			Contract.Requires<InvalidOperationException>(StartOffset.IsNoneOrPositive(),
 				"You need to call SetRange before calling this");
@@ -72,7 +72,9 @@ namespace KSoft.Security.Cryptography
 
 			long orig_pos = mInputStream.Position;
 			if (!StartOffsetIsStreamPosition && StartOffset != orig_pos)
+			{
 				mInputStream.Seek(StartOffset, SeekOrigin.Begin);
+			}
 			#endregion
 
 			for (long bytes_remaining = Count; bytes_remaining > 0;)
@@ -83,16 +85,22 @@ namespace KSoft.Security.Cryptography
 				{
 					int n = mInputStream.Read(buffer, num_bytes_read, (int)num_bytes_to_read);
 					if (n == 0)
+					{
 						break;
+					}
 
 					num_bytes_read += n;
 					num_bytes_to_read -= n;
 				} while (num_bytes_to_read > 0);
 
 				if (num_bytes_read > 0)
+				{
 					mAlgo.TransformBlock(buffer, 0, num_bytes_read, null, 0);
+				}
 				else
+				{
 					break;
+				}
 
 				bytes_remaining -= num_bytes_read;
 			}
@@ -101,7 +109,9 @@ namespace KSoft.Security.Cryptography
 
 			#region epilogue
 			if (mRestorePosition)
+			{
 				mInputStream.Seek(orig_pos, SeekOrigin.Begin);
+			}
 			#endregion
 
 			return mAlgo;

@@ -57,16 +57,22 @@ namespace KSoft.Security.Cryptography
 				{
 					int n = stream.Read(buffer, num_bytes_read, num_bytes_to_read);
 					if (n == 0)
+					{
 						break;
+					}
 
 					num_bytes_read += n;
 					num_bytes_to_read -= n;
 				} while (num_bytes_to_read > 0);
 
 				if (num_bytes_read > 0)
+				{
 					computer.Compute(buffer, 0, num_bytes_read);
+				}
 				else
+				{
 					break;
+				}
 
 				bytes_remaining -= num_bytes_read;
 			}
@@ -74,7 +80,9 @@ namespace KSoft.Security.Cryptography
 			adler32 = computer.ComputeFinish();
 
 			if (prev_position != -1)
+			{
 				stream.Seek(prev_position, System.IO.SeekOrigin.Begin);
+			}
 
 			return adler32;
 		}

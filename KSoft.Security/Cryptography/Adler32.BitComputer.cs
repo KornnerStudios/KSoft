@@ -21,7 +21,7 @@ namespace KSoft.Security.Cryptography
 
 			public static BitComputer New { get { return new BitComputer(1); } }
 
-			public uint ComputeFinish()
+			public readonly uint ComputeFinish()
 			{
 				return Adler32.ComputeFinish(s1, s2);
 			}

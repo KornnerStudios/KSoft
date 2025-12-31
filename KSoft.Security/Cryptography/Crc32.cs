@@ -42,7 +42,7 @@ namespace KSoft.Security.Cryptography
 		#endregion
 
 		readonly Crc32.Definition mDefinition;
-		byte[] mHashBytes;
+		readonly byte[] mHashBytes;
 		public uint Hash32 { get; private set; }
 
 		public CrcHash32()

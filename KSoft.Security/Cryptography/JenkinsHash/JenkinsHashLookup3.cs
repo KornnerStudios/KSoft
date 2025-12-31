@@ -13,7 +13,9 @@ namespace KSoft.Security.Cryptography
 		const uint kGoldenRatio = 0xDEADBEEF;
 		const int kBlockSize = 12;
 
+#pragma warning disable IDE1006 // Naming Styles
 		static uint rot(uint x, int k)
+#pragma warning restore IDE1006 // Naming Styles
 		{
 			return (x << k) | (x >> (Bits.kInt32BitCount-k));
 		}
@@ -22,7 +24,7 @@ namespace KSoft.Security.Cryptography
 		{
 			uint a, b, c;
 
-			public uint Result { get { return c; } }
+			public readonly uint Result { get { return c; } }
 
 			public HashState(int length, uint seed)
 			{
@@ -101,19 +103,19 @@ namespace KSoft.Security.Cryptography
 			public void ProcessFinalBlock(byte[] buffer, ref int index, int length)
 			{
 				FinalFill(buffer, ref index, length);
-				if(length > 0) FinalMix();
+				if (length > 0) { FinalMix(); }
 			}
 
 			public void ProcessFinalBlock(char[] buffer, ref int index, int length)
 			{
 				FinalFill(buffer, ref index, length);
-				if (length > 0) FinalMix();
+				if (length > 0) { FinalMix(); }
 			}
 
 			public void ProcessFinalBlock(string buffer, ref int index, int length)
 			{
 				FinalFill(buffer, ref index, length);
-				if (length > 0) FinalMix();
+				if (length > 0) { FinalMix(); }
 			}
 		};
 
@@ -122,11 +124,15 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if (length.IsNone())
+			{
 				length = buffer.Length - index;
+			}
 
-			HashState state = new HashState(length, seed);
+			var state = new HashState(length, seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 
@@ -139,11 +145,15 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if (length.IsNone())
+			{
 				length = buffer.Length - index;
+			}
 
-			HashState state = new HashState(length, seed);
+			var state = new HashState(length, seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 
@@ -158,9 +168,11 @@ namespace KSoft.Security.Cryptography
 			int length = buffer.Length;
 			int index = 0;
 
-			HashState state = new HashState(length, seed);
+			var state = new HashState(length, seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 

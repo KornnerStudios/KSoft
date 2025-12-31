@@ -41,7 +41,7 @@ namespace KSoft.Security.Cryptography
 		#endregion
 
 		readonly Crc16.Definition mDefinition;
-		byte[] mHashBytes;
+		readonly byte[] mHashBytes;
 		public ushort Hash16 { get; private set; }
 
 		public CrcHash16()

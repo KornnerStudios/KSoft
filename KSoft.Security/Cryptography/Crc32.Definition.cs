@@ -33,9 +33,13 @@ namespace KSoft.Security.Cryptography
 					for (uint j = 0; j < 8; j++)
 					{
 						if ((crc & 1) == 1)
+						{
 							crc = (crc >> 1) ^ polynomial;
+						}
 						else
+						{
 							crc >>= 1;
+						}
 					}
 					crc_table[index] = crc;
 				}
@@ -85,7 +89,9 @@ namespace KSoft.Security.Cryptography
 			public uint Crc(ref uint crc, byte[] buffer, int size)
 			{
 				if (crc == 0)
+				{
 					crc = InitialValue;
+				}
 
 				crc ^= XorIn;
 

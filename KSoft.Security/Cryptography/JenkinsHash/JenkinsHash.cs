@@ -13,7 +13,10 @@ namespace KSoft.Security.Cryptography
 		static uint HashChar(uint hash, char c)
 		{
 			c = char.ToLowerInvariant(c);
-			if (c == '\\') c = '/';
+			if (c == '\\')
+			{
+				c = '/';
+			}
 
 			hash += (byte)c;
 			hash += hash << 10;
@@ -27,7 +30,10 @@ namespace KSoft.Security.Cryptography
 			hash ^= hash >> 11;
 			hash += hash << 15;
 
-			if (hash < 2) hash += 2;
+			if (hash < 2)
+			{
+				hash += 2;
+			}
 
 			return hash;
 		}
@@ -37,12 +43,16 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if(length == -1)
+			{
 				length = buffer.Length - index;
+			}
 
 			uint hash = 0;
 
 			for (int x = 0; x < length; x++)
+			{
 				hash = HashChar(hash, (char)buffer[index+x]);
+			}
 
 			return HashEnd(hash);
 		}
@@ -52,12 +62,16 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if(length == -1)
+			{
 				length = buffer.Length - index;
+			}
 
 			uint hash = 0;
 
 			for (int x = 0; x < length; x++)
+			{
 				hash = HashChar(hash, buffer[index+x]);
+			}
 
 			return HashEnd(hash);
 		}
@@ -69,7 +83,9 @@ namespace KSoft.Security.Cryptography
 			uint hash = 0;
 
 			for (int x = 0; x < buffer.Length; x++)
+			{
 				hash = HashChar(hash, buffer[x]);
+			}
 
 			return HashEnd(hash);
 		}

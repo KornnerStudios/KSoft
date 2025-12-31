@@ -12,7 +12,7 @@ namespace KSoft.Security.Cryptography
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct BitComputer
 		{
-			Definition mDefinition;
+			readonly Definition mDefinition;
 			ushort mCrc;
 
 			public BitComputer(Definition definition)
@@ -48,7 +48,9 @@ namespace KSoft.Security.Cryptography
 				Contract.Requires<ArgumentOutOfRangeException>(offset+length <= buffer.Length);
 
 				for (int x = 0; x < length; x++)
+				{
 					mDefinition.ComputeUpdate(buffer[offset+x], ref mCrc);
+				}
 			}
 
 			public void Compute(byte value)
@@ -73,9 +75,13 @@ namespace KSoft.Security.Cryptography
 			public void Compute(Shell.EndianFormat byteOrder, uint value)
 			{
 				if (byteOrder == Shell.EndianFormat.Little)
+				{
 					ComputeLE(value);
+				}
 				else
+				{
 					ComputeBE(value);
+				}
 			}
 			public void ComputeLE(uint value)
 			{

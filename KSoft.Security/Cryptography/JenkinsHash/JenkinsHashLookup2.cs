@@ -17,7 +17,7 @@ namespace KSoft.Security.Cryptography
 		{
 			uint a, b, c;
 
-			public uint Result { get { return c; } }
+			public readonly uint Result { get { return c; } }
 
 			public HashState(uint seed)
 			{
@@ -116,11 +116,15 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if (length.IsNone())
+			{
 				length = buffer.Length - index;
+			}
 
-			HashState state = new HashState(seed);
+			var state = new HashState(seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 
@@ -133,11 +137,15 @@ namespace KSoft.Security.Cryptography
 			Contract.Requires(buffer != null);
 
 			if (length.IsNone())
+			{
 				length = buffer.Length - index;
+			}
 
-			HashState state = new HashState(seed);
+			var state = new HashState(seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 
@@ -152,9 +160,11 @@ namespace KSoft.Security.Cryptography
 			int length = buffer.Length;
 			int index = 0;
 
-			HashState state = new HashState(seed);
+			var state = new HashState(seed);
 			for (; index + kBlockSize <= length; )
+			{
 				state.ProcessBlock(buffer, ref index);
+			}
 
 			state.ProcessFinalBlock(buffer, ref index, length);
 

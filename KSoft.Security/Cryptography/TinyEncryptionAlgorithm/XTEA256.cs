@@ -25,7 +25,9 @@ namespace KSoft.Security.Cryptography
 
 			uint[] r = new uint[k_round_count];
 			for (int i = 0; i < r.Length; i++)
+			{
 				r[i] = kDeltas[i] + key[kKeyIndex[i]];
+			}
 
 			k0 =  r[0];  k1 =  r[1];  k2 =  r[2];  k3 =  r[3];  k4 =  r[4];  k5 =  r[5];  k6 =  r[6];  k7 =  r[7];
 			k8 =  r[8];  k9 =  r[9];  k10 = r[10]; k11 = r[11]; k12 = r[12]; k13 = r[13]; k14 = r[14]; k15 = r[15];
@@ -45,7 +47,10 @@ namespace KSoft.Security.Cryptography
 
 			uint v;
 			v = y >> 5;
+			// #REVIEW did I ever finish this code?
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
 			v ^= k31;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 
 			z -= (((y >> 5) ^ (y << 4)) + y) ^ k31; y -= (((z << 4) ^ (z >> 5)) + z) ^ k30;
 			z -= (((y >> 5) ^ (y << 4)) + y) ^ k29; y -= (((z << 4) ^ (z >> 5)) + z) ^ k28;
