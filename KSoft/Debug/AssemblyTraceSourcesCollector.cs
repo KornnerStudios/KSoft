@@ -17,14 +17,18 @@ namespace KSoft.Debug
 			Contract.Requires(debugTraceClass != null);
 
 			if (sources == null)
-				sources = new List<TraceSource>();
+			{
+				sources = [];
+			}
 
 			var properties = debugTraceClass.GetProperties(BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.Public);
 
 			foreach (var prop in properties)
 			{
 				if (prop.PropertyType != typeof(TraceSource))
+				{
 					continue;
+				}
 
 				var trace_source = (TraceSource)prop.GetValue(null);
 				Contract.Assert(trace_source != null, prop.Name);
@@ -40,7 +44,9 @@ namespace KSoft.Debug
 			Contract.Requires(debugTraceClasses != null);
 
 			if (sources == null)
-				sources = new List<TraceSource>();
+			{
+				sources = [];
+			}
 
 			foreach (var debugTraceClass in debugTraceClasses)
 			{

@@ -18,9 +18,13 @@ namespace KSoft.Debug
 			if (!EqualityComparer<T>.Default.Equals(expected, actual))
 			{
 				if (expectedDisplayValue == null)
+				{
 					expectedDisplayValue = expected.ToString();
+				}
 				if (actualDisplayValue == null)
+				{
 					actualDisplayValue = actual.ToString();
+				}
 
 				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
 					"{0}. Expected '{1}' but got '{2}'",
@@ -33,9 +37,11 @@ namespace KSoft.Debug
 			Contract.Requires(!string.IsNullOrEmpty(description));
 
 			if (actualMax > expectedMax)
+			{
 				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
 					"{0}. Expected at most {1}, got {2}",
 					description, expectedMax, actualMax));
+			}
 		}
 
 		public static void IsGreaterThanEqualTo(string description, int expectedMin, int actualMin)
@@ -43,9 +49,11 @@ namespace KSoft.Debug
 			Contract.Requires(!string.IsNullOrEmpty(description));
 
 			if (actualMin < expectedMin)
+			{
 				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
 					"{0}. Expected at least {1}, got {2}",
 					description, expectedMin, actualMin));
+			}
 		}
 
 		public static void IsDistinct<T>(string description, string valueName, IEnumerable<T> seq)
@@ -55,9 +63,11 @@ namespace KSoft.Debug
 			Contract.Requires(seq != null);
 
 			if (seq.ContainsDuplicates())
+			{
 				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
 					"{0}. Expected all '{1}' values to be distinct",
 					description, valueName));
+			}
 		}
 	};
 }

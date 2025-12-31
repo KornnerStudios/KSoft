@@ -99,10 +99,9 @@ namespace KSoft.Debug
 	public class KSoftFileLogTraceListener
 		: TraceListener
 	{
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static KSoftFileLogTraceListener()
 		{
-			var prop_names = Enum.GetNames(typeof(Property)).ToList();
+			var prop_names = Enum.GetNames<Property>().ToList();
 			prop_names.Remove(Property.kNumberOf.ToString());
 
 			mSupportedAttributes = prop_names.ToArray();
@@ -211,7 +210,7 @@ namespace KSoft.Debug
 				this.Dispose(false);
 			}
 		};
-		static Dictionary<string, ReferencedStream> mStreams = new Dictionary<string, ReferencedStream>();
+		static readonly Dictionary<string, ReferencedStream> mStreams = [];
 
 		private enum Property
 		{
@@ -242,11 +241,15 @@ namespace KSoft.Debug
 		{
 			value = null;
 			if (mPropertiesSet.Test(property))
+			{
 				return false;
+			}
 
 			string property_name = property.ToString();
 			if (!Attributes.ContainsKey(property_name))
+			{
 				return false;
+			}
 
 			value = Attributes[property_name];
 
@@ -598,7 +601,7 @@ namespace KSoft.Debug
 		}
 		#endregion
 
-		[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
+		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private ReferencedStream mStream;
 		private ReferencedStream ListenerStream
 		{
@@ -725,14 +728,16 @@ namespace KSoft.Debug
 		protected override string[] GetSupportedAttributes() => mSupportedAttributes;
 
 		#region TemporaryBuffer
-		private StringBuilder mTemporaryBuffer = new StringBuilder();
+		private readonly StringBuilder mTemporaryBuffer = new();
 		private void TemporaryWriteIndent()
 		{
 			NeedIndent = false;
 			for (int i = 0; i < IndentLevel; i++)
 			{
 				if (IndentSize == 4)
+				{
 					TemporaryWrite("    ");
+				}
 				else
 				{
 					for (int j = 0; j < IndentSize; j++)
@@ -745,7 +750,9 @@ namespace KSoft.Debug
 		private void TemporaryWriteFlush()
 		{
 			if (mTemporaryBuffer.Length == 0)
+			{
 				return;
+			}
 
 			Write(mTemporaryBuffer.ToString());
 			mTemporaryBuffer.Clear();
@@ -753,13 +760,17 @@ namespace KSoft.Debug
 		private void TemporaryWrite(string message)
 		{
 			if (NeedIndent)
+			{
 				TemporaryWriteIndent();
+			}
 			mTemporaryBuffer.Append(message);
 		}
 		private void TemporaryWriteLine(string message)
 		{
 			if (NeedIndent)
+			{
 				TemporaryWriteIndent();
+			}
 			mTemporaryBuffer.AppendLine(message);
 			NeedIndent = true;
 		}
@@ -821,7 +832,7 @@ namespace KSoft.Debug
 			if (!DoNotIncludeSourceName)
 			{
 				sb.Append(source);
-				sb.Append(" ");
+				sb.Append(' ');
 			}
 			if (!DoNotIncludeEventType)
 			{
@@ -838,17 +849,23 @@ namespace KSoft.Debug
 			}
 
 			if (sb.Length > 0)
+			{
 				Write(sb.ToString());
+			}
 		}
 
 		private void WriteFooter(TraceEventCache eventCache)
 		{
 			if (eventCache == null)
+			{
 				return;
+			}
 
 			IndentLevel++;
 			if (IsEnabled(TraceOptions.ProcessId))
+			{
 				TemporaryWriteLine("ProcessId=" + eventCache.ProcessId);
+			}
 
 			if (IsEnabled(TraceOptions.LogicalOperationStack))
 			{
@@ -858,9 +875,13 @@ namespace KSoft.Debug
 				foreach (var obj in operationStack)
 				{
 					if (!first)
+					{
 						Write(", ");
+					}
 					else
+					{
 						first = false;
+					}
 
 					TemporaryWrite(obj.ToString());
 				}
@@ -868,16 +889,24 @@ namespace KSoft.Debug
 			}
 
 			if (IsEnabled(TraceOptions.ThreadId))
+			{
 				TemporaryWriteLine("ThreadId=" + eventCache.ThreadId);
+			}
 
 			if (IsEnabled(TraceOptions.DateTime))
+			{
 				TemporaryWriteLine("DateTime=" + eventCache.DateTime.ToString("o", CultureInfo.InvariantCulture));
+			}
 
 			if (IsEnabled(TraceOptions.Timestamp))
+			{
 				TemporaryWriteLine("Timestamp=" + eventCache.Timestamp);
+			}
 
 			if (IsEnabled(TraceOptions.Callstack))
+			{
 				TemporaryWriteLine("Callstack=" + eventCache.Callstack);
+			}
 
 			IndentLevel--;
 
@@ -961,7 +990,9 @@ namespace KSoft.Debug
 		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, message, null, null, null))
+			{
 				return;
+			}
 
 #if false
 			var sb = new StringBuilder();
@@ -1030,7 +1061,9 @@ namespace KSoft.Debug
 		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, format, args, null, null))
+			{
 				return;
+			}
 
 #if false
 			string message;
@@ -1047,9 +1080,13 @@ namespace KSoft.Debug
 			WriteHeader(source, eventType, id);
 
 			if (args != null)
+			{
 				WriteLine(string.Format(CultureInfo.InvariantCulture, format, args));
+			}
 			else
+			{
 				WriteLine(format);
+			}
 
 			WriteFooter(eventCache);
 #endif
@@ -1059,7 +1096,9 @@ namespace KSoft.Debug
 		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, data, null))
+			{
 				return;
+			}
 
 #if false
 			string message = "";
@@ -1074,7 +1113,9 @@ namespace KSoft.Debug
 			string datastring = "";
 			var actual_data = GetDataEntryForTrace(data);
 			if (actual_data != null)
+			{
 				datastring = actual_data.ToString();
+			}
 
 			WriteLine(datastring);
 			WriteFooter(eventCache);
@@ -1085,7 +1126,9 @@ namespace KSoft.Debug
 		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
 		{
 			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, data))
+			{
 				return;
+			}
 
 #if false
 			var sb = new StringBuilder();
@@ -1116,7 +1159,9 @@ namespace KSoft.Debug
 				for (int i = 0; i < actual_data.Length; i++)
 				{
 					if (actual_data[i] != null)
+					{
 						WriteData(actual_data[i]);
+					}
 				}
 				IndentLevel--;
 
@@ -1131,7 +1176,9 @@ namespace KSoft.Debug
 		private object[] GetDataForTrace(params object[] args)
 		{
 			if (args.IsNullOrEmpty())
+			{
 				return args;
+			}
 
 			var result = new object[args.Length];
 
@@ -1147,7 +1194,9 @@ namespace KSoft.Debug
 		private static object GetDataEntryForTrace(object data)
 		{
 			if (data == null)
+			{
 				return data;
+			}
 
 			var result = data;
 			if (result is Exception)
@@ -1164,10 +1213,7 @@ namespace KSoft.Debug
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
 		public override void Flush()
 		{
-			if (this.mStream != null)
-			{
-				this.mStream.Flush();
-			}
+			this.mStream?.Flush();
 		}
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
@@ -1215,9 +1261,9 @@ namespace KSoft.Debug
 					object streams = mStreams;
 					lock (streams)
 					{
-						if (mStreams.ContainsKey(key))
+						if (mStreams.TryGetValue(key, out ReferencedStream value))
 						{
-							referencedStream = mStreams[key];
+							referencedStream = value;
 							if (!referencedStream.IsInUse)
 							{
 								mStreams.Remove(key);
@@ -1322,7 +1368,7 @@ namespace KSoft.Debug
 		{
 			string pathRoot = Path.GetPathRoot(Path.GetFullPath(this.FullLogFileName));
 //			new FileIOPermission(FileIOPermissionAccess.PathDiscovery, pathRoot).Demand();
-			if (GetDiskFreeSpaceEx(pathRoot, out long num, out long num2, out long num3) && num > -1L)
+			if (GetDiskFreeSpaceEx(pathRoot, out long num, out long _, out long _) && num > -1L)
 			{
 				return num;
 			}
@@ -1338,8 +1384,10 @@ namespace KSoft.Debug
 		[SecurityCritical]
 		private void DemandWritePermission()
 		{
+#if false
 			string directoryName = Path.GetDirectoryName(this.LogFileName);
 //			new FileIOPermission(FileIOPermissionAccess.Write, directoryName).Demand();
+#endif
 		}
 
 		private Encoding GetFileEncoding(string fileName)
@@ -1360,10 +1408,7 @@ namespace KSoft.Debug
 				}
 				finally
 				{
-					if (streamReader != null)
-					{
-						streamReader.Close();
-					}
+					streamReader?.Close();
 				}
 			}
 			result = null;

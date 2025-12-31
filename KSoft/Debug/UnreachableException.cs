@@ -2,8 +2,6 @@
 namespace KSoft.Debug
 {
 	/// <summary>Exception thrown in supposedly unreachable cases (ie, switch or if-else)</summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
 	public class UnreachableException : System.Exception
 	{
 		public UnreachableException(

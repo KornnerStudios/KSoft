@@ -1,6 +1,5 @@
 ﻿#if CONTRACTS_FULL_SHIM
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.ConstrainedExecution;
+//using System.Runtime.ConstrainedExecution;
 using System.Reflection;
 
 // https://github.com/Microsoft/CodeContracts/issues/409#issuecomment-268913908
@@ -17,7 +16,6 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 namespace System.Diagnostics.ContractsShim
 {
 	// alt for System.Diagnostics.Contracts.__ContractsRuntime+ContractException
-	[SuppressMessage("Microsoft.Design", "CA1064")]
 	internal class ContractShimException : Exception
 	{
 		public ContractShimException() : base() { }
@@ -285,7 +283,7 @@ namespace System.Diagnostics.ContractsShim
 		// Returns:
 		//     Return value of the enclosing method or property.
 //		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-		public static T Result<T>() { return default(T); }
+		public static T Result<T>() { return default; }
 #endif
 #if true // #HORRIBLE_SHIM. Can't use for non-out params without breaking things!
 		//
@@ -306,7 +304,7 @@ namespace System.Diagnostics.ContractsShim
 //		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 		public static T ValueAtReturn<T>(out T value)
 		{
-			value = default(T);
+			value = default;
 			return value;
 		}
 #endif
