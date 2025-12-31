@@ -20,55 +20,51 @@ namespace KSoft.Reflection
 
 		static Type GetDynamicDelegateActionType(int paramCount)
 		{
-			switch (paramCount)
+			return paramCount switch
 			{
-				case 0:  return typeof(Action);
-				case 1:  return typeof(Action<>);
-				case 2:  return typeof(Action<,>);
-				case 3:  return typeof(Action<,,>);
-				case 4:  return typeof(Action<,,,>);
-				case 5:  return typeof(Action<,,,,>);
-				case 6:  return typeof(Action<,,,,,>);
-				case 7:  return typeof(Action<,,,,,,>);
-				case 8:  return typeof(Action<,,,,,,,>);
-				case 9:  return typeof(Action<,,,,,,,,>);
-				case 10: return typeof(Action<,,,,,,,,,>);
-				case 11: return typeof(Action<,,,,,,,,,,>);
-				case 12: return typeof(Action<,,,,,,,,,,,>);
-				case 13: return typeof(Action<,,,,,,,,,,,,>);
-				case 14: return typeof(Action<,,,,,,,,,,,,,>);
-				case 15: return typeof(Action<,,,,,,,,,,,,,,>);
-				case 16: return typeof(Action<,,,,,,,,,,,,,,,>);
-
-				default:
-					throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo));
-			}
+				0 => typeof(Action),
+				1 => typeof(Action<>),
+				2 => typeof(Action<,>),
+				3 => typeof(Action<,,>),
+				4 => typeof(Action<,,,>),
+				5 => typeof(Action<,,,,>),
+				6 => typeof(Action<,,,,,>),
+				7 => typeof(Action<,,,,,,>),
+				8 => typeof(Action<,,,,,,,>),
+				9 => typeof(Action<,,,,,,,,>),
+				10 => typeof(Action<,,,,,,,,,>),
+				11 => typeof(Action<,,,,,,,,,,>),
+				12 => typeof(Action<,,,,,,,,,,,>),
+				13 => typeof(Action<,,,,,,,,,,,,>),
+				14 => typeof(Action<,,,,,,,,,,,,,>),
+				15 => typeof(Action<,,,,,,,,,,,,,,>),
+				16 => typeof(Action<,,,,,,,,,,,,,,,>),
+				_ => throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo)),
+			};
 		}
 		static Type GetDynamicDelegateFuncType(int paramCount)
 		{
-			switch (paramCount)
+			return paramCount switch
 			{
-				case 0:  return typeof(Func<>);
-				case 1:  return typeof(Func<,>);
-				case 2:  return typeof(Func<,,>);
-				case 3:  return typeof(Func<,,,>);
-				case 4:  return typeof(Func<,,,,>);
-				case 5:  return typeof(Func<,,,,,>);
-				case 6:  return typeof(Func<,,,,,,>);
-				case 7:  return typeof(Func<,,,,,,,>);
-				case 8:  return typeof(Func<,,,,,,,,>);
-				case 9:  return typeof(Func<,,,,,,,,,>);
-				case 10: return typeof(Func<,,,,,,,,,,>);
-				case 11: return typeof(Func<,,,,,,,,,,,>);
-				case 12: return typeof(Func<,,,,,,,,,,,,>);
-				case 13: return typeof(Func<,,,,,,,,,,,,,>);
-				case 14: return typeof(Func<,,,,,,,,,,,,,,>);
-				case 15: return typeof(Func<,,,,,,,,,,,,,,,>);
-				case 16: return typeof(Func<,,,,,,,,,,,,,,,,>);
-
-				default:
-					throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo));
-			}
+				0 => typeof(Func<>),
+				1 => typeof(Func<,>),
+				2 => typeof(Func<,,>),
+				3 => typeof(Func<,,,>),
+				4 => typeof(Func<,,,,>),
+				5 => typeof(Func<,,,,,>),
+				6 => typeof(Func<,,,,,,>),
+				7 => typeof(Func<,,,,,,,>),
+				8 => typeof(Func<,,,,,,,,>),
+				9 => typeof(Func<,,,,,,,,,>),
+				10 => typeof(Func<,,,,,,,,,,>),
+				11 => typeof(Func<,,,,,,,,,,,>),
+				12 => typeof(Func<,,,,,,,,,,,,>),
+				13 => typeof(Func<,,,,,,,,,,,,,>),
+				14 => typeof(Func<,,,,,,,,,,,,,,>),
+				15 => typeof(Func<,,,,,,,,,,,,,,,>),
+				16 => typeof(Func<,,,,,,,,,,,,,,,,>),
+				_ => throw new Debug.UnreachableException(paramCount.ToString(KSoft.Util.InvariantCultureInfo)),
+			};
 		}
 		static Type GetDynamicDelegateType(bool hasResult, int paramCount)
 		{
@@ -87,7 +83,10 @@ namespace KSoft.Reflection
 
 				int i = 0;
 				foreach (var param in parameters)
+				{
 					types[i++] = param;
+				}
+
 				types[i] = result;
 			}
 
@@ -127,9 +126,11 @@ namespace KSoft.Reflection
 			var method = type.GetMethod(methodName, bindingAttr, null, method_params, null);
 
 			if (method == null)
+			{
 				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
 					"Couldn't find a method in {0} named '{1}' ({2})",
 					type, methodName, bindingAttr));
+			}
 
 			var param_this =Expr.Parameter(type, kThisName);
 			// have to convert it to a collection, else a different set of Parameter objects will be created for Call and the Lambda
@@ -142,7 +143,9 @@ namespace KSoft.Reflection
 				params_lamda[0] = param_this;
 				int i = 1;
 				foreach(var param in @params)
+				{
 					params_lamda[i++] = param;
+				}
 			}
 			return Expr.Lambda<TFunc>(call, params_lamda).Compile();
 		}
@@ -176,11 +179,16 @@ namespace KSoft.Reflection
 				foreach (var param_type in func_params)
 				{
 					if (param_names.Length != 0)
+					{
 						param_names.Append(',');
+					}
+
 					param_names.Append(param_type.Name);
 				}
 				if (param_names.Length == 0)
+				{
 					param_names.Append("<no-parameters>");
+				}
 
 				string msg = string.Format(KSoft.Util.InvariantCultureInfo,
 					"Generation failed: {0} has no ctor which matches the bindings '{1}' and takes the following parameter types: {2}",

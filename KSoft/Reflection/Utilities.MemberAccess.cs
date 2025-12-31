@@ -136,34 +136,38 @@ namespace KSoft.Reflection
 		static void ValidatePropertyForGenerateSetter(Reflect.MemberInfo member)
 		{
 			if (member.MemberType != Reflect.MemberTypes.Property)
+			{
 				return;
+			}
 
 			var prop_info = (Reflect.PropertyInfo)member;
 			if (!prop_info.CanWrite)
+			{
 				throw new MemberAccessException("Tried to generate setter for get-only property " +
 					member.Name + " in " + member.ReflectedType);
+			}
 		}
 		static void ValidateMemberForGenerateSetter(Reflect.MemberInfo member)
 		{
-			switch(member.MemberType)
+			switch (member.MemberType)
 			{
-			case Reflect.MemberTypes.Field:
-			{
-				var field_member = (Reflect.FieldInfo)member;
-				if (field_member.IsInitOnly)
+				case Reflect.MemberTypes.Field:
 				{
-					throw new MemberAccessException("Tried to generate setter for readonly field " +
+					var field_member = (Reflect.FieldInfo)member;
+					if (field_member.IsInitOnly)
+					{
+						throw new MemberAccessException("Tried to generate setter for readonly field " +
+							member.Name + " in " + member.ReflectedType);
+					}
+				} break;
+
+				case Reflect.MemberTypes.Property:
+					ValidatePropertyForGenerateSetter(member);
+					break;
+
+				default:
+					throw new MemberAccessException("Tried to generate setter for unsupported member type " +
 						member.Name + " in " + member.ReflectedType);
-				}
-			} break;
-
-			case Reflect.MemberTypes.Property:
-				ValidatePropertyForGenerateSetter(member);
-				break;
-
-			default:
-				throw new MemberAccessException("Tried to generate setter for unsupported member type " +
-					member.Name + " in " + member.ReflectedType);
 			}
 		}
 
@@ -338,7 +342,9 @@ namespace KSoft.Reflection
 		static string PropertyNameFromUnaryExpr(Exprs.UnaryExpression expr)
 		{
 			if (expr.NodeType == Exprs.ExpressionType.ArrayLength)
+			{
 				return "Length";
+			}
 
 			var mem_expr = expr.Operand as Exprs.MemberExpression;
 
@@ -348,9 +354,13 @@ namespace KSoft.Reflection
 		static string PropertyNameFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
 			if (expr.Body is Exprs.MemberExpression)
+			{
 				return PropertyNameFromMemberExpr(expr.Body as Exprs.MemberExpression);
+			}
 			else if (expr.Body is Exprs.UnaryExpression)
+			{
 				return PropertyNameFromUnaryExpr(expr.Body as Exprs.UnaryExpression);
+			}
 
 			throw new NotSupportedException(expr.ToString());
 		}
@@ -380,7 +390,9 @@ namespace KSoft.Reflection
 		static Reflect.MemberInfo MemberFromExprUnaryExpr(Exprs.UnaryExpression expr)
 		{
 			if (expr.NodeType == Exprs.ExpressionType.ArrayLength)
+			{
 				throw new NotSupportedException();
+			}
 
 			var mem_expr = expr.Operand as Exprs.MemberExpression;
 
@@ -389,9 +401,13 @@ namespace KSoft.Reflection
 		static Reflect.MemberInfo MemberFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
 			if (expr.Body is Exprs.MemberExpression)
+			{
 				return MemberFromExprMemberExpr(expr.Body as Exprs.MemberExpression);
+			}
 			else if (expr.Body is Exprs.UnaryExpression)
+			{
 				return MemberFromExprUnaryExpr(expr.Body as Exprs.UnaryExpression);
+			}
 
 			throw new NotSupportedException(expr.ToString());
 		}

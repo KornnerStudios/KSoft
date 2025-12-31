@@ -11,15 +11,15 @@ namespace KSoft.ObjectModel
 {
 	public class PropertyChangedEventArgsCollection : IEnumerable<System.ComponentModel.PropertyChangedEventArgs>
 	{
-		List<System.ComponentModel.PropertyChangedEventArgs> mEventArgs;
+		readonly List<System.ComponentModel.PropertyChangedEventArgs> mEventArgs;
 
 		public PropertyChangedEventArgsCollection()
 		{
-			mEventArgs = new List<System.ComponentModel.PropertyChangedEventArgs>();
+			mEventArgs = [];
 		}
 		PropertyChangedEventArgsCollection(IEnumerable<System.ComponentModel.PropertyChangedEventArgs> eventArgs)
 		{
-			mEventArgs = new List<System.ComponentModel.PropertyChangedEventArgs>(eventArgs);
+			mEventArgs = new(eventArgs);
 		}
 
 		public PropertyChangedEventArgsCollection CreateArgs<T, TProp>(
@@ -42,8 +42,12 @@ namespace KSoft.ObjectModel
 		public void NotifyPropertiesChanged(object sender, System.ComponentModel.PropertyChangedEventHandler handler)
 		{
 			if (handler != null)
+			{
 				foreach (var args in mEventArgs)
+				{
 					handler(sender, args);
+				}
+			}
 		}
 
 		#region IEnumerable<PropertyChangedEventArgs> Members

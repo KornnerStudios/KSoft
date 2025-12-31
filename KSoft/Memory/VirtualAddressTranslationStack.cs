@@ -79,9 +79,13 @@ namespace KSoft.Memory
 			var pop = base.Pop();
 
 			if (base.Count != 0)
+			{
 				mCurrentPA = base.Peek();
+			}
 			else
+			{
 				mCurrentPA = mNull;
+			}
 
 			return pop;
 		}
@@ -98,7 +102,9 @@ namespace KSoft.Memory
 			s.ReadRawPointer(ref va);
 
 			if (va.IsInvalidHandle)
+			{
 				return va;
+			}
 
 			return CurrentAddress + va;
 		}

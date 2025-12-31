@@ -25,7 +25,7 @@ namespace KSoft
 		public static <#= bittable_type.Keyword #> Align(int alignmentBit, <#= bittable_type.Keyword #> value)
 		{
 			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-<#		if(bittable_type.IsSigned) { #>
+<#		if (bittable_type.IsSigned) { #>
 			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
 			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() >= 0);
 <#		} #>
@@ -47,7 +47,7 @@ namespace KSoft
 		public static int PaddingRequired(int alignmentBit, <#= bittable_type.Keyword #> value)
 		{
 			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-<#		if(bittable_type.IsSigned) { #>
+<#		if (bittable_type.IsSigned) { #>
 			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
 			Contract.Ensures(Contract.Result<int>() >= 0);
 <#		} #>
@@ -72,12 +72,12 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(<#= bittable_type.Keyword #> n)
 		{
-			if (n == 0)			return -1;
+			if (n == 0)			{ return -1; }
 			int pos = 0;
-<#		for(int x = bittable_type.SizeOfInBits >> 1; x > 1; x >>= 1) { #>
+<#		for (int x = bittable_type.SizeOfInBits >> 1; x > 1; x >>= 1) { #>
 			if (n >= 1 << <#= x #>)	{ n >>= <#= x #>;	pos += <#= x #>; }
 <#		} #>
-			if (n >= 1 << 1)	pos += 1;
+			if (n >= 1 << 1)	{ pos += 1; }
 
 			return pos;
 		}

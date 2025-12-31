@@ -10,19 +10,16 @@ using Exprs = System.Linq.Expressions;
 
 namespace KSoft.ObjectModel
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1724:TypeNamesShouldNotMatchNamespaces",
-		Justification="I don't care about System.Web.Util")]
 	public static class Util
 	{
 		// based on System.Windows.Data.Binding.IndexerName in PresentationFramework.dll
 		public const string kIndexerPropertyName = "Item[]";
 		public static readonly PropertyChangedEventArgs kIndexerPropertyChanged =
-			new PropertyChangedEventArgs(kIndexerPropertyName);
+			new(kIndexerPropertyName);
 
 
 		public static readonly System.Collections.Specialized.NotifyCollectionChangedEventArgs kNotifyCollectionReset =
-			new System.Collections.Specialized.NotifyCollectionChangedEventArgs(
-				System.Collections.Specialized.NotifyCollectionChangedAction.Reset);
+			new(System.Collections.Specialized.NotifyCollectionChangedAction.Reset);
 
 		public static PropertyChangedEventArgs CreatePropertyChangedEventArgs<T>(
 			Exprs.Expression<Func<T, object>> propertyExpr)
@@ -43,11 +40,13 @@ namespace KSoft.ObjectModel
 				Reflection.Util.PropertyFromExpr(propertyExpr).Name);
 		}
 
-		private static Dictionary<Type, Func<object, object>> gCollectionGetUnderlyingListFuncs = new Dictionary<Type, Func<object, object>>();
+		private static readonly Dictionary<Type, Func<object, object>> gCollectionGetUnderlyingListFuncs = [];
 		public static List<T> GetUnderlyingItemsAsList<T>(System.Collections.ObjectModel.Collection<T> coll, bool throwOnError = true)
 		{
 			if (coll == null)
+			{
 				return null;
+			}
 
 			var collType = coll.GetType();
 			Func<object, object> getFunc;

@@ -12,8 +12,12 @@ namespace KSoft.ObjectModel
 			[System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
 			var handler = PropertyChanged;
+#pragma warning disable IDE0031 // Use null propagation
 			if (handler != null)
+			{
 				handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
+#pragma warning restore IDE0031 // Use null propagation
 		}
 
 		protected bool SetFieldVal<T>(ref T field, T value

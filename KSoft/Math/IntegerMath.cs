@@ -36,7 +36,9 @@ namespace KSoft
 		public static uint RoundUpUInt32(uint value, uint mult)
 		{
 			if (mult == 0)
+			{
 				return value;
+			}
 
 			return value - (value-1) % mult + (mult-1);
 		}

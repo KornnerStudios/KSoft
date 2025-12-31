@@ -13,7 +13,7 @@ namespace KSoft.Memory.Strings
 		{
 			const int kBlankIndexState = -2;
 
-			StringMemoryPool mPool;
+			readonly StringMemoryPool mPool;
 			int mCurrentIndex;
 
 			public KeyValueEnumerator(StringMemoryPool pool)
@@ -26,16 +26,16 @@ namespace KSoft.Memory.Strings
 			#region IEnumerator<T> Members
 			KeyValuePair<Values.PtrHandle, string> mCurrent;
 			/// <summary>Get the current element in the enumeration</summary>
-			public KeyValuePair<Values.PtrHandle, string> Current { get { return mCurrent; } }
+			public readonly KeyValuePair<Values.PtrHandle, string> Current { get { return mCurrent; } }
 			#endregion
 
 			#region IDisposable Members
-			void IDisposable.Dispose() { }
+			readonly void IDisposable.Dispose() { }
 			#endregion
 
 			#region IEnumerator Members
 			/// <summary>Get the current element in the enumeration</summary>
-			object System.Collections.IEnumerator.Current { get { return mCurrent; } }
+			readonly object System.Collections.IEnumerator.Current { get { return mCurrent; } }
 
 			/// <summary>Advances the enumerator to the next address\string pair</summary>
 			/// <returns></returns>
@@ -43,7 +43,9 @@ namespace KSoft.Memory.Strings
 			{
 				// for supporting state Resets
 				if (mCurrentIndex == kBlankIndexState)
+				{
 					mCurrentIndex = 0;
+				}
 
 				if (mCurrentIndex >= 0 && mCurrentIndex < mPool.Count)
 				{
@@ -54,7 +56,9 @@ namespace KSoft.Memory.Strings
 				}
 				// when we've past the end of the pool
 				else
+				{
 					mCurrentIndex = TypeExtensions.kNone;
+				}
 
 				return mCurrentIndex >= 0 && mCurrentIndex < mPool.Count;
 			}

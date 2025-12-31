@@ -11,7 +11,7 @@ namespace KSoft.Security.Cryptography
 	public abstract class BlockHashAlgorithm
 		: HashAlgorithm
 	{
-		byte[] mBlockBuffer;
+		readonly byte[] mBlockBuffer;
 
 		protected long TotalBytesProcessed { get; private set; }
 

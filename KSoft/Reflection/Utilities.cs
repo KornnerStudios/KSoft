@@ -83,14 +83,20 @@ namespace KSoft.Reflection
 				}
 
 				for (int x = arg_index; x < param_types.Length; x++)
+				{
 					il.Emit(Reflect.Emit.OpCodes.Ldarg, x);
+				}
 			}
 
 			// Generate the IL for Calli's entry pointer (pushed to the stack)
 			if (Environment.Is64BitProcess)
+			{
 				il.Emit(Reflect.Emit.OpCodes.Ldc_I8, nativePtr.ToInt64());
+			}
 			else
+			{
 				il.Emit(Reflect.Emit.OpCodes.Ldc_I4, nativePtr.ToInt32());
+			}
 
 			il.EmitCalli(Reflect.Emit.OpCodes.Calli, callConv, ret_type, param_types);
 			il.Emit(Reflect.Emit.OpCodes.Ret);

@@ -31,7 +31,7 @@ namespace KSoft.Memory.Strings
 		/// <summary>Default amount of entry memory allocated for use</summary>
 		const int kEntryStartCount = 64;
 		/// <summary>Sentinel value of an invalid string address reference</summary>
-		public static readonly Values.PtrHandle kInvalidReference = new Values.PtrHandle(ulong.MaxValue);
+		public static readonly Values.PtrHandle kInvalidReference = new(ulong.MaxValue);
 
 
 		/// <summary>Configuration instance data for this pool</summary>
@@ -43,7 +43,7 @@ namespace KSoft.Memory.Strings
 		Dictionary<string, int> mStringToIndex;
 		// null string offset starts off null in case the user doesn't want an implicit null
 		Values.PtrHandle mNullReference = kInvalidReference;
-		Text.StringStorageEncoding mEncoding;
+		readonly Text.StringStorageEncoding mEncoding;
 
 		#region Count
 		/// <summary>Get the number of strings in the pool</summary>
@@ -193,7 +193,6 @@ namespace KSoft.Memory.Strings
 		/// <remarks>
 		/// Code contracts will cause an assert if the address doesn't start a new string
 		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers")]
 		public string this[Values.PtrHandle address]	{ get { return Get(address); } }
 		#endregion
 
@@ -373,7 +372,7 @@ namespace KSoft.Memory.Strings
 		#endregion
 
 		#region ICollection<string> Members
-		void ICollection<string>.Add(string item)						{ var handle = Add(item); }
+		void ICollection<string>.Add(string item)						{ _ = Add(item); }
 		void ICollection<string>.Clear()								{ throw new NotSupportedException("Can't clear items from a StringMemoryPool"); }
 		public bool Contains(string item)								{ return UseStringToIndex ? mStringToIndex.ContainsKey(item) : mPool.Contains(item); }
 		void ICollection<string>.CopyTo(string[] array, int arrayIndex)	{ mPool.CopyTo(array, arrayIndex); }
