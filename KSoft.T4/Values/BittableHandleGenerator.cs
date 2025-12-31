@@ -67,13 +67,14 @@ namespace KSoft.T4.Values
 			mUnderlyingTypeName = underlyingTypeName;
 			mStructName = structName;
 		}
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods")]
 		public BittableHandleGenerator(TextTemplating.TextTransformation ttFile,
 			NumberCodeDefinition underlyingType, string structName)
 			: this(ttFile, underlyingType.Code.ToString(), structName)
 		{
 			if (underlyingType == null)
+			{
 				throw new ArgumentNullException(nameof(underlyingType));
+			}
 		}
 
 		public static BittableHandleGenerator ForIntPtr(TextTemplating.TextTransformation ttFile,
@@ -92,7 +93,6 @@ namespace KSoft.T4.Values
 		#endregion
 
 		#region Generate type declaration
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1822", Justification="Remove supression once this does something")]
 		void WriteDeclAttributes()
 		{
 			// #TODO_IMPLEMENT
@@ -168,7 +168,9 @@ namespace KSoft.T4.Values
 		public void GenerateCtorFromValueMethod()
 		{
 			if (CtorFromValueTypeName == null)
+			{
 				CtorFromValueTypeName = mUnderlyingTypeName;
+			}
 
 			mFile.WriteLine("public {0}({1} {2})",
 				mStructName, CtorFromValueTypeName, CtorFromValueParamName);
@@ -402,15 +404,17 @@ namespace KSoft.T4.Values
 			{
 				switch (Kind)
 				{
-				case BittableHandleKind.Noneable:
-					WriteNoneField();
-					break;
-				case BittableHandleKind.Nullable:
-					WriteNullField();
-					break;
+					case BittableHandleKind.Noneable:
+						WriteNoneField();
+						break;
+					case BittableHandleKind.Nullable:
+						WriteNullField();
+						break;
 				}
 				if (Kind != BittableHandleKind.Undefined)
+				{
 					mFile.NewLine();
+				}
 
 				GenerateBackingFieldDecl();
 
@@ -421,15 +425,17 @@ namespace KSoft.T4.Values
 
 				switch (Kind)
 				{
-				case BittableHandleKind.Noneable:
-					WriteNoneableProperties();
-					break;
-				case BittableHandleKind.Nullable:
-					WriteNullableProperties();
-					break;
+					case BittableHandleKind.Noneable:
+						WriteNoneableProperties();
+						break;
+					case BittableHandleKind.Nullable:
+						WriteNullableProperties();
+						break;
 				}
 				if (Kind != BittableHandleKind.Undefined)
+				{
 					mFile.NewLine();
+				}
 
 				GenerateObjectMethodOverrides();
 

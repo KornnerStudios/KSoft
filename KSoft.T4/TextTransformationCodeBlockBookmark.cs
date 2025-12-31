@@ -30,21 +30,31 @@ namespace KSoft.T4
 		{
 			if (mType == TextTransformationCodeBlockType.Brackets ||
 				mType == TextTransformationCodeBlockType.BracketsStatement)
+			{
 				mFile.WriteLine("{");
+			}
 
 			for (int x = 0; x < mIndentCount; x++)
+			{
 				mFile.PushIndent(kIndent);
+			}
 		}
 
 		public void Dispose()
 		{
 			for (int x = 0; x < mIndentCount; x++)
+			{
 				mFile.PopIndent();
+			}
 
 			if (mType == TextTransformationCodeBlockType.Brackets)
+			{
 				mFile.WriteLine("}");
+			}
 			else if (mType == TextTransformationCodeBlockType.BracketsStatement)
+			{
 				mFile.WriteLine("};");
+			}
 		}
 	};
 }

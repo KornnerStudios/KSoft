@@ -5,7 +5,7 @@ namespace KSoft.T4
 {
 	public static class UtilT4
 	{
-		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
+		public static System.Globalization.CultureInfo InvariantCultureInfo => System.Globalization.CultureInfo.InvariantCulture;
 
 		public static string EnumConstraintsCode()
 		{
@@ -21,7 +21,9 @@ namespace KSoft.T4
 		public static NumberCodeDefinition TryGetSignedDefinition(this NumberCodeDefinition def)
 		{
 			if (def == null)
+			{
 				throw new ArgumentNullException(nameof(def));
+			}
 
 			switch (def.Code)
 			{
@@ -52,14 +54,8 @@ namespace KSoft.T4
 			return bookmark;
 		}
 
-		internal static void NewLine(this TextTemplating.TextTransformation ttFile)
-		{
-			ttFile.WriteLine("");
-		}
-		internal static void EndStmt(this TextTemplating.TextTransformation ttFile)
-		{
-			ttFile.WriteLine(";");
-		}
+		internal static void NewLine(this TextTemplating.TextTransformation ttFile) => ttFile.WriteLine("");
+		internal static void EndStmt(this TextTemplating.TextTransformation ttFile) => ttFile.WriteLine(";");
 
 		static void WriteXmlDocLine(TextTemplating.TextTransformation ttFile,
 			string xmlTag, string attributeText, string text)
@@ -107,17 +103,11 @@ namespace KSoft.T4
 		}
 
 		internal static string ToValueKeyword(this bool condition)
-		{
-			return condition ? "true" : "false";
-		}
+			=> condition ? "true" : "false";
 		internal static string UseStringOrEmpty(this bool condition, string trueString)
-		{
-			return condition ? trueString : string.Empty;
-		}
+			=> condition ? trueString : string.Empty;
 		internal static string UseStringOrEmpty(this bool condition, string trueStringFormat, params object[] args)
-		{
-			return condition ? string.Format(InvariantCultureInfo, trueStringFormat, args) : string.Empty;
-		}
+			=> condition ? string.Format(InvariantCultureInfo, trueStringFormat, args) : string.Empty;
 
 		class NullDisposableImpl
 			: IDisposable

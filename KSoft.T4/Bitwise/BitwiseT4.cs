@@ -25,7 +25,9 @@ namespace KSoft.T4.Bitwise
 		public static string GetConstantKeyword(this NumberCodeDefinition def)
 		{
 			if (def == null)
+			{
 				throw new ArgumentNullException(nameof(def));
+			}
 
 			switch (def.Code)
 			{
@@ -52,25 +54,31 @@ namespace KSoft.T4.Bitwise
 		public static string GetVectorsSuffix(this NumberCodeDefinition def)
 		{
 			if (def == null)
+			{
 				throw new ArgumentNullException(nameof(def));
+			}
 
 			if (!def.IsByte)
+			{
 				return GetConstantKeyword(def);
+			}
 
 			return "Bytes";
 		}
 
 		#region Bitstream related
 		/// <summary>	The integer type to use for bitstream cache operations. </summary>
-		public static NumberCodeDefinition BitStreamCacheWord { get {
-			return PrimitiveDefinitions.kUInt32;
-		} }
+		public static NumberCodeDefinition BitStreamCacheWord => PrimitiveDefinitions.kUInt32;
 		public static IEnumerable<PrimitiveCodeDefinition> BitStreambleIntegerTypes { get {
 			yield return PrimitiveDefinitions.kChar;
 
 			foreach (var num_type in PrimitiveDefinitions.Numbers)
+			{
 				if (num_type.IsInteger)
+				{
 					yield return num_type;
+				}
+			}
 		} }
 		public static IEnumerable<PrimitiveCodeDefinition> BitStreambleNonIntegerTypes { get {
 			yield return PrimitiveDefinitions.kBool;
@@ -85,57 +93,53 @@ namespace KSoft.T4.Bitwise
 		{
 			switch (op)
 			{
-			case BitOperation.Clear:	return "Bitwise.Flags.Remove";
-			case BitOperation.Set:		return "Bitwise.Flags.Add";
-			case BitOperation.Toggle:	return "Bitwise.Flags.Toggle";
-			case BitOperation.Test:		return "Bitwise.Flags.TestAny";
+				case BitOperation.Clear:	return "Bitwise.Flags.Remove";
+				case BitOperation.Set:		return "Bitwise.Flags.Add";
+				case BitOperation.Toggle:	return "Bitwise.Flags.Toggle";
+				case BitOperation.Test:		return "Bitwise.Flags.TestAny";
 
-			default: throw new InvalidOperationException(op.ToString());
+				default: throw new InvalidOperationException(op.ToString());
 			}
 		}
 		public static string FlagsMethodBitsPrefix(this BitOperation op)
 		{
 			switch (op)
 			{
-			case BitOperation.Clear:
-			case BitOperation.Set:
-			case BitOperation.Toggle:
-				return "ref";
+				case BitOperation.Clear:
+				case BitOperation.Set:
+				case BitOperation.Toggle:
+					return "ref";
 
-			default:
-				return "";
+				default:
+					return "";
 			}
 		}
 		public static string ResultType(this BitOperation op)
 		{
 			switch (op)
 			{
-			case BitOperation.Test:
-				return "bool";
+				case BitOperation.Test:
+					return "bool";
 
-			default:
-				return "void";
+				default:
+					return "void";
 			}
 		}
 		public static string ResultDefault(this BitOperation op)
 		{
 			switch (op)
 			{
-			case BitOperation.Test:
-				return "false";
+				case BitOperation.Test:
+					return "false";
 
-			default:
-				return "";
+				default:
+					return "";
 			}
 		}
 		public static bool IsNotPure(this BitOperation op)
-		{
-			return op != BitOperation.Test;
-		}
+			=> op != BitOperation.Test;
 		public static bool RequiresCardinalityReUpdate(this BitOperation op)
-		{
-			return op != BitOperation.Test;
-		}
+			=> op != BitOperation.Test;
 		#endregion
 
 		#region BittableTypes
@@ -145,12 +149,10 @@ namespace KSoft.T4.Bitwise
 			PrimitiveDefinitions.kUInt32,
 			PrimitiveDefinitions.kUInt64,
 		};
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		public static IReadOnlyList<NumberCodeDefinition> BittableTypes_Unsigned { get {
 			return kBittableTypes_Unsigned;
 		} }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		public static IEnumerable<NumberCodeDefinition> BittableTypes_MajorWords { get {
 			yield return PrimitiveDefinitions.kUInt32;
 			yield return PrimitiveDefinitions.kUInt64;
@@ -212,7 +214,9 @@ namespace KSoft.T4.Bitwise
 					mFile.Write("{0}{1}", mByteName, x);
 
 					if (x < (mSizeOfInBytes - 1))
+					{
 						mFile.Write(", ");
+					}
 				}
 				mFile.WriteLine(";");
 			}

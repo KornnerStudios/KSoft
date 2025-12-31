@@ -54,7 +54,9 @@ namespace KSoft.T4.Bitwise
 
 				var mask_str = byteMask.ToString("X2", UtilT4.InvariantCultureInfo);
 				for (int x = 0; x < Def.SizeOfInBytes; x++)
+				{
 					sb.Append(mask_str);
+				}
 
 				return sb.ToString();
 			}
@@ -69,13 +71,19 @@ namespace KSoft.T4.Bitwise
 
 				// mask is for the left-hand-side/most-significant bits
 				if (lhs)
-					mask_str = mask_str + zero_str;
+				{
+					mask_str += zero_str;
+				}
 				else // rhs/lsb
+				{
 					mask_str = zero_str + mask_str;
+				}
 
 				var sb = new System.Text.StringBuilder("0x");
 				for (int x = 0; x < Def.SizeOfInBytes; x += wordSize)
+				{
 					sb.Append(mask_str);
+				}
 
 				return sb.ToString();
 			}
@@ -114,7 +122,9 @@ namespace KSoft.T4.Bitwise
 				File.Write("return ");
 
 				if (Def.SizeOfInBits < PrimitiveDefinitions.kUInt32.SizeOfInBits)
+				{
 					File.Write("({0})", Def.Keyword);
+				}
 
 				File.Write(kFondleVarName);
 				File.WriteLine(";");
@@ -128,9 +138,13 @@ namespace KSoft.T4.Bitwise
 					maskRHS,
 					shiftAmount);
 				if (doc != null)
+				{
 					File.WriteLine(" // {0}", doc);
+				}
 				else
+				{
 					File.WriteLine("");
+				}
 			}
 			void GenerateBitOperationCode(byte byteMaskLHS, byte byteMaskRHS, int shiftAmount, string doc = null)
 			{
@@ -158,9 +172,9 @@ namespace KSoft.T4.Bitwise
 				GenerateBitOperationCode(kMaskNibbleMsb, kMaskNibbleLsb, 4,
 					"swap nibbles");
 
-				if (Def.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort),	"swap bytes");
-				if (Def.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint),		"swap halves");
-				if (Def.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong),	"swap words");
+				if (Def.SizeOfInBytes >= sizeof(ushort))	{ GenerateWordOperationCode(sizeof(ushort),	"swap bytes"); }
+				if (Def.SizeOfInBytes >= sizeof(uint))		{ GenerateWordOperationCode(sizeof(uint),	"swap halves"); }
+				if (Def.SizeOfInBytes >= sizeof(ulong))		{ GenerateWordOperationCode(sizeof(ulong),	"swap words"); }
 
 				File.NewLine();
 			}
@@ -212,9 +226,13 @@ namespace KSoft.T4.Bitwise
 					maskRHS,
 					shiftAmount);
 				if (doc != null)
+				{
 					File.WriteLine(" // {0}", doc);
+				}
 				else
+				{
 					File.NewLine();
+				}
 			}
 			void GenerateBitOperationCode(byte byteMaskLHS, byte byteMaskRHS, int shiftAmount, string doc = null)
 			{
@@ -239,9 +257,9 @@ namespace KSoft.T4.Bitwise
 				GenerateBitOperationCode(kMaskConsecutivePairsMsb, kMaskConsecutivePairsLsb, 2);
 				GenerateBitOperationCode(kMaskNibbleMsb, kMaskNibbleLsb, 4);
 
-				if (Def.SizeOfInBytes >= sizeof(ushort))	GenerateWordOperationCode(sizeof(ushort));
-				if (Def.SizeOfInBytes >= sizeof(uint))		GenerateWordOperationCode(sizeof(uint));
-				if (Def.SizeOfInBytes >= sizeof(ulong))	GenerateWordOperationCode(sizeof(ulong));
+				if (Def.SizeOfInBytes >= sizeof(ushort))	{ GenerateWordOperationCode(sizeof(ushort)); }
+				if (Def.SizeOfInBytes >= sizeof(uint))		{ GenerateWordOperationCode(sizeof(uint)); }
+				if (Def.SizeOfInBytes >= sizeof(ulong))		{ GenerateWordOperationCode(sizeof(ulong)); }
 
 				File.NewLine();
 			}

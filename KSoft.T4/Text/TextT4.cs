@@ -42,13 +42,10 @@ namespace KSoft.T4
 
 			protected abstract string TableName { get; }
 			protected abstract string TableNamePostfix { get; }
-			protected virtual string RowHeaderTabString { get { return "\t"; } }
+			protected virtual string RowHeaderTabString => "\t";
 
 			protected abstract void WriteXmlDoc();
-			protected virtual bool LookupUsesCharByte(int charByte)
-			{
-				return IsAlphabetOrDigit(charByte);
-			}
+			protected virtual bool LookupUsesCharByte(int charByte) => IsAlphabetOrDigit(charByte);
 		};
 
 		public abstract class CharLookupTableCodeGeneratorBase
@@ -61,16 +58,15 @@ namespace KSoft.T4
 
 			protected abstract PrimitiveCodeDefinition TableElementType { get; }
 
-			protected virtual int OverrideDigitIndex(int charByte, int digitIndex)
-			{
-				return digitIndex;
-			}
+			protected virtual int OverrideDigitIndex(int charByte, int digitIndex) => digitIndex;
 			protected virtual string DigitToElementText(int digitIndex)
 			{
 				if (digitIndex < kMaxHexidecimal)
 				{
 					if (digitIndex == -1)
+					{
 						digitIndex = 0;
+					}
 
 					return string.Format(UtilT4.InvariantCultureInfo, "0x{0},",
 						digitIndex.ToString("X", UtilT4.InvariantCultureInfo));
@@ -83,14 +79,18 @@ namespace KSoft.T4
 			{
 				File.Write("//\t");
 				for (int x = 0; x < kMaxHexidecimal; x++)
+				{
 					File.Write("{0}{1}", x.ToString("X", UtilT4.InvariantCultureInfo), RowHeaderTabString);
+				}
 				File.WriteLine("");
 			}
 			void WriteColumnHeader_Numbers()
 			{
 				File.Write("//\t");
 				for (int x = 0; x < kMaxDecimal; x++)
+				{
 					File.Write("{0}{1}", x, RowHeaderTabString);
+				}
 				File.WriteLine("");
 			}
 			void WriteColumnHeader_A_to_O(bool uppercase)
@@ -100,7 +100,9 @@ namespace KSoft.T4
 
 				File.Write("//\t");
 				for (char x = min; x <= max; x++)
+				{
 					File.Write("{0}{1}", x, RowHeaderTabString);
+				}
 				File.WriteLine("");
 			}
 			void WriteColumnHeader_P_to_Z(bool uppercase)
@@ -110,7 +112,9 @@ namespace KSoft.T4
 
 				File.Write("//\t");
 				for (char x = min; x <= max; x++)
+				{
 					File.Write("{0}{1}", x, RowHeaderTabString);
+				}
 				File.WriteLine("");
 			}
 			public void Generate()
@@ -132,15 +136,17 @@ namespace KSoft.T4
 					x++)
 				{
 					#region write column headers
-						 if (column == 0 && row == 3) WriteColumnHeader_Numbers();
-					else if (column == 0 && row == 4) WriteColumnHeader_A_to_O(uppercase:true);
-					else if (column == 0 && row == 5) WriteColumnHeader_P_to_Z(uppercase:true);
-					else if (column == 0 && row == 6) WriteColumnHeader_A_to_O(uppercase:false);
-					else if (column == 0 && row == 7) WriteColumnHeader_P_to_Z(uppercase:false);
+						 if (column == 0 && row == 3) { WriteColumnHeader_Numbers(); }
+					else if (column == 0 && row == 4) { WriteColumnHeader_A_to_O(uppercase:true); }
+					else if (column == 0 && row == 5) { WriteColumnHeader_P_to_Z(uppercase:true); }
+					else if (column == 0 && row == 6) { WriteColumnHeader_A_to_O(uppercase:false); }
+					else if (column == 0 && row == 7) { WriteColumnHeader_P_to_Z(uppercase:false); }
 					#endregion
 
 					if (column == 0)
+					{
 						File.PushIndent("\t");
+					}
 
 					if (LookupUsesCharByte(x))
 					{
@@ -149,7 +155,9 @@ namespace KSoft.T4
 						File.Write(DigitToElementText(digit_index++));
 					}
 					else
+					{
 						File.Write(DigitToElementText(-1));
+					}
 
 					if (column++ == kMaxHexidecimal-1)
 					{
@@ -177,8 +185,8 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override PrimitiveCodeDefinition TableElementType { get { return PrimitiveDefinitions.kByte; } }
-			protected override string TableName { get { return "kCharToByteLookup"; } }
+			protected override PrimitiveCodeDefinition TableElementType => PrimitiveDefinitions.kByte;
+			protected override string TableName => "kCharToByteLookup";
 
 			protected override void WriteXmlDoc()
 			{
@@ -194,12 +202,14 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 36.ToString(UtilT4.InvariantCultureInfo); } }
+			protected override string TableNamePostfix => 36.ToString(UtilT4.InvariantCultureInfo);
 
 			protected override int OverrideDigitIndex(int charByte, int digitIndex)
 			{
 				if ((char)charByte == 'a')
+				{
 					digitIndex = ('9' - '0') + 1;
+				}
 
 				return digitIndex;
 			}
@@ -212,7 +222,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 62.ToString(UtilT4.InvariantCultureInfo); } }
+			protected override string TableNamePostfix => 62.ToString(UtilT4.InvariantCultureInfo);
 		};
 		public sealed class CharToByteLookupTable16CodeGenerator
 			: CharToByteLookupTableCodeGeneratorBase
@@ -222,16 +232,15 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 16.ToString(UtilT4.InvariantCultureInfo); } }
+			protected override string TableNamePostfix => 16.ToString(UtilT4.InvariantCultureInfo);
 
-			protected override bool LookupUsesCharByte(int charByte)
-			{
-				return IsHexidecimalDigit(charByte);
-			}
+			protected override bool LookupUsesCharByte(int charByte) => IsHexidecimalDigit(charByte);
 			protected override int OverrideDigitIndex(int charByte, int digitIndex)
 			{
 				if ((char)charByte == 'a')
+				{
 					digitIndex = ('9' - '0') + 1;
+				}
 
 				return digitIndex;
 			}
@@ -245,10 +254,10 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override PrimitiveCodeDefinition TableElementType { get { return PrimitiveDefinitions.kBool; } }
-			protected override string TableName { get { return "kCharIsDigitLookup"; } }
+			protected override PrimitiveCodeDefinition TableElementType => PrimitiveDefinitions.kBool;
+			protected override string TableName => "kCharIsDigitLookup";
 
-			protected override string RowHeaderTabString { get { return "\t\t"; } }
+			protected override string RowHeaderTabString => "\t\t";
 
 			protected override void WriteXmlDoc()
 			{
@@ -271,7 +280,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 62.ToString(UtilT4.InvariantCultureInfo); } }
+			protected override string TableNamePostfix => 62.ToString(UtilT4.InvariantCultureInfo);
 		};
 		public sealed class CharIsDigitLookupTable16CodeGenerator
 			: CharIsDigitLookupTableCodeGeneratorBase
@@ -281,12 +290,9 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableNamePostfix { get { return 16.ToString(UtilT4.InvariantCultureInfo); } }
+			protected override string TableNamePostfix => 16.ToString(UtilT4.InvariantCultureInfo);
 
-			protected override bool LookupUsesCharByte(int charByte)
-			{
-				return IsHexidecimalDigit(charByte);
-			}
+			protected override bool LookupUsesCharByte(int charByte) => IsHexidecimalDigit(charByte);
 		};
 
 
@@ -301,7 +307,7 @@ namespace KSoft.T4
 			{
 			}
 
-			protected override string TableName { get { return "kCharIsDigitBitVector"; } }
+			protected override string TableName => "kCharIsDigitBitVector";
 
 			protected override void WriteXmlDoc()
 			{
@@ -317,7 +323,9 @@ namespace KSoft.T4
 			static int GetBitArrayLength(int bitLength, int wordBitSize)
 			{
 				if (bitLength <= 0)
+				{
 					return 0;
+				}
 
 				return ((bitLength - 1) / wordBitSize) + 1;
 			}
@@ -358,7 +366,9 @@ namespace KSoft.T4
 					x++)
 				{
 					if (column == 0)
+					{
 						File.PushIndent("\t");
+					}
 
 					File.Write(BitArrayElementToElementText(bitvector[x]));
 

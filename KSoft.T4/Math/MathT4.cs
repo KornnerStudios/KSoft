@@ -18,21 +18,13 @@ namespace KSoft.T4.Math
 				LastComponent = index == (vecDimensions-1);
 			}
 
-			public string Prefix(string prefix)
-			{
-				return prefix + Name;
-			}
-			public string Suffix(string suffix)
-			{
-				return Name + suffix;
-			}
+			public string Prefix(string prefix) => prefix + Name;
+			public string Suffix(string suffix) => Name + suffix;
 
 			public string ContOrEnd(string cont, string end = "")
-			{
-				return LastComponent
+				=> LastComponent
 					? end
 					: cont;
-			}
 		};
 
 		public sealed class VectorDef
@@ -57,12 +49,12 @@ namespace KSoft.T4.Math
 			} }
 
 			public IEnumerable<VectorComponent> Components { get {
-				if (Dimensions >= 1) yield return new VectorComponent(0, "x", Dimensions);
-				if (Dimensions >= 2) yield return new VectorComponent(1, "y", Dimensions);
-				if (Dimensions >= 3) yield return new VectorComponent(2, "z", Dimensions);
+				if (Dimensions >= 1) { yield return new VectorComponent(0, "x", Dimensions); }
+				if (Dimensions >= 2) { yield return new VectorComponent(1, "y", Dimensions); }
+				if (Dimensions >= 3) { yield return new VectorComponent(2, "z", Dimensions); }
 			} }
 
-			public bool ComponentsRequireCast { get { return CodeDef.SizeOfInBytes < PrimitiveDefinitions.kInt32.SizeOfInBytes; } }
+			public bool ComponentsRequireCast => CodeDef.SizeOfInBytes < PrimitiveDefinitions.kInt32.SizeOfInBytes;
 
 			public string ComponentDecls(string prefix = "", string suffix = "")
 			{
@@ -78,7 +70,9 @@ namespace KSoft.T4.Math
 					sb.Append(suffix);
 
 					if (!comp.LastComponent)
+					{
 						sb.Append(", ");
+					}
 				}
 
 				return sb.ToString();
@@ -98,7 +92,9 @@ namespace KSoft.T4.Math
 					sb.Append(suffix);
 
 					if (!comp.LastComponent)
+					{
 						sb.Append(", ");
+					}
 				}
 
 				return sb.ToString();
@@ -109,7 +105,9 @@ namespace KSoft.T4.Math
 				var sb = new System.Text.StringBuilder();
 
 				if (useCastsIfNeeded)
+				{
 					useCastsIfNeeded = ComponentsRequireCast;
+				}
 
 				foreach (var comp in Components)
 				{
@@ -124,10 +122,14 @@ namespace KSoft.T4.Math
 					sb.Append(suffix);
 
 					if (useCastsIfNeeded)
+					{
 						sb.Append(" )");
+					}
 
 					if (!comp.LastComponent)
+					{
 						sb.Append(", ");
+					}
 				}
 
 				return sb.ToString();

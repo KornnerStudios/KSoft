@@ -49,8 +49,12 @@ namespace KSoft.T4
 
 		public static IEnumerable<NumberCodeDefinition> SerializableTypesIntegers { get {
 			foreach (var num_type in PrimitiveDefinitions.Numbers)
+			{
 				if (num_type.IsInteger)
+				{
 					yield return num_type;
+				}
+			}
 		} }
 
 		public static IEnumerable<PrimitiveCodeDefinition> SerializableTypesSpecial { get {
@@ -61,9 +65,13 @@ namespace KSoft.T4
 			TagElementStreamSubjectType subject, PrimitiveCodeDefinition codeDef, bool hasTNameParam = true)
 		{
 			if (ttFile == null)
+			{
 				throw new ArgumentNullException(nameof(ttFile));
+			}
 			if (codeDef == null)
+			{
 				throw new ArgumentNullException(nameof(codeDef));
+			}
 
 			ttFile.PushIndent("\t");
 			ttFile.PushIndent("\t");
@@ -97,7 +105,9 @@ namespace KSoft.T4
 			{
 				ttFile.WriteLine("if (predicate == null)");
 				using (var cb1 = ttFile.EnterCodeBlock())
+				{
 					ttFile.WriteLine("predicate = x => true;");
+				}
 
 				ttFile.NewLine();
 				ttFile.WriteLine("bool executed = false;");
@@ -115,9 +125,13 @@ namespace KSoft.T4
 					codeDef.IsInteger.UseStringOrEmpty(", numBase")
 				);
 				if (is_opt)
+				{
 					ttFile.WriteLine("if (executed)");
+				}
 				using (var cb2 = ttFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
+				{
 					ttFile.WriteLine("property.SetValue(theObj, value, null);");
+				}
 			}
 
 			ttFile.WriteLine("else if (IsWriting)");
@@ -132,7 +146,7 @@ namespace KSoft.T4
 					is_opt.UseStringOrEmpty(", predicate"),			// 5
 					codeDef.IsInteger.UseStringOrEmpty(", numBase")	// 6
 				);
-			};
+			}
 
 			if (is_opt)
 			{
