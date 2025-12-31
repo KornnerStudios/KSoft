@@ -10,19 +10,23 @@ namespace KSoft.WPF
 		private static BoolToWindowStateConverter gNormalOrMaximized;
 		public static BoolToWindowStateConverter NormalOrMaximized { get {
 			if (gNormalOrMaximized == null)
+			{
 				gNormalOrMaximized = new BoolToWindowStateConverter
 				{
 				};
+			}
 
 			return gNormalOrMaximized;
 		} }
 		private static BoolToWindowStateConverter gNormalOrMaximizedInverted;
 		public static BoolToWindowStateConverter NormalOrMaximizedInverted { get {
 			if (gNormalOrMaximizedInverted == null)
+			{
 				gNormalOrMaximizedInverted = new BoolToWindowStateConverter
 				{
 					NormalFlag = false,
 				};
+			}
 
 			return gNormalOrMaximizedInverted;
 		} }
@@ -30,21 +34,25 @@ namespace KSoft.WPF
 		private static BoolToWindowStateConverter gNormalOrMinimized;
 		public static BoolToWindowStateConverter NormalOrMinimized { get {
 			if (gNormalOrMinimized == null)
+			{
 				gNormalOrMinimized = new BoolToWindowStateConverter
 				{
 					Minimize = true,
 				};
+			}
 
 			return gNormalOrMinimized;
 		} }
 		private static BoolToWindowStateConverter gNormalOrMinimizedInverted;
 		public static BoolToWindowStateConverter NormalOrMinimizedInverted { get {
 			if (gNormalOrMinimizedInverted == null)
+			{
 				gNormalOrMinimizedInverted = new BoolToWindowStateConverter
 				{
 					Minimize = true,
 					NormalFlag = false,
 				};
+			}
 
 			return gNormalOrMinimizedInverted;
 		} }
@@ -77,9 +85,13 @@ namespace KSoft.WPF
 			var state = (WindowState)value;
 
 			if (state == WindowState.Normal)
+			{
 				return NormalFlag;
+			}
 			else
+			{
 				return !NormalFlag;
+			}
 		}
 	};
 }

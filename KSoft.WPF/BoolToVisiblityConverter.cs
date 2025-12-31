@@ -10,19 +10,23 @@ namespace KSoft.WPF
 		private static BoolToVisiblityConverter gVisibleOrHidden;
 		public static BoolToVisiblityConverter VisibleOrHidden { get {
 			if (gVisibleOrHidden == null)
+			{
 				gVisibleOrHidden = new BoolToVisiblityConverter
 				{
 				};
+			}
 
 			return gVisibleOrHidden;
 		} }
 		private static BoolToVisiblityConverter gVisibleOrHiddenInverted;
 		public static BoolToVisiblityConverter VisibleOrHiddenInverted { get {
 			if (gVisibleOrHiddenInverted == null)
+			{
 				gVisibleOrHiddenInverted = new BoolToVisiblityConverter
 				{
 					VisibleFlag = false,
 				};
+			}
 
 			return gVisibleOrHiddenInverted;
 		} }
@@ -30,21 +34,25 @@ namespace KSoft.WPF
 		private static BoolToVisiblityConverter gVisibleOrCollapsed;
 		public static BoolToVisiblityConverter VisibleOrCollapsed { get {
 			if (gVisibleOrCollapsed == null)
+			{
 				gVisibleOrCollapsed = new BoolToVisiblityConverter
 				{
 					Collapse = true,
 				};
+			}
 
 			return gVisibleOrCollapsed;
 		} }
 		private static BoolToVisiblityConverter gVisibleOrCollapsedInverted;
 		public static BoolToVisiblityConverter VisibleOrCollapseInverted { get {
 			if (gVisibleOrCollapsedInverted == null)
+			{
 				gVisibleOrCollapsedInverted = new BoolToVisiblityConverter
 				{
 					Collapse = true,
 					VisibleFlag = false,
 				};
+			}
 
 			return gVisibleOrCollapsedInverted;
 		} }
@@ -77,9 +85,13 @@ namespace KSoft.WPF
 			var visibility = (Visibility)value;
 
 			if (visibility == Visibility.Visible)
+			{
 				return VisibleFlag;
+			}
 			else
+			{
 				return !VisibleFlag;
+			}
 		}
 	};
 }

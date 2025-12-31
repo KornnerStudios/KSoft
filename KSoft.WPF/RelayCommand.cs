@@ -31,7 +31,9 @@ namespace KSoft.WPF
 		public bool CanExecute(object parameter)
 		{
 			if (mCanExecute == null)
+			{
 				return true;
+			}
 
 			return mCanExecute(parameter);
 		}
@@ -39,7 +41,11 @@ namespace KSoft.WPF
 		public void Execute(object parameter)
 		{
 			if (mExecute != null)
+			{
+#pragma warning disable IDE1005 // Delegate invocation can be simplified.
 				mExecute(parameter);
+#pragma warning restore IDE1005 // Delegate invocation can be simplified.
+			}
 		}
 	}
 }

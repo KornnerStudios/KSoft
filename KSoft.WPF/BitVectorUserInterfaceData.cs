@@ -21,7 +21,9 @@ namespace KSoft.WPF
 
 			public bool CanNotBeRendered { get {
 				if (Visible)
+				{
 					return string.IsNullOrWhiteSpace(DisplayName);
+				}
 
 				return false;
 			} }
@@ -29,7 +31,9 @@ namespace KSoft.WPF
 		public static bool CanNotBeRendered(BitUserInterfaceData data)
 		{
 			if (data == null)
+			{
 				return true;
+			}
 
 			return data.CanNotBeRendered;
 		}
@@ -70,7 +74,9 @@ namespace KSoft.WPF
 						bitInfos.RemoveAt(x);
 					}
 					else
+					{
 						break;
+					}
 				}
 
 				mBitInfo = bitInfos.ToArray();
@@ -81,27 +87,41 @@ namespace KSoft.WPF
 		{
 			var attr_display_name = bitFieldInfo.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>();
 			if (attr_display_name != null)
+			{
 				bitInfo.DisplayName = attr_display_name.Name;
+			}
 			else
+			{
 				bitInfo.DisplayName = bitFieldInfo.Name;
+			}
 
 			var attr_description = bitFieldInfo.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
 			if (attr_description != null)
+			{
 				bitInfo.Description = attr_description.Description;
+			}
 			else
 			{
 				if (attr_display_name != null)
+				{
 					bitInfo.Description = attr_display_name.Description;
+				}
 
 				if (bitInfo.Description == null)
+				{
 					bitInfo.Description = string.Empty;
+				}
 			}
 
 			var attr_browsable = bitFieldInfo.GetCustomAttribute<System.ComponentModel.BrowsableAttribute>();
 			if (attr_browsable != null)
+			{
 				bitInfo.Visible = attr_browsable.Browsable;
+			}
 			else
+			{
 				bitInfo.Visible = true;
+			}
 		}
 
 		public static BitVectorUserInterfaceData ForEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
@@ -120,7 +140,9 @@ namespace KSoft.WPF
 			{
 				int bit_index = Convert.ToInt32(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
 				if (bit_index < 0)
+				{
 					continue;
+				}
 
 				if (find_highest_index)
 				{
@@ -135,17 +157,23 @@ namespace KSoft.WPF
 				}
 
 				if (!find_highest_index && bit_index > highest_index)
+				{
 					continue;
+				}
 
 				bit_ui_infos.EnsureCount(bit_index + 1);
 				if (bit_ui_infos[bit_index] != null)
+				{
 					continue;
+				}
 
 				var bit_ui_info = new BitUserInterfaceData();
 				SetBitInfoFromFieldInfo(bit_ui_info, bit_field_info);
 
 				if (bit_ui_info.CanNotBeRendered)
+				{
 					continue;
+				}
 
 				bit_ui_infos[bit_index] = bit_ui_info;
 			}
@@ -171,7 +199,9 @@ namespace KSoft.WPF
 			{
 				ulong flag = Convert.ToUInt64(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
 				if (Bits.BitCount(flag) > 0)
+				{
 					continue;
+				}
 
 				int bit_index = Bits.IndexOfHighestBitSet(flag);
 
@@ -187,17 +217,23 @@ namespace KSoft.WPF
 				}
 
 				if (!find_highest_index && bit_index > highest_index)
+				{
 					continue;
+				}
 
 				bit_ui_infos.EnsureCount(bit_index + 1);
 				if (bit_ui_infos[bit_index] != null)
+				{
 					continue;
+				}
 
 				var bit_ui_info = new BitUserInterfaceData();
 				SetBitInfoFromFieldInfo(bit_ui_info, bit_field_info);
 
 				if (bit_ui_info.CanNotBeRendered)
+				{
 					continue;
+				}
 
 				bit_ui_infos[bit_index] = bit_ui_info;
 			}
@@ -216,7 +252,9 @@ namespace KSoft.WPF
 			{
 				info.mBitInfo = bitInfos.ToArray();
 				if (info.mBitInfo.Length == 0 || Array.TrueForAll(info.mBitInfo, CanNotBeRendered))
+				{
 					info.mBitInfo = null;
+				}
 			}
 			return info;
 		}
@@ -239,9 +277,13 @@ namespace KSoft.WPF
 					};
 
 					if (bit_ui_info.CanNotBeRendered)
+					{
 						bit_ui_infos.Add(null);
+					}
 					else
+					{
 						bit_ui_infos.Add(bit_ui_info);
+					}
 
 					bit_index++;
 				}

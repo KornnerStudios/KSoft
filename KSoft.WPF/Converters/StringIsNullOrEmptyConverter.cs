@@ -10,7 +10,9 @@ namespace KSoft.WPF.Converters
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			if (value == null)
+			{
 				return true;
+			}
 
 			if (value is string str)
 			{

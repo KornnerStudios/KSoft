@@ -36,7 +36,9 @@ namespace KSoft.WPF.ViewModels
 		ICommand mCloseCommand;
 		public ICommand CloseCommand { get {
 			if (mCloseCommand == null)
+			{
 				mCloseCommand = new RelayCommand(_ => this.Close());
+			}
 
 			return mCloseCommand;
 		} }
@@ -45,7 +47,9 @@ namespace KSoft.WPF.ViewModels
 		public void Close()
 		{
 			if (CanClose)
+			{
 				IsClosed = true;
+			}
 		}
 	};
 }

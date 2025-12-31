@@ -10,9 +10,11 @@ namespace KSoft.WPF.Converters
 		private static InverseBooleanConverter gInstance;
 		public static InverseBooleanConverter Instance { get {
 			if (gInstance == null)
+			{
 				gInstance = new InverseBooleanConverter
 				{
 				};
+			}
 
 			return gInstance;
 		} }
@@ -20,7 +22,9 @@ namespace KSoft.WPF.Converters
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			if (targetType != typeof(bool))
+			{
 				throw new InvalidOperationException("The target must be a boolean");
+			}
 
 			var boolean = (bool)value;
 			return !boolean;
@@ -29,7 +33,9 @@ namespace KSoft.WPF.Converters
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			if (targetType != typeof(bool))
+			{
 				throw new InvalidOperationException("The target must be a boolean");
+			}
 
 			var boolean = (bool)value;
 			return !boolean;

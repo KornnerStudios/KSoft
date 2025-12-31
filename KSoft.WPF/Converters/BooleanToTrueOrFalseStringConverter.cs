@@ -15,13 +15,17 @@ namespace KSoft.WPF.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			if (value is bool && parameter is TrueOrFalseString)
+			if (value is bool valueAsBool && parameter is TrueOrFalseString)
 			{
 				var str = parameter as TrueOrFalseString;
-				if ((bool)value)
+				if (valueAsBool)
+				{
 					return str.TrueString;
+				}
 				else
+				{
 					return str.FalseString;
+				}
 			}
 
 			throw new InvalidOperationException("The value must be a boolean and parameter must be a " + nameof(TrueOrFalseString));

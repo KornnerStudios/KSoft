@@ -35,10 +35,14 @@ namespace KSoft.WPF.ViewModels
 		public void InitializeObservableCollections()
 		{
 			if (Documents == null)
+			{
 				Documents = new ObservableCollection<DockWindowViewModel>();
+			}
 
 			if (Anchorables == null)
+			{
 				Anchorables = new ObservableCollection<object>();
+			}
 		}
 
 		private void DockWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -48,9 +52,13 @@ namespace KSoft.WPF.ViewModels
 			if (e.PropertyName == nameof(DockWindowViewModel.IsClosed))
 			{
 				if (document.IsClosed)
+				{
 					CloseDocument(document);
+				}
 				else
+				{
 					OpenDocument(document);
+				}
 			}
 		}
 
@@ -60,15 +68,21 @@ namespace KSoft.WPF.ViewModels
 		public bool AddDocument(DockWindowViewModel doc)
 		{
 			if (doc == null)
+			{
 				return false;
+			}
 
 			if (Documents == null)
+			{
 				Documents = new ObservableCollection<DockWindowViewModel>();
+			}
 
 			doc.PropertyChanged += DockWindowViewModel_PropertyChanged;
 
 			if (doc.IsClosed)
+			{
 				return false;
+			}
 
 			Documents.Add(doc);
 			return true;
@@ -80,10 +94,14 @@ namespace KSoft.WPF.ViewModels
 		public bool RemoveDocument(DockWindowViewModel doc)
 		{
 			if (doc == null)
+			{
 				return false;
+			}
 
 			if (Documents == null)
+			{
 				return false;
+			}
 
 			doc.PropertyChanged -= DockWindowViewModel_PropertyChanged;
 			return Documents.Remove(doc);
@@ -92,7 +110,9 @@ namespace KSoft.WPF.ViewModels
 		private void OpenDocument(DockWindowViewModel doc)
 		{
 			if (doc == null)
+			{
 				return;
+			}
 
 			Documents.Add(doc);
 		}
@@ -100,7 +120,9 @@ namespace KSoft.WPF.ViewModels
 		private void CloseDocument(DockWindowViewModel doc)
 		{
 			if (doc == null)
+			{
 				return;
+			}
 
 			Documents.Remove(doc);
 		}
@@ -108,7 +130,9 @@ namespace KSoft.WPF.ViewModels
 		public void Clear()
 		{
 			if (Documents == null)
+			{
 				return;
+			}
 
 			Documents.Clear();
 		}
@@ -119,12 +143,16 @@ namespace KSoft.WPF.ViewModels
 			viewModel = null;
 
 			if (Documents == null)
+			{
 				return false;
+			}
 
 			foreach (var obj in Documents)
 			{
-				if (!(obj is TViewModel vm))
+				if (obj is not TViewModel vm)
+				{
 					continue;
+				}
 
 				viewModel = vm;
 			}
@@ -135,7 +163,9 @@ namespace KSoft.WPF.ViewModels
 		public IEnumerator<DockWindowViewModel> GetEnumerator()
 		{
 			if (Documents == null)
+			{
 				return Enumerable.Empty<DockWindowViewModel>().GetEnumerator();
+			}
 
 			return ((IEnumerable<DockWindowViewModel>)Documents).GetEnumerator();
 		}
@@ -143,7 +173,9 @@ namespace KSoft.WPF.ViewModels
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			if (Documents == null)
+			{
 				return Enumerable.Empty<DockWindowViewModel>().GetEnumerator();
+			}
 
 			return Documents.GetEnumerator();
 		}

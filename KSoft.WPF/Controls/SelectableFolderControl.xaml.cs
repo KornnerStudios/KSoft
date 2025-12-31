@@ -60,11 +60,13 @@ namespace KSoft.WPF.Controls
 				{
 					Text = dlg.SelectedPath;
 					BindingExpression be = GetBindingExpression(TextProperty);
+#pragma warning disable IDE0031 // Use null propagation
 					if (be != null)
 					{
 						// Textbox bindings are only updated on the lostfocus event.
 						be.UpdateSource();
 					}
+#pragma warning restore IDE0031 // Use null propagation
 				}
 			}
 		}
@@ -81,11 +83,13 @@ namespace KSoft.WPF.Controls
 				{
 					Text = dlg.FileName;
 					BindingExpression be = GetBindingExpression(TextProperty);
+#pragma warning disable IDE0031 // Use null propagation
 					if (be != null)
 					{
 						// Textbox bindings are only updated on the lostfocus event.
 						be.UpdateSource();
 					}
+#pragma warning restore IDE0031 // Use null propagation
 				}
 			}
 		}

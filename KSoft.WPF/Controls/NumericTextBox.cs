@@ -33,7 +33,9 @@ namespace KSoft.WPF.Controls
 			nameof(Value), typeof(double), typeof(NumericTextBox),
 			new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, OnCoerceValue));
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
 		private static object OnCoerceValue(DependencyObject d, object basevalue)
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 		{
 			return ((NumericTextBox)d).CoerceValue((double)basevalue);
 		}
@@ -89,7 +91,9 @@ namespace KSoft.WPF.Controls
 			mTextBlock.MouseMove += (sender, e) =>
 			{
 				if (!mTextBlock.IsMouseCaptured)
+				{
 					return;
+				}
 
 				mouseMoved = true;
 
@@ -100,7 +104,9 @@ namespace KSoft.WPF.Controls
 			mTextBlock.MouseUp += (sender, e) =>
 			{
 				if (mTextBlock.IsMouseCaptured)
+				{
 					mTextBlock.ReleaseMouseCapture();
+				}
 
 				if (!mouseMoved)
 				{
@@ -114,7 +120,9 @@ namespace KSoft.WPF.Controls
 			mTextBox.KeyUp += (sender, e) =>
 			{
 				if (e.Key == Key.Escape || e.Key == Key.Enter)
+				{
 					Mode = NumericTextBoxMode.Normal;
+				}
 			};
 			mTextBox.LostFocus += (sender, e) => Mode = NumericTextBoxMode.Normal;
 
@@ -124,9 +132,15 @@ namespace KSoft.WPF.Controls
 		private double CoerceValue(double newValue)
 		{
 			if (Minimum != null && newValue < Minimum.Value)
+			{
 				return Minimum.Value;
+			}
+
 			if (Maximum != null && newValue > Maximum.Value)
+			{
 				return Maximum.Value;
+			}
+
 			return newValue;
 		}
 	};

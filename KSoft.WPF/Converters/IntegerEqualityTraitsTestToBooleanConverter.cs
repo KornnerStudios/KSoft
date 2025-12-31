@@ -14,7 +14,9 @@ namespace KSoft.WPF.Converters
 		private static IntegerEqualityTraitsTestToBooleanConverter gEqualsZero;
 		public static IntegerEqualityTraitsTestToBooleanConverter EqualsZero { get {
 			if (gEqualsZero == null)
+			{
 				gEqualsZero = new IntegerEqualityTraitsTestToBooleanConverter(Values.EqualityTraits.Equal, 0);
+			}
 
 			return gEqualsZero;
 		} }
@@ -27,7 +29,9 @@ namespace KSoft.WPF.Converters
 			get
 			{
 				if (gGreaterThanZero == null)
+				{
 					gGreaterThanZero = new IntegerEqualityTraitsTestToBooleanConverter(Values.EqualityTraits.GreaterThan, 0);
+				}
 
 				return gGreaterThanZero;
 			}

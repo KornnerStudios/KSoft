@@ -84,7 +84,9 @@ namespace KSoft.WPF.Controls
 		{
 			var bit_vector = BitVector;
 			if (bit_vector == null)
+			{
 				return;
+			}
 
 			int bit_index = bitModel.BitIndex;
 			if (bit_index >= bit_vector.Length)
@@ -105,15 +107,21 @@ namespace KSoft.WPF.Controls
 			if (newBits == null)
 			{
 				foreach (var bit_model in BitItems)
+				{
 					if (bit_model.IsSet)
+					{
 						bit_model.IsSet = false;
+					}
+				}
 			}
 			else
 			{
 				foreach (var bit_model in BitItems)
 				{
 					if (!bit_model.IsValid)
+					{
 						continue;
+					}
 
 					int bit_index = bit_model.BitIndex;
 
@@ -127,7 +135,9 @@ namespace KSoft.WPF.Controls
 					bool old_bit = bit_model.IsSet;
 					bool new_bit = newBits[bit_index];
 					if (old_bit != new_bit)
+					{
 						bit_model.IsSet = new_bit;
+					}
 				}
 			}
 		}
@@ -136,7 +146,9 @@ namespace KSoft.WPF.Controls
 		{
 			var source = this.BitsUserInterfaceSource;
 			if (source == null)
+			{
 				return;
+			}
 
 			foreach (var bit_model in BitItems)
 			{
@@ -155,7 +167,9 @@ namespace KSoft.WPF.Controls
 			if (bit_enum_type != null)
 			{
 				if (e.Property == BitsEnumTypeProperty)
+				{
 					ui_source = BitVectorUserInterfaceData.ForEnum(bit_enum_type);
+				}
 			}
 
 			ctrl.BitsUserInterfaceSource = ui_source;
@@ -192,7 +206,9 @@ namespace KSoft.WPF.Controls
 			var vold = (Collections.BitSet)e.OldValue;
 			var vnew = (Collections.BitSet)e.NewValue;
 			if (vold == vnew)
+			{
 				return;
+			}
 
 			ctrl.AssignItems(vnew);
 		}

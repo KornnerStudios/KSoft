@@ -73,11 +73,15 @@ namespace KSoft.WPF.Controls
 		static bool IsValidBitVectorValue(object obj)
 		{
 			if (obj == null)
+			{
 				return false;
+			}
 
 			if (obj is Collections.BitVector32 ||
 				obj is Collections.BitVector64)
+			{
 				return true;
+			}
 
 			return false;
 		}
@@ -129,7 +133,9 @@ namespace KSoft.WPF.Controls
 		{
 			var source = this.BitsUserInterfaceSource;
 			if (source == null)
+			{
 				return;
+			}
 
 			foreach (var bit_model in BitItems)
 			{
@@ -148,9 +154,13 @@ namespace KSoft.WPF.Controls
 			if (bit_enum_type != null)
 			{
 				if (e.Property == BitsEnumTypeProperty)
+				{
 					ui_source = BitVectorUserInterfaceData.ForEnum(bit_enum_type);
+				}
 				else if (e.Property == FlagsEnumTypeProperty)
+				{
 					ui_source = BitVectorUserInterfaceData.ForFlagsEnum(bit_enum_type);
+				}
 			}
 
 			ctrl.BitsUserInterfaceSource = ui_source;
@@ -185,13 +195,19 @@ namespace KSoft.WPF.Controls
 		{
 			var ctrl = (BitVectorControl)d;
 
-			Type vector_type = null;
+			Type vector_type;
 			if (e.OldValue != null)
+			{
 				vector_type = e.OldValue.GetType();
+			}
 			else if (e.NewValue != null)
+			{
 				vector_type = e.NewValue.GetType();
+			}
 			else
+			{
 				return;
+			}
 
 			if (vector_type == typeof(Collections.BitVector32))
 			{
@@ -207,7 +223,9 @@ namespace KSoft.WPF.Controls
 			var vold = (Collections.BitVector32)e.OldValue;
 			var vnew = (Collections.BitVector32)e.NewValue;
 			if (vold == vnew)
+			{
 				return;
+			}
 
 			// optimize for the case were only one bit was changed
 			var vdiff = vold.Xor(vnew);
@@ -234,7 +252,9 @@ namespace KSoft.WPF.Controls
 			var vold = (Collections.BitVector64)e.OldValue;
 			var vnew = (Collections.BitVector64)e.NewValue;
 			if (vold == vnew)
+			{
 				return;
+			}
 
 			// optimize for the case were only one bit was changed
 			var vdiff = vold.Xor(vnew);

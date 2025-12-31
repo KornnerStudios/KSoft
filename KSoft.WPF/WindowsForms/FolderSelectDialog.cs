@@ -86,7 +86,7 @@ namespace KSoft.WPF.WindowsForms
 			readonly static MethodInfo gCreateVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("CreateVistaDialog", kBindingFlags);
 			readonly static MethodInfo gOnBeforeVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("OnBeforeVistaDialog", kBindingFlags);
 			readonly static MethodInfo gGetOptionsMethodInfo = typeof(FileDialog).GetMethod("GetOptions", kBindingFlags);
-			static MethodInfo gSetOptionsMethodInfo = gIFileDialogType.GetMethod("SetOptions", kBindingFlags);
+			readonly static MethodInfo gSetOptionsMethodInfo = gIFileDialogType.GetMethod("SetOptions", kBindingFlags);
 #if false
 			readonly static uint gFosPickFoldersBitFlag = (uint) gWindowsFormsAssembly
 				.GetType("System.Windows.Forms.FileDialogNative+FOS")
@@ -96,7 +96,7 @@ namespace KSoft.WPF.WindowsForms
 			const uint kOptionFlags = (uint)(FOS.FOS_PICKFOLDERS | FOS.FOS_PATHMUSTEXIST);
 			readonly static ConstructorInfo gVistaDialogEventsConstructorInfo = gWindowsFormsAssembly
 				.GetType("System.Windows.Forms.FileDialog+VistaDialogEvents")
-				.GetConstructor(kBindingFlags, null, new[] { typeof(FileDialog) }, null);
+				.GetConstructor(kBindingFlags, null, [typeof(FileDialog)], null);
 			readonly static MethodInfo gAdviseMethodInfo = gIFileDialogType.GetMethod("Advise");
 			readonly static MethodInfo gUnAdviseMethodInfo = gIFileDialogType.GetMethod("Unadvise");
 			readonly static MethodInfo gShowMethodInfo = gIFileDialogType.GetMethod("Show");
@@ -115,14 +115,14 @@ namespace KSoft.WPF.WindowsForms
 				};
 
 				var iFileDialog = gCreateVistaDialogMethodInfo.Invoke(openFileDialog, Util.EmptyArray);
-				gOnBeforeVistaDialogMethodInfo.Invoke(openFileDialog, new[] { iFileDialog });
-				gSetOptionsMethodInfo.Invoke(iFileDialog, new object[] { (uint) gGetOptionsMethodInfo.Invoke(openFileDialog, Util.EmptyArray) | kOptionFlags });
-				var adviseParametersWithOutputConnectionToken = new[] { gVistaDialogEventsConstructorInfo.Invoke(new object[] { openFileDialog }), 0U };
+				gOnBeforeVistaDialogMethodInfo.Invoke(openFileDialog, [iFileDialog]);
+				gSetOptionsMethodInfo.Invoke(iFileDialog, [(uint) gGetOptionsMethodInfo.Invoke(openFileDialog, Util.EmptyArray) | kOptionFlags]);
+				var adviseParametersWithOutputConnectionToken = new[] { gVistaDialogEventsConstructorInfo.Invoke([openFileDialog]), 0U };
 				gAdviseMethodInfo.Invoke(iFileDialog, adviseParametersWithOutputConnectionToken);
 
 				try
 				{
-					int retVal = (int) gShowMethodInfo.Invoke(iFileDialog, new object[] { ownerHandle });
+					int retVal = (int) gShowMethodInfo.Invoke(iFileDialog, [ownerHandle]);
 					return new ShowDialogResult
 					{
 						Result = retVal == 0,
@@ -131,7 +131,7 @@ namespace KSoft.WPF.WindowsForms
 				}
 				finally
 				{
-					gUnAdviseMethodInfo.Invoke(iFileDialog, new[] { adviseParametersWithOutputConnectionToken[1] });
+					gUnAdviseMethodInfo.Invoke(iFileDialog, [adviseParametersWithOutputConnectionToken[1]]);
 				}
 			}
 		};
