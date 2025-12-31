@@ -127,7 +127,7 @@ namespace KSoft
 
 			byteCount = bitCount = bitShift = bitMod = TypeExtensions.kNoneInt32;
 
-			switch(Type.GetTypeCode(integerType))
+			switch (Type.GetTypeCode(integerType))
 			{
 				case TypeCode.Byte:
 				case TypeCode.SByte:

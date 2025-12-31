@@ -42,66 +42,52 @@ namespace KSoft.Collections
 			mWord = (<#= prim_keyword #>)bits;
 		}
 
-		public <#= sign_keyword #> Data { get { return (<#= sign_keyword #>)mWord; } }
+		public readonly <#= sign_keyword #> Data => (<#= sign_keyword #>)mWord;
 
 		/// <summary>Length in bits. Always returns <#= bittable_type.SizeOfInBits #></summary>
-		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic")]
-		public int Length	{ get { return kNumberOfBits; } }
+		[SuppressMessage("Performance", "CA1822:Mark members as static")]
+		public readonly int Length				=> kNumberOfBits;
 		/// <summary>Number of bits set to true</summary>
-		public int Cardinality		{ get { return Bits.BitCount(mWord); } }
+		public readonly int Cardinality			=> Bits.BitCount(mWord);
 		/// <summary>Number of bits set to false</summary>
-		public int CardinalityZeros	{ get { return Length - Cardinality; } }
+		public readonly int CardinalityZeros	=> Length - Cardinality;
 
 		/// <summary>Are all the bits in this set currently false?</summary>
-		public bool IsAllClear	{ get { return mWord == <#= prim_keyword #>.MinValue; } }
+		public readonly bool IsAllClear	=> mWord == <#= prim_keyword #>.MinValue;
 		/// <summary>Are all the bits in this set currently true?</summary>
-		public bool IsAllSet	{ get { return mWord == <#= prim_keyword #>.MaxValue; } }
+		public readonly bool IsAllSet	=> mWord == <#= prim_keyword #>.MaxValue;
 
-		public int TrailingZerosCount	{ get { return Bits.TrailingZerosCount(mWord); } }
-		public int IndexOfHighestBitSet	{ get { return Bits.IndexOfHighestBitSet(mWord); } }
+		public readonly int TrailingZerosCount		=> Bits.TrailingZerosCount(mWord);
+		public readonly int IndexOfHighestBitSet	=> Bits.IndexOfHighestBitSet(mWord);
 
 		#region Overrides
-		public bool Equals(<#= typename #> other)
+		public readonly bool Equals(<#= typename #> other)
+			=> mWord == other.mWord;
+		public override readonly bool Equals(object o)
 		{
-			return mWord == other.mWord;
-		}
-		public override bool Equals(object o)
-		{
-			if (!(o is <#= typename #>))
+			if (o is not <#= typename #>)
+			{
 				return false;
+			}
 
 			return Equals((<#= typename #>)o);
 		}
 		public static bool operator ==(<#= typename #> x, <#= typename #> y)
-		{
-			return x.Equals(y);
-		}
+			=> x.Equals(y);
 		public static bool operator !=(<#= typename #> x, <#= typename #> y)
-		{
-			return !x.Equals(y);
-		}
+			=> !x.Equals(y);
 
 		public static bool operator <(<#= typename #> left, <#= typename #> right)
-		{
-			return left.CompareTo(right) < 0;
-		}
+			=> left.CompareTo(right) < 0;
 		public static bool operator <=(<#= typename #> left, <#= typename #> right)
-		{
-			return left.CompareTo(right) <= 0;
-		}
+			=> left.CompareTo(right) <= 0;
 		public static bool operator >(<#= typename #> left, <#= typename #> right)
-		{
-			return left.CompareTo(right) > 0;
-		}
+			=> left.CompareTo(right) > 0;
 		public static bool operator >=(<#= typename #> left, <#= typename #> right)
-		{
-			return left.CompareTo(right) >= 0;
-		}
+			=> left.CompareTo(right) >= 0;
 
-		public override int GetHashCode()
-		{
-			return mWord.GetHashCode();
-		}
+		public override readonly int GetHashCode()
+			=> mWord.GetHashCode();
 
 		public static string ToString(<#= typename #> value)
 		{
@@ -113,24 +99,22 @@ namespace KSoft.Collections
 			for (int i = 0; i < kNumberOfBits; i++)
 			{
 				sb.Append((word & k_msb) != 0
-					? "1"
-					: "0");
+					? '1'
+					: '0');
 
 				word <<= 1;
 			}
-			sb.Append("}");
+			sb.Append('}');
 			return sb.ToString();
 		}
-		public override string ToString()
-		{
-			return <#= typename #>.ToString(this);
-		}
+		public override readonly string ToString()
+			=> <#= typename #>.ToString(this);
 		#endregion
 
 		#region Access
 		public bool this[int bitIndex]
 		{
-			get
+			readonly get
 			{
 				Contract.Requires(bitIndex >= 0 && bitIndex < Bits.k<#= const_keyword #>BitCount);
 
@@ -151,7 +135,7 @@ namespace KSoft.Collections
 		/// <returns>True if any bits are set, false if they're all clear</returns>
 		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
 		public bool this[int frombitIndex, int toBitIndex] {
-			get {
+			readonly get {
 				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
 				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
 
@@ -164,23 +148,33 @@ namespace KSoft.Collections
 
 				// handle the cases of the set already being all 1's or 0's
 				if (value && Cardinality == Length)
+				{
 					return;
+				}
 				if (!value && CardinalityZeros == Length)
+				{
 					return;
+				}
 
 				int bitCount = toBitIndex - frombitIndex;
 				if (bitCount == 0)
+				{
 					return;
+				}
 
 				if (value)
+				{
 					SetBits(frombitIndex, bitCount);
+				}
 				else
+				{
 					ClearBits(frombitIndex, bitCount);
+				}
 			}
 		}
 
 		[Contracts.Pure]
-		public int NextBitIndex(
+		public readonly int NextBitIndex(
 			int prevBitIndex = TypeExtensions.kNone, bool stateFilter = true)
 		{
 			Contract.Requires(prevBitIndex.IsNoneOrPositive() && prevBitIndex < Bits.k<#= const_keyword #>BitCount);
@@ -188,7 +182,9 @@ namespace KSoft.Collections
 			for (int bit_index = prevBitIndex+1; bit_index < kNumberOfBits; bit_index++)
 			{
 				if (this[bit_index] == stateFilter)
+				{
 					return bit_index;
+				}
 			}
 
 			return TypeExtensions.kNone;
@@ -199,14 +195,18 @@ namespace KSoft.Collections
 <#	for (var op = BitOperation.kFirst; op <= BitOperation.kLast; op++) { #>
 <#		if (op.IsNotPure()==false) { #>
 		[Contracts.Pure]
-<#		} #>
+		public readonly <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
+<#		} else { #>
 		public <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
+<#		} #>
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
 			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
 
 			if (bitCount <= 0)
+			{
 				return <#= op.ResultDefault() #>;
+			}
 
 			var from_word_mask = Bits.VectorElementSectionBitMaskIn<#= const_keyword #>(startBitIndex, kVectorWordFormat);
 //			var last_word_mask = Bits.VectorElementBitMaskIn<#= const_keyword #>(startBitIndex+bitCount, kVectorWordFormat);
@@ -229,57 +229,41 @@ namespace KSoft.Collections
 		/// <param name="vector">Vector with the bits to AND with</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public <#= typename #> And(<#= typename #> vector)
-		{
-			return new <#= typename #>(mWord & vector.mWord);
-		}
+		public readonly <#= typename #> And(<#= typename #> vector)
+			=> new(mWord & vector.mWord);
 		[Contracts.Pure]
-		public <#= typename #> BitwiseAnd(<#= typename #> vector)
-		{
-			return new <#= typename #>(mWord & vector.mWord);
-		}
+		public readonly <#= typename #> BitwiseAnd(<#= typename #> vector)
+			=> new(mWord & vector.mWord);
 		/// <summary>Clears all of the bits in this vector whose corresponding bit is set in the specified vector</summary>
 		/// <param name="vector">vector with which to mask this vector</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public <#= typename #> AndNot(<#= typename #> vector)
-		{
-			return new <#= typename #>(Bitwise.Flags.Remove(mWord, vector.mWord));
-		}
+		public readonly <#= typename #> AndNot(<#= typename #> vector)
+			=> new(Bitwise.Flags.Remove(mWord, vector.mWord));
 		/// <summary>Bit OR this set with another</summary>
 		/// <param name="vector">Vector with the bits to OR with</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public <#= typename #> Or(<#= typename #> vector)
-		{
-			return new <#= typename #>(mWord | vector.mWord);
-		}
+		public readonly <#= typename #> Or(<#= typename #> vector)
+			=> new(mWord | vector.mWord);
 		[Contracts.Pure]
-		public <#= typename #> BitwiseOr(<#= typename #> vector)
-		{
-			return new <#= typename #>(mWord | vector.mWord);
-		}
+		public readonly <#= typename #> BitwiseOr(<#= typename #> vector)
+			=> new(mWord | vector.mWord);
 		/// <summary>Bit XOR this vector with another</summary>
 		/// <param name="vector">Vector with the bits to XOR with</param>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public <#= typename #> Xor(<#= typename #> vector)
-		{
-			return new <#= typename #>(Bitwise.Flags.Toggle(mWord, vector.mWord));
-		}
+		public readonly <#= typename #> Xor(<#= typename #> vector)
+			=> new(Bitwise.Flags.Toggle(mWord, vector.mWord));
 
 		/// <summary>Inverts all bits in this vector</summary>
 		/// <returns></returns>
 		[Contracts.Pure]
-		public <#= typename #> Not()
-		{
-			return new <#= typename #>(~mWord);
-		}
+		public readonly <#= typename #> Not()
+			=> new(~mWord);
 		[Contracts.Pure]
-		public <#= typename #> OnesComplement()
-		{
-			return new <#= typename #>(~mWord);
-		}
+		public readonly <#= typename #> OnesComplement()
+			=> new(~mWord);
 		#endregion
 
 		/// <summary>Set all the bits to zero</summary>
@@ -297,24 +281,18 @@ namespace KSoft.Collections
 			mWord = fill_value;
 		}
 
-		public int CompareTo(<#= typename #> other)
-		{
-			return mWord.CompareTo(other.mWord);
-		}
+		public readonly int CompareTo(<#= typename #> other)
+			=> mWord.CompareTo(other.mWord);
 
 		#region Math operators
 <#	foreach (var op in CollectionsT4.BitVectorMathBinaryOperatorOverloads) { #>
 		public static <#= typename #> operator <#= op #>(<#= typename #> lhs, <#= typename #> rhs)
-		{
-			return new <#= typename #>(lhs.mWord <#= op #> rhs.mWord);
-		}
+			=> new(lhs.mWord <#= op #> rhs.mWord);
 <#	} #>
 
 <#	foreach (var op in CollectionsT4.BitVectorMathUnaryOperatorOverloads) { #>
 		public static <#= typename #> operator <#= op #>(<#= typename #> value)
-		{
-			return new <#= typename #>(<#= op #>value.mWord);
-		}
+			=> new(<#= op #>value.mWord);
 <#	} #>
 		#endregion
 
@@ -323,15 +301,11 @@ namespace KSoft.Collections
 		/// <summary>Get the bit index of the next bit which is <#= state_def.DocNameVerbose #></summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		/// <returns>The next <#= state_def.DocName #> bit index, or -1 if one isn't found</returns>
-		public int Next<#= state_def.ApiName #>BitIndex(int startBitIndex = -1)
-		{
-			return NextBitIndex(startBitIndex, <#= state_def.ValueKeyword #>);
-		}
+		public readonly int Next<#= state_def.ApiName #>BitIndex(int startBitIndex = -1)
+			=> NextBitIndex(startBitIndex, <#= state_def.ValueKeyword #>);
 		/// <summary>Enumeration of bit indexes in this vector which are <#= state_def.DocNameVerbose #></summary>
-		public EnumeratorWrapper<int, StateFilterEnumerator> <#= state_def.ApiName #>BitIndices { get {
-			return new EnumeratorWrapper<int, StateFilterEnumerator>(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>));
-		} }
-
+		public readonly EnumeratorWrapper<int, StateFilterEnumerator> <#= state_def.ApiName #>BitIndices
+			=> new(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>));
 <#	} #>
 		#endregion
 
@@ -366,23 +340,23 @@ namespace KSoft.Collections
 <#		} #>
 				mVector = vector;
 				mBitIndex = TypeExtensions.kNone;
-				mCurrent = default(<#= enum_result_keyword #>);
+				mCurrent = default;
 			}
 
-			public <#= enum_result_keyword #> Current { get {
-				if (mBitIndex.IsNone())			throw new InvalidOperationException("Enumeration has not started");
-				if (mBitIndex > kLastIndex)		throw new InvalidOperationException("Enumeration already finished");
+			public readonly <#= enum_result_keyword #> Current { get {
+				if (mBitIndex.IsNone())			{ throw new InvalidOperationException("Enumeration has not started"); }
+				if (mBitIndex > kLastIndex)		{ throw new InvalidOperationException("Enumeration already finished"); }
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get { return this.Current; } }
+			readonly object System.Collections.IEnumerator.Current => this.Current;
 
 			public void Reset()
 			{
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			public void Dispose()	{ }
+			public readonly void Dispose()	{ }
 
 			public bool MoveNext()
 			{
@@ -395,7 +369,9 @@ namespace KSoft.Collections
 
 <#		} else if (enum_def.Name == "StateFilter") { #>
 				if (mBitIndex.IsNone())
+				{
 					mBitIndex = mStartBitIndex;
+				}
 
 				if (mBitIndex < kLastIndex)
 				{
@@ -418,7 +394,7 @@ namespace KSoft.Collections
 		#endregion
 
 		#region Enum interfaces
-		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
+		private readonly void ValidateBit<TEnum>(TEnum bit, int bitIndex)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
@@ -429,7 +405,7 @@ namespace KSoft.Collections
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
-		public bool Test<TEnum>(TEnum bit)
+		public readonly bool Test<TEnum>(TEnum bit)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			int bitIndex = bit.ToInt32(null);
@@ -454,17 +430,20 @@ namespace KSoft.Collections
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
-		public List<string> ToStrings<TEnum>(TEnum maxCount
-			, string valueSeperator = ","
+		public readonly List<string> ToStrings<TEnum>(TEnum maxCount
 			, bool stateFilter = true
 			, List<string> results = null)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			if (results == null)
+			{
 				results = new List<string>(Cardinality);
+			}
 
 			if (Cardinality == 0)
+			{
 				return results;
+			}
 
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
@@ -474,16 +453,15 @@ namespace KSoft.Collections
 					maxCount, maxCountValue));
 			}
 
-			if (valueSeperator == null)
-				valueSeperator = "";
-
 			var enumType = typeof(TEnum);
 			var enumMembers = (TEnum[])Enum.GetValues(enumType);
 
 			// Find the member which represents bit-0
 			int memberIndex = 0;
 			while (memberIndex < enumMembers.Length && memberIndex < maxCountValue && enumMembers[memberIndex].ToInt32(null) != 0)
+			{
 				memberIndex++;
+			}
 
 			var bitsInDesiredState = stateFilter
 				? SetBitIndices
@@ -491,7 +469,9 @@ namespace KSoft.Collections
 			foreach (int bitIndex in bitsInDesiredState)
 			{
 				if (bitIndex >= maxCountValue)
+				{
 					break;
+				}
 
 				results.Add(enumMembers[memberIndex+bitIndex].ToString());
 			}
@@ -500,13 +480,15 @@ namespace KSoft.Collections
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
-		public string ToString<TEnum>(TEnum maxCount
+		public readonly string ToString<TEnum>(TEnum maxCount
 			, string valueSeperator = ","
 			, bool stateFilter = true)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
 			if (Cardinality == 0)
+			{
 				return "";
+			}
 
 			int maxCountValue = maxCount.ToInt32(null);
 			if (maxCountValue < 0 || maxCountValue >= Length)
@@ -517,7 +499,9 @@ namespace KSoft.Collections
 			}
 
 			if (valueSeperator == null)
+			{
 				valueSeperator = "";
+			}
 
 			var enumType = typeof(TEnum);
 			var enumMembers = (TEnum[])Enum.GetValues(enumType);
@@ -525,7 +509,9 @@ namespace KSoft.Collections
 			// Find the member which represents bit-0
 			int memberIndex = 0;
 			while (memberIndex < enumMembers.Length && memberIndex < maxCountValue && enumMembers[memberIndex].ToInt32(null) != 0)
+			{
 				memberIndex++;
+			}
 
 			var sb = new System.Text.StringBuilder();
 			var bitsInDesiredState = stateFilter
@@ -534,10 +520,14 @@ namespace KSoft.Collections
 			foreach (int bitIndex in bitsInDesiredState)
 			{
 				if (bitIndex >= maxCountValue)
+				{
 					break;
+				}
 
 				if (sb.Length > 0)
+				{
 					sb.Append(valueSeperator);
+				}
 
 				sb.Append(enumMembers[memberIndex+bitIndex].ToString());
 			}
@@ -576,9 +566,13 @@ namespace KSoft.Collections
 			{
 				var parsed = TryParseFlag<TEnum>(flagStr, errorsOutput);
 				if (parsed.HasValue==false)
+				{
 					continue;
+				}
 				else if (parsed.Value==false)
+				{
 					success = false;
+				}
 			}
 
 			return success;
@@ -592,26 +586,24 @@ namespace KSoft.Collections
 
 			// Enum.TryParse will call Trim on the value anyway, so don't add yet another allocation when we can check for whitespace
 			if (string.IsNullOrWhiteSpace(flagStr))
+			{
 				return null;
+			}
 
 			if (!Enum.TryParse<TEnum>(flagStr, ignore_case, out TEnum flag))
 			{
-				if (errorsOutput != null)
-				{
-					errorsOutput.AddFormat("Couldn't parse '{0}' as a {1} flag",
-						flagStr, typeof(TEnum));
-				}
+				errorsOutput?.AddFormat("Couldn't parse '{0}' as a {1} flag",
+					flagStr, typeof(TEnum));
+
 				return false;
 			}
 
 			int bitIndex = flag.ToInt32(null);
 			if (bitIndex < 0 || bitIndex > Length)
 			{
-				if (errorsOutput != null)
-				{
-					errorsOutput.AddFormat("Member '{0}'={1} in enum {2} can't be used as a bit index",
-						flag, bitIndex, typeof(TEnum));
-				}
+				errorsOutput?.AddFormat("Member '{0}'={1} in enum {2} can't be used as a bit index",
+					flag, bitIndex, typeof(TEnum));
+
 				return false;
 			}
 

@@ -57,7 +57,7 @@ namespace KSoft
 
 			byteCount = bitCount = bitShift = bitMod = TypeExtensions.kNoneInt32;
 
-			switch(Type.GetTypeCode(integerType))
+			switch (Type.GetTypeCode(integerType))
 			{
 <# foreach (var num_type in BitwiseT4.BittableTypes_Unsigned) { #>
 				case TypeCode.<#= num_type.Code #>:

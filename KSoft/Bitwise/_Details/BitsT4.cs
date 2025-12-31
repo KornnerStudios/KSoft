@@ -28,7 +28,9 @@ namespace KSoft
 			{
 				lut = new byte[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+				{
 					lut[x] = (byte)(byte.MaxValue >> shift);
+				}
 			}
 		}
 		/// <summary>Generate an 8-bit bit count to bitmask table</summary>
@@ -61,7 +63,9 @@ namespace KSoft
 			{
 				lut = new ushort[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+				{
 					lut[x] = (ushort)(ushort.MaxValue >> shift);
+				}
 			}
 		}
 		/// <summary>Generate an 16-bit bit count to bitmask table</summary>
@@ -94,7 +98,9 @@ namespace KSoft
 			{
 				lut = new uint[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+				{
 					lut[x] = (uint)(uint.MaxValue >> shift);
+				}
 			}
 		}
 		/// <summary>Generate an 32-bit bit count to bitmask table</summary>
@@ -127,7 +133,9 @@ namespace KSoft
 			{
 				lut = new ulong[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+				{
 					lut[x] = (ulong)(ulong.MaxValue >> shift);
+				}
 			}
 		}
 		/// <summary>Generate an 64-bit bit count to bitmask table</summary>

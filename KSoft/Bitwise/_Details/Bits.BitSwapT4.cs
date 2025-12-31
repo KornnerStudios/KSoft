@@ -26,7 +26,9 @@ namespace KSoft
 				for (var value_mask = k_one << startBitIndex;
 					value_shift >= 0;
 					value_mask >>= 1, value_shift--, bits_shift++)
+				{
 					bits |= ((value & value_mask) >> value_shift) << bits_shift;
+				}
 
 				value = (byte)bits;
 			}
@@ -49,7 +51,9 @@ namespace KSoft
 				for (var value_mask = k_one << startBitIndex;
 					value_shift >= 0;
 					value_mask >>= 1, value_shift--, bits_shift++)
+				{
 					bits |= ((value & value_mask) >> value_shift) << bits_shift;
+				}
 
 				value = (ushort)bits;
 			}
@@ -72,7 +76,9 @@ namespace KSoft
 				for (var value_mask = k_one << startBitIndex;
 					value_shift >= 0;
 					value_mask >>= 1, value_shift--, bits_shift++)
+				{
 					bits |= ((value & value_mask) >> value_shift) << bits_shift;
+				}
 
 				value = (uint)bits;
 			}
@@ -95,7 +101,9 @@ namespace KSoft
 				for (var value_mask = k_one << startBitIndex;
 					value_shift >= 0;
 					value_mask >>= 1, value_shift--, bits_shift++)
+				{
 					bits |= ((value & value_mask) >> value_shift) << bits_shift;
+				}
 
 				value = (ulong)bits;
 			}

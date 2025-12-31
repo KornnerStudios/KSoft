@@ -29,25 +29,18 @@ namespace KSoft.Bitwise
 
 		/// <summary>Get the 32-bit handle value</summary>
 		/// <returns></returns>
-		public uint GetHandle32()
-		{
-			return mBits.u32;
-		}
+		public readonly uint GetHandle32()
+			=> mBits.u32;
 		/// <summary>Get the 64-bit handle value</summary>
 		/// <returns></returns>
-		public ulong GetHandle64()
-		{
-			return mBits.u64;
-		}
+		public readonly ulong GetHandle64()
+			=> mBits.u64;
 
 		#region Encode
 		/// <summary>Encode an enumeration value using an enumeration encoder object</summary>
 		/// <typeparam name="TEnum">Enumeration type to encode</typeparam>
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="encoder">Encoder for <typeparamref name="TEnum"/> objects</param>
-		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
-			Justification ="Pretty sure this is a CA bug",
-			Scope = "method", Target = "BitEncode")]
 		public void Encode32<TEnum>(TEnum value, EnumBitEncoder32<TEnum> encoder)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -59,9 +52,6 @@ namespace KSoft.Bitwise
 		/// <typeparam name="TEnum">Enumeration type to encode</typeparam>
 		/// <param name="value">Enumeration value to encode</param>
 		/// <param name="encoder">Encoder for <typeparamref name="TEnum"/> objects</param>
-		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
-			Justification ="Pretty sure this is a CA bug",
-			Scope = "method", Target = "BitEncode")]
 		public void Encode64<TEnum>(TEnum value, EnumBitEncoder64<TEnum> encoder)
 			where TEnum : struct, IComparable, IFormattable, IConvertible
 		{
@@ -73,9 +63,6 @@ namespace KSoft.Bitwise
 		/// <summary>Bit encode a value into this handle</summary>
 		/// <param name="value">Value to encode</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
-		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
-			Justification ="Pretty sure this is a CA bug",
-			Scope = "method", Target = "BitEncode")]
 		public void Encode32(uint value, uint bitMask)
 		{
 			Contract.Requires<ArgumentException>(bitMask != 0);
@@ -117,9 +104,6 @@ namespace KSoft.Bitwise
 		/// <summary>Bit encode a value into this handle</summary>
 		/// <param name="value">Value to encode</param>
 		/// <param name="bitMask">Masking value for <paramref name="value"/></param>
-		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
-			Justification ="Pretty sure this is a CA bug",
-			Scope = "method", Target = "BitEncode")]
 		public void Encode64(ulong value, ulong bitMask)
 		{
 			Contract.Requires<ArgumentException>(bitMask != 0);

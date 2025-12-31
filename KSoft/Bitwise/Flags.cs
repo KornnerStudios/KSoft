@@ -34,14 +34,13 @@ namespace KSoft.Bitwise
 			Contract.Requires(values != null);
 
 			foreach (uint f in values)
+			{
 				Add(f);
+			}
 		}
 
 		/// <summary>Implicitly cast an <see cref="Flags32"/> to its unsigned integer representation</summary>
-		public uint ToUInt32()
-		{
-			return this.mValue;
-		}
+		public uint ToUInt32() => mValue;
 		/// <summary>Implicitly cast an <see cref="Flags32"/> to its unsigned integer representation</summary>
 		/// <param name="value"></param>
 		public static implicit operator uint(Flags32 value)
@@ -67,7 +66,7 @@ namespace KSoft.Bitwise
 		/// <param name="flag">flag to test</param>
 		/// <returns>True if <paramref name="flag"/> is set</returns>
 		[Contracts.Pure]
-		public bool Test(uint flag)					{ return (mValue & flag) == flag; }
+		public bool Test(uint flag)	=> (mValue & flag) == flag;
 
 		#region Add
 		/// <summary>Adds <paramref name="flags"/> from this.Value</summary>
@@ -81,7 +80,9 @@ namespace KSoft.Bitwise
 		public bool Add(bool cond, uint flags)
 		{
 			if (cond)
+			{
 				Add(flags);
+			}
 
 			return cond;
 		}
@@ -99,7 +100,9 @@ namespace KSoft.Bitwise
 		public bool Remove(bool cond, uint flags)
 		{
 			if (cond)
+			{
 				Remove(flags);
+			}
 
 			return cond;
 		}
@@ -110,7 +113,7 @@ namespace KSoft.Bitwise
 		/// <summary>Tests whether or not <paramref name="obj"/> is equal to this</summary>
 		/// <param name="obj">The other object</param>
 		/// <returns>Returns true if <paramref name="obj"/> is a <see cref="Flags32"/> object and if it's value is the same as this</returns>
-		public override bool Equals(object obj)	{ return obj is Flags32 && ((Flags32)obj).mValue == mValue; }
+		public override bool Equals(object obj)	{ return obj is Flags32 flags && flags.mValue == mValue; }
 		/// <summary><see cref="uint.GetHashCode()"/></summary>
 		/// <returns></returns>
 		/// <remarks>Beware: this uses the underlying flags value's hash code</remarks>

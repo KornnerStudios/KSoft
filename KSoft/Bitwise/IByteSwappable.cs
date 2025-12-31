@@ -14,7 +14,6 @@ namespace KSoft.Bitwise
 	{
 		int SizeOf { get; }
 
-		[SuppressMessage("Microsoft.Design", "CA1819:PropertiesShouldNotReturnArrays")]
 		short[] ByteSwapCodes { get; }
 	};
 	[Contracts.ContractClassFor(typeof(IByteSwappable))]

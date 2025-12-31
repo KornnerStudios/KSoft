@@ -58,8 +58,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
-				if(!Test(value, i))
+			{
+				if (!Test(value, i))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -74,8 +78,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
+			{
 				if (Test(value, i))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -182,9 +190,13 @@ namespace KSoft.Bitwise
 		public static bool Modify(bool addOrRemove, ref <#= prim_keyword #> lhs, <#= prim_keyword #> rhs)
 		{
 			if (addOrRemove == true)
+			{
 				lhs |= rhs;
+			}
 			else
+			{
 				lhs &= (<#= prim_keyword #>)~rhs;
+			}
 
 			return addOrRemove;
 		}

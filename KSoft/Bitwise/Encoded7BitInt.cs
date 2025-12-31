@@ -35,7 +35,9 @@ namespace KSoft.Bitwise
 
 			int size = 0;
 			for (uint num = (uint)value; num >= 0x80; size++)
+			{
 				num >>= 7;
+			}
 
 			return ++size;
 		}
@@ -62,10 +64,14 @@ namespace KSoft.Bitwise
 				// Check for a corrupted stream.  Access a max of 5 bytes.
 				// In a future version, add a DataFormatException.
 				if (shift == 5 * 7)  // 5 bytes max per Int32, shift += 7
+				{
 					return TypeExtensions.kNone;
+				}
 				// Either a corrupted stream or the buffer is incomplete
 				if (size >= maxCount)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				b = buffer[startIndex + size++];
 				count |= (b & 0x7F) << shift;
@@ -75,7 +81,9 @@ namespace KSoft.Bitwise
 			// either buffer is incomplete or
 			// this isn't even data with a 7-bit integer.
 			if ((size + count) > maxCount)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			endingIndex = startIndex + size;
 
@@ -92,7 +100,9 @@ namespace KSoft.Bitwise
 			// when on, tells reader to continue reading more bytes.
 			uint v = (uint)value;
 			for (; v >= 0x80; v >>= 7, startIndex++)
+			{
 				buffer[startIndex] = (byte)(v | 0x80);
+			}
 
 			buffer[startIndex++] = (byte)v;
 

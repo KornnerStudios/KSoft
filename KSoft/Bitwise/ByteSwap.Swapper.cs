@@ -10,8 +10,8 @@ namespace KSoft.Bitwise
 {
 	partial class ByteSwap
 	{
-		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-		public struct Swapper
+		//[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		public readonly struct Swapper
 		{
 			readonly short[] kCodes;
 
@@ -34,7 +34,7 @@ namespace KSoft.Bitwise
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
 				Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
 
-				return SwapData(buffer, startIndex, out int size_in_bytes, out int size_in_codes);
+				return SwapData(buffer, startIndex, out int _, out int _);
 			}
 
 			public int SwapData(byte[] buffer, int startIndex,
@@ -120,7 +120,9 @@ namespace KSoft.Bitwise
 									codes_index);
 
 								if (buffer_is_valid)
+								{
 									buffer_index += recursive_size_in_bytes;
+								}
 
 								codes_index += recursive_size_in_codes;
 								size_in_codes += recursive_size_in_codes;
@@ -137,10 +139,14 @@ namespace KSoft.Bitwise
 							#region Skip (default)
 							default:
 								if (current_code < 0)
+								{
 									throw new Debug.UnreachableException();
+								}
 
 								if (buffer_is_valid)
+								{
 									buffer_index += current_code;
+								}
 
 								codes_index++;
 								size_in_codes++;

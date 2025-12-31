@@ -22,7 +22,7 @@ namespace KSoft
 		public delegate int VectorLengthInT(int bitsCount);
 		#region Bit Vector length calculations
 		[Contracts.Pure]
-		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+//		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorLengthInT GetVectorLengthInT<T>()
 			where T : struct
 		{
@@ -30,26 +30,14 @@ namespace KSoft
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
-			switch(c)
+			return c switch
 			{
-				case TypeCode.SByte:
-				case TypeCode.Byte:
-					return VectorLengthInBytes;
-
-				case TypeCode.Int16:
-				case TypeCode.UInt16:
-					return VectorLengthInInt16;
-
-				case TypeCode.Int32:
-				case TypeCode.UInt32:
-					return VectorLengthInInt32;
-
-				case TypeCode.Int64:
-				case TypeCode.UInt64:
-					return VectorLengthInInt64;
-
-				default: throw new ArgumentException(c.ToString(), nameof(T));
-			}
+				TypeCode.SByte or TypeCode.Byte => VectorLengthInBytes,
+				TypeCode.Int16 or TypeCode.UInt16 => VectorLengthInInt16,
+				TypeCode.Int32 or TypeCode.UInt32 => VectorLengthInInt32,
+				TypeCode.Int64 or TypeCode.UInt64 => VectorLengthInInt64,
+				_ => throw new ArgumentException(c.ToString(), nameof(T)),
+			};
 		}
 		#endregion
 
@@ -69,7 +57,7 @@ namespace KSoft
 		public delegate int VectorIndexInT(int bitIndex);
 		#region Bit Vector bitIndex to vector_index
 		[Contracts.Pure]
-		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+//		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorIndexInT GetVectorIndexInT<T>()
 			where T : struct
 		{
@@ -77,26 +65,14 @@ namespace KSoft
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
-			switch(c)
+			return c switch
 			{
-				case TypeCode.SByte:
-				case TypeCode.Byte:
-					return VectorIndexInBytes;
-
-				case TypeCode.Int16:
-				case TypeCode.UInt16:
-					return VectorIndexInInt16;
-
-				case TypeCode.Int32:
-				case TypeCode.UInt32:
-					return VectorIndexInInt32;
-
-				case TypeCode.Int64:
-				case TypeCode.UInt64:
-					return VectorIndexInInt64;
-
-				default: throw new ArgumentException(c.ToString(), nameof(T));
-			}
+				TypeCode.SByte or TypeCode.Byte => VectorIndexInBytes,
+				TypeCode.Int16 or TypeCode.UInt16 => VectorIndexInInt16,
+				TypeCode.Int32 or TypeCode.UInt32 => VectorIndexInInt32,
+				TypeCode.Int64 or TypeCode.UInt64 => VectorIndexInInt64,
+				_ => throw new ArgumentException(c.ToString(), nameof(T)),
+			};
 		}
 		#endregion
 
@@ -107,7 +83,7 @@ namespace KSoft
 		public delegate int VectorBitIndexInT(int index, int bitOffset);
 		#region Bit Vector cursor to bitIndex
 		[Contracts.Pure]
-		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+//		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorBitIndexInT GetVectorBitIndexInT<T>()
 			where T : struct
 		{
@@ -115,26 +91,14 @@ namespace KSoft
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
-			switch (c)
+			return c switch
 			{
-				case TypeCode.SByte:
-				case TypeCode.Byte:
-					return VectorBitIndexInBytes;
-
-				case TypeCode.Int16:
-				case TypeCode.UInt16:
-					return VectorBitIndexInInt16;
-
-				case TypeCode.Int32:
-				case TypeCode.UInt32:
-					return VectorBitIndexInInt32;
-
-				case TypeCode.Int64:
-				case TypeCode.UInt64:
-					return VectorBitIndexInInt64;
-
-				default: throw new ArgumentException(c.ToString(), nameof(T));
-			}
+				TypeCode.SByte or TypeCode.Byte => VectorBitIndexInBytes,
+				TypeCode.Int16 or TypeCode.UInt16 => VectorBitIndexInInt16,
+				TypeCode.Int32 or TypeCode.UInt32 => VectorBitIndexInInt32,
+				TypeCode.Int64 or TypeCode.UInt64 => VectorBitIndexInInt64,
+				_ => throw new ArgumentException(c.ToString(), nameof(T)),
+			};
 		}
 		#endregion
 
@@ -145,7 +109,7 @@ namespace KSoft
 		public delegate void VectorBitCursorInT(int bitIndex, out int index, out int bitOffset);
 		#region Bit Vector cursor from bitIndex
 		[Contracts.Pure]
-		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+//		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorBitCursorInT GetVectorBitCursorInT<T>()
 			where T : struct
 		{
@@ -153,26 +117,14 @@ namespace KSoft
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
-			switch (c)
+			return c switch
 			{
-				case TypeCode.SByte:
-				case TypeCode.Byte:
-					return VectorBitCursorInBytes;
-
-				case TypeCode.Int16:
-				case TypeCode.UInt16:
-					return VectorBitCursorInInt16;
-
-				case TypeCode.Int32:
-				case TypeCode.UInt32:
-					return VectorBitCursorInInt32;
-
-				case TypeCode.Int64:
-				case TypeCode.UInt64:
-					return VectorBitCursorInInt64;
-
-				default: throw new ArgumentException(c.ToString(), nameof(T));
-			}
+				TypeCode.SByte or TypeCode.Byte => VectorBitCursorInBytes,
+				TypeCode.Int16 or TypeCode.UInt16 => VectorBitCursorInInt16,
+				TypeCode.Int32 or TypeCode.UInt32 => VectorBitCursorInInt32,
+				TypeCode.Int64 or TypeCode.UInt64 => VectorBitCursorInInt64,
+				_ => throw new ArgumentException(c.ToString(), nameof(T)),
+			};
 		}
 		#endregion
 	};

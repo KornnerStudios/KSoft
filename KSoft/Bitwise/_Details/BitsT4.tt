@@ -36,7 +36,9 @@ namespace KSoft
 			{
 				lut = new <#= bittable_type.Keyword #>[BitmaskLookUpTableGetLength(wordBitSize)];
 				for (int x = 1, shift = lut.Length-2; x < lut.Length; x++, shift--)
+				{
 					lut[x] = (<#= bittable_type.Keyword #>)(<#= bittable_type.Keyword #>.MaxValue >> shift);
+				}
 			}
 		}
 		/// <summary>Generate an <#= bittable_type.SizeOfInBits #>-bit bit count to bitmask table</summary>

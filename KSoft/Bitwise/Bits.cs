@@ -30,19 +30,19 @@ namespace KSoft
 		#region MultiplyDeBruijnBitPosition
 		static readonly byte[] kMultiplyDeBruijnBitPositionHighestBitSet32 = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
 		static readonly byte[] kMultiplyDeBruijnBitPositionLeadingZeros32 = GenerateMultiplyDeBruijnBitPositionLeadingZeros32();
-		static readonly byte[] kMultiplyDeBruijnBitPositionTrailingZeros32 = new byte[kInt32BitCount]
-		{
+		static readonly byte[] kMultiplyDeBruijnBitPositionTrailingZeros32 = /*new byte[kInt32BitCount]*/
+		[
 			0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
 			31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-		};
+		];
 
 		static byte[] GenerateMultiplyDeBruijnBitPositionHighestBitSet32()
 		{
-			return new byte[kInt32BitCount]
-			{
+			return /*new byte[kInt32BitCount]*/
+			[
 				0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
 				8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
-			};
+			];
 		}
 
 		static byte[] GenerateMultiplyDeBruijnBitPositionLeadingZeros32()
@@ -50,7 +50,9 @@ namespace KSoft
 			var src = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
 			var dst = new byte[kInt32BitCount];
 			for (int x = 0; x < dst.Length; x++)
-				dst[x] = (byte)(src[x]+1);
+			{
+				dst[x] = (byte)(src[x] + 1);
+			}
 
 			return dst;
 		}
@@ -68,8 +70,8 @@ namespace KSoft
 
 		#region Memory/ArrayCopy
 		// #REVIEW: Does #DOTNET5 enable us to change this to a class and use stackalloc?
-		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-		public struct MemoryCopier<TDst, TSrc>
+		//[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		public readonly struct MemoryCopier<TDst, TSrc>
 			where TDst : struct
 			where TSrc : struct
 		{
@@ -98,11 +100,12 @@ namespace KSoft
 			readonly int mDstTypeSize;
 			readonly int mSrcTypeSize;
 
-			public int DestinationTypeSize { get { return mDstTypeSize; } }
-			public int SourceTypeSize { get { return mSrcTypeSize; } }
+			public readonly int DestinationTypeSize => mDstTypeSize;
+			public readonly int SourceTypeSize => mSrcTypeSize;
 
 			public MemoryCopier(
 				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 				bool dummy)
 			{
 				mDstTypeSize = LowLevel.Util.Unmanaged.SizeOf<TDst>();
@@ -117,18 +120,24 @@ namespace KSoft
 					"somebody used MemoryCopier's default constructor!");
 
 				if (srcCopyCount == 0)
+				{
 					return;
+				}
 
 				// Get the available size of the buffers
 				int dst_buffer_local_size_in_bytes = (dst.Length - dstOffset) * mDstTypeSize;
+#if DEBUG
 				int src_buffer_local_size_in_bytes = (src.Length - srcOffset) * mSrcTypeSize;
+#endif
 
 				// Size, in bytes, of the src elements to copy. Could be smaller than src_buffer_size
 				int src_copy_count_in_bytes = mSrcTypeSize * srcCopyCount;
 
 				if (src_copy_count_in_bytes > dst_buffer_local_size_in_bytes)
+				{
 					throw new ArgumentOutOfRangeException(nameof(srcCopyCount), srcCopyCount,
 						"total source memory to copy exceeds the memory available in destination");
+				}
 
 				Buffer.BlockCopy(src, srcOffset,
 					dst, dstOffset,
@@ -169,7 +178,9 @@ namespace KSoft
 		public static bool ArrayCopyFromBytesBoundsValidate(byte[] src, int srcOffset, Array dst, int dstOffset, int count, int elementSize)
 		{
 			if (count < 0)
+			{
 				return false;
+			}
 
 			int src_index_end = srcOffset + count;
 			int dst_index_end = dstOffset + (count / elementSize);
@@ -177,7 +188,9 @@ namespace KSoft
 
 			if (src_index_end > src.Length ||
 				dst_index_end > dst.Length)
+			{
 				return false;
+			}
 
 			//if (copy_leftovers != 0)
 			//	return false;
@@ -189,14 +202,18 @@ namespace KSoft
 		public static bool ArrayCopyToBytesBoundsValidate(Array src, int srcOffset, byte[] dst, int dstOffset, int count, int elementSize)
 		{
 			if (count < 0)
+			{
 				return false;
+			}
 
 			int src_index_end = srcOffset + count;
 			int dst_index_end = dstOffset + (count * elementSize);
 
 			if (src_index_end > src.Length ||
 				dst_index_end > dst.Length)
+			{
 				return false;
+			}
 
 			return true;
 		}
@@ -239,34 +256,34 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <returns>Signed representation of the high-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static int GetHighBitsSigned(uint value)	{ return (int)((value >> 16) & 0xFFFFFFFF); }
+		public static int GetHighBitsSigned(uint value) => (int)((value >> 16) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Signed representation of the low-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static int GetLowBitsSigned(uint value)	{ return (int)(value & 0xFFFFFFFF); }
+		public static int GetLowBitsSigned(uint value) => (int)(value & 0xFFFFFFFF);
 
 		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static uint GetHighBits(ulong value)	{ return (uint)((value >> 32) & 0xFFFFFFFF); }
+		public static uint GetHighBits(ulong value) => (uint)((value >> 32) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static uint GetLowBits(ulong value)	{ return (uint)(value & 0xFFFFFFFF); }
+		public static uint GetLowBits(ulong value) => (uint)(value & 0xFFFFFFFF);
 
 		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static int GetHighBitsSigned(ulong value)	{ return (int)((value >> 32) & 0xFFFFFFFF); }
+		public static int GetHighBitsSigned(ulong value) => (int)((value >> 32) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
 		[Contracts.Pure]
-		public static int GetLowBitsSigned(ulong value)	{ return (int)(value & 0xFFFFFFFF); }
+		public static int GetLowBitsSigned(ulong value) => (int)(value & 0xFFFFFFFF);
 		#endregion
 
 		#region HighestBitSetIndex
@@ -289,12 +306,16 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<byte>() < kInt64BitCount);
 
-			int index = 0;
+			int index;
 			uint high = GetHighBits(value);
-			if(high != 0)
+			if (high != 0)
+			{
 				index = IndexOfHighestBitSet(high) + kInt32BitCount;
+			}
 			else
+			{
 				index = IndexOfHighestBitSet(GetLowBits(value));
+			}
 
 			Contract.Assume(index >= 0);
 			return (byte)index;
@@ -328,7 +349,9 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			if (value == 0)
+			{
 				return kInt32BitCount;
+			}
 
 			value |= value >> 1; // first round down to one less than a power of 2
 			value |= value >> 2;
@@ -351,7 +374,9 @@ namespace KSoft
 			byte count = LeadingZerosCount(GetHighBits(value));
 			// The high bits were all zero, continue checking low bits
 			if (count == kInt32BitCount)
+			{
 				count += LeadingZerosCount(GetLowBits(value));
+			}
 
 			return count;
 		}
@@ -366,7 +391,9 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			if (value == 0)
+			{
 				return kInt32BitCount;
+			}
 
 			// instead of (value & -value), where the op result is a long, we do this to keep it all 32-bit
 			uint ls1b = (~value) + 1; // two's complement
@@ -385,7 +412,9 @@ namespace KSoft
 			byte count = TrailingZerosCount(GetLowBits(value));
 			// The low bits were all zero, continue checking high bits
 			if (count == kInt32BitCount)
+			{
 				count += TrailingZerosCount(GetHighBits(value));
+			}
 
 			return count;
 		}

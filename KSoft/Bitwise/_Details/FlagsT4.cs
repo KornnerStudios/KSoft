@@ -50,8 +50,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
-				if(!Test(value, i))
+			{
+				if (!Test(value, i))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -66,8 +70,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
+			{
 				if (Test(value, i))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -111,8 +119,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
-				if(!Test(value, i))
+			{
+				if (!Test(value, i))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -127,8 +139,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
+			{
 				if (Test(value, i))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -172,8 +188,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
-				if(!Test(value, i))
+			{
+				if (!Test(value, i))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -188,8 +208,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
+			{
 				if (Test(value, i))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -233,8 +257,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
-				if(!Test(value, i))
+			{
+				if (!Test(value, i))
+				{
 					return false;
+				}
+			}
 
 			return true;
 		}
@@ -249,8 +277,12 @@ namespace KSoft.Bitwise
 			Contract.Requires(flags != null);
 
 			foreach (var i in flags)
+			{
 				if (Test(value, i))
+				{
 					return true;
+				}
+			}
 
 			return false;
 		}
@@ -389,9 +421,13 @@ namespace KSoft.Bitwise
 		public static bool Modify(bool addOrRemove, ref byte lhs, byte rhs)
 		{
 			if (addOrRemove == true)
+			{
 				lhs |= rhs;
+			}
 			else
+			{
 				lhs &= (byte)~rhs;
+			}
 
 			return addOrRemove;
 		}
@@ -422,9 +458,13 @@ namespace KSoft.Bitwise
 		public static bool Modify(bool addOrRemove, ref ushort lhs, ushort rhs)
 		{
 			if (addOrRemove == true)
+			{
 				lhs |= rhs;
+			}
 			else
+			{
 				lhs &= (ushort)~rhs;
+			}
 
 			return addOrRemove;
 		}
@@ -455,9 +495,13 @@ namespace KSoft.Bitwise
 		public static bool Modify(bool addOrRemove, ref uint lhs, uint rhs)
 		{
 			if (addOrRemove == true)
+			{
 				lhs |= rhs;
+			}
 			else
+			{
 				lhs &= (uint)~rhs;
+			}
 
 			return addOrRemove;
 		}
@@ -488,9 +532,13 @@ namespace KSoft.Bitwise
 		public static bool Modify(bool addOrRemove, ref ulong lhs, ulong rhs)
 		{
 			if (addOrRemove == true)
+			{
 				lhs |= rhs;
+			}
 			else
+			{
 				lhs &= (ulong)~rhs;
+			}
 
 			return addOrRemove;
 		}
