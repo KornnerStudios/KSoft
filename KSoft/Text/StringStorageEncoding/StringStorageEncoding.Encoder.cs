@@ -20,15 +20,14 @@ namespace KSoft.Text
 		/// <returns>Total byte count needed for encoding a <see cref="StringStorageType.Pascal"/> string</returns>
 		int CalcByteCountPascal(int byteCount)
 		{
-			switch (mStorage.LengthPrefix)
+			return mStorage.LengthPrefix switch
 			{
-				case StringStorageLengthPrefix.Int7: return byteCount + Bitwise.Encoded7BitInt.CalculateSize(byteCount);
-				case StringStorageLengthPrefix.Int8: return byteCount + sizeof(byte);
-				case StringStorageLengthPrefix.Int16:return byteCount + sizeof(short);
-				case StringStorageLengthPrefix.Int32:return byteCount + sizeof(int);
-				default:
-					throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString());
-			}
+				StringStorageLengthPrefix.Int7 => byteCount + Bitwise.Encoded7BitInt.CalculateSize(byteCount),
+				StringStorageLengthPrefix.Int8 => byteCount + sizeof(byte),
+				StringStorageLengthPrefix.Int16 => byteCount + sizeof(short),
+				StringStorageLengthPrefix.Int32 => byteCount + sizeof(int),
+				_ => throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString()),
+			};
 		}
 		/// <summary>Calculate how many additional bytes are needed to encode a raw <see cref="StringStorageType.CharArray"/> string</summary>
 		/// <param name="byteCount">Base characters byte count</param>
@@ -43,7 +42,9 @@ namespace KSoft.Text
 		int CalculateByteCount(int byteCount)
 		{
 			if (mStorage.IsFixedLength)
+			{
 				return mFixedLengthByteLength;
+			}
 
 			switch (mStorage.Type)
 			{
@@ -64,17 +65,19 @@ namespace KSoft.Text
 		void ClampCharCount(ref int charCount)
 		{
 			if (!mStorage.IsFixedLength)
+			{
 				return;
+			}
 
 			switch (mStorage.Type)
 			{
 				case StringStorageType.CString:
 					int fixed_length = mStorage.FixedLength - 1; // don't include null char
 
-					if (charCount > fixed_length) charCount = fixed_length;
+					if (charCount > fixed_length) { charCount = fixed_length; }
 					break;
 				case StringStorageType.CharArray:
-					if (charCount > mStorage.FixedLength) charCount = mStorage.FixedLength;
+					if (charCount > mStorage.FixedLength) { charCount = mStorage.FixedLength; }
 					break;
 				default:
 					throw new Debug.UnreachableException(mStorage.Type.ToString());
@@ -112,21 +115,22 @@ namespace KSoft.Text
 		/// <returns>Number of prefix bytes written into <paramref name="bytes"/></returns>
 		int EncodeStringStorageTypePrefixData(
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			char[] chars,
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			int charIndex,
 			int charCount, byte[] bytes, int byteIndex)
 		{
-			switch (mStorage.Type)
+			return mStorage.Type switch
 			{
 				// No prefix for CString
-				case StringStorageType.CString:		return 0;
-				case StringStorageType.Pascal:		return EncStringStorageTypePrefixPascalData(charCount, bytes, byteIndex);
+				StringStorageType.CString => 0,
+				StringStorageType.Pascal => EncStringStorageTypePrefixPascalData(charCount, bytes, byteIndex),
 				// CharArray doesn't do anything anyway
-				case StringStorageType.CharArray:	return 0;
-				default:
-					throw new Debug.UnreachableException(mStorage.Type.ToString());
-			}
+				StringStorageType.CharArray => 0,
+				_ => throw new Debug.UnreachableException(mStorage.Type.ToString()),
+			};
 		}
 		#endregion
 
@@ -134,7 +138,9 @@ namespace KSoft.Text
 		int EncStringStoragePostfixCStringData(byte[] bytes, int byteIndex)
 		{
 			for (int x = byteIndex; x < mNullCharacterSize; x++)
+			{
 				bytes[x] = 0;
+			}
 
 			return mNullCharacterSize; // number of bytes written into [bytes]
 		}
@@ -147,31 +153,33 @@ namespace KSoft.Text
 		/// <returns>The actual number of bytes written into <paramref name="bytes"/></returns>
 		int EncodeStringStorageTypePostfixData(
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			char[] chars,
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			int charIndex,
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			int charCount,
 			byte[] bytes, int byteIndex)
 		{
-			switch (mStorage.Type)
+			return mStorage.Type switch
 			{
-				case StringStorageType.CString:		return EncStringStoragePostfixCStringData(bytes, byteIndex);
+				StringStorageType.CString => EncStringStoragePostfixCStringData(bytes, byteIndex),
 				// No postfix for Pascal
-				case StringStorageType.Pascal:		return 0;
+				StringStorageType.Pascal => 0,
 				// CharArray doesn't do anything anyway
-				case StringStorageType.CharArray:	return 0;
-				default:
-					throw new Debug.UnreachableException(mStorage.Type.ToString());
-			}
+				StringStorageType.CharArray => 0,
+				_ => throw new Debug.UnreachableException(mStorage.Type.ToString()),
+			};
 		}
 		#endregion
 
 		/// <summary>Converts a set of characters into a sequence of bytes.</summary>
 		class Encoder : System.Text.Encoder
 		{
-			StringStorageEncoding mEncoding;
-			System.Text.Encoder mEnc;
+			readonly StringStorageEncoding mEncoding;
+			readonly System.Text.Encoder mEnc;
 			public Encoder(StringStorageEncoding enc) { mEncoding = enc; mEnc = enc.mBaseEncoding.GetEncoder(); }
 
 			/// <summary>
@@ -226,11 +234,15 @@ namespace KSoft.Text
 		internal void WriteString(IO.BitStream s, string value, int maxLength = -1, int prefixBitLength = -1)
 		{
 			if (prefixBitLength > 0)
+			{
 				throw new NotSupportedException("Currently don't support unnatural bit lengths for prefixes on writes");
+			}
 
 			int length = value.Length;
 			if (maxLength > 0)
+			{
 				length = System.Math.Min(maxLength, length);
+			}
 
 			char[] chars = value.ToCharArray(0, length);
 			byte[] bytes = GetBytes(chars);

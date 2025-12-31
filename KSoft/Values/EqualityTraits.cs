@@ -9,7 +9,6 @@ namespace KSoft.Values
 {
 	/// <summary>Describes how a value is compared for equality</summary>
 	[System.Reflection.Obfuscation(Exclude=false, ApplyToMembers=false)]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1717:OnlyFlagsEnumsShouldHavePluralNames")]
 	public enum EqualityTraits : byte
 	{
 		NotEqual = 0,
@@ -24,6 +23,7 @@ namespace KSoft.Values
 			Equal | GreaterThan,
 
 		[System.Reflection.Obfuscation(Exclude=false)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "this is equal to Equal, but it's for masking purposes")]
 		kEqualityMask =			// 1
 			NotEqual | Equal,
 		[System.Reflection.Obfuscation(Exclude=false)]

@@ -26,7 +26,9 @@ namespace KSoft
 		public static void BitmaskLookUpTableGenerate(int wordBitSize, out <#= bittable_type.Keyword #>[] lut)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= k<#= bittable_type.Code #>BitCount);
+#if !CODE_ANALYSIS // it thinks lut is already assigned with this
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+#endif // CODE_ANALYSIS
 
 			if (wordBitSize == k<#= bittable_type.Code #>BitCount && kBitmaskLookup<#= bittable_type.SizeOfInBits #> != null)
 			{

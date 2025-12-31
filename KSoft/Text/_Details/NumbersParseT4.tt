@@ -13,6 +13,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+#pragma warning disable IDE0301 // Collection initialization can be simplified
+
 namespace KSoft
 {
 	partial class Numbers

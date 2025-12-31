@@ -125,12 +125,14 @@ namespace KSoft.Reflection
 			var method_params = sig_method_info.GetParameters().Select(p => p.ParameterType).ToArray();
 			var method = type.GetMethod(methodName, bindingAttr, null, method_params, null);
 
+#pragma warning disable IDE0270 // Use coalesce expression
 			if (method == null)
 			{
 				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
 					"Couldn't find a method in {0} named '{1}' ({2})",
 					type, methodName, bindingAttr));
 			}
+#pragma warning restore IDE0270 // Use coalesce expression
 
 			var param_this =Expr.Parameter(type, kThisName);
 			// have to convert it to a collection, else a different set of Parameter objects will be created for Call and the Lambda

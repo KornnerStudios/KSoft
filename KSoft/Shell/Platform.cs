@@ -252,18 +252,14 @@ namespace KSoft.Shell
 
 				// #REVIEW: .NET 4 upgrade:
 				// System.Environment.Is64BitProcess and Is64BitOperatingSystem
-				ProcessorSize size;
-				switch (IntPtr.Size) // HACK: the only way I've read on how to detect the processor size (assuming you compile with AnyCPU)
+				var size = IntPtr.Size switch // HACK: the only way I've read on how to detect the processor size (assuming you compile with AnyCPU)
 				{
-					case 4: size = ProcessorSize.x32; break;
-					case 8: size = ProcessorSize.x64; break;
-
-					default:
-						throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
+					4 => ProcessorSize.x32,
+					8 => ProcessorSize.x64,
+					_ => throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
 							"Pointer Size: {0}",
-							IntPtr.Size.ToString(Util.InvariantCultureInfo)));
-				}
-
+							IntPtr.Size.ToString(Util.InvariantCultureInfo))),
+				};
 				Contract.Assume(System.Environment.OSVersion != null);
 				switch (System.Environment.OSVersion.Platform)
 				{

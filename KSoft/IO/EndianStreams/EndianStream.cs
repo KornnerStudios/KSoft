@@ -8,6 +8,9 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// #TODO fix CA warnings
+#pragma warning disable IDE0011 // Use braces
+
 namespace KSoft.IO
 {
 	public sealed partial class EndianStream : IKSoftBinaryStream, IKSoftStreamModeable, IKSoftStreamWithVirtualBuffer
@@ -98,28 +101,28 @@ namespace KSoft.IO
 		/// <param name="translationCapacity">The initial table capacity</param>
 		public void VirtualAddressTranslationInitialize(Shell.ProcessorSize vaSize, int translationCapacity = 0)
 		{
-			if (Reader != null) Reader.VirtualAddressTranslationInitialize(vaSize, translationCapacity);
-			if (Writer != null) Writer.VirtualAddressTranslationInitialize(vaSize, translationCapacity);
+			Reader?.VirtualAddressTranslationInitialize(vaSize, translationCapacity);
+			Writer?.VirtualAddressTranslationInitialize(vaSize, translationCapacity);
 		}
 		/// <summary>Push a PA into to the VAT table, setting the current PA in the process</summary>
 		/// <param name="physicalAddress">PA to push and to use as the VAT's current address</param>
 		public void VirtualAddressTranslationPush(Values.PtrHandle physicalAddress)
 		{
-			if (Reader != null) Reader.VirtualAddressTranslationPush(physicalAddress);
-			if (Writer != null) Writer.VirtualAddressTranslationPush(physicalAddress);
+			Reader?.VirtualAddressTranslationPush(physicalAddress);
+			Writer?.VirtualAddressTranslationPush(physicalAddress);
 		}
 		/// <summary>Push the stream's position (as a physical address) into the VAT table</summary>
 		public void VirtualAddressTranslationPushPosition()
 		{
-			if (Reader != null) Reader.VirtualAddressTranslationPushPosition();
-			if (Writer != null) Writer.VirtualAddressTranslationPushPosition();
+			Reader?.VirtualAddressTranslationPushPosition();
+			Writer?.VirtualAddressTranslationPushPosition();
 		}
 		/// <summary>Increase the current address (PA) by a relative offset</summary>
 		/// <param name="relativeOffset">Offset, relative to the current address</param>
 		public void VirtualAddressTranslationIncrease(Values.PtrHandle relativeOffset)
 		{
-			if (Reader != null) Reader.VirtualAddressTranslationIncrease(relativeOffset);
-			if (Writer != null) Writer.VirtualAddressTranslationIncrease(relativeOffset);
+			Reader?.VirtualAddressTranslationIncrease(relativeOffset);
+			Writer?.VirtualAddressTranslationIncrease(relativeOffset);
 		}
 		/// <summary>Pop and return the current address (PA) in the VAT table</summary>
 		/// <returns>The VAT's current address value before this call</returns>
@@ -141,11 +144,11 @@ namespace KSoft.IO
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
 		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
-			new Values.PtrHandle(ptrSize, (ulong)BaseStream.Position);
+			new(ptrSize, (ulong)BaseStream.Position);
 		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
 		public Values.PtrHandle PositionPtr =>
-			new Values.PtrHandle(BaseAddress, (ulong)BaseStream.Position);
+			new(BaseAddress, (ulong)BaseStream.Position);
 		#endregion
 		#endregion
 
@@ -173,8 +176,8 @@ namespace KSoft.IO
 		/// <remarks>If <paramref name="newOrder"/> is the same as <see cref="ByteOrder"/> nothing will happen</remarks>
 		public void ChangeByteOrder(Shell.EndianFormat newOrder)
 		{
-			if (Reader != null) Reader.ChangeByteOrder(newOrder);
-			if (Writer != null) Writer.ChangeByteOrder(newOrder);
+			Reader?.ChangeByteOrder(newOrder);
+			Writer?.ChangeByteOrder(newOrder);
 		}
 
 		/// <summary>Convenience class for C# "using" statements where we want to temporarily inverse the current byte order</summary>
@@ -193,8 +196,8 @@ namespace KSoft.IO
 			#region IDisposable Members
 			public void Dispose()
 			{
-				if (mReaderSwitch != null) mReaderSwitch.Dispose();
-				if (mWriterSwitch != null) mWriterSwitch.Dispose();
+				mReaderSwitch?.Dispose();
+				mWriterSwitch?.Dispose();
 			}
 			#endregion
 		};
@@ -472,7 +475,7 @@ namespace KSoft.IO
 		#endregion
 
 		#region Stream group tag
-		char[] mTagScratchBuffer = new char[8];
+		readonly char[] mTagScratchBuffer = new char[8];
 
 		public EndianStream StreamTag(ref uint value)
 		{

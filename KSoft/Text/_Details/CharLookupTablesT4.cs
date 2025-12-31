@@ -1,4 +1,6 @@
 ﻿
+#pragma warning disable IDE0300 // Collection initialization can be simplified
+
 namespace KSoft.Text
 {
 	partial class Util

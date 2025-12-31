@@ -23,11 +23,11 @@ namespace KSoft.IO
 		/// <summary>Stream to push/pull bits to/from</summary>
 		public Stream BaseStream { get; private set; }
 		/// <summary>byte offset in <see cref="BaseStream"/> where we started streaming at</summary>
-		long mStartPosition;
+		readonly long mStartPosition;
 		/// <summary>byte offset in <see cref="BaseStream"/> to stop streaming at, or zero</summary>
-		long mEndPosition;
+		readonly long mEndPosition;
 		/// <summary>More efficient to use buffer Read/Writes than to do Read/WriteByte calls</summary>
-		byte[] mIoBuffer = new byte[1];
+		readonly byte[] mIoBuffer = new byte[sizeof(byte)];
 		#endregion
 
 		#region Cache

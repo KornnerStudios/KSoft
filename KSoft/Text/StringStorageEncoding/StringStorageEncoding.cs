@@ -24,21 +24,21 @@ namespace KSoft.Text
 		, IEquatable<StringStorageEncoding>, IEqualityComparer<StringStorageEncoding>
 		, IComparer<StringStorageEncoding>, IComparable<StringStorageEncoding>
 	{
-		Encoding mBaseEncoding;
+		readonly Encoding mBaseEncoding;
 		#region Storage
-		StringStorage mStorage;
+		readonly StringStorage mStorage;
 		/// <summary>The string storage definition for this encoding</summary>
 		public StringStorage Storage { get => mStorage; }
 		#endregion
-		Options mOptions;
+		readonly Options mOptions;
 		bool DontAlwaysFlush { get => (mOptions & Options.DontAlwaysFlush) != 0; }
 		/// <summary>Number of bytes a null character consumes</summary>
-		int mNullCharacterSize;
+		readonly int mNullCharacterSize;
 		/// <summary>
 		/// Number of bytes used to store a fixed length character array using
 		/// the <see cref="StringStorageType"/> defined in <see cref="storage"/>
 		/// </summary>
-		int mFixedLengthByteLength;
+		readonly int mFixedLengthByteLength;
 
 		#region Ctor
 		/// <summary>Initialize an encoding for this library's methods of String Storages</summary>

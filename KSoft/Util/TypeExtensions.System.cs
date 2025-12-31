@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
+using System.Diagnostics.CodeAnalysis;
+
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -153,7 +155,9 @@ namespace KSoft
 		#endregion
 
 		#region Exception
-		public static void UnusedExceptionVar(this Exception e)
+		public static void UnusedExceptionVar(
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
+			this Exception e)
 		{
 		}
 
@@ -850,7 +854,7 @@ namespace KSoft
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> seq)
 		{
-			return seq ?? Enumerable.Empty<T>();
+			return seq ?? /*Enumerable.Empty<T>()*/[];
 		}
 
 		/// <summary>Query if 'seq' contains duplicate values</summary>

@@ -70,7 +70,9 @@ namespace KSoft.Memory.Strings
 			mPool = new List<string>(capacity);
 			mReferences = new List<Values.PtrHandle>(capacity);
 			if (UseStringToIndex)
+			{
 				mStringToIndex = new Dictionary<string, int>(capacity, StringComparer.Ordinal);
+			}
 		}
 		/// <summary>Create a <see cref="StringMemoryPool"/> from a <see cref="StringMemoryPoolSettings"/> definition</summary>
 		/// <param name="definition"></param>
@@ -96,7 +98,9 @@ namespace KSoft.Memory.Strings
 			if (string.IsNullOrEmpty(str))
 			{
 				if (Settings.ImplicitNull) // if we're setup to use a implicit null string, its always the first string in the pool
+				{
 					return Settings.BaseAddress;
+				}
 
 				if (mNullReference == kInvalidReference) // if not, check to see if a null string has been added yet
 				{
@@ -120,7 +124,9 @@ namespace KSoft.Memory.Strings
 		void AddInternal(string value)
 		{
 			if (UseStringToIndex)
+			{
 				mStringToIndex.Add(value, mPool.Count);
+			}
 			// the PtrHandle created will implicitly take after [BaseAddress]'s address size
 			mReferences.Add(Settings.BaseAddress + Size);
 			mPool.Add(value);
@@ -131,7 +137,10 @@ namespace KSoft.Memory.Strings
 		void AddFromRead(int index, string value)
 		{
 			if (UseStringToIndex)
+			{
 				mStringToIndex.Add(value, index);
+			}
+
 			mPool[index] = value;
 		}
 		#endregion
@@ -155,12 +164,18 @@ namespace KSoft.Memory.Strings
 		{
 			int index;
 			if (UseStringToIndex)
+			{
 				mStringToIndex.TryGetValue(value, out index);
+			}
 			else
+			{
 				index = mPool.IndexOf(value);
+			}
 
 			if (index.IsNone())
+			{
 				return Settings.BaseAddress + mReferences[index];
+			}
 
 			return kInvalidReference;
 		}
@@ -220,7 +235,9 @@ namespace KSoft.Memory.Strings
 
 			InitializeCollections(count);
 			for (int x = 0; x < mReferences.Count; x++)
+			{
 				mReferences[x] = new Values.PtrHandle(Settings.AddressSize);
+			}
 		}
 		/// <summary>
 		/// Write the header for this pool to a stream for future re-initializing
@@ -249,7 +266,9 @@ namespace KSoft.Memory.Strings
 
 			ioStringLengths = new int[Count];
 			for (int x = 0; x < ioStringLengths.Length; x++)
+			{
 				ioStringLengths[x] = s.ReadInt32();
+			}
 		}
 		/// <summary>Write the character count for the string values to a stream</summary>
 		/// <param name="s"></param>
@@ -258,7 +277,9 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			foreach (string str in mPool)
+			{
 				s.Write(str.Length);
+			}
 		}
 		/// <summary>Only used for Interop situations where explicit lengths are needed for cases (like enumeration) in unmanaged code</summary>
 		/// <param name="s"></param>
@@ -267,7 +288,9 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			foreach (string str in mPool)
+			{
 				s.Write(CalculateStringByteLength(str));
+			}
 		}
 
 		/// <summary>Read the string addresses from a stream</summary>
@@ -277,7 +300,9 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			for (int x = 0; x < mReferences.Count; x++)
+			{
 				mReferences[x].Read(s);
+			}
 		}
 		/// <summary>Write the string addresses to a stream</summary>
 		/// <param name="s"></param>
@@ -286,7 +311,9 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			foreach (Values.PtrHandle r in mReferences)
+			{
 				r.Write(s);
+			}
 		}
 
 		/// <summary>Read the string values from a stream</summary>
@@ -296,12 +323,19 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			if (ioStringLengths == null)
+			{
 				for (int x = 0; x < mPool.Count; x++)
+				{
 					AddFromRead(x, s.ReadString(mEncoding));
+				}
+			}
 			else
 			{
 				for (int x = 0; x < Count; x++)
+				{
 					AddFromRead(x, s.ReadString(mEncoding, ioStringLengths[x]));
+				}
+
 				ioStringLengths = null;
 			}
 		}
@@ -312,7 +346,9 @@ namespace KSoft.Memory.Strings
 			Contract.Requires(s != null);
 
 			foreach (string str in mPool)
+			{
 				s.Write(str, mEncoding);
+			}
 		}
 
 		/// <summary>Read a <see cref="StringMemoryPool"/> from a stream</summary>
@@ -346,28 +382,28 @@ namespace KSoft.Memory.Strings
 
 		public void SerializeHeader(IO.EndianStream s)
 		{
-				 if (s.IsReading) ReadHeader(s.Reader);
-			else if (s.IsWriting) WriteHeader(s.Writer);
+				 if (s.IsReading) { ReadHeader(s.Reader); }
+			else if (s.IsWriting) { WriteHeader(s.Writer); }
 		}
 		public void SerializeStringCharacterLengths(IO.EndianStream s)
 		{
-				 if (s.IsReading) ReadStringCharacterLengths(s.Reader);
-			else if (s.IsWriting) WriteStringCharacterLengths(s.Writer);
+				 if (s.IsReading) { ReadStringCharacterLengths(s.Reader); }
+			else if (s.IsWriting) { WriteStringCharacterLengths(s.Writer); }
 		}
 		public void SerializeReferences(IO.EndianStream s)
 		{
-				 if (s.IsReading) ReadReferences(s.Reader);
-			else if (s.IsWriting) WriteReferences(s.Writer);
+				 if (s.IsReading) { ReadReferences(s.Reader); }
+			else if (s.IsWriting) { WriteReferences(s.Writer); }
 		}
 		public void SerializeStrings(IO.EndianStream s)
 		{
-				 if (s.IsReading) ReadStrings(s.Reader);
-			else if (s.IsWriting) WriteStrings(s.Writer);
+				 if (s.IsReading) { ReadStrings(s.Reader); }
+			else if (s.IsWriting) { WriteStrings(s.Writer); }
 		}
 		public void Serialize(IO.EndianStream s)
 		{
-				 if (s.IsReading) Read(s.Reader);
-			else if (s.IsWriting) Write(s.Writer);
+				 if (s.IsReading) { Read(s.Reader); }
+			else if (s.IsWriting) { Write(s.Writer); }
 		}
 		#endregion
 

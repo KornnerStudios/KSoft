@@ -42,7 +42,9 @@ namespace KSoft.Text
 				byte b0 = buffer[index+0], b1 = buffer[index+1], b2 = buffer[index+2], b3 = buffer[index+3];
 
 				if (b0 == 0x00 && b1 == 0x00 && b2 == 0xFE && b3 == 0xFF)
+				{
 					enc = Encoding.UTF32;
+				}
 			}
 			if (enc == null && length >= 3)
 			{
@@ -56,19 +58,27 @@ namespace KSoft.Text
 					throw new NotSupportedException("UTF7 is not supported with the move to dotnet");
 				}
 				else if (b0 == 0xEF && b1 == 0xBB && b2 == 0xBF)
+				{
 					enc = Encoding.UTF8;
+				}
 			}
 			if (enc == null && length >= 2)
 			{
 				byte b0 = buffer[index+0], b1 = buffer[index+1];
 
-				if		(b0 == 0xFF && b1 == 0xFE)
-						 enc = Encoding.Unicode;
-				else if	(b0 == 0xFE && b1 == 0xFF)
-						 enc = Encoding.BigEndianUnicode;
+				if (b0 == 0xFF && b1 == 0xFE)
+				{
+					enc = Encoding.Unicode;
+				}
+				else if (b0 == 0xFE && b1 == 0xFF)
+				{
+					enc = Encoding.BigEndianUnicode;
+				}
 			}
 			if (enc == null)
+			{
 				enc = Encoding.Default;
+			}
 
 			return enc;
 		}
@@ -95,9 +105,11 @@ namespace KSoft.Text
 
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			StringBuilder sb = new StringBuilder(count * 2);
+			var sb = new StringBuilder(count * 2);
 			for (int x = startIndex; x < (startIndex+count); x++)
+			{
 				sb.Append(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
+			}
 
 			return sb.ToString();
 		}
@@ -117,7 +129,9 @@ namespace KSoft.Text
 			Contract.Requires((startIndex+count) <= data.Length);
 
 			for (int x = startIndex; x < (startIndex+count); x++)
+			{
 				stream.Write(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
+			}
 		}
 		/// <summary>Converts an array of bytes to a hex string</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
@@ -264,7 +278,7 @@ namespace KSoft.Text
 			int blocks = data.Length / digitsPerLine;
 			int leftovers = data.Length % digitsPerLine;
 
-			StringBuilder sb = new StringBuilder(
+			var sb = new StringBuilder(
 				(data.Length * 2) +
 				(new_line.Length * blocks) + // calculate how many new line characters we'll need
 				(padding.Length * (leftovers == 0 ? blocks : blocks + 1)) // calculate how many characters the padding on each line will take
@@ -272,10 +286,14 @@ namespace KSoft.Text
 
 			int index = 0;
 			for (int b = 0; b < blocks; b++, index+=digitsPerLine)
+			{
 				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index, digitsPerLine), new_line);
+			}
 
 			if (leftovers > 0)
+			{
 				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index), new_line);
+			}
 
 			return sb.ToString();
 		}
@@ -298,15 +316,21 @@ namespace KSoft.Text
 			int index = 0;
 			for (int b = 0; b < blocks; b++, index += digitsPerLine)
 			{
-				if(!string.IsNullOrEmpty(padding))
+				if (!string.IsNullOrEmpty(padding))
+				{
 					output.Write(padding);
+				}
+
 				output.WriteLine(ByteArrayToString(data, index, digitsPerLine));
 			}
 
 			if (leftovers > 0)
 			{
 				if (!string.IsNullOrEmpty(padding))
+				{
 					output.Write(padding);
+				}
+
 				output.WriteLine(ByteArrayToString(data, index));
 			}
 		}
@@ -400,7 +424,9 @@ namespace KSoft.Text
 			int value = 0;
 
 			if (CharIsAnyDigit(c2) && CharIsAnyDigit(c1))
+			{
 				value = CharToInt(c2, radix, 1) + CharToInt(c1, radix, 0);
+			}
 
 			// Someone could supply a radix value that isn't technically a member of NumeralBase (eg, 36)
 			// So we clamp it to a byte here

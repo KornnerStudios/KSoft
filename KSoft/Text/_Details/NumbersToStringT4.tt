@@ -13,6 +13,8 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 using StringBuilder = System.Text.StringBuilder;
 
+#pragma warning disable IDE0305 // Collection initialization can be simplified
+
 namespace KSoft
 {
 	partial class Numbers

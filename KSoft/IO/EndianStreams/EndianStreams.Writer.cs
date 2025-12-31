@@ -7,6 +7,9 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// #TODO fix CA warnings
+#pragma warning disable IDE0011 // Use braces
+
 namespace KSoft.IO
 {
 	/// <summary>A binary stream with the ability to write data in different endian formats</summary>

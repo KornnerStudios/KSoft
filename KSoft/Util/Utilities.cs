@@ -44,7 +44,7 @@ namespace KSoft
 
 		#region static EmptyArray
 		/// <summary>A global zero-length array of objects. Should only be used as input for functions that don't use 'params'</summary>
-		public static object[] EmptyArray { get => Array.Empty<object>(); }
+		public static object[] EmptyArray => /*Array.Empty<object>()*/[];
 		#endregion
 
 		#region static GetNullException function ptr
@@ -182,7 +182,7 @@ namespace KSoft
 			#endregion
 
 			[Contracts.Pure]
-			public static IComparer<T> Create(Func<T, T, int> comparer)
+			public static /*IComparer<T>*/ComparerFactory<T> Create(Func<T, T, int> comparer)
 			{
 				return new ComparerFactory<T>(comparer);
 			}

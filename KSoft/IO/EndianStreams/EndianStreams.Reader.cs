@@ -7,6 +7,9 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// #TODO fix CA warnings
+#pragma warning disable IDE0011 // Use braces
+
 namespace KSoft.IO
 {
 	/// <summary>A binary stream with the ability to read data in different endian formats</summary>
@@ -91,7 +94,9 @@ namespace KSoft.IO
 
 		public IDisposable ReadSignatureWithByteSwapSupport(uint expectedSignature)
 		{
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
 			return ReadSignatureWithByteSwapSupport(expectedSignature, out uint actualSignature);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 		}
 
 		#region Pad

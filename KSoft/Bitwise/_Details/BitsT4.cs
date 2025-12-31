@@ -18,7 +18,9 @@ namespace KSoft
 		public static void BitmaskLookUpTableGenerate(int wordBitSize, out byte[] lut)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kByteBitCount);
+#if !CODE_ANALYSIS // it thinks lut is already assigned with this
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+#endif // CODE_ANALYSIS
 
 			if (wordBitSize == kByteBitCount && kBitmaskLookup8 != null)
 			{
@@ -53,7 +55,9 @@ namespace KSoft
 		public static void BitmaskLookUpTableGenerate(int wordBitSize, out ushort[] lut)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt16BitCount);
+#if !CODE_ANALYSIS // it thinks lut is already assigned with this
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+#endif // CODE_ANALYSIS
 
 			if (wordBitSize == kUInt16BitCount && kBitmaskLookup16 != null)
 			{
@@ -88,7 +92,9 @@ namespace KSoft
 		public static void BitmaskLookUpTableGenerate(int wordBitSize, out uint[] lut)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt32BitCount);
+#if !CODE_ANALYSIS // it thinks lut is already assigned with this
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+#endif // CODE_ANALYSIS
 
 			if (wordBitSize == kUInt32BitCount && kBitmaskLookup32 != null)
 			{
@@ -123,7 +129,9 @@ namespace KSoft
 		public static void BitmaskLookUpTableGenerate(int wordBitSize, out ulong[] lut)
 		{
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && wordBitSize <= kUInt64BitCount);
+#if !CODE_ANALYSIS // it thinks lut is already assigned with this
 			Contract.Ensures(Contract.ValueAtReturn(out lut) != null);
+#endif // CODE_ANALYSIS
 
 			if (wordBitSize == kUInt64BitCount && kBitmaskLookup64 != null)
 			{

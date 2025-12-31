@@ -291,16 +291,15 @@ namespace KSoft
 		{
 			Contract.Ensures(Contract.Result<Encoding>() != null);
 
-			switch(type)
+			return type switch
 			{
-				case MS.StringStorageWidthType.Ascii:	return Encoding.ASCII;
-				case MS.StringStorageWidthType.Unicode:	return Encoding.Unicode;
-//				case MS.StringStorageWidthType.UTF7:	return Encoding.UTF7;
-				case MS.StringStorageWidthType.UTF8:	return Encoding.UTF8;
-				case MS.StringStorageWidthType.UTF32:	return Encoding.UTF32;
-
-				default: throw new Debug.UnreachableException(type.ToString());
-			}
+				MS.StringStorageWidthType.Ascii => Encoding.ASCII,
+				MS.StringStorageWidthType.Unicode => Encoding.Unicode,
+//				MS.StringStorageWidthType.UTF7 => Encoding.UTF7,
+				MS.StringStorageWidthType.UTF8 => Encoding.UTF8,
+				MS.StringStorageWidthType.UTF32 => Encoding.UTF32,
+				_ => throw new Debug.UnreachableException(type.ToString()),
+			};
 		}
 
 		/// <summary>
@@ -314,13 +313,16 @@ namespace KSoft
 		{
 			Contract.Requires<ArgumentNullException>(enc != null);
 
-			if		(enc is ASCIIEncoding)				return MS.StringStorageWidthType.Ascii;
-			else if (enc is UnicodeEncoding)			return MS.StringStorageWidthType.Unicode;
-//			else if (enc is UTF7Encoding)				return MS.StringStorageWidthType.UTF7;
-			else if (enc is UTF8Encoding)				return MS.StringStorageWidthType.UTF8;
-			else if (enc is UTF32Encoding)				return MS.StringStorageWidthType.UTF32;
-			else if (enc is Text.StringStorageEncoding)	return (enc as Text.StringStorageEncoding).Storage.WidthType;
-			else										throw new Debug.UnreachableException(enc.GetType().ToString());
+			return enc switch
+			{
+				ASCIIEncoding => MS.StringStorageWidthType.Ascii,
+				UnicodeEncoding => MS.StringStorageWidthType.Unicode,
+//				UTF7Encoding => MS.StringStorageWidthType.UTF7,
+				UTF8Encoding => MS.StringStorageWidthType.UTF8,
+				UTF32Encoding => MS.StringStorageWidthType.UTF32,
+				Text.StringStorageEncoding => (enc as Text.StringStorageEncoding).Storage.WidthType,
+				_ => throw new Debug.UnreachableException(enc.GetType().ToString())
+			};
 		}
 
 		/// <summary>Does this string type use a length prefix when serialized?</summary>

@@ -53,12 +53,14 @@ namespace KSoft.Values
 			if (string.IsNullOrEmpty(collectionName)) { collectionName = kDefaultName; }
 
 			var pi = mHost.GetProperty(collectionName, BindingFlags.Public | BindingFlags.Static);
+#pragma warning disable IDE0270 // Use coalesce expression
 			if (pi == null)
 			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"[{0}] doesn't have a static collection property named '{1}'", mHost.FullName, collectionName),
 					nameof(collectionName));
 			}
+#pragma warning restore IDE0270 // Use coalesce expression
 
 			TagCollection = pi.GetValue(null, null) as GroupTagCollection;
 		}

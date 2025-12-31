@@ -184,7 +184,9 @@ namespace KSoft.Values
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length == kExpectedTagLength);
 
+#pragma warning disable IDE0300 // Simplify collection initialization
 			char[] swap = new char[8];
+#pragma warning restore IDE0300 // Simplify collection initialization
 			swap[0] = tag[3];
 			swap[1] = tag[2];
 			swap[2] = tag[1];
