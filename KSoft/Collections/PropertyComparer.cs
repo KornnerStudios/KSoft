@@ -119,7 +119,9 @@ namespace KSoft.Collections.Generic
 			int result = obj1.CompareTo(obj2);
 
 			if (mDirection != SortDirection.Ascending)
+			{
 				result *= -1;
+			}
 
 			return result;
 		}

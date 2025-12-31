@@ -18,6 +18,7 @@ namespace KSoft.Collections
 
 			StateEnumerator(IReadOnlyBitSet bitset,
 				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 				bool dummy)
 				: this()
 			{
@@ -27,19 +28,21 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			void VerifyVersion()
+			readonly void VerifyVersion()
 			{
 				if (mVersion != mSet.Version)
+				{
 					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
+				}
 			}
 
-			public bool Current { get {
-				if (mBitIndex.IsNone())			throw new InvalidOperationException("Enumeration has not started");
-				if (mBitIndex > mLastIndex)		throw new InvalidOperationException("Enumeration already finished");
+			public readonly bool Current { get {
+				if (mBitIndex.IsNone())			{ throw new InvalidOperationException("Enumeration has not started"); }
+				if (mBitIndex > mLastIndex)		{ throw new InvalidOperationException("Enumeration already finished"); }
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get => this.Current; }
+			readonly object System.Collections.IEnumerator.Current { get => this.Current; }
 
 			public void Reset()
 			{
@@ -47,7 +50,7 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			public void Dispose()	{ }
+			public readonly void Dispose()	{ }
 		};
 
 		[Serializable]
@@ -65,6 +68,7 @@ namespace KSoft.Collections
 
 			StateFilterEnumerator(IReadOnlyBitSet bitset,
 				[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+				[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 				bool dummy)
 				: this()
 			{
@@ -74,19 +78,21 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			void VerifyVersion()
+			readonly void VerifyVersion()
 			{
 				if (mVersion != mSet.Version)
+				{
 					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
+				}
 			}
 
-			public int Current { get {
-				if (mBitIndex.IsNone())			throw new InvalidOperationException("Enumeration has not started");
-				if (mBitIndex > mLastIndex)		throw new InvalidOperationException("Enumeration already finished");
+			public readonly int Current { get {
+				if (mBitIndex.IsNone())			{ throw new InvalidOperationException("Enumeration has not started"); }
+				if (mBitIndex > mLastIndex)		{ throw new InvalidOperationException("Enumeration already finished"); }
 
 				return mCurrent;
 			} }
-			object System.Collections.IEnumerator.Current { get => this.Current; }
+			readonly object System.Collections.IEnumerator.Current { get => this.Current; }
 
 			public void Reset()
 			{
@@ -94,7 +100,7 @@ namespace KSoft.Collections
 				mBitIndex = TypeExtensions.kNone;
 			}
 
-			public void Dispose()	{ }
+			public readonly void Dispose()	{ }
 		};
 
 	};

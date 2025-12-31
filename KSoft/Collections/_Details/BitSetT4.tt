@@ -29,9 +29,8 @@ namespace KSoft.Collections
 			return NextBitIndex(startBitIndex, <#= state_def.ValueKeyword #>);
 		}
 		/// <summary>Enumeration of bit indexes in this BitSet which are <#= state_def.DocNameVerbose #></summary>
-		public StateFilterEnumeratorWrapper <#= state_def.ApiName #>BitIndices { get {
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>));
-		} }
+		public StateFilterEnumeratorWrapper <#= state_def.ApiName #>BitIndices
+			=> new(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>));
 		/// <summary>Enumeration of bit indexes in this BitSet which are <#= state_def.DocNameVerbose #></summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper <#= state_def.ApiName #>BitIndicesStartingAt(int startBitIndex)
@@ -39,7 +38,7 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
 
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>, startBitIndex));
+			return new(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>, startBitIndex));
 		}
 
 <# } #>
@@ -56,7 +55,9 @@ namespace KSoft.Collections
 
 <#	} #>
 			if (bitCount <= 0)
+			{
 				return <#= op.ResultDefault() #>;
+			}
 
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
@@ -91,7 +92,9 @@ namespace KSoft.Collections
 <#		} #>
 <#	} else if (op == BitOperation.Test) { #>
 			if (<#= op.FlagsMethod() #>(mArray[from_word_index], from_word_mask))
+			{
 				return true;
+			}
 <#	} #>
 
 			// handle any words in between
@@ -111,7 +114,9 @@ namespace KSoft.Collections
 <#		} #>
 <#	} else if (op == BitOperation.Test) { #>
 				if (mArray[x] > kWordAllBitsClear)
+				{
 					return true;
+				}
 <#	} #>
 			}
 

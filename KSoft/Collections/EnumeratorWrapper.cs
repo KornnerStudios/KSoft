@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft
 {
@@ -10,9 +9,7 @@ namespace KSoft
 	/// implementation, but the type has other data/properties which can be enumerated with a foreach.
 	/// </remarks>
 	/// <see cref="Collections.BitSet.ClearBitIndices"/>
-	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-	public struct EnumeratorWrapper<T>
+	public readonly struct EnumeratorWrapper<T>
 		: IEnumerable<T>
 	{
 		readonly IEnumerator<T> mEnumerator;
@@ -34,9 +31,7 @@ namespace KSoft
 	/// implementation, but the type has other data/properties which can be enumerated with a foreach.
 	/// </remarks>
 	/// <see cref="Collections.BitSet.ClearBitIndices"/>
-	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-	public struct EnumeratorWrapper<T, TEnumerator>
+	public readonly struct EnumeratorWrapper<T, TEnumerator>
 		: IEnumerable<T>
 		where TEnumerator : struct, IEnumerator<T>
 	{

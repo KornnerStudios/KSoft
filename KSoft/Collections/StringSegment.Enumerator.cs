@@ -20,16 +20,16 @@ namespace KSoft.Collections
 				mEnd = mStart + segment.mCount;
 				mCurrent = mStart - 1;
 			}
-			public void Dispose() { }
+			public readonly void Dispose() { }
 
 			#region IEnumerator<char> Members
-			public char Current { get {
-				if (mCurrent < mStart)	throw new InvalidOperationException("Enumeration has not started");
-				if (mCurrent >= mEnd)	throw new InvalidOperationException("Enumeration already finished");
+			public readonly char Current { get {
+				if (mCurrent < mStart)	{ throw new InvalidOperationException("Enumeration has not started"); }
+				if (mCurrent >= mEnd)	{ throw new InvalidOperationException("Enumeration already finished"); }
 
 				return mData[mCurrent];
 			} }
-			object System.Collections.IEnumerator.Current { get { return Current; } }
+			readonly object System.Collections.IEnumerator.Current { get { return Current; } }
 
 			public bool MoveNext()
 			{

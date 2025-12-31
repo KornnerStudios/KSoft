@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -36,8 +35,6 @@ namespace KSoft.Collections
 		const string kEntryValueName = "value";
 		#endregion
 
-		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
-		[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct DicEntry
 		{
 			public DicEntryHashCodeType HashCode; // only the lower 31 bits of the actual hash code
@@ -50,10 +47,10 @@ namespace KSoft.Collections
 			public TKey Key;
 			public TValue Value;
 
-//			public bool IsFree { get => HashCode.IsNone(); }
-			public bool IsLast { get => NextEntryIndex.IsNone(); }
+//			public readonly bool IsFree { get => HashCode.IsNone(); }
+			public readonly bool IsLast { get => NextEntryIndex.IsNone(); }
 
-			public DicEntry GetNext(ClrDictionaryInspector<TKey, TValue> inspector)
+			public readonly DicEntry GetNext(ClrDictionaryInspector<TKey, TValue> inspector)
 			{
 				Contract.Requires<ArgumentNullException>(inspector != null);
 				Contract.Requires<InvalidOperationException>(!IsLast);
@@ -81,7 +78,6 @@ namespace KSoft.Collections
 		static readonly Func<object, TValue> kGetEntryValue;
 		#endregion
 
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static ClrDictionaryInspector()
 		{
 			// implementations are totally different...
@@ -170,11 +166,13 @@ namespace KSoft.Collections
 		public IReadOnlyList<int> Buckets { get {
 			var buckets = kGetDicBuckets(mDic);
 
-			return buckets ?? Array.Empty<int>();
+			return buckets ?? [];
 		} }
 		public IReadOnlyList<DicEntry> Entries { get {
 			if (mEntries == null)
+			{
 				InitializeEntries();
+			}
 
 			return mEntries;
 		} }
@@ -190,7 +188,9 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>(bucketIndex >= 0 && bucketIndex < Buckets.Count);
 
 			for (int x = Buckets[bucketIndex]; x >= 0; x = Entries[x].NextEntryIndex)
+			{
 				yield return Entries[x];
+			}
 		}
 
 		public IEnumerable<DicEntry> EntryCollisions(TKey key)

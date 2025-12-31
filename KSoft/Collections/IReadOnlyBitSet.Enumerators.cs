@@ -46,7 +46,9 @@ namespace KSoft.Collections
 			public bool MoveNext()
 			{
 				if (mBitIndex.IsNone())
+				{
 					mBitIndex = mStartBitIndex;
+				}
 
 				if (mBitIndex < mLastIndex)
 				{

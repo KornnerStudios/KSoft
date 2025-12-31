@@ -12,18 +12,19 @@ namespace KSoft.Collections
 	using StringSegmentEnumerator = StringSegment.Enumerator;
 
 	// #TODO how is this better or different compared to StringSegment Microsoft.Extensions.Primitives.dll?
+	// #REVIEW with .net9, can we replace this with Span<char> and ReadOnlySpan<char>?
 	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	public partial struct StringSegment
+	public readonly partial struct StringSegment
 		: IReadOnlyList<char>
 		, IEquatable<StringSegment>
 		, IList<char>
 	{
 		readonly string mData;
-		public string Data { get { return mData; } }
+		public readonly string Data => mData;
 		readonly int mOffset;
-		public int Offset { get { return mOffset; } }
+		public readonly int Offset => mOffset;
 		readonly int mCount;
-		public int Count { get { return mCount; } }
+		public readonly int Count => mCount;
 
 		#region Ctor
 		public StringSegment(string data)
@@ -46,31 +47,35 @@ namespace KSoft.Collections
 		}
 		#endregion
 
-		void VerifyData()
+		readonly void VerifyData()
 		{
 			if (mData == null)
+			{
 				throw new InvalidOperationException("String data is null");
+			}
 		}
 
-		public int IndexOf(char value)
+		public readonly int IndexOf(char value)
 		{
 			VerifyData();
 
 			int index = mData.IndexOf(value, mOffset, mCount);
 			if (index < 0)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			return index - mOffset;
 		}
 
-		public bool Contains(char value)
+		public readonly bool Contains(char value)
 		{
 			VerifyData();
 
 			return mData.IndexOf(value, mOffset, mCount) >= 0;
 		}
 
-		public void CopyTo(char[] array, int arrayIndex)
+		public readonly void CopyTo(char[] array, int arrayIndex)
 		{
 			VerifyData();
 
@@ -78,28 +83,28 @@ namespace KSoft.Collections
 		}
 
 		#region IReadOnlyList<char> Members
-		public char this[int index] { get {
+		public readonly char this[int index] { get {
 			VerifyData();
 
 			return mData[mOffset + index];
 		} }
 
 		char IList<char>.this[int index] {
-			get { return this[index]; }
+			readonly get { return this[index]; }
 			set { throw new NotImplementedException(); }
 		}
 		#endregion
 
 		#region IEnumerable<char> Members
-		public StringSegmentEnumerator GetEnumerator()
+		public readonly StringSegmentEnumerator GetEnumerator()
 		{
 			VerifyData();
 
 			return new StringSegmentEnumerator(this);
 		}
-		IEnumerator<char> IEnumerable<char>.GetEnumerator()
+		readonly IEnumerator<char> IEnumerable<char>.GetEnumerator()
 		{ return GetEnumerator(); }
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		readonly System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{ return GetEnumerator(); }
 		#endregion
 
@@ -111,18 +116,18 @@ namespace KSoft.Collections
 		#region NotImplemented ICollection<char> Members
 		void ICollection<char>.Add(char item) { throw new NotImplementedException(); }
 		void ICollection<char>.Clear() { throw new NotImplementedException(); }
-		bool ICollection<char>.IsReadOnly { get { return true; } }
+		readonly bool ICollection<char>.IsReadOnly { get { return true; } }
 		bool ICollection<char>.Remove(char item) { throw new NotImplementedException(); }
 		#endregion
 
 		#region Equatable Members
-		public bool Equals(StringSegment other)
+		public readonly bool Equals(StringSegment other)
 		{
 			return other.mData == mData && other.mOffset == mOffset && other.mCount == mCount;
 		}
-		public override bool Equals(object obj)
+		public override readonly bool Equals(object obj)
 		{
-			return obj is StringSegment && Equals((StringSegment)obj);
+			return obj is StringSegment segment && Equals(segment);
 		}
 
 		public static bool operator ==(StringSegment lhs, StringSegment rhs)
@@ -135,10 +140,12 @@ namespace KSoft.Collections
 		}
 		#endregion
 
-		public override int GetHashCode()
+		public override readonly int GetHashCode()
 		{
 			if (mData != null)
+			{
 				return (mData.GetHashCode() ^ mOffset) ^ mCount;
+			}
 
 			return 0;
 		}

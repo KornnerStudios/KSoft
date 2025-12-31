@@ -15,7 +15,7 @@ namespace KSoft.Collections
 	};
 
 	[System.Flags]
-	[SuppressMessage("Microsoft.Design", "CA1714:FlagsEnumsShouldHavePluralNames")]
+
 	public enum TreeTraversalDirection : byte
 	{
 		PreOrder	= 1,	// Root, Left, Right
@@ -26,6 +26,7 @@ namespace KSoft.Collections
 		Root		= 1 << 3,
 		Right		= 1 << 4,
 
+		[SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "this is equal to PostOrder, but it's for masking purposes")]
 		kOrderMask	= (1 << 2) - 1,
 		kDirMask	= (1 << 5) - 1 - kOrderMask,
 

@@ -23,9 +23,8 @@ namespace KSoft.Collections
 			return NextBitIndex(startBitIndex, false);
 		}
 		/// <summary>Enumeration of bit indexes in this BitSet which are 0 (clear)</summary>
-		public StateFilterEnumeratorWrapper ClearBitIndices { get {
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, false));
-		} }
+		public StateFilterEnumeratorWrapper ClearBitIndices
+			=> new(new StateFilterEnumerator(this, false));
 		/// <summary>Enumeration of bit indexes in this BitSet which are 0 (clear)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper ClearBitIndicesStartingAt(int startBitIndex)
@@ -33,7 +32,7 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
 
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, false, startBitIndex));
+			return new(new StateFilterEnumerator(this, false, startBitIndex));
 		}
 
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
@@ -45,9 +44,8 @@ namespace KSoft.Collections
 			return NextBitIndex(startBitIndex, true);
 		}
 		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
-		public StateFilterEnumeratorWrapper SetBitIndices { get {
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, true));
-		} }
+		public StateFilterEnumeratorWrapper SetBitIndices
+			=> new(new StateFilterEnumerator(this, true));
 		/// <summary>Enumeration of bit indexes in this BitSet which are 1 (set)</summary>
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper SetBitIndicesStartingAt(int startBitIndex)
@@ -55,7 +53,7 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
 			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
 
-			return new StateFilterEnumeratorWrapper(new StateFilterEnumerator(this, true, startBitIndex));
+			return new(new StateFilterEnumerator(this, true, startBitIndex));
 		}
 
 
@@ -65,7 +63,9 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
 
 			if (bitCount <= 0)
+			{
 				return ;
+			}
 
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
@@ -109,7 +109,9 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
 
 			if (bitCount <= 0)
+			{
 				return ;
+			}
 
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
@@ -154,7 +156,9 @@ namespace KSoft.Collections
 			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
 
 			if (bitCount <= 0)
+			{
 				return ;
+			}
 
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
@@ -197,7 +201,9 @@ namespace KSoft.Collections
 		public bool TestBits(int startBitIndex, int bitCount)
 		{
 			if (bitCount <= 0)
+			{
 				return false;
+			}
 
 			var from_word_mask = kVectorElementSectionBitMask(startBitIndex);
 			var last_word_mask = GetCabooseRetainedBitsMask(startBitIndex+bitCount);
@@ -216,13 +222,17 @@ namespace KSoft.Collections
 
 			// handle the first word
 			if (Bitwise.Flags.TestAny(mArray[from_word_index], from_word_mask))
+			{
 				return true;
+			}
 
 			// handle any words in between
 			for (int x = from_word_index+1; x < last_word_index; x++)
 			{
 				if (mArray[x] > kWordAllBitsClear)
+				{
 					return true;
+				}
 			}
 
 			// handle the last word
