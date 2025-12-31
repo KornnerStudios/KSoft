@@ -48,6 +48,7 @@ namespace KSoft.IO
 				var list = new List<Values.GroupTagData32>();
 
 				foreach (var node in s.ElementsByName(k_element_name))
+				{
 					using (s.EnterCursorBookmark(node))
 					{
 						Values.GroupTagData32 data = null;
@@ -55,17 +56,20 @@ namespace KSoft.IO
 
 						list.Add(data);
 					}
+				}
 
 				tags = list.ToArray();
 			}
 			else if (s.IsWriting)
 			{
 				foreach (Values.GroupTagData32 data in tags)
+				{
 					using (s.EnterCursorBookmark(k_element_name))
 					{
 						var temp = data; // can't pass a foreach value by ref
 						Serialize(s, ref temp);
 					}
+				}
 			}
 		}
 		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
@@ -88,10 +92,15 @@ namespace KSoft.IO
 
 			s.StreamAttributeOpt("guid", ref guid, Predicates.IsNotEmpty);
 
-			using (var bm = s.EnterCursorBookmarkOpt(groupsElementName, tags, Predicates.HasItems)) if (bm.IsNotNull)
-				StreamElements(s, ref tags);
+			using (var bm = s.EnterCursorBookmarkOpt(groupsElementName, tags, Predicates.HasItems))
+			{
+				if (bm.IsNotNull)
+				{
+					StreamElements(s, ref tags);
+				}
+			}
 
-			if(reading)
+			if (reading)
 			{
 				bool sort = false;
 				s.ReadAttributeOpt("sort", ref sort);

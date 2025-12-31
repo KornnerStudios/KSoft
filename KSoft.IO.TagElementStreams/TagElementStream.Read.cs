@@ -31,9 +31,13 @@ namespace KSoft.IO
 			bool result = Enum.TryParse(str, ignoreCase, out TEnum temp);
 
 			if (!result)
+			{
 				return TagElementStreamParseEnumResult.FailedMemberNotFound;
+			}
 			else
+			{
 				value = temp;
+			}
 
 			return TagElementStreamParseEnumResult.Success;
 		}
@@ -43,11 +47,13 @@ namespace KSoft.IO
 		{
 			intValue = 0;
 
-			TEnum value = default(TEnum);
+			TEnum value = default;
 			var result = Parse(ignoreCase, str, ref value);
 
 			if (result == TagElementStreamParseEnumResult.Success)
+			{
 				intValue = EnumToInt(value);
+			}
 
 			return result;
 		}
@@ -243,6 +249,7 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = ctor(ctxt);
@@ -250,6 +257,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements<T, TContext>(
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
@@ -295,6 +303,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = ctor(ctxt);
@@ -302,6 +311,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadStreamableElements<T, TContext>(
 			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor)
@@ -331,6 +341,7 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var key = default(TKey);
@@ -341,6 +352,7 @@ namespace KSoft.IO
 
 					dic.Add(key, value);
 				}
+			}
 		}
 		public void ReadElements<TKey, TValue, TContext>(
 			IDictionary<TKey, TValue> dic, TContext ctxt,
@@ -397,6 +409,7 @@ namespace KSoft.IO
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var key = default(TKey);
@@ -407,6 +420,7 @@ namespace KSoft.IO
 
 					dic.Add(key, value);
 				}
+			}
 		}
 		public void ReadStreamableElements<TKey, TValue, TContext>(TName name,
 			IDictionary<TKey, TValue> dic, TContext ctxt,
@@ -435,7 +449,10 @@ namespace KSoft.IO
 					array[count++] = value;
 				}
 
-				if (count == array.Length) break;
+				if (count == array.Length)
+				{
+					break;
+				}
 			}
 
 			return count;

@@ -170,6 +170,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< <#= type.Keyword #> > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(<#= type.Keyword #>);
@@ -177,6 +178,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< <#= type.Keyword #> > coll)
 		{
@@ -198,6 +200,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					<#= type.Keyword #> value = 0;
@@ -205,6 +208,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -232,10 +236,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -263,10 +271,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;

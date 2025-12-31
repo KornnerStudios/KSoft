@@ -391,7 +391,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -406,12 +408,16 @@ namespace KSoft.IO
 			Contract.Requires(predicate != null);
 			Contract.Requires(ValidateNameArg(name));
 			if (predicate != string.IsNullOrEmpty && value == null)
+			{
 				throw new ArgumentNullException(nameof(value));
+			}
 
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -429,7 +435,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -447,7 +455,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -465,7 +475,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -483,7 +495,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -501,7 +515,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -519,7 +535,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -537,7 +555,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -555,7 +575,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -576,7 +598,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -596,7 +620,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -616,7 +642,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -636,7 +664,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -656,7 +686,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -676,7 +708,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -696,7 +730,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -716,7 +752,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -736,7 +774,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -756,7 +796,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -776,7 +818,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -796,7 +840,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -816,7 +862,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -836,7 +884,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -856,7 +906,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -876,7 +928,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -898,7 +952,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -913,12 +969,16 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
 			if (predicate != string.IsNullOrEmpty && value == null)
+			{
 				throw new ArgumentNullException(nameof(value));
+			}
 
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -936,7 +996,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -954,7 +1016,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -972,7 +1036,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -990,7 +1056,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -1008,7 +1076,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -1026,7 +1096,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -1044,7 +1116,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -1062,7 +1136,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -1082,7 +1158,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1101,7 +1179,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1120,7 +1200,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1139,7 +1221,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1158,7 +1242,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1177,7 +1263,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1196,7 +1284,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1215,7 +1305,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1234,7 +1326,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1253,7 +1347,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1272,7 +1368,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1291,7 +1389,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1310,7 +1410,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1329,7 +1431,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1348,7 +1452,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1367,7 +1473,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value, toBase);
+			}
 
 			return result;
 		}
@@ -1381,7 +1489,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< char > coll)
 		{
@@ -1389,7 +1499,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< bool > coll)
 		{
@@ -1397,7 +1509,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< float > coll)
 		{
@@ -1405,7 +1519,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< double > coll)
 		{
@@ -1413,7 +1529,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value);
+			}
 		}
 
 		public void WriteElements(TName elementName, ICollection< byte > coll, NumeralBase toBase=kDefaultRadix)
@@ -1422,7 +1540,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< sbyte > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1430,7 +1550,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< ushort > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1438,7 +1560,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< short > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1446,7 +1570,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< uint > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1454,7 +1580,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< int > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1462,7 +1590,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< ulong > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1470,7 +1600,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		public void WriteElements(TName elementName, ICollection< long > coll, NumeralBase toBase=kDefaultRadix)
 		{
@@ -1478,7 +1610,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				WriteElement(elementName, value, toBase);
+			}
 		}
 		#endregion
 	};

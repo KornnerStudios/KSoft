@@ -41,28 +41,32 @@ namespace KSoft.IO
 		static bool ParseHandleError(ParseErrorType type, bool noThrow, string input
 			, TextStreamReadErrorState errorState)
 		{
-			Exception detailsException = null;
+			Exception detailsException;
 			switch (type)
 			{
-			case ParseErrorType.NoInput:
-				if (noThrow)
-					return false;
+				case ParseErrorType.NoInput:
+					if (noThrow)
+					{
+						return false;
+					}
 
-				detailsException = new ArgumentException
+					detailsException = new ArgumentException
 					("Input null or empty", nameof(input));
-				break;
+					break;
 
-			case ParseErrorType.InvalidValue:
-				detailsException = new ArgumentException(string.Format
-					(Util.InvariantCultureInfo, "Couldn't parse \"{0}\"", input), nameof(input));
-				break;
+				case ParseErrorType.InvalidValue:
+					detailsException = new ArgumentException(string.Format
+						(Util.InvariantCultureInfo, "Couldn't parse \"{0}\"", input), nameof(input));
+					break;
 
-			default:
-				return true;
+				default:
+					return true;
 			}
 
 			if (noThrow == false)
+			{
 				errorState.ThrowReadExeception(detailsException);
+			}
 
 			errorState.LogReadExceptionWarning(detailsException);
 			return true;
@@ -73,7 +77,9 @@ namespace KSoft.IO
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
+			{
 				value = input[0];
+			}
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}
@@ -82,7 +88,9 @@ namespace KSoft.IO
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
+			{
 				value = Text.Util.ParseBooleanLazy(input);
+			}
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}
@@ -97,7 +105,9 @@ namespace KSoft.IO
 				// #HACK HaloWars data has floats with C-based 'f' suffix
 				char last_char = input[input.Length - 1];
 				if (last_char == 'f' || last_char == 'F')
+				{
 					input = input.Substring(0, input.Length - 1);
+				}
 
 				result = ParseVerifyResult(result, Numbers.FloatTryParseInvariant(input, out value));
 			}
@@ -109,7 +119,9 @@ namespace KSoft.IO
 		{
 			var result = ParseVerifyInput(input);
 			if (result == ParseErrorType.None)
+			{
 				result = ParseVerifyResult(result, Numbers.DoubleTryParseInvariant(input, out value));
+			}
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}
@@ -119,7 +131,7 @@ namespace KSoft.IO
 	partial class TagElementTextStream<TDoc, TCursor>
 	{
 		#region Parse Util
-		TextStreamReadErrorState mReadErrorState;
+		readonly TextStreamReadErrorState mReadErrorState;
 
 		/// <summary>Sets the node that the current read operation is querying</summary>
 		/// <remarks>It should be assumed that this isn't reset after the current read successfully finishes</remarks>

@@ -19,15 +19,13 @@ namespace KSoft.IO
 		[Contracts.Pure]
 		public static bool StreamSourceIsValid(XmlNodeType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case XmlNodeType.Element:
-				case XmlNodeType.Attribute:
-				case XmlNodeType.Text: // aka, Cursor
-					return true;
-
-				default: return false;
-			}
+				XmlNodeType.Element or XmlNodeType.Attribute or
+				XmlNodeType.Text // aka, Cursor
+				=> true,
+				_ => false,
+			};
 		}
 
 		#region Cursor
@@ -43,9 +41,14 @@ namespace KSoft.IO
 		public override bool AttributeExists(string name)
 		{
 			if (Cursor == null)
+			{
 				return false;
+			}
+
 			if (!ValidateNameArg(name))
+			{
 				return false;
+			}
 
 			XmlNode n = Cursor.Attributes[name];
 
@@ -56,17 +59,26 @@ namespace KSoft.IO
 
 		public override IEnumerable<string> AttributeNames { get {
 			if (AttributesExist)
-				foreach (XmlAttribute attr in Cursor.Attributes)
-					yield return attr.Name;
-		} }
+				{
+					foreach (XmlAttribute attr in Cursor.Attributes)
+					{
+						yield return attr.Name;
+					}
+				}
+			} }
 
 		[SuppressMessage("Microsoft.Design", "CA1820:TestForEmptyStringsUsingStringLength")]
 		public override bool ElementsExists(string name)
 		{
 			if (Cursor == null)
+			{
 				return false;
+			}
+
 			if (!ValidateNameArg(name))
+			{
 				return false;
+			}
 
 			XmlElement n = Cursor[name];
 
@@ -80,17 +92,29 @@ namespace KSoft.IO
 
 		public override IEnumerable<XmlElement> Elements { get {
 			if (ElementsExist)
+			{
 				foreach (XmlNode n in Cursor)
-					if (n is XmlElement)
-						yield return (XmlElement)n;
+				{
+					if (n is XmlElement element)
+					{
+						yield return element;
+					}
+				}
+			}
 		} }
 
 		public override IEnumerable<XmlElement> ElementsByName(string localName)
 		{
 			if (ElementsExist)
+			{
 				foreach (XmlNode n in Cursor.ChildNodes)
-					if (n is XmlElement && n.Name == localName)
-						yield return (XmlElement)n;
+				{
+					if (n is XmlElement element && n.Name == localName)
+					{
+						yield return element;
+					}
+				}
+			}
 
 #if false // this returns ALL descendants, no just immediate children
 			var elements = Cursor.GetElementsByTagName(localName);
@@ -103,7 +127,9 @@ namespace KSoft.IO
 		public override string GetElementName(XmlElement element)
 		{
 			if (element == null)
+			{
 				return null;
+			}
 
 			return element.Name;
 		}
@@ -130,9 +156,13 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentException>(sourceStream.HasPermissions(permissions));
 
 			if (streamNameOverride.IsNullOrEmpty())
+			{
 				SetStreamName(sourceStream);
+			}
 			else
+			{
 				base.StreamName = streamNameOverride;
+			}
 
 			var doc = new Xml.XmlDocumentWithLocation
 			{
@@ -165,7 +195,9 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(filename != null);
 
 			if (!System.IO.File.Exists(filename))
+			{
 				throw new System.IO.FileNotFoundException("XmlElementStream: Load", filename);
+			}
 
 			Document = new Xml.XmlDocumentWithLocation();
 			try
@@ -228,7 +260,7 @@ namespace KSoft.IO
 			};
 			root.AppendChild(root.CreateElement(rootName));
 
-			XmlElementStream @this = new XmlElementStream
+			var @this = new XmlElementStream
 			{
 				Document = root,
 				Owner = owner,

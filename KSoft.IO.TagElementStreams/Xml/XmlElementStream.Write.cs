@@ -7,10 +7,14 @@ namespace KSoft.IO
 		protected override void AppendElement(XmlElement e)
 		{
 			// if there is a node in scope, add the element after it and use it as the new scope
-			if(Cursor != null)
+			if (Cursor != null)
+			{
 				Cursor.AppendChild(e);
+			}
 			else // if there is no XML node in scope, assume we're adding to the root
+			{
 				Document.AppendChild(e);
+			}
 		}
 
 		protected override void NestElement(XmlElement e, out XmlElement oldCursor)
@@ -75,7 +79,9 @@ namespace KSoft.IO
 		protected override void WriteCommentImpl(string comment)
 		{
 			if (!string.IsNullOrEmpty(comment))
+			{
 				Cursor.AppendChild(Document.CreateComment(comment));
+			}
 		}
 	};
 }

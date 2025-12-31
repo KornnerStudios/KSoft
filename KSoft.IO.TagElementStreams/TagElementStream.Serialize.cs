@@ -8,6 +8,9 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 using Exprs = System.Linq.Expressions;
 
+// #TODO fix CA warnings
+#pragma warning disable IDE0011 // Use braces
+
 namespace KSoft.IO
 {
 	partial class TagElementStream<TDoc, TCursor, TName>

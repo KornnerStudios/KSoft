@@ -718,6 +718,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< string > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(string);
@@ -725,6 +726,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< string > coll)
 		{
@@ -743,6 +745,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< char > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(char);
@@ -750,6 +753,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< char > coll)
 		{
@@ -768,6 +772,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< bool > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(bool);
@@ -775,6 +780,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< bool > coll)
 		{
@@ -793,6 +799,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< float > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(float);
@@ -800,6 +807,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< float > coll)
 		{
@@ -818,6 +826,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< double > coll)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					var value = default(double);
@@ -825,6 +834,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< double > coll)
 		{
@@ -844,6 +854,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< byte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					byte value = 0;
@@ -851,6 +862,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< byte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -869,6 +881,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< sbyte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					sbyte value = 0;
@@ -876,6 +889,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< sbyte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -894,6 +908,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< ushort > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					ushort value = 0;
@@ -901,6 +916,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< ushort > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -919,6 +935,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< short > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					short value = 0;
@@ -926,6 +943,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< short > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -944,6 +962,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< uint > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					uint value = 0;
@@ -951,6 +970,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< uint > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -969,6 +989,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< int > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					int value = 0;
@@ -976,6 +997,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< int > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -994,6 +1016,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< ulong > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					ulong value = 0;
@@ -1001,6 +1024,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< ulong > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -1019,6 +1043,7 @@ namespace KSoft.IO
 		void ReadElements(IEnumerable<TCursor> elements, ICollection< long > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			foreach (var node in elements)
+			{
 				using (EnterCursorBookmark(node))
 				{
 					long value = 0;
@@ -1026,6 +1051,7 @@ namespace KSoft.IO
 
 					coll.Add(value);
 				}
+			}
 		}
 		public void ReadElements(ICollection< long > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
@@ -1051,10 +1077,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1079,10 +1109,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1107,10 +1141,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1135,10 +1173,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1163,10 +1205,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++]);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1192,10 +1238,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1220,10 +1270,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1248,10 +1302,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1276,10 +1334,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1304,10 +1366,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1332,10 +1398,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1360,10 +1430,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;
@@ -1388,10 +1462,14 @@ namespace KSoft.IO
 			foreach (var node in elements)
 			{
 				using (EnterCursorBookmark(node))
+				{
 					ReadCursor(ref array[count++], fromBase);
+				}
 
-				if(count == array.Length)
+				if (count == array.Length)
+				{
 					break;
+				}
 			}
 
 			return count;

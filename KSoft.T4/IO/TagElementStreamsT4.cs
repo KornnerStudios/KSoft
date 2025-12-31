@@ -104,7 +104,7 @@ namespace KSoft.T4
 			if (is_opt)
 			{
 				ttFile.WriteLine("if (predicate == null)");
-				using (var cb1 = ttFile.EnterCodeBlock())
+				using (var cb1 = ttFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
 				{
 					ttFile.WriteLine("predicate = x => true;");
 				}
@@ -135,7 +135,7 @@ namespace KSoft.T4
 			}
 
 			ttFile.WriteLine("else if (IsWriting)");
-			using (var cb1 = ttFile.EnterCodeBlock())
+			using (var cb1 = ttFile.EnterCodeBlock(TextTransformationCodeBlockType.Brackets))
 			{
 				ttFile.WriteLine("{2}Write{0}{3}({4} ({1})property.GetValue(theObj, null) {5}{6});",
 					method_name,									// 0

@@ -48,7 +48,9 @@ namespace KSoft.IO
 				var extension_format = BaseFormat;
 				string extension = GetExtension(extension_format);
 				if (extension != null)
+				{
 					gRegisteredFileExtensions.Add(extension, extension_format);
+				}
 				#endregion
 				#region Register Binary
 				extension_format |= TagElementStreamFormat.Binary;
@@ -57,7 +59,9 @@ namespace KSoft.IO
 				catch (NotImplementedException) { extension = null; }
 
 				if (extension != null)
+				{
 					gRegisteredFileExtensions.Add(extension, extension_format);
+				}
 				#endregion
 
 				return this;
@@ -72,8 +76,8 @@ namespace KSoft.IO
 			}
 		};
 
-		static Dictionary<TagElementStreamFormat, RegisteredFormat> gRegisteredFormats;
-		static Dictionary<string, TagElementStreamFormat> gRegisteredFileExtensions;
+		static readonly Dictionary<TagElementStreamFormat, RegisteredFormat> gRegisteredFormats;
+		static readonly Dictionary<string, TagElementStreamFormat> gRegisteredFileExtensions;
 
 		public static RegisteredFormat Register(TagElementStreamFormat baseFormat, string name = null)
 		{
@@ -84,7 +88,9 @@ namespace KSoft.IO
 				"Custom formats require an explicit name");
 
 			if (string.IsNullOrEmpty(name))
+			{
 				name = baseFormat.ToString();
+			}
 
 			var registration = new RegisteredFormat(name, baseFormat);
 			gRegisteredFormats.Add(baseFormat, registration);
@@ -99,9 +105,11 @@ namespace KSoft.IO
 			var base_format = format.GetBaseFormat();
 
 			if (!gRegisteredFormats.TryGetValue(base_format, out RegisteredFormat registration))
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"Format {0} ({1}) is not registered, can't {2}",
 					base_format, format, operation));
+			}
 
 			return registration;
 		}
@@ -113,9 +121,13 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Xml);
 
 			if (format.IsText())
+			{
 				return ".xml";
+			}
 			else if (format.IsBinary()) // haven't decided on a standard to use yet
+			{
 				throw new NotImplementedException("General binary XML files not yet implemented");
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -132,7 +144,9 @@ namespace KSoft.IO
 				return stream;
 			}
 			else if (format.IsBinary()) // haven't decided on a standard to use yet
+			{
 				throw new NotImplementedException("General binary XML files not yet implemented");
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -144,9 +158,13 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Json);
 
 			if (format.IsText())
+			{
 				return ".json";
+			}
 			else if (format.IsBinary())
+			{
 				return ".bson";
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -156,9 +174,13 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Json);
 
 			if (format.IsText())
+			{
 				throw new NotImplementedException();
+			}
 			else if (format.IsBinary())
+			{
 				throw new NotImplementedException();
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -170,9 +192,13 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Yaml);
 
 			if (format.IsText())
+			{
 				return ".yaml";
+			}
 			else if (format.IsBinary()) // Yaml doesn't support binary formats
+			{
 				return null;
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -182,9 +208,13 @@ namespace KSoft.IO
 			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Yaml);
 
 			if (format.IsText())
+			{
 				throw new NotImplementedException();
+			}
 			else if (format.IsBinary())
+			{
 				throw new NotSupportedException("Yaml doesn't support binary streams");
+			}
 
 			throw new Debug.UnreachableException(format.ToString());
 		}
@@ -227,14 +257,18 @@ namespace KSoft.IO
 
 			string extension = Path.GetExtension(filename);
 			if (string.IsNullOrEmpty(extension))
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"'{0}' doesn't have a valid file extension",
 					filename));
+			}
 
 			if (!gRegisteredFileExtensions.TryGetValue(extension, out TagElementStreamFormat format))
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"No TagElementStream is registered to handle '{0}' files",
 					extension));
+			}
 
 			// NOTE: could just use File.OpenRead instead. File isn't actually ever written to in this context
 			using (var fs = File.Open(filename, FileMode.Open, permissions))

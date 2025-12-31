@@ -125,7 +125,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElementEnum(name, value, isFlags);
+			}
 
 			return result;
 		}
@@ -146,7 +148,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteElementEnum(name, value, isFlags);
+			}
 
 			return result;
 		}
@@ -160,7 +164,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteElement(name, value);
+			}
 
 			return result;
 		}
@@ -183,7 +189,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttributeEnum(name, value, isFlags);
+			}
 
 			return result;
 		}
@@ -204,7 +212,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || !predicate(value);
 
 			if (result)
+			{
 				WriteAttributeEnum(name, value, isFlags);
+			}
 
 			return result;
 		}
@@ -218,7 +228,9 @@ namespace KSoft.IO
 			bool result = IgnoreWritePredicates || predicate(value);
 
 			if (result)
+			{
 				WriteAttribute(name, value);
+			}
 
 			return result;
 		}
@@ -233,11 +245,13 @@ namespace KSoft.IO
 			Contract.Requires(action != null);
 
 			foreach (var value in coll)
+			{
 				using (EnterCursorBookmark(elementName))
 				{
 					var v = value; // can't pass a foreach value by ref
 					action(this, ctxt, ref v);
 				}
+			}
 		}
 
 		public void WriteStreamableElements<T>(TName elementName,
@@ -249,9 +263,15 @@ namespace KSoft.IO
 			Contract.Requires<ArgumentNullException>(coll != null);
 
 			foreach (var value in coll)
+			{
 				if (shouldWritePredicate == null || shouldWritePredicate(value))
+				{
 					using (EnterCursorBookmark(elementName))
+					{
 						value.Serialize(this);
+					}
+				}
+			}
 		}
 		#endregion
 
@@ -267,6 +287,7 @@ namespace KSoft.IO
 			Contract.Requires(streamValue != null);
 
 			foreach (var kv in dic)
+			{
 				using (EnterCursorBookmark(elementName))
 				{
 					var key = kv.Key;
@@ -275,6 +296,7 @@ namespace KSoft.IO
 					var v = kv.Value;
 					streamValue(this, ctxt, ref v);
 				}
+			}
 		}
 
 		public void WriteStreamableElements<TKey, TValue, TContext>(TName elementName,
@@ -288,7 +310,9 @@ namespace KSoft.IO
 			Contract.Requires(streamKey != null);
 
 			foreach (var kv in dic)
+			{
 				if (shouldWritePredicate == null || shouldWritePredicate(kv))
+				{
 					using (EnterCursorBookmark(elementName))
 					{
 						TKey key = kv.Key;
@@ -296,6 +320,8 @@ namespace KSoft.IO
 
 						kv.Value.Serialize(this);
 					}
+				}
+			}
 		}
 		#endregion
 
@@ -313,7 +339,9 @@ namespace KSoft.IO
 		public void WriteComment(string comment)
 		{
 			if (IsWriting && SupportsComments && CommentsEnabled)
+			{
 				WriteCommentImpl(comment);
+			}
 		}
 		public virtual void WriteComment<TContext>(TContext ctxt, Func<TContext, string> commentMaker)
 		{

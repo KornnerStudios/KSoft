@@ -23,8 +23,8 @@ namespace KSoft.IO
 		/// <seealso cref="WriteCursor(string, <#= type.Keyword #>)"/>
 		public void StreamCursor(ref <#= type.Keyword #> value)
 		{
-				 if (IsReading) ReadCursor(ref value);
-			else if (IsWriting) WriteCursor(value);
+				 if (IsReading) { ReadCursor(ref value); }
+			else if (IsWriting) { WriteCursor(value); }
 		}
 <# } #>
 
@@ -36,8 +36,8 @@ namespace KSoft.IO
 		/// <seealso cref="WriteCursor(string, <#= type.Keyword #>, NumeralBase)"/>
 		public void StreamCursor(ref <#= type.Keyword #> value, NumeralBase numBase=kDefaultRadix)
 		{
-				 if (IsReading) ReadCursor(ref value, numBase);
-			else if (IsWriting) WriteCursor(value, numBase);
+				 if (IsReading) { ReadCursor(ref value, numBase); }
+			else if (IsWriting) { WriteCursor(value, numBase); }
 		}
 <# } #>
 
@@ -66,8 +66,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 
-				 if (IsReading) ReadElement(name, ref value);
-			else if (IsWriting) WriteElement(name, value);
+				 if (IsReading) { ReadElement(name, ref value); }
+			else if (IsWriting) { WriteElement(name, value); }
 		}
 <# } #>
 
@@ -82,8 +82,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 
-				 if (IsReading) ReadElement(name, ref value, numBase);
-			else if (IsWriting) WriteElement(name, value, numBase);
+				 if (IsReading) { ReadElement(name, ref value, numBase); }
+			else if (IsWriting) { WriteElement(name, value, numBase); }
 		}
 <# } #>
 
@@ -115,11 +115,13 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 
 			if (predicate == null)
+			{
 				predicate = Predicates.True< <#= type.Keyword #> >;
+			}
 
 			bool executed = false;
-				 if (IsReading) executed = ReadElementOpt(name, ref value);
-			else if (IsWriting) executed = WriteElementOptOnTrue(name, value, predicate);
+				 if (IsReading) { executed = ReadElementOpt(name, ref value); }
+			else if (IsWriting) { executed = WriteElementOptOnTrue(name, value, predicate); }
 			return executed;
 		}
 <# } #>
@@ -138,11 +140,13 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 
 			if (predicate == null)
+			{
 				predicate = Predicates.True< <#= type.Keyword #> >;
+			}
 
 			bool executed = false;
-				 if (IsReading) executed = ReadElementOpt(name, ref value, numBase);
-			else if (IsWriting) executed = WriteElementOptOnTrue(name, value, predicate, numBase);
+				 if (IsReading) { executed = ReadElementOpt(name, ref value, numBase); }
+			else if (IsWriting) { executed = WriteElementOptOnTrue(name, value, predicate, numBase); }
 			return executed;
 		}
 <# } #>
@@ -172,8 +176,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 
-				 if (IsReading) ReadAttribute(name, ref value);
-			else if (IsWriting) WriteAttribute(name, value);
+				 if (IsReading) { ReadAttribute(name, ref value); }
+			else if (IsWriting) { WriteAttribute(name, value); }
 		}
 <# } #>
 
@@ -188,8 +192,8 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 
-				 if (IsReading) ReadAttribute(name, ref value, numBase);
-			else if (IsWriting) WriteAttribute(name, value, numBase);
+				 if (IsReading) { ReadAttribute(name, ref value, numBase); }
+			else if (IsWriting) { WriteAttribute(name, value, numBase); }
 		}
 <# } #>
 
@@ -221,11 +225,13 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 
 			if (predicate == null)
+			{
 				predicate = Predicates.True< <#= type.Keyword #> >;
+			}
 
 			bool executed = false;
-				 if (IsReading) executed = ReadAttributeOpt(name, ref value);
-			else if (IsWriting) executed = WriteAttributeOptOnTrue(name, value, predicate);
+				 if (IsReading) { executed = ReadAttributeOpt(name, ref value); }
+			else if (IsWriting) { executed = WriteAttributeOptOnTrue(name, value, predicate); }
 			return executed;
 		}
 <# } #>
@@ -244,11 +250,13 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 
 			if (predicate == null)
+			{
 				predicate = Predicates.True< <#= type.Keyword #> >;
+			}
 
 			bool executed = false;
-				 if (IsReading) executed = ReadAttributeOpt(name, ref value, numBase);
-			else if (IsWriting) executed = WriteAttributeOptOnTrue(name, value, predicate, numBase);
+				 if (IsReading) { executed = ReadAttributeOpt(name, ref value, numBase); }
+			else if (IsWriting) { executed = WriteAttributeOptOnTrue(name, value, predicate, numBase); }
 			return executed;
 		}
 <# } #>
@@ -274,8 +282,8 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires<ArgumentNullException>(coll != null);
 
-				 if (IsReading) ReadElements(name, coll);
-			else if (IsWriting) WriteElements(name, coll);
+				 if (IsReading) { ReadElements(name, coll); }
+			else if (IsWriting) { WriteElements(name, coll); }
 		}
 <# } #>
 
@@ -285,8 +293,8 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires<ArgumentNullException>(coll != null);
 
-				 if (IsReading) ReadElements(name, coll, numBase);
-			else if (IsWriting) WriteElements(name, coll, numBase);
+				 if (IsReading) { ReadElements(name, coll, numBase); }
+			else if (IsWriting) { WriteElements(name, coll, numBase); }
 		}
 <# } #>
 		#endregion
@@ -299,8 +307,8 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires<ArgumentNullException>(array != null);
 
-				 if (IsReading) return ReadFixedArray(name, array);
-			else if (IsWriting) WriteElements(name, array);
+				 if (IsReading) { return ReadFixedArray(name, array); }
+			else if (IsWriting) { WriteElements(name, array); }
 
 			return array.Length;
 		}
@@ -312,8 +320,8 @@ namespace KSoft.IO
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires<ArgumentNullException>(array != null);
 
-				 if (IsReading) return ReadFixedArray(name, array, numBase);
-			else if (IsWriting) WriteElements(name, array, numBase);
+				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
+			else if (IsWriting) { WriteElements(name, array, numBase); }
 
 			return array.Length;
 		}

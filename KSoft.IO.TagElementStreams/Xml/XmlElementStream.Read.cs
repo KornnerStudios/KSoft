@@ -26,20 +26,28 @@ namespace KSoft.IO
 		private XmlNode GetInnerTextNode(XmlElement n)
 		{
 			if (!n.HasChildNodes)
+			{
 				return null;
+			}
 
 			var text_node = n.LastChild;
 			if (text_node.NodeType == XmlNodeType.Text)
+			{
 				return text_node;
+			}
 
 			text_node = n.FirstChild;
 			if (text_node.NodeType == XmlNodeType.Text)
+			{
 				return text_node;
+			}
 
 			foreach (XmlNode node in n.ChildNodes)
 			{
 				if (node.NodeType == XmlNodeType.Text)
+				{
 					return node;
+				}
 			}
 
 			return null;
@@ -53,8 +61,10 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 			if (n == null)
+			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
 					"Element doesn't exist: " + name));
+			}
 
 			oldCursor = Cursor;
 			// update the error state with the node we're about to read from
@@ -72,8 +82,10 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 			if (n == null)
+			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
 					"Element doesn't exist: " + name));
+			}
 
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
@@ -86,10 +98,12 @@ namespace KSoft.IO
 		{
 			ValidateReadPermission();
 
-			XmlNode n = Cursor.Attributes[name];
+			XmlAttribute n = Cursor.Attributes[name];
 			if (n == null)
+			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
 					"Attribute doesn't exist: " + name));
+			}
 
 			Contract.Assume(n != null);
 			// update the error state with the node we're about to read from
@@ -108,7 +122,9 @@ namespace KSoft.IO
 
 			XmlElement n = Cursor[name];
 			if (n == null)
+			{
 				return null;
+			}
 
 			// element exists, update the error state with the node we're about to read from
 			ReadErrorNode = n;
@@ -130,9 +146,11 @@ namespace KSoft.IO
 		{
 			ValidateReadPermission();
 
-			XmlNode n = Cursor.Attributes[name];
+			XmlAttribute n = Cursor.Attributes[name];
 			if (n == null)
+			{
 				return null;
+			}
 
 			// attribute exists, update the error state with the node we're about to read from
 			ReadErrorNode = n;

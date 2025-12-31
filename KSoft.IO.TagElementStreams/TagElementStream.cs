@@ -68,10 +68,14 @@ namespace KSoft.IO
 			StreamName = null;
 
 			if (stream is System.IO.FileStream fs)
+			{
 				StreamName = fs.Name;
+			}
 
 			if (StreamName == null)
+			{
 				stream.ToString();
+			}
 		}
 		#endregion
 
@@ -120,7 +124,10 @@ namespace KSoft.IO
 		public void SaveCursor(TCursor newCursor, out TCursor oldCursor)
 		{
 			oldCursor = Cursor;
-			if(newCursor != null) Cursor = newCursor;
+			if (newCursor != null)
+			{
+				Cursor = newCursor;
+			}
 		}
 		/// <summary>Returns the cursor to a previously saved cursor value</summary>
 		/// <param name="oldCursor">Previously saved cursor. Set to null before the method returns</param>
@@ -161,7 +168,9 @@ namespace KSoft.IO
 		{
 			if ((IsReading && ElementsExists(elementName)) ||
 				 IsWriting)
+			{
 				return new TagElementStreamBookmark<TDoc, TCursor, TName>(this, elementName);
+			}
 
 			return TagElementStreamBookmark<TDoc, TCursor, TName>.Null;
 		}
@@ -180,7 +189,9 @@ namespace KSoft.IO
 		{
 			if ((IsReading && ElementsExists(elementName)) ||
 				(IsWriting && writeShouldEnterBookmark(theObj)))
+			{
 				return new TagElementStreamBookmark<TDoc, TCursor, TName>(this, elementName);
+			}
 
 			return TagElementStreamBookmark<TDoc, TCursor, TName>.Null;
 		}
