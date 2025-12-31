@@ -48,7 +48,6 @@ namespace KSoft
 		public static readonly int kBitCount;
 
 		#region Static Initialize
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		static void ProcessMembers(Type t, out <#= bittable_type.Keyword #> maxValue, out bool hasNone)
 		{
 			maxValue = <#= bittable_type.Keyword #>.MaxValue;
@@ -57,19 +56,17 @@ namespace KSoft
 			var mnames = Reflection.EnumUtil<TEnum>.Names;
 
 			#region is_type_signed
-			bool func_is_type_signed()
+			static bool func_is_type_signed()
 			{
-				switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
+				return Reflection.EnumUtil<TEnum>.UnderlyingTypeCode switch
 				{
-					case TypeCode.SByte:
-					case TypeCode.Int16:
-					case TypeCode.Int32:
+					TypeCode.SByte or TypeCode.Int16 or TypeCode.Int32
 <#		if (bittable_type.SizeOfInBits >= 64) { #>
-					case TypeCode.Int64:
+						or TypeCode.Int64
 <#		} #>
-						return true;
-					default: return false;
-				}
+					=> true,
+					_ => false,
+				};
 			}
 			bool is_type_signed = func_is_type_signed();
 			#endregion
@@ -86,10 +83,11 @@ namespace KSoft
 
 					if (int_value < TypeExtensions.kNoneInt<#= bittable_type.SizeOfInBits #>)
 					{
-						// CA2208
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
 						throw new ArgumentOutOfRangeException(nameof(TEnum),
 							string.Format(Util.InvariantCultureInfo,
 								"{0}:{1} is invalid (negative, less than NONE)!", t.FullName, mnames[x]));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 					}
 					else if (int_value.IsNone())
 					{
@@ -100,7 +98,9 @@ namespace KSoft
 				ProcessMembers_DebugCheckMemberName(t, Reflection.EnumUtil<TEnum>.IsFlags, mnames[x]);
 
 				if (mvalue_is_none) // don't perform greatest value checking on NONE values
+				{
 					continue;
+				}
 
 				temp = Convert.ToUInt<#= bittable_type.SizeOfInBits #>(mvalues.GetValue(x), Util.InvariantCultureInfo);
 				// Base max_value off the predetermined member name first
@@ -116,9 +116,13 @@ namespace KSoft
 				else
 				{
 					if (!Reflection.EnumUtil<TEnum>.IsFlags)
+					{
 						greatest = System.Math.Max(greatest, temp);
+					}
 					else
+					{
 						greatest |= temp; // just add all the flag values together
+					}
 				}
 			}
 
@@ -131,11 +135,12 @@ namespace KSoft
 				// isn't a real member of the enumeration. We didn't find a k*MaxMemberName so we
 				// fake it
 				if (!Reflection.EnumUtil<TEnum>.IsFlags)
+				{
 					maxValue += 1;
+				}
 			}
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitEncoder<#= bittable_type.SizeOfInBits #>()
 		{
 			Type t = typeof(TEnum);
@@ -143,27 +148,31 @@ namespace KSoft
 
 			ProcessMembers(t, out kMaxValue, out kHasNone);
 			if (Reflection.EnumUtil<TEnum>.IsFlags)
+			{
 				kBitmask = kMaxValue;
+			}
 			else
+			{
 				kBitmask = Bits.GetBitmaskEnum(kHasNone ? kMaxValue+1 : kMaxValue);
+			}
 			kBitCount = Bits.BitCount(kBitmask);
 		}
 		#endregion
 
 		#region IEnumBitEncoder<TUInt>
-		public bool IsFlags { get { return Reflection.EnumUtil<TEnum>.IsFlags; } }
-		public bool HasNone { get { return kHasNone; } }
-		public <#= bittable_type.Keyword #> MaxValueTrait { get { return kMaxValue; } }
+		public bool IsFlags => Reflection.EnumUtil<TEnum>.IsFlags;
+		public bool HasNone => kHasNone;
+		public <#= bittable_type.Keyword #> MaxValueTrait => kMaxValue;
 		/// <see cref="kBitmask"/>
-		public <#= bittable_type.Keyword #> BitmaskTrait { get { return kBitmask; } }
+		public <#= bittable_type.Keyword #> BitmaskTrait => kBitmask;
 		/// <see cref="kBitCount"/>
-		public override int BitCountTrait { get { return kBitCount; } }
+		public override int BitCountTrait => kBitCount;
 		#endregion
 
 		#region DefaultBitIndex
 		readonly int mDefaultBitIndex;
 		/// <summary>The bit index assumed when one isn't provided</summary>
-		public int DefaultBitIndex { get { return mDefaultBitIndex; } }
+		public int DefaultBitIndex => mDefaultBitIndex;
 		#endregion
 
 		public EnumBitEncoder<#= bittable_type.SizeOfInBits #>() : this(0) {}
@@ -198,12 +207,14 @@ namespace KSoft
 
 			<#= bittable_type.Keyword #> v = Reflection.EnumValue<TEnum>.ToUInt<#= bittable_type.SizeOfInBits #>(value);
 			if (kHasNone)
+			{
 				v++;
+			}
 
 			Contract.Assert(v <= kMaxValue);
-			return Reflection.EnumUtil<TEnum>.IsFlags ?
-				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
-				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+			return Reflection.EnumUtil<TEnum>.IsFlags
+				? Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask)
+				: Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
 		}
 		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
 		/// <param name="value">Enumeration value to encode</param>
@@ -234,12 +245,14 @@ namespace KSoft
 
 			<#= bittable_type.Keyword #> v = Reflection.EnumValue<TEnum>.ToUInt<#= bittable_type.SizeOfInBits #>(value);
 			if (kHasNone)
+			{
 				v++;
+			}
 
 			Contract.Assert(v <= kMaxValue);
-			bits = Reflection.EnumUtil<TEnum>.IsFlags ?
-				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
-				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+			bits = Reflection.EnumUtil<TEnum>.IsFlags
+				? Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask)
+				: Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
 
 			bitIndex += kBitCount;
 		}
@@ -267,7 +280,9 @@ namespace KSoft
 
 			<#= bittable_type.Keyword #> v = Bits.BitDecode(bits, bitIndex, kBitmask);
 			if (kHasNone)
+			{
 				v--;
+			}
 
 			Contract.Assert(v <= kMaxValue || (kHasNone && v == <#= bittable_type.Keyword #>.MaxValue));
 			return Reflection.EnumValue<TEnum>.FromUInt<#= bittable_type.SizeOfInBits #>(v);
@@ -299,7 +314,9 @@ namespace KSoft
 
 			<#= bittable_type.Keyword #> v = Bits.BitDecode(bits, bitIndex, kBitmask);
 			if (kHasNone)
+			{
 				v--;
+			}
 
 			bitIndex += kBitCount;
 
@@ -320,27 +337,16 @@ namespace KSoft
 		{
 			Contract.Requires(s != null);
 
-			<#= bittable_type.Keyword #> stream_value;
-			switch (Reflection.EnumUtil<TEnum>.UnderlyingTypeCode)
+			<#= bittable_type.Keyword #> stream_value = Reflection.EnumUtil<TEnum>.UnderlyingTypeCode switch
 			{
-				case TypeCode.Byte:
-				case TypeCode.SByte: stream_value = s.ReadByte();
-					break;
-				case TypeCode.Int16:
-				case TypeCode.UInt16: stream_value = s.ReadUInt16();
-					break;
-				case TypeCode.Int32:
-				case TypeCode.UInt32: stream_value = s.ReadUInt32();
-					break;
+				TypeCode.Byte or TypeCode.SByte => s.ReadByte(),
+				TypeCode.Int16 or TypeCode.UInt16 => s.ReadUInt16(),
+				TypeCode.Int32 or TypeCode.UInt32 => s.ReadUInt32(),
 <#		if (bittable_type.SizeOfInBits >= 64) { #>
-				case TypeCode.Int64:
-				case TypeCode.UInt64: stream_value = s.ReadUInt64();
-					break;
+				TypeCode.Int64 or TypeCode.UInt64 => s.ReadUInt64(),
 <#		} #>
-
-				default:
-					throw new Debug.UnreachableException();
-			}
+				_ => throw new Debug.UnreachableException(),
+			};
 
 			value = Reflection.EnumValue<TEnum>.FromUInt64(stream_value);
 		}

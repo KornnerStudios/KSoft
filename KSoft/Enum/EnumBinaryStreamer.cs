@@ -28,7 +28,7 @@ namespace KSoft.IO
 		/// <summary>Initialize <see cref="kReadMethods"/> with the read methods for the supported underlying enum types <see cref="EnumUtils.kSupportedTypeCodes"/></summary>
 		static void InitializeReadMethods()
 		{
-			var methods = kBinaryReaderType.GetMethods();
+			//var methods = kBinaryReaderType.GetMethods();
 			foreach (TypeCode c in EnumUtils.kSupportedTypeCodes)
 			{
 				var mi = kBinaryReaderType.GetMethod("Read" + c.ToString());
@@ -38,9 +38,9 @@ namespace KSoft.IO
 		/// <summary>Initialize <see cref="kWriteMethods"/> with the read methods for the supported underlying enum types <see cref="EnumUtils.kSupportedTypeCodes"/></summary>
 		static void InitializeWriteMethods()
 		{
-			var methods = kBinaryWriterType.GetMethods();
+			//var methods = kBinaryWriterType.GetMethods();
 			// Avoid having to allocate a new array every iteration
-			Type[] types = new Type[] { null };
+			Type[] types = [null];
 			foreach (Type t in EnumUtils.kSupportedTypes)
 			{
 				types[0] = t;
@@ -65,7 +65,6 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBinaryStreamerBase()
 		{
 			kBinaryReaderType = typeof(BinaryReader);
@@ -88,7 +87,6 @@ namespace KSoft.IO
 			/// <summary><typeparamref name="TStreamType"/>'s Write method in <see cref="BinaryWriter"/></summary>
 			public static readonly MethodInfo kWrite;
 
-			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static StreamType()
 			{
 				TypeCode c = Type.GetTypeCode(typeof(TStreamType));
@@ -254,7 +252,9 @@ namespace KSoft.IO
 				// Check if the user wants us to always use the underlying type
 				UseUnderlyingType = StreamType == typeof(EnumBinaryStreamerUseUnderlyingType);
 				if (UseUnderlyingType)
+				{
 					StreamType = UnderlyingType;
+				}
 
 				EnumUtils.AssertTypeIsEnum(EnumType);
 				EnumUtils.AssertUnderlyingTypeIsSupported(EnumType, UnderlyingType);
@@ -273,7 +273,6 @@ namespace KSoft.IO
 		public static readonly IEnumEndianStreamer<TEnum> Instance;
 
 		/// <summary>Initializes the <see cref="EnumBinaryStreamer{TEnum}"/> class by generating the IO methods.</summary>
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBinaryStreamer()
 		{
 			var generation_args = new MethodGenerationArgs();
@@ -417,8 +416,8 @@ namespace KSoft.IO
 		/// <param name="value">Value to serialize</param>
 		public static void Stream(IO.EndianStream s, ref TEnum value)
 		{
-				 if (s.IsReading) Read(s.Reader, out value);
-			else if (s.IsWriting) Write(s.Writer, value);
+				 if (s.IsReading) { Read(s.Reader, out value); }
+			else if (s.IsWriting) { Write(s.Writer, value); }
 		}
 		#endregion
 

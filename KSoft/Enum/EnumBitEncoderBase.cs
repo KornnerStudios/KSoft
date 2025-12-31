@@ -31,26 +31,34 @@ namespace KSoft
 			Reflection.EnumUtils.AssertTypeIsEnum(t);
 
 			if (!ValidateTypeIsNotEncoderDisabled(t))
+			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"EnumBitEncoder can't operate on enumerations with an EnumBitEncoderDisableAttribute! {0}",
 					t.FullName));
+			}
 		}
 
 		[System.Diagnostics.Conditional("TRACE")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
+		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 		protected static void ProcessMembers_DebugCheckMemberName(Type t, bool isFlags, string memberName)
 		{
 			if (isFlags && (memberName == kEnumNumberOfMemberName || memberName == kEnumMaxMemberName))
+			{
 				Debug.Trace.IO.TraceInformation("Flags enum '{0}' has the Enum EnumBitEncoder member. Is this intentional?", t);
+			}
 			else if (!isFlags && memberName == kFlagsMaxMemberName)
+			{
 				Debug.Trace.IO.TraceInformation("Enum '{0}' has the Flags EnumBitEncoder member. Is this intentional?", t);
+			}
 		}
 		protected static bool IsMaxMemberName(bool isFlags, string memberName)
 		{
-			bool result = false;
+			bool result;
 
 			if (isFlags)
+			{
 				result = memberName == kFlagsMaxMemberName;
+			}
 			else
 			{
 				result =memberName == kEnumNumberOfMemberName ||

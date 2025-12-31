@@ -1,5 +1,6 @@
 ﻿using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
+using Exprs = System.Linq.Expressions;
 
 namespace KSoft
 {
@@ -26,7 +27,7 @@ namespace KSoft
 			public static readonly ReadDelegate kTestFlags = GenerateTestFlagsMethod();
 
 
-			static Expr GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
+			static Exprs.BinaryExpression GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var param_v_member=Expr.PropertyOrField(paramV, EnumUtils.kMemberName);	// value.value__
 				var param_f_member=Expr.PropertyOrField(paramF, EnumUtils.kMemberName);	// flags.value__
@@ -35,7 +36,7 @@ namespace KSoft
 				return Expr.Assign(param_v_member, or);
 				//return Expr.OrAssign(param_v_member, param_f_member);					// value.value__ |= flags.value__
 			}
-			static Expr GenerateRemoveFlagsGuts(ExprParam paramV, ExprParam paramF)
+			static Exprs.BinaryExpression GenerateRemoveFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var param_v_member=Expr.PropertyOrField(paramV, EnumUtils.kMemberName);	// value.value__
 				var param_f_member=Expr.PropertyOrField(paramF, EnumUtils.kMemberName);	// flags.value__
@@ -46,7 +47,7 @@ namespace KSoft
 				return Expr.Assign(param_v_member, and);
 				//return Expr.AndAssign(param_v_member, f_complement);					// value.value__ &= ~flags.value__
 			}
-			static Expr GenerateModifyFlagsGuts(ExprParam paramV, ExprParam paramF, ExprParam paramCond)
+			static Exprs.ConditionalExpression GenerateModifyFlagsGuts(ExprParam paramV, ExprParam paramF, ExprParam paramCond)
 			{
 				return Expr.Condition(paramCond,
 					GenerateAddFlagsGuts(paramV, paramF),

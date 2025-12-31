@@ -53,7 +53,9 @@ namespace KSoft.IO
 				// Check if the user wants us to always use the underlying type
 				UseUnderlyingType = StreamType == typeof(EnumBinaryStreamerUseUnderlyingType);
 				if (UseUnderlyingType)
+				{
 					StreamType = UnderlyingType;
+				}
 
 				EnumUtils.AssertTypeIsEnum(EnumType);
 				EnumUtils.AssertUnderlyingTypeIsSupported(EnumType, UnderlyingType);
@@ -66,23 +68,29 @@ namespace KSoft.IO
 				if (Options.UseNoneSentinelEncoding)
 				{
 					if (StreamType == typeof(sbyte) || StreamType == typeof(byte))
+					{
 						throw new ArgumentException(
 							"{0}: UseNoneSentinelEncoding can't operate on (s)byte types (StreamType)",
 							EnumType.FullName);
+					}
 				}
 				#region Options.BitSwap
 				if (Options.BitSwap)
 				{
 					if (StreamTypeIsSigned)
+					{
 						throw new ArgumentException(
 							"{0}: Bit-swapping only makes sense on flags/unsigned types, but StreamType is signed",
 							EnumType.FullName);
+					}
 				}
 				else
 				{
 					if (Options.BitSwapGuardAgainstOneBit)
+					{
 						Debug.Trace.IO.TraceInformation("{0}'s {1} says we should guard against one bit cases, but not bitswap",
 							EnumType.FullName, typeof(TOptions).FullName);
+					}
 				}
 				#endregion
 			}
@@ -97,7 +105,6 @@ namespace KSoft.IO
 		public static readonly IEnumBitStreamer<TEnum> Instance;
 
 		/// <summary>Initializes the <see cref="EnumBitStreamer{TEnum}"/> class by generating the IO methods.</summary>
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitStreamer()
 		{
 			var generation_args = new MethodGenerationArgs();
@@ -167,12 +174,18 @@ namespace KSoft.IO
 			// Define the Read call
 			Expr call_read;
 			if (args.StreamTypeIsSigned)
+			{
 				call_read =		Expr.Call(param_s, readMethodInfo, param_bc, Expr.Constant(args.Options.SignExtend));
+			}
 			else
-				call_read =		Expr.Call(param_s, readMethodInfo, param_bc);			// i.e., 's.Read<Type>(bitCount)'
+			{
+				call_read =		Expr.Call(param_s, readMethodInfo, param_bc);           // i.e., 's.Read<Type>(bitCount)'
+			}
 
 			if (args.Options.UseNoneSentinelEncoding)
+			{
 				call_read = Expr.Decrement(call_read);
+			}
 
 			#region options.BitSwap
 			if (args.Options.BitSwap)
@@ -240,7 +253,9 @@ namespace KSoft.IO
 									(Expr)param_v_member;
 
 			if (args.Options.UseNoneSentinelEncoding)
+			{
 				write_param = Expr.Increment(write_param);
+			}
 
 			#region options.BitSwap
 			if (args.Options.BitSwap)
@@ -301,8 +316,8 @@ namespace KSoft.IO
 		/// <param name="bitCount"></param>
 		public static void Stream(IO.BitStream s, ref TEnum value, int bitCount)
 		{
-				 if (s.IsReading) Read(s, out value, bitCount);
-			else if (s.IsWriting) Write(s, value, bitCount);
+				 if (s.IsReading) { Read(s, out value, bitCount); }
+			else if (s.IsWriting) { Write(s, value, bitCount); }
 		}
 		#endregion
 

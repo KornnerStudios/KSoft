@@ -37,7 +37,7 @@ namespace KSoft.IO
 		static void InitializeWriteMethods()
 		{
 			// Avoid having to allocate a new array every iteration
-			Type[] types = new Type[] { null, null };
+			Type[] types = [null, null];
 			types[1] = typeof(int); // bitCount
 			foreach (Type t in EnumUtils.kSupportedTypes)
 			{
@@ -54,12 +54,14 @@ namespace KSoft.IO
 			var Bits_type = typeof(Bits);
 
 			// Avoid having to allocate a new array every iteration
-			Type[] types = new Type[] { null, null };
+			Type[] types = [null, null];
 			types[1] = typeof(int); // startBitIndex
 			foreach (Type t in EnumUtils.kSupportedTypes)
 			{
 				if (Type.GetTypeCode(t).IsSigned())
+				{
 					continue;
+				}
 
 				types[0] = t;
 
@@ -86,7 +88,6 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static EnumBitStreamerBase()
 		{
 			kBitStreamType = typeof(IO.BitStream);
@@ -111,7 +112,6 @@ namespace KSoft.IO
 			/// <remarks>Will be null for signed types</remarks>
 			public static readonly MethodInfo kBitSwap;
 
-			[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 			static StreamType()
 			{
 				TypeCode c = Type.GetTypeCode(typeof(TStreamType));

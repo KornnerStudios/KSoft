@@ -29,12 +29,14 @@ namespace KSoft
 
 			ulong v = Reflection.EnumValue<TEnum>.ToUInt32(value);
 			if (kHasNone)
+			{
 				v++;
+			}
 
 			Contract.Assert(v <= kMaxValue);
-			bits = Reflection.EnumUtil<TEnum>.IsFlags ?
-				Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask) :
-				Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
+			bits = Reflection.EnumUtil<TEnum>.IsFlags
+				? Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask)
+				: Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
 
 			bitIndex += kBitCount;
 		}
@@ -56,7 +58,9 @@ namespace KSoft
 
 			ulong v = Bits.BitDecode(bits, bitIndex, kBitmask);
 			if (kHasNone)
+			{
 				v--;
+			}
 
 			bitIndex += kBitCount;
 
@@ -77,10 +81,10 @@ namespace KSoft
 	public sealed class EnumBitEncoder<TEnum>
 		where TEnum : struct, IComparable, IFormattable, IConvertible
 	{
-		[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields",
-			Justification = "This could probably just be wrapped in #if DEBUG...but what if you don't ever run debug?")]
-		static readonly EnumBitEncoder32<TEnum> x32 = new EnumBitEncoder32<TEnum>();
-		static readonly EnumBitEncoder64<TEnum> x64 = new EnumBitEncoder64<TEnum>();
+		//[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields",
+		//	Justification = "x32 could probably just be wrapped in #if DEBUG...but what if you don't ever run debug?")]
+		static readonly EnumBitEncoder32<TEnum> x32 = new();
+		static readonly EnumBitEncoder64<TEnum> x64 = new();
 
 		public bool IsFlags { get => x64.IsFlags; }
 		public bool HasNone { get => x64.HasNone; }

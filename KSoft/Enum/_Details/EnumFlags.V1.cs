@@ -1,5 +1,6 @@
 ﻿using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
+using Exprs = System.Linq.Expressions;
 
 namespace KSoft
 {
@@ -24,14 +25,14 @@ namespace KSoft
 			public static readonly ReadDelegate kTestFlags = GenerateTestFlagsMethod();
 
 
-			static Expr GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
+			static Exprs.UnaryExpression GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var v_as_int = Expr.Convert(paramV, kUnderlyingType);					// integer v = (integer)value
 				var f_as_int = Expr.Convert(paramF, kUnderlyingType);					// integer f = (integer)flags
 
 				return Expr.Convert(Expr.Or(v_as_int, f_as_int), kEnumType);			// (TEnum)(v | f)
 			}
-			static Expr GenerateRemoveFlagsGuts(ExprParam paramV, ExprParam paramF)
+			static Exprs.UnaryExpression GenerateRemoveFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var v_as_int = Expr.Convert(paramV, kUnderlyingType);					// integer v = (integer)value
 				var f_as_int = Expr.Convert(paramF, kUnderlyingType);					// integer f = (integer)flags
@@ -40,7 +41,7 @@ namespace KSoft
 
 				return Expr.Convert(Expr.And(v_as_int, f_complement), kEnumType);		// (TEnum)(v & ~f)
 			}
-			static Expr GenerateModifyFlagsGuts(ExprParam paramV, ExprParam paramF, ExprParam paramCond)
+			static Exprs.ConditionalExpression GenerateModifyFlagsGuts(ExprParam paramV, ExprParam paramF, ExprParam paramCond)
 			{
 				return Expr.Condition(paramCond,
 					GenerateAddFlagsGuts(paramV, paramF),
