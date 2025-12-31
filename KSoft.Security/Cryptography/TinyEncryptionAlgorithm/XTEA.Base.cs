@@ -6,7 +6,7 @@ namespace KSoft.Security.Cryptography
 	{
 		protected const uint kDelta = 0x9E3779B9;
 
-		protected static readonly uint[] kDeltas = {
+		protected static readonly uint[] kDeltas = [
 			//       0           1           2           3           4           5
 			0x00000000, 0x9E3779B9, 0x9E3779B9, 0x3C6EF372, 0x3C6EF372, 0xDAA66D2B, // 0
 			0xDAA66D2B, 0x78DDE6E4, 0x78DDE6E4, 0x1715609D, 0x1715609D, 0xB54CDA56, // 6
@@ -19,15 +19,15 @@ namespace KSoft.Security.Cryptography
 			0xD5336958, 0x736AE311, 0x736AE311, 0x11A25CCA, 0x11A25CCA, 0xAFD9D683, // 48
 			0xAFD9D683, 0x4E11503C, 0x4E11503C, 0xEC48C9F5, 0xEC48C9F5, 0x8A8043AE, // 54
 			0x8A8043AE, 0x28B7BD67, 0x28B7BD67, 0xC6EF3720							// 60
-		};
-		protected static readonly byte[] kKeyIndex = {
+		];
+		protected static readonly byte[] kKeyIndex = [
 			0x00, 0x03, 0x01, 0x02, 0x02, 0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x03,
 			0x02, 0x02, 0x03, 0x01, 0x00, 0x00, 0x01, 0x00, 0x02, 0x03, 0x03, 0x02,
 			0x00, 0x01, 0x01, 0x01, 0x02, 0x00, 0x03, 0x03, 0x00, 0x02, 0x01, 0x01,
 			0x02, 0x01, 0x03, 0x00, 0x00, 0x03, 0x01, 0x02, 0x02, 0x01, 0x03, 0x01,
 			0x00, 0x00, 0x01, 0x03, 0x02, 0x02, 0x03, 0x02, 0x00, 0x01, 0x01, 0x00,
 			0x02, 0x03, 0x03, 0x02
-		};
+		];
 
 		protected static uint GetUInt32(byte[] b, int i)
 		{
@@ -42,7 +42,7 @@ namespace KSoft.Security.Cryptography
 			b[i++] = (byte)(v >> 24); b[i++] = (byte)(v >> 16); b[i++] = (byte)(v >> 8); b[i++] = (byte)v;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
+		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		protected uint k0, k1, k2, k3, k4, k5, k6, k7, k8, k9, k10, k11, k12, k13, k14, k15,
 				k16, k17, k18, k19, k20, k21, k22, k23, k24, k25, k26, k27, k28, k29, k30, k31;
 
@@ -50,7 +50,9 @@ namespace KSoft.Security.Cryptography
 		{
 			uint[] r = new uint[32];
 			for (int i = 1; i <= 32; i++)
+			{
 				r[i - 1] = kDeltas[i];
+			}
 
 			k0 = r[0]; k1 = r[1]; k2 = r[2]; k3 = r[3]; k4 = r[4]; k5 = r[5]; k6 = r[6]; k7 = r[7];
 			k8 = r[8]; k9 = r[9]; k10 = r[10]; k11 = r[11]; k12 = r[12]; k13 = r[13]; k14 = r[14]; k15 = r[15];
@@ -61,7 +63,9 @@ namespace KSoft.Security.Cryptography
 		{
 			uint[] r = new uint[32];
 			for (int r_i = 0, d_i = 32; r_i < 32; r_i++, d_i--)
+			{
 				r[r_i] = kDeltas[d_i];
+			}
 
 			k0 = r[0]; k1 = r[1]; k2 = r[2]; k3 = r[3]; k4 = r[4]; k5 = r[5]; k6 = r[6]; k7 = r[7];
 			k8 = r[8]; k9 = r[9]; k10 = r[10]; k11 = r[11]; k12 = r[12]; k13 = r[13]; k14 = r[14]; k15 = r[15];
@@ -75,17 +79,23 @@ namespace KSoft.Security.Cryptography
 		public void Encypt(byte[] bytes, int index, int length)
 		{
 			for (int x = index; x < (index + length); x += 8)
+			{
 				EncryptBlock(bytes, bytes, x);
+			}
 		}
 		public void Decypt(byte[] bytes, int index, int length)
 		{
 			for (int x = index; x < (index + length); x += 8)
+			{
 				DecryptBlock(bytes, bytes, x);
+			}
 		}
 		public void Decypt(byte[] inb, byte[] outb)
 		{
 			for (int x = 0; x < inb.Length; x += 8)
+			{
 				DecryptBlock(inb, outb, x);
+			}
 		}
 	};
 }

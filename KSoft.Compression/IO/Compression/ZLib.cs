@@ -22,7 +22,9 @@ namespace KSoft.IO.Compression
 
 			// adjust for zlib header
 			if (skipHeader)
+			{
 				dec.BaseStream.Seek(offset + kSizeOfHeader, System.IO.SeekOrigin.Begin);
+			}
 
 			// decompress the data and fill in the result array
 			result = new byte[length];
@@ -38,8 +40,8 @@ namespace KSoft.IO.Compression
 			Contract.Requires<ArgumentNullException>(ms != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
-			if (offset.IsNone()) offset = 0;
-			if (length.IsNone()) length = (int)ms.Length;
+			if (offset.IsNone()) { offset = 0; }
+			if (length.IsNone()) { length = (int)ms.Length; }
 
 			using (var dec = new DeflateStream(ms, CompressionMode.Decompress, true))
 			{
@@ -53,8 +55,8 @@ namespace KSoft.IO.Compression
 			Contract.Requires<ArgumentNullException>(bytes != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
-			if (offset.IsNone()) offset = 0;
-			if (length.IsNone()) length = bytes.Length;
+			if (offset.IsNone()) { offset = 0; }
+			if (length.IsNone()) { length = bytes.Length; }
 
 			using (var ms = new MemoryStream(bytes))
 			using (var dec = new DeflateStream(ms, CompressionMode.Decompress, false))
@@ -113,7 +115,9 @@ namespace KSoft.IO.Compression
 			// Setup the decompressed size header
 			byte[] size_bytes = BitConverter.GetBytes(bytes.Length);
 			if (!byteOrder.IsSameAsRuntime())
+			{
 				Bitwise.ByteSwap.SwapInt32(size_bytes, 0);
+			}
 			Array.Copy(size_bytes, result, size_bytes.Length);
 
 			var zip = new ICSharpCode.SharpZipLib.Zip.Compression.Deflater(

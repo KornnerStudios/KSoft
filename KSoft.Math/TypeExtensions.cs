@@ -96,38 +96,38 @@ namespace KSoft
 		#region Stream Real types
 		public static IO.EndianStream StreamV(this IO.EndianStream s, ref Vector2f value)
 		{
-				 if (s.IsReading) s.Reader.Read(out value);
-			else if (s.IsWriting) s.Writer.Write(value);
+				 if (s.IsReading) { s.Reader.Read(out value); }
+			else if (s.IsWriting) { s.Writer.Write(value); }
 
 			return s;
 		}
 		public static IO.EndianStream StreamV(this IO.EndianStream s, ref Vector3f value)
 		{
-				 if (s.IsReading) s.Reader.Read(out value);
-			else if (s.IsWriting) s.Writer.Write(value);
+				 if (s.IsReading) { s.Reader.Read(out value); }
+			else if (s.IsWriting) { s.Writer.Write(value); }
 
 			return s;
 		}
 		public static IO.EndianStream StreamV(this IO.EndianStream s, ref Vector4f value)
 		{
-				 if (s.IsReading) s.Reader.Read(out value);
-			else if (s.IsWriting) s.Writer.Write(value);
+				 if (s.IsReading) { s.Reader.Read(out value); }
+			else if (s.IsWriting) { s.Writer.Write(value); }
 
 			return s;
 		}
 
 		public static IO.EndianStream Stream(this IO.EndianStream s, ref QuaternionF value)
 		{
-				 if (s.IsReading) s.Reader.Read(out value);
-			else if (s.IsWriting) s.Writer.Write(value);
+				 if (s.IsReading) { s.Reader.Read(out value); }
+			else if (s.IsWriting) { s.Writer.Write(value); }
 
 			return s;
 		}
 
 		public static IO.EndianStream Stream(this IO.EndianStream s, ref Plane3f value)
 		{
-				 if (s.IsReading) s.Reader.Read(out value);
-			else if (s.IsWriting) s.Writer.Write(value);
+				 if (s.IsReading) { s.Reader.Read(out value); }
+			else if (s.IsWriting) { s.Writer.Write(value); }
 
 			return s;
 		}
