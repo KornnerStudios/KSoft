@@ -38,7 +38,7 @@ namespace KSoft.WPF.WindowsForms
 		/// <returns>true if the user clicks OK</returns>
 		public bool ShowDialog(IntPtr hWndOwner)
 		{
-			var result = Environment.OSVersion.Version.Major >= 6
+			var result = Environment.OSVersion.Version.Major >= 6 && gVistaDialogIsEnabled
 				? VistaDialog.Show(hWndOwner, InitialDirectory, Title)
 				: ShowXpDialog(hWndOwner, InitialDirectory, Title);
 			mFileName = result.FileName;
@@ -58,7 +58,8 @@ namespace KSoft.WPF.WindowsForms
 				{
 					Description = title,
 					SelectedPath = initialDirectory,
-					ShowNewFolderButton = true
+					ShowNewFolderButton = true,
+					AutoUpgradeEnabled = true, // to get Vista style
 				})
 			{
 				if (folderBrowserDialog.ShowDialog(new Win32WindowHandleWrapper(ownerHandle)) == DialogResult.OK)
@@ -78,11 +79,18 @@ namespace KSoft.WPF.WindowsForms
 			FOS_PATHMUSTEXIST = 0x00000800,
 		};
 
+		// Nope! This code is not 1:1 compatible with post-.netframework runtimes
+		static bool gVistaDialogIsEnabled = false;
 		static class VistaDialog
 		{
 			const BindingFlags kBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 			readonly static Assembly gWindowsFormsAssembly = typeof(FileDialog).Assembly;
+			// .netframework: System.Windows.Forms.FileDialogNative+IFileDialog
+			// .net9:
+			//	Assembly: System.Windows.Forms.Primitives
+			//	Class:Windows.Win32.UI.Shell.IFileDialog
 			readonly static Type gIFileDialogType = gWindowsFormsAssembly.GetType("System.Windows.Forms.FileDialogNative+IFileDialog");
+			// .net9 this returns ComScope<IFileDialog>, which is a ref struct
 			readonly static MethodInfo gCreateVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("CreateVistaDialog", kBindingFlags);
 			readonly static MethodInfo gOnBeforeVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("OnBeforeVistaDialog", kBindingFlags);
 			readonly static MethodInfo gGetOptionsMethodInfo = typeof(FileDialog).GetMethod("GetOptions", kBindingFlags);
