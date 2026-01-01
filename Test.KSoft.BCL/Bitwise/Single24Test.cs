@@ -6,14 +6,14 @@ namespace KSoft.Bitwise.Test
 	[TestClass]
 	public class Single24Test : BaseTestClass
 	{
-		static uint[] kTestConversionsList = {
+		static readonly uint[] kTestConversionsList = [
 			Single24.kMinInt,  0xCFFFFFC0,
 			Single24.kMaxInt,  0x4FFFFFC0,
 
 			0x39C000, 0x3E700000,
 			0x407921, 0x401E4840,
 			0x5870F0, 0x461C3C00,
-		};
+		];
 
 		[TestMethod]
 		public void Single24_TestConversions()

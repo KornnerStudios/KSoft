@@ -135,7 +135,7 @@ namespace KSoft.Reflection.Test
 		#endregion
 
 		#region Generate MemberSetter fail tests
-		struct MemberSetterTestStruct
+		readonly struct MemberSetterTestStruct
 		{
 #pragma warning disable 649
 			private readonly string mValueReadonly;
@@ -237,10 +237,10 @@ namespace KSoft.Reflection.Test
 			private TestGenerateConstructorFuncClass()
 			{
 			}
-			internal TestGenerateConstructorFuncClass(int i)
+			internal TestGenerateConstructorFuncClass(int _)
 			{
 			}
-			public TestGenerateConstructorFuncClass(object o, double d)
+			public TestGenerateConstructorFuncClass(object _, double _1)
 			{
 
 			}

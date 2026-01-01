@@ -30,8 +30,10 @@ namespace KSoft.Collections.Test
 				var collisions = dic_inspector.EntryCollisions(x);
 				int collision_count = collisions.Count();
 				if (collision_count > 0)
+				{
 					Console.WriteLine("{0} had {1} collisions before it was added",
 						x, collision_count);
+				}
 			}
 		}
 	};

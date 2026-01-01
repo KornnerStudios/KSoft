@@ -10,8 +10,8 @@ namespace KSoft.IO.Test
 		[TestMethod]
 		public void IO_JsonNodeGetRangesTest()
 		{
-			Dictionary<string, object> jsonData = null;
-			int min = 0, max = 0;
+			Dictionary<string, object> jsonData;
+			int min, max;
 			bool success;
 
 			const string kJson1 = "{\"gold\":[10,50]}";

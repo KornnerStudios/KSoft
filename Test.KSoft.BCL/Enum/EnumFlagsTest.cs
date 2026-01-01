@@ -27,7 +27,7 @@ namespace KSoft.Test
 				Assert.Fail("EnumFlags didn't fail on an Enum without a Flags attribute!");
 			} catch (System.Exception ex)
 			{
-				Assert.IsInstanceOfType(ex.InnerException, typeof(System.NotSupportedException));
+				Assert.IsInstanceOfType<System.NotSupportedException>(ex.InnerException);
 			}
 		}
 

@@ -8,9 +8,9 @@ namespace KSoft.Text.Test
 	{
 		const string kInt32ListString = "-516,517,519,520,521,522,523,-1258";
 		static readonly string kInt32ListStringWithSpaces = kInt32ListString.Replace(",", ", ");
-		static readonly int[] kInt32List = {
+		static readonly int[] kInt32List = [
 			-516,517,519,520,521,522,523,-1258,
-		};
+		];
 
 		#region StringListDesc related
 		void VerifyTryParseInt32List(System.Collections.Generic.IEnumerable<int?> results)

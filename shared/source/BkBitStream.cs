@@ -38,6 +38,17 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 #pragma warning disable 3021
 
+// KM00 start
+#pragma warning disable CA1513
+#pragma warning disable CA1834
+#pragma warning disable IDE0011 // Use braces
+#pragma warning disable IDE0056 // indexing can be simplified
+#pragma warning disable IDE0059 // Unnecessary assignment
+#pragma warning disable IDE0090 // 'new' statement can be simplified
+#pragma warning disable IDE0300 // Collection init can be simplified
+#pragma warning disable IDE0330
+// KM00 end
+
 namespace BKSystem.IO
 {
 	// http://www.codeproject.com/Articles/12261/A-BitStream-Class-for-the-NET-Framework

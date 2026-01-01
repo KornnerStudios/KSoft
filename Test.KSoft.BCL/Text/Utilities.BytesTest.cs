@@ -8,9 +8,9 @@ namespace KSoft.Text.Test
 		static class StringConstants
 		{
 			// 1337BEEF
-			public static readonly byte[] kDataBytes = {
+			public static readonly byte[] kDataBytes = [
 				0x13, 0x37, 0xBE, 0xEF,
-			};
+			];
 			public const string kDataString = "1337BEEF";
 
 			public const string kDataStringLong = "The quick brown fox jumped over the fucking lazy ass bitch";
@@ -96,7 +96,9 @@ namespace KSoft.Text.Test
 			num++;
 			TestCharDigitsAlpha(to_digit, is_digit, uc_start, uc_end, num);
 			if (is_extended)
+			{
 				num += (int)(uc_end-uc_start) + 1;
+			}
 			TestCharDigitsAlpha(to_digit, is_digit, lc_start, lc_end, num);
 		}
 
@@ -193,7 +195,7 @@ namespace KSoft.Text.Test
 		{
 			const int k_expected_0 = 51; // result expected when using chars starting at index 0
 			const int k_expected_1 = 63; // result expected when using chars starting at index 1
-			char[] chars = { '3', '3', 'F' }; // extra '3' prepended for testing offset params
+			char[] chars = ['3', '3', 'F']; // extra '3' prepended for testing offset params
 
 			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, chars[0], chars[1]));
 			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, chars[1], chars[2]));
@@ -201,7 +203,7 @@ namespace KSoft.Text.Test
 			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, chars));
 			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, chars, 1));
 
-			string str = new string(chars);
+			var str = new string(chars);
 			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, str));
 			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, str, 1));
 		}

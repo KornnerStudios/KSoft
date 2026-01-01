@@ -185,11 +185,15 @@ namespace KSoft.Bitwise.Test
 		{
 			Assert.AreEqual(Bits.kInt32BitCount, Bits.LeadingZerosCount(uint.MinValue));
 			for (uint x = 0, bits = uint.MaxValue; x < Bits.kInt32BitCount; x++, bits >>= 1)
+			{
 				Assert.AreEqual(x, (uint)Bits.LeadingZerosCount(bits));
+			}
 
 			Assert.AreEqual(Bits.kInt64BitCount, Bits.LeadingZerosCount(ulong.MinValue));
 			for (ulong x = 0, bits = ulong.MaxValue; x < Bits.kInt64BitCount; x++, bits >>= 1)
+			{
 				Assert.AreEqual(x, (ulong)Bits.LeadingZerosCount(bits));
+			}
 		}
 
 		[TestMethod]
@@ -197,11 +201,15 @@ namespace KSoft.Bitwise.Test
 		{
 			Assert.AreEqual(Bits.kInt32BitCount, Bits.TrailingZerosCount(uint.MinValue));
 			for (uint x = 0, bits = 1; x < Bits.kInt32BitCount; x++, bits <<= 1)
+			{
 				Assert.AreEqual(x, (uint)Bits.TrailingZerosCount(bits));
+			}
 
 			Assert.AreEqual(Bits.kInt64BitCount, Bits.TrailingZerosCount(ulong.MinValue));
 			for (ulong x = 0, bits = 1; x < Bits.kInt64BitCount; x++, bits <<= 1)
+			{
 				Assert.AreEqual(x, (ulong)Bits.TrailingZerosCount(bits));
+			}
 		}
 		#endregion
 
@@ -245,20 +253,20 @@ namespace KSoft.Bitwise.Test
 		}
 
 		#region BitmaskLookUpTable
-		static readonly byte[] kBitmaskLookup8 = new byte[] {
+		static readonly byte[] kBitmaskLookup8 = [
 			0x00,
 			0x01, 0x03, 0x07, 0x0F,
 			0x1F, 0x3F, 0x7F, 0xFF, // 8-bit
-		};
-		static readonly ushort[] kBitmaskLookup16 = new ushort[] {
+		];
+		static readonly ushort[] kBitmaskLookup16 = [
 			0x0000,
 			0x0001, 0x0003, 0x0007, 0x000F,
 			0x001F, 0x003F, 0x007F, 0x00FF, // 8-bit
 
 			0x01FF,	0x03FF, 0x07FF, 0x0FFF,
 			0x1FFF, 0x3FFF,	0x7FFF, 0xFFFF, // 16-bit
-		};
-		static readonly uint[] kBitmaskLookup32 = new uint[] {
+		];
+		static readonly uint[] kBitmaskLookup32 = [
 			0x00000000,
 			0x00000001, 0x00000003, 0x00000007, 0x0000000F,
 			0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF, // 8-bit
@@ -271,8 +279,8 @@ namespace KSoft.Bitwise.Test
 
 			0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF, 0x0FFFFFFF,
 			0x1FFFFFFF,	0x3FFFFFFF, 0x7FFFFFFF, 0xFFFFFFFF, // 32-bit
-		};
-		static readonly ulong[] kBitmaskLookup64 = new ulong[] {
+		];
+		static readonly ulong[] kBitmaskLookup64 = [
 			0x00000000,
 			0x00000001, 0x00000003, 0x00000007, 0x0000000F,
 			0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF, // 8-bit
@@ -298,7 +306,7 @@ namespace KSoft.Bitwise.Test
 
 			0x01FFFFFFFFFFFFFF, 0x03FFFFFFFFFFFFFF, 0x07FFFFFFFFFFFFFF, 0x0FFFFFFFFFFFFFFF,
 			0x1FFFFFFFFFFFFFFF,	0x3FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, // 64-bit
-		};
+		];
 
 		[TestMethod]
 		public void Bits_TestBitmaskLookUpTableGenerators()
@@ -324,12 +332,11 @@ namespace KSoft.Bitwise.Test
 		{
 			#region 32-bit
 			int i32_max_value;
-			int i32_bit_count;
 			uint i32_bit_mask;
 
 			// smallest value case
 			i32_max_value = 1;
-			i32_bit_mask = Bits.GetNoneableEncodingTraits(i32_max_value, out i32_bit_count);
+			i32_bit_mask = Bits.GetNoneableEncodingTraits(i32_max_value, out int i32_bit_count);
 			Assert.AreEqual(1, i32_bit_count);
 			Assert.AreEqual(0x1U, i32_bit_mask);
 
@@ -373,7 +380,7 @@ namespace KSoft.Bitwise.Test
 		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
 		{
-			Bits.GetNoneableEncodingTraits(0, out int bit_count);
+			Bits.GetNoneableEncodingTraits(0, out int _);
 		}
 
 		[TestMethod]
@@ -381,7 +388,7 @@ namespace KSoft.Bitwise.Test
 		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
 		{
-			Bits.GetNoneableEncodingTraits(int.MaxValue, out int bit_count);
+			Bits.GetNoneableEncodingTraits(int.MaxValue, out int _);
 		}
 		#endregion
 

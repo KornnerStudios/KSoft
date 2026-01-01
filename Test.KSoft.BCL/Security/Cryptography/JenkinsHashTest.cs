@@ -29,16 +29,16 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Cryptography_JenkinsHashLookup3Test()
 		{
-			string[] k_inputs = {
+			string[] k_inputs = [
 				"",
 				"Four score and seven years ago",
 				"Four score and seven years ago", // seed=1
-			};
-			uint[] k_expected_outputs = {
+			];
+			uint[] k_expected_outputs = [
 				0xDEADBEEF,
 				0x17770551,
 				0xCD628161, // seed=1
-			};
+			];
 
 			TestLookup3(k_inputs[0], k_expected_outputs[0]);
 			TestLookup3(k_inputs[1], k_expected_outputs[1]);

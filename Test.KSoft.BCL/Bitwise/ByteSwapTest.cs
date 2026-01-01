@@ -55,7 +55,7 @@ namespace KSoft.Bitwise.Test
 		public void ByteSwap_ReplaceBytesTest()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
-			byte[] buffer_bc = null;
+			byte[] buffer_bc;
 			ulong value = kBeforeValue;
 
 			// UInt64
@@ -96,7 +96,7 @@ namespace KSoft.Bitwise.Test
 		public void ByteSwap_SwapBufferTest()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
-			byte[] buffer_bc = null;
+			byte[] buffer_bc;
 			ulong value_before = kBeforeValue;
 			ulong value_after = kAfterValue;
 

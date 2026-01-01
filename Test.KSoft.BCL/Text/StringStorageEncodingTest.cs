@@ -19,7 +19,7 @@ namespace KSoft.Text.Test
 			{
 				MS.StringStorage storage =
 					//Strings.StringStorage.kCStringUnicode;
-					new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, 256);
+					new(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, 256);
 				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
 
 				const string test1 = "This is a test",

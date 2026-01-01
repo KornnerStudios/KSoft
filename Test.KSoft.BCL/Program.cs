@@ -11,6 +11,7 @@ namespace KSoft
 		[AssemblyInitialize]
 		public static void AssemblyInitialize(
 			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			TestContext context)
 		{
 			KSoft.Program.Initialize();

@@ -12,22 +12,22 @@ namespace KSoft.IO.Test
 		public void IO_BitStreamLogicTest()
 		{
 			var values = new KeyValuePair<uint, int>[] {
-				new KeyValuePair<uint, int>(10, 7),
-				new KeyValuePair<uint, int>(0xBEEFBEEF, 32),
-				new KeyValuePair<uint, int>(12, 7),
-				new KeyValuePair<uint, int>(0x13371337, 32),
-				new KeyValuePair<uint, int>(123, 7),
-				new KeyValuePair<uint, int>(0xDEADC0DE, 32),
-				new KeyValuePair<uint, int>(0, 7),
-				new KeyValuePair<uint, int>(111, 7),
+				new(10, 7),
+				new(0xBEEFBEEF, 32),
+				new(12, 7),
+				new(0x13371337, 32),
+				new(123, 7),
+				new(0xDEADC0DE, 32),
+				new(0, 7),
+				new(111, 7),
 
-				new KeyValuePair<uint, int>(1, 1),
-				new KeyValuePair<uint, int>(2, 2),
-				new KeyValuePair<uint, int>(7, 3),
-				new KeyValuePair<uint, int>(14, 4),
-				new KeyValuePair<uint, int>(21, 5),
-				new KeyValuePair<uint, int>(42, 6),
-				new KeyValuePair<uint, int>(14406, 15),
+				new(1, 1),
+				new(2, 2),
+				new(7, 3),
+				new(14, 4),
+				new(21, 5),
+				new(42, 6),
+				new(14406, 15),
 			};
 
 			using (var ms = new MemoryStream())
@@ -63,7 +63,10 @@ namespace KSoft.IO.Test
 				using (var bs_old = new BKSystem.IO.BitStream())
 				{
 					foreach (var kv in values)
+					{
 						bs_old.Write(kv.Key, 0, kv.Value);
+					}
+
 					bs_old.WriteTo(ms);
 				}
 				Text.Util.ByteArrayToStream(ms.ToArray(), System.Console.Out);
