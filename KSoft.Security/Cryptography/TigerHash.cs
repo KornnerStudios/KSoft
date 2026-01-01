@@ -5,6 +5,12 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
+// which means the algo's Initialize method will be executed before the call returns!
+// .netframework did not do this:
+// https://github.com/microsoft/referencesource/blob/ec9fa9ae770d522a5b5f0607898044b7478574a3/mscorlib/system/security/cryptography/hashalgorithm.cs#L172
+//#define TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
+
 namespace KSoft.Security.Cryptography
 {
 	// http://www.codeproject.com/Articles/149061/A-Tiger-Hash-Implementation-for-C
@@ -95,16 +101,26 @@ namespace KSoft.Security.Cryptography
 
 		public TigerHashVersion Version { get; set; }
 
+		private int ActualHashValueArrayLength => HashSizeValue / kWordCount;
+
 		public bool TryGetAsTiger64(out ulong tiger64)
 		{
 			tiger64 = 0;
 
+#if TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 			// This would only ever happen if Initialize wasn't called
 			if (mRegs != null && mRegs.Length >= 1)
 			{
 				tiger64 = mRegs[0];
 				return true;
 			}
+#else
+			if (HashValue != null && HashValue.Length == ActualHashValueArrayLength)
+			{
+				tiger64 = BitConverter.ToUInt64(HashValue, 0);
+				return true;
+			}
+#endif // TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 
 			return false;
 		}
@@ -114,6 +130,7 @@ namespace KSoft.Security.Cryptography
 			tiger64 = 0;
 			tiger128 = 0;
 
+#if TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 			// This would only ever happen if Initialize wasn't called
 			if (mRegs != null && mRegs.Length >= 2)
 			{
@@ -121,6 +138,14 @@ namespace KSoft.Security.Cryptography
 				tiger128 = mRegs[1];
 				return true;
 			}
+#else
+			if (HashValue != null && HashValue.Length == ActualHashValueArrayLength)
+			{
+				tiger64 = BitConverter.ToUInt64(HashValue, 0);
+				tiger128 = BitConverter.ToUInt64(HashValue, sizeof(ulong));
+				return true;
+			}
+#endif // TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 
 			return false;
 		}
@@ -131,6 +156,7 @@ namespace KSoft.Security.Cryptography
 			tiger128 = 0;
 			tiger192 = 0;
 
+#if TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 			// This would only ever happen if Initialize wasn't called
 			if (mRegs != null && mRegs.Length >= 3)
 			{
@@ -139,6 +165,15 @@ namespace KSoft.Security.Cryptography
 				tiger192 = mRegs[2];
 				return true;
 			}
+#else
+			if (HashValue != null && HashValue.Length == ActualHashValueArrayLength)
+			{
+				tiger64 = BitConverter.ToUInt64(HashValue, 0);
+				tiger128 = BitConverter.ToUInt64(HashValue, sizeof(ulong));
+				tiger192 = BitConverter.ToUInt64(HashValue, sizeof(ulong)+sizeof(ulong));
+				return true;
+			}
+#endif // TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 
 			return false;
 		}
@@ -312,7 +347,7 @@ namespace KSoft.Security.Cryptography
 
 			if (HashValue == null)
 			{
-				HashValue = new byte[HashSizeValue / kWordCount];
+				HashValue = new byte[ActualHashValueArrayLength];
 			}
 			Bits.ArrayCopy(mRegs, 0, HashValue, 0, mRegs.Length);
 			return HashValue;

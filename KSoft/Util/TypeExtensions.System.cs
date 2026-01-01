@@ -1362,6 +1362,10 @@ namespace KSoft
 				bytes_remaining -= num_bytes_read;
 			}
 
+			// #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
+			// which means the algo's Initialize method will be executed before the call returns!
+			// .netframework did not do this:
+			// https://github.com/microsoft/referencesource/blob/ec9fa9ae770d522a5b5f0607898044b7478574a3/mscorlib/system/security/cryptography/hashalgorithm.cs#L172
 			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
 
 			if (restorePosition)
