@@ -230,11 +230,19 @@ namespace KSoft
 			}
 		};
 
-		// Single.ToString(string): "if format is null or an empty string, the return value for this isntance is formatted with the general numeric format specifier ("G")
+		// Single.ToString(string): "if format is null or an empty string, the return value for this instance is formatted with the general numeric format specifier ("G")
 		public const string kFloatDefaultFormatSpecifier = null;
-		public const string kFloatRoundTripFormatSpecifier = "G9";
+		// Previously, these were set to G9 and G17
+		//	https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings#GFormatString
+		//	However, this led to cases with floats like "0.2" -> "0.200000003", "0.7" -> "0.699999988". Possibly due to doubles being used inside .NET's Single ToString?
+		// I am not entirely sure why I picked G many years ago, when round trip is actually R. Maybe I read the docs wrong?
+		// Anyway, we're now setting these both to just "R"
+		//	https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings#RFormatString
+		//	Docs only recommend R for BigInteger, not for Single/Double
+		//	Precision number is actually ignored, which is why these are not R9 and R17
+		public const string kFloatRoundTripFormatSpecifier = "R";
 		public const string kSingleRoundTripFormatSpecifier = kFloatRoundTripFormatSpecifier;
-		public const string kDoubleRoundTripFormatSpecifier = "G17";
+		public const string kDoubleRoundTripFormatSpecifier = "R";
 
 		// based on the reference source, this is what the default number styles are
 		public const NumberStyles kFloatTryParseNumberStyles = 0
