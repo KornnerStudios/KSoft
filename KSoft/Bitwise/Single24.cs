@@ -19,6 +19,8 @@ namespace KSoft.Bitwise
 		public const float MinValue = kMin;
 		public const float MaxValue = kMax;
 
+		public const string HexFormatString = "X6";
+
 		// s1e8m23
 		#region Single bit definitions
 		static class Single32
