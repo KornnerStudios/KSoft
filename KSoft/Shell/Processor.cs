@@ -175,6 +175,8 @@ namespace KSoft.Shell
 		#region Util
 		static int StaticCompare(Processor lhs, Processor rhs)
 		{
+			// #TODO figure out a a utility to do this generically for bit-encoded handles that can run
+			// in the internal Constants class.
 			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
 				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
 

@@ -165,6 +165,8 @@ namespace KSoft.Shell
 		#region Util
 		static int StaticCompare(Platform lhs, Platform rhs)
 		{
+			// #TODO figure out a a utility to do this generically for bit-encoded handles that can run
+			// in the internal Constants class.
 			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
 				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
 
@@ -273,6 +275,7 @@ namespace KSoft.Shell
 
 					// #REVIEW: Somehow use Environment.OSVersion.Version to detect if this is
 					// a Mac Intel (I think PPC was discontinued after 10.5?)
+					// "On .NET Core, its replacement is Unix."
 					case PlatformID.MacOSX:
 						switch (size)
 						{
@@ -281,7 +284,7 @@ namespace KSoft.Shell
 						}
 						break;
 
-					case PlatformID.Xbox:
+					case PlatformID.Xbox: // #REMOVE documentation says "this value is no longer used". And was specific to Xbox360.
 						switch (size)
 						{
 							case ProcessorSize.x32: kEnvironment = Xbox360; break;
@@ -291,6 +294,7 @@ namespace KSoft.Shell
 
 					// #REVIEW: iPod maybe?
 
+					case PlatformID.Other: // "Any other operating system. This includes Browser (WASM)."
 					default:
 						throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
 							"PlatformID: {0}",
