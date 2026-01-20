@@ -35,8 +35,8 @@ namespace KSoft.Shell
 
 		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
 		/// <remarks>10 bits at last count</remarks>
-		public static int BitCount { get => Constants.kLastBitField.FieldsBitCount; }
-		public static uint Bitmask { get => Constants.kLastBitField.FieldsBitmask.u32; }
+		public static int BitCount => Constants.kLastBitField.FieldsBitCount;
+		public static uint Bitmask => Constants.kLastBitField.FieldsBitmask.u32;
 		#endregion
 
 		#region Internal Value
@@ -198,48 +198,48 @@ namespace KSoft.Shell
 		static readonly Platform kUndefined = new(PlatformType.Undefined, Processor.Undefined);
 		/// <summary>Undefined platform</summary>
 		/// <remarks>Only use for comparison operations, don't query Processor properties. Results will be...undefined</remarks>
-		public static Platform Undefined { get { return kUndefined; } }
+		public static Platform Undefined => kUndefined;
 
 		#region Windows
 		static readonly Platform kWin32 = new(PlatformType.Windows, Processor.Intelx86);
 		/// <summary>Microsoft Windows 32-bit platform</summary>
-		public static Platform Win32 { get { return kWin32; } }
+		public static Platform Win32 => kWin32;
 
 		static readonly Platform kWin64 = new(PlatformType.Windows, Processor.Intelx64);
 		/// <summary>Microsoft Windows 64-bit platform</summary>
-		public static Platform Win64 { get { return kWin64; } }
+		public static Platform Win64 => kWin64;
 		#endregion
 
 		#region Xbox
 		static readonly Platform kXbox1 = new(PlatformType.Xbox, Processor.Intelx86);
 		/// <summary>Microsoft Xbox (Original) platform</summary>
-		public static Platform Xbox1 { get { return kXbox1; } }
+		public static Platform Xbox1 => kXbox1;
 
 		static readonly Platform kXbox360 = new(PlatformType.Xbox, Processor.PowerPcXenon);
 		/// <summary>Microsoft Xbox 360 platform</summary>
-		public static Platform Xbox360 { get { return kXbox360; } }
+		public static Platform Xbox360 => kXbox360;
 
 		static readonly Platform kXboxDurango = new(PlatformType.Xbox, Processor.Intelx64);
 		/// <summary>Microsoft Xbox One platform</summary>
-		public static Platform XboxDurango { get { return kXboxDurango; } }
+		public static Platform XboxDurango => kXboxDurango;
 		#endregion
 
 		#region Mac
 		static readonly Platform kMac32 = new(PlatformType.Mac, Processor.PowerPc32);
 		/// <summary>Apple's Macintosh PowerPC 32-bit platform</summary>
-		public static Platform Mac32 { get { return kMac32; } }
+		public static Platform Mac32 => kMac32;
 
 		static readonly Platform kMac64 = new(PlatformType.Mac, Processor.PowerPc64);
 		/// <summary>Apple's Macintosh PowerPC 64-bit platform</summary>
-		public static Platform Mac64 { get { return kMac64; } }
+		public static Platform Mac64 => kMac64;
 
 		static readonly Platform kMacIntel32 = new(PlatformType.Mac, Processor.Intelx86);
 		/// <summary>Apple's Macintosh for Intel 32-bit platform</summary>
-		public static Platform MacIntel32 { get { return kMacIntel32; } }
+		public static Platform MacIntel32 => kMacIntel32;
 
 		static readonly Platform kMacIntel64 = new(PlatformType.Mac, Processor.Intelx64);
 		/// <summary>Apple's Macintosh for Intel 64-bit platform</summary>
-		public static Platform MacIntel64 { get { return kMacIntel64; } }
+		public static Platform MacIntel64 => kMacIntel64;
 		#endregion
 
 		#region Operating Environment
@@ -304,9 +304,9 @@ namespace KSoft.Shell
 		};
 
 		/// <summary>Is the current .NET runtime Mono based, or Microsoft?</summary>
-		public static bool IsMonoRuntime  { get => OperatingEnvironment.kIsMonoRuntime; }
+		public static bool IsMonoRuntime => OperatingEnvironment.kIsMonoRuntime;
 		/// <summary>Get the library's platform definition for the current operating environment</summary>
-		public static Platform Environment { get => OperatingEnvironment.kEnvironment; }
+		public static Platform Environment => OperatingEnvironment.kEnvironment;
 		#endregion
 	};
 }

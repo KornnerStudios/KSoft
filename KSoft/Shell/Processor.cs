@@ -38,8 +38,8 @@ namespace KSoft.Shell
 
 		/// <summary>Number of bits required to represent a bit-encoded representation of this value type</summary>
 		/// <remarks>6 bits at last count</remarks>
-		public static int BitCount { get => Constants.kLastBitField.FieldsBitCount; }
-		public static uint Bitmask { get => Constants.kLastBitField.FieldsBitmask.u32; }
+		public static int BitCount => Constants.kLastBitField.FieldsBitCount;
+		public static uint Bitmask => Constants.kLastBitField.FieldsBitmask.u32;
 		#endregion
 
 		#region Internal Value
@@ -191,26 +191,26 @@ namespace KSoft.Shell
 		static readonly Processor kUndefined = new(uint.MaxValue, BitFieldTraits.Empty);
 		/// <summary>Undefined processor definition</summary>
 		/// <remarks>Only use for comparison operations, don't query value properties. Results will be...undefined</remarks>
-		public static Processor Undefined		{ get => kUndefined; }
+		public static Processor Undefined =>		kUndefined;
 
 		#region Intel
 		static readonly Processor kIntelx86 = new(ProcessorSize.x32, EndianFormat.Little, InstructionSet.Intel);
 		/// <summary>Intel's x86 processor definition</summary>
-		public static Processor Intelx86		{ get { return kIntelx86; } }
+		public static Processor Intelx86 =>			kIntelx86;
 
 		static readonly Processor kIntelx64 = new(ProcessorSize.x64, EndianFormat.Little, InstructionSet.Intel);
 		/// <summary>Intel's x64 processor definition</summary>
-		public static Processor Intelx64		{ get { return kIntelx64; } }
+		public static Processor Intelx64 =>			kIntelx64;
 		#endregion
 
 		#region PowerPc
 		static readonly Processor kPowerPc32 = new(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC 32-bit processor definition</summary>
-		public static Processor PowerPc32		{ get { return kPowerPc32; } }
+		public static Processor PowerPc32 =>		kPowerPc32;
 
 		static readonly Processor kPowerPc64 = new(ProcessorSize.x64, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC 64-bit processor definition</summary>
-		public static Processor PowerPc64		{ get { return kPowerPc64; } }
+		public static Processor PowerPc64 =>		kPowerPc64;
 
 		static readonly Processor kPowerPcXenon = new(ProcessorSize.x32, EndianFormat.Big, InstructionSet.PPC);
 		/// <summary>IBM's PowerPC (Xenon) processor definition</summary>
@@ -219,7 +219,7 @@ namespace KSoft.Shell
 		/// its instruction set is treated as if it were 32-bit. So we may adjust the definition system later on for these
 		/// types of processor cases.
 		/// </remarks>
-		public static Processor PowerPcXenon	{ get { return kPowerPcXenon; } }
+		public static Processor PowerPcXenon =>		kPowerPcXenon;
 		#endregion
 	};
 }
