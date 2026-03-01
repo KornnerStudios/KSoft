@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if MSBUILD_RUNTIME_FULL
+using System.Collections.Generic;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4
@@ -69,3 +70,4 @@ namespace KSoft.T4
 		} }
 	};
 }
+#endif // MSBUILD_RUNTIME_FULL

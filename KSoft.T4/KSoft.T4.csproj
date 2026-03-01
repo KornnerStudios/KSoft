@@ -7,8 +7,9 @@
     <AssemblyTitle>KSoft.T4</AssemblyTitle>
     <Product>KSoft.T4</Product>
     <TargetFramework>net481</TargetFramework>
+    <DefineConstants Condition=" '$(MSBuildRuntimeType)'=='Full' ">MSBUILD_RUNTIME_FULL;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(MSBuildRuntimeType)'=='Full' ">
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
     </Reference>

@@ -1,4 +1,5 @@
-﻿using Debug = System.Diagnostics.Debug;
+﻿#if MSBUILD_RUNTIME_FULL
+using Debug = System.Diagnostics.Debug;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
 namespace KSoft.T4.Bitwise
@@ -320,3 +321,4 @@ namespace KSoft.T4.Bitwise
 		}
 	};
 }
+#endif // MSBUILD_RUNTIME_FULL

@@ -426,11 +426,14 @@
       <LastGenOutput>HandleBitEncoderT4.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
+  <!--We do not want to reference KSoft.T4 under 'dotnet test', which runs msbuild as 'Core', as it won't have T4 extensions-->
+  <ItemGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
     <!--
       NOTE: There are no uses of KSoft.T4 in the cs files themselves, only the .tt files.
       However, KSoft.T4 MUST be build before KSoft. If the sln's entry for KSoft is not setup correctly
       (with a ProjectDependencies to KSoft.T4), the dll will not exist and this will force the build to occur.
+
+      We also do not want to reference KSoft.T4 under 'dotnet test'
     -->
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.T4\KSoft.T4.csproj"
         Condition="!Exists('$(VitaSolutionFamilyBinPath)KSoft.T4.dll')">

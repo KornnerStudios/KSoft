@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MSBUILD_RUNTIME_FULL
+using System;
 using Debug = System.Diagnostics.Debug;
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
 
@@ -450,3 +451,4 @@ namespace KSoft.T4.Values
 		}
 	};
 }
+#endif // MSBUILD_RUNTIME_FULL

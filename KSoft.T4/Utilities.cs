@@ -1,5 +1,7 @@
 ﻿using System;
+#if MSBUILD_RUNTIME_FULL
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
+#endif // MSBUILD_RUNTIME_FULL
 
 namespace KSoft.T4
 {
@@ -44,6 +46,7 @@ namespace KSoft.T4
 			}
 		}
 
+#if MSBUILD_RUNTIME_FULL
 		internal static TextTransformationCodeBlockBookmark EnterCodeBlock(
 			this TextTemplating.TextTransformation ttFile,
 			TextTransformationCodeBlockType type = TextTransformationCodeBlockType.NoBrackets, int indentCount = 1)
@@ -101,6 +104,7 @@ namespace KSoft.T4
 			WriteXmlDocLine(ttFile, "remarks", null,
 				string.Format(InvariantCultureInfo, format, args));
 		}
+#endif // MSBUILD_RUNTIME_FULL
 
 		internal static string ToValueKeyword(this bool condition)
 			=> condition ? "true" : "false";

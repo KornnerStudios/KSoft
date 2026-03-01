@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Debug = System.Diagnostics.Debug;
+#if MSBUILD_RUNTIME_FULL
 using TextTemplating = Microsoft.VisualStudio.TextTemplating;
+#endif // MSBUILD_RUNTIME_FULL
 
 namespace KSoft.T4.Bitwise
 {
@@ -174,6 +176,7 @@ namespace KSoft.T4.Bitwise
 		} }
 		#endregion
 
+#if MSBUILD_RUNTIME_FULL
 		public class IntegerByteAccessCodeGenerator
 		{
 			static readonly string kByteKeyword = NumberCodeDefinition.TypeCodeToKeyword(TypeCode.Byte);
@@ -333,5 +336,6 @@ namespace KSoft.T4.Bitwise
 			protected abstract void GenerateEpilogue();
 			protected abstract void GenerateCode();
 		};
+#endif // MSBUILD_RUNTIME_FULL
 	};
 }
