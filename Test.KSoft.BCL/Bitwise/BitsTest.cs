@@ -72,16 +72,16 @@ namespace KSoft.Bitwise.Test
 				ulong u64;
 
 				u32 = Bits.BitCountToMask32(Bits.kInt32BitCount);
-				Assert.AreEqual(u32, uint.MaxValue);
+				Assert.AreEqual(uint.MaxValue,		u32);
 
 				u32 = Bits.BitCountToMask32(Bits.kInt32BitCount-1);
-				Assert.AreEqual(u32, uint.MaxValue>>1);
+				Assert.AreEqual(uint.MaxValue>>1,	u32);
 
 				u64 = Bits.BitCountToMask64(Bits.kInt64BitCount);
-				Assert.AreEqual(u64, ulong.MaxValue);
+				Assert.AreEqual(ulong.MaxValue,		u64);
 
 				u64 = Bits.BitCountToMask64(Bits.kInt64BitCount-1);
-				Assert.AreEqual(u64, ulong.MaxValue>>1);
+				Assert.AreEqual(ulong.MaxValue>>1,	u64);
 			}
 		}
 
@@ -377,18 +377,20 @@ namespace KSoft.Bitwise.Test
 
 		[TestMethod]
 		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
-		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
 		{
-			Bits.GetNoneableEncodingTraits(0, out int _);
+			Assert.Throws<Exception>(() =>
+				Bits.GetNoneableEncodingTraits(0, out int _)
+			);
 		}
 
 		[TestMethod]
 		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
-		[ExpectedException(typeof(Exception), AllowDerivedTypes=true)]
 		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
 		{
-			Bits.GetNoneableEncodingTraits(int.MaxValue, out int _);
+			Assert.Throws<Exception>(() =>
+				Bits.GetNoneableEncodingTraits(int.MaxValue, out int _)
+			);
 		}
 		#endregion
 

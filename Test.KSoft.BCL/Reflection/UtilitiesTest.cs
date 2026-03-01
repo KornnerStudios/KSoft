@@ -68,7 +68,7 @@ namespace KSoft.Reflection.Test
 			var value_setter = Util.GenerateReferenceTypeMemberSetter<PropertySetPrivateClass, string>("Value");
 
 			value_setter(c, PropertySetPrivateClass.kModifiedValue);
-			Assert.AreEqual(c.Value, PropertySetPrivateClass.kModifiedValue);
+			Assert.AreEqual(PropertySetPrivateClass.kModifiedValue, c.Value);
 		}
 		[TestMethod]
 		public void Reflection_PropertySetPrivateViaReflectionTest()
@@ -77,7 +77,7 @@ namespace KSoft.Reflection.Test
 			var value_prop = Util.PropertyFromExpr(() => c.Value);
 
 			value_prop.SetValue(c, PropertySetPrivateClass.kModifiedValue, null);
-			Assert.AreEqual(c.Value, PropertySetPrivateClass.kModifiedValue);
+			Assert.AreEqual(PropertySetPrivateClass.kModifiedValue, c.Value);
 		}
 		#endregion
 
@@ -159,47 +159,53 @@ namespace KSoft.Reflection.Test
 
 		[TestMethod]
 		[Description("Validate GenerateValueTypeMemberSetter fails on readonly field")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateValueTypeMemberSetterFailTest1()
 		{
-			Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("mValueReadonly");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("mValueReadonly")
+			);
 		}
 		[TestMethod]
 		[Description("Validate GenerateValueTypeMemberSetter fails on a get-only property")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateValueTypeMemberSetterFailTest2()
 		{
-			Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("ValueNoSetter");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("ValueNoSetter")
+			);
 		}
 
 		[TestMethod]
 		[Description("Validate GenerateReferenceTypeMemberSetter fails on readonly field")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateReferenceTypeMemberSetterFailTest1()
 		{
-			Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("mValueReadonly");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("mValueReadonly")
+			);
 		}
 		[TestMethod]
 		[Description("Validate GenerateReferenceTypeMemberSetter fails on a get-only property")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateReferenceTypeMemberSetterFailTest2()
 		{
-			Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("ValueNoSetter");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("ValueNoSetter")
+			);
 		}
 
 		[TestMethod]
 		[Description("Validate GenerateStaticFieldSetter fails on readonly field")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateStaticFieldSetterFailTest()
 		{
-			Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>("mStaticValueReadonly");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>("mStaticValueReadonly")
+			);
 		}
 		[TestMethod]
 		[Description("Validate GenerateStaticPropertySetter fails on a get-only property")]
-		[ExpectedException(typeof(MemberAccessException))]
 		public void Reflection_GenerateStaticPropertySetterFailTest()
 		{
-			Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>("StaticValueNoSetter");
+			Assert.Throws<MemberAccessException>(() =>
+				Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>("StaticValueNoSetter")
+			);
 		}
 		#endregion
 

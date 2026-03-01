@@ -21,14 +21,14 @@ namespace KSoft.Collections.Test
 
 			foreach (int idx in bs.ClearBitIndices)
 			{
-				Assert.IsTrue(idx % 2 == 0);
+				Assert.AreEqual(0, idx % 2);
 				idx_count++;
 			}
 			Assert.AreEqual(bs.Length / 2, idx_count);
 
 			foreach (int idx in bs.SetBitIndices)
 			{
-				Assert.IsTrue(idx % 2 == 1);
+				Assert.AreEqual(1, idx % 2);
 				idx_count++;
 			}
 			Assert.AreEqual(bs.Length, idx_count);
@@ -75,39 +75,39 @@ namespace KSoft.Collections.Test
 			lhs_bs.Or(rhs_bs);
 			Assert.AreEqual(2, lhs_bs.Cardinality);
 			Assert.AreEqual(1, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
 
 			// also undoes the OR operation
 			lhs_bs.AndNot(rhs_bs);
 			Assert.AreEqual(1, lhs_bs.Cardinality);
 			Assert.AreEqual(2, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
 
 			lhs_bs.And(rhs_bs);
 			Assert.AreEqual(0, lhs_bs.Cardinality);
 			Assert.AreEqual(3, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
 
 			// at this point lhs is zero, and the only bit in rhs which is on (relative to lhs's bit-space) is the 2nd
 			lhs_bs.Xor(rhs_bs);
 			Assert.AreEqual(1, lhs_bs.Cardinality);
 			Assert.AreEqual(2, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
 
 			lhs_bs.Not();
 			Assert.AreEqual(2, lhs_bs.Cardinality);
 			Assert.AreEqual(1, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], true);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
+			Assert.IsTrue (lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
 		}
 
 		[TestMethod]
@@ -120,9 +120,9 @@ namespace KSoft.Collections.Test
 			{
 				Assert.AreEqual(1, bs.Cardinality);
 				Assert.AreEqual(2, bs.CardinalityZeros);
-				Assert.AreEqual(bs[0], false);
-				Assert.AreEqual(bs[1], false);
-				Assert.AreEqual(bs[2], true);
+				Assert.IsFalse(bs[0]);
+				Assert.IsFalse(bs[1]);
+				Assert.IsTrue (bs[2]);
 			}
 
 			bs.Or(bs_empty);

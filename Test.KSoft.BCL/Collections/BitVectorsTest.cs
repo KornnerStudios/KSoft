@@ -42,14 +42,14 @@ namespace KSoft.Collections.Test
 
 				foreach (int idx in bv32.ClearBitIndices)
 				{
-					Assert.IsTrue(idx % 2 == 0);
+					Assert.AreEqual(0, idx % 2);
 					idx_count++;
 				}
 				Assert.AreEqual(bv32.Length / 2, idx_count);
 
 				foreach (int idx in bv32.SetBitIndices)
 				{
-					Assert.IsTrue(idx % 2 == 1);
+					Assert.AreEqual(1, idx % 2);
 					idx_count++;
 				}
 				Assert.AreEqual(bv32.Length, idx_count);
@@ -65,14 +65,14 @@ namespace KSoft.Collections.Test
 
 				foreach (int idx in bv64.ClearBitIndices)
 				{
-					Assert.IsTrue(idx % 2 == 0);
+					Assert.AreEqual(0, idx % 2);
 					idx_count++;
 				}
 				Assert.AreEqual(bv64.Length / 2, idx_count);
 
 				foreach (int idx in bv64.SetBitIndices)
 				{
-					Assert.IsTrue(idx % 2 == 1);
+					Assert.AreEqual(1, idx % 2);
 					idx_count++;
 				}
 				Assert.AreEqual(bv64.Length, idx_count);
@@ -100,44 +100,44 @@ namespace KSoft.Collections.Test
 			lhs_bs = lhs_bs.Or(rhs_bs);
 			Assert.AreEqual(3, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsTrue (lhs_bs[3]);
 
 			// also undoes the OR operation
 			lhs_bs = lhs_bs.AndNot(rhs_bs);
 			Assert.AreEqual(1, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 
 			lhs_bs = lhs_bs.And(rhs_bs);
 			Assert.AreEqual(0, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], false);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 
 			// at this point lhs is zero, and the only bit in rhs which is on (relative to lhs's bit-space) is the 2nd
 			lhs_bs = lhs_bs.Xor(rhs_bs);
 			Assert.AreEqual(2, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], false);
-			Assert.AreEqual(lhs_bs[3], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
+			Assert.IsTrue (lhs_bs[3]);
 
 			lhs_bs = lhs_bs.Not();
 			Assert.AreEqual(k_bit_count - 2, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], true);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsTrue (lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 		}
 		private void BitVectorsOperationsTest64()
 		{
@@ -151,44 +151,44 @@ namespace KSoft.Collections.Test
 			lhs_bs = lhs_bs.Or(rhs_bs);
 			Assert.AreEqual(3, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsTrue (lhs_bs[3]);
 
 			// also undoes the OR operation
 			lhs_bs = lhs_bs.AndNot(rhs_bs);
 			Assert.AreEqual(1, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 
 			lhs_bs = lhs_bs.And(rhs_bs);
 			Assert.AreEqual(0, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], false);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 
 			// at this point lhs is zero, and the only bit in rhs which is on (relative to lhs's bit-space) is the 2nd
 			lhs_bs = lhs_bs.Xor(rhs_bs);
 			Assert.AreEqual(2, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], false);
-			Assert.AreEqual(lhs_bs[1], true);
-			Assert.AreEqual(lhs_bs[2], false);
-			Assert.AreEqual(lhs_bs[3], true);
+			Assert.IsFalse(lhs_bs[0]);
+			Assert.IsTrue (lhs_bs[1]);
+			Assert.IsFalse(lhs_bs[2]);
+			Assert.IsTrue (lhs_bs[3]);
 
 			lhs_bs = lhs_bs.Not();
 			Assert.AreEqual(k_bit_count - 2, lhs_bs.Cardinality);
 			Assert.AreEqual(k_bit_count - lhs_bs.Cardinality, lhs_bs.CardinalityZeros);
-			Assert.AreEqual(lhs_bs[0], true);
-			Assert.AreEqual(lhs_bs[1], false);
-			Assert.AreEqual(lhs_bs[2], true);
-			Assert.AreEqual(lhs_bs[3], false);
+			Assert.IsTrue (lhs_bs[0]);
+			Assert.IsFalse(lhs_bs[1]);
+			Assert.IsTrue (lhs_bs[2]);
+			Assert.IsFalse(lhs_bs[3]);
 		}
 		#endregion
 
