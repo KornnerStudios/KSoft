@@ -1,10 +1,5 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft
 {
@@ -75,6 +70,7 @@ namespace KSoft
 
 #endif
 
+		// #TODO_DOTNET replace BitCount with System.Numerics.BitOperations.PopCount
 		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
 		/// <param name="bits">Integer whose bits to count</param>
 		/// <returns></returns>
@@ -127,9 +123,14 @@ namespace KSoft
 		[Contracts.Pure]
 		public static uint BitCountToMask32(int bitCount)
 		{
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount >= 0 && bitCount <= kUInt32BitCount);
+			ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, kUInt32BitCount);
 
-			return uint.MaxValue >> (kUInt32BitCount-bitCount);
+			//return uint.MaxValue >> (kUInt32BitCount-bitCount);
+			const uint kOne = 1;
+			return bitCount == kUInt32BitCount
+				? uint.MaxValue
+				: (kOne << bitCount) - 1;
 		}
 
 		/// <summary>Calculate the bit-mask needed for a number of bits</summary>
@@ -138,9 +139,14 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ulong BitCountToMask64(int bitCount)
 		{
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount >= 0 && bitCount <= kUInt64BitCount);
+			ArgumentOutOfRangeException.ThrowIfLessThan(bitCount, 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, kUInt64BitCount);
 
-			return ulong.MaxValue >> (kUInt64BitCount-bitCount);
+			//return ulong.MaxValue >> (kUInt64BitCount-bitCount);
+			const ulong kOne = 1;
+			return bitCount == kUInt64BitCount
+				? ulong.MaxValue
+				: (kOne << bitCount) - 1;
 		}
 
 	};

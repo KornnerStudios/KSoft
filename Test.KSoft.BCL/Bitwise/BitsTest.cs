@@ -14,6 +14,7 @@ namespace KSoft.Bitwise.Test
 		[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields")]
 		const ulong kMiddleNybbles = 0x6666666666666666UL; // Bit pattern middle bits are set in a nybble
 
+		// #TODO_DOTNET replace BitCount with System.Numerics.BitOperations.PopCount
 		#region BitCount
 		[TestMethod]
 		public void Bits_BitCountTest()
@@ -56,26 +57,40 @@ namespace KSoft.Bitwise.Test
 
 				expected_bit_count = Bits.kByteBitCount / 2;	i32 = Bits.BitCount(unchecked((byte)kBitCountValue));
 				Assert.AreEqual(expected_bit_count, i32);
+				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((byte)kBitCountValue)), i32);
 
 				expected_bit_count = Bits.kInt16BitCount / 2;	i32 = Bits.BitCount(unchecked((ushort)kBitCountValue));
 				Assert.AreEqual(expected_bit_count, i32);
+				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((ushort)kBitCountValue)), i32);
 
 				expected_bit_count = Bits.kInt32BitCount / 2;	i32 = Bits.BitCount(unchecked((uint)kBitCountValue));
 				Assert.AreEqual(expected_bit_count, i32);
+				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((uint)kBitCountValue)), i32);
 
 				expected_bit_count = Bits.kInt64BitCount / 2;	i32 = Bits.BitCount(kBitCountValue);
 				Assert.AreEqual(expected_bit_count, i32);
+				Assert.AreEqual(System.Numerics.BitOperations.PopCount(kBitCountValue), i32);
 			}
+		}
 
+		[TestMethod]
+		public void BitCountToMask_Test()
+		{
 			{
 				uint u32;
 				ulong u64;
+
+				u32 = Bits.BitCountToMask32(0);
+				Assert.AreEqual(0U,					u32);
 
 				u32 = Bits.BitCountToMask32(Bits.kInt32BitCount);
 				Assert.AreEqual(uint.MaxValue,		u32);
 
 				u32 = Bits.BitCountToMask32(Bits.kInt32BitCount-1);
 				Assert.AreEqual(uint.MaxValue>>1,	u32);
+
+				u64 = Bits.BitCountToMask64(0);
+				Assert.AreEqual(0UL,				u64);
 
 				u64 = Bits.BitCountToMask64(Bits.kInt64BitCount);
 				Assert.AreEqual(ulong.MaxValue,		u64);
@@ -85,11 +100,42 @@ namespace KSoft.Bitwise.Test
 			}
 		}
 
-//		[TestMethod]
-		[SuppressMessage("Microsoft.Design", "CA1822:MarkMembersAsStatic", Justification="#TODO_UNITTEST")]
-		public void Bits_BitCountToMaskTest()
+		[TestMethod]
+		public void BitCountToMask_TestInRangeValues()
 		{
-			// #TODO_UNITTEST
+			for (int bitCount = Bits.kInt32BitCount; bitCount > 0; bitCount--)
+			{
+				uint u32 = Bits.BitCountToMask32(bitCount);
+
+				int expectedShift = Bits.kInt32BitCount - bitCount;
+				var expectedValue = uint.MaxValue>>expectedShift;
+				Assert.AreEqual(expectedValue, u32,
+					$"bitCount={bitCount}");
+			}
+
+			for (int bitCount = Bits.kInt64BitCount; bitCount > 0; bitCount--)
+			{
+				ulong u64 = Bits.BitCountToMask64(bitCount);
+
+				int expectedShift = Bits.kInt64BitCount - bitCount;
+				var expectedValue = ulong.MaxValue>>expectedShift;
+				Assert.AreEqual(expectedValue, u64,
+					$"bitCount={bitCount}");
+			}
+		}
+
+		[TestMethod]
+		public void BitCountToMask_TestThrowsOnOutOfRange()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(()
+				=> Bits.BitCountToMask32(-1));
+			Assert.Throws<ArgumentOutOfRangeException>(()
+				=> Bits.BitCountToMask32(Bits.kInt32BitCount+1));
+
+			Assert.Throws<ArgumentOutOfRangeException>(()
+				=> Bits.BitCountToMask64(-1));
+			Assert.Throws<ArgumentOutOfRangeException>(()
+				=> Bits.BitCountToMask64(Bits.kInt64BitCount+1));
 		}
 		#endregion
 
@@ -312,17 +358,16 @@ namespace KSoft.Bitwise.Test
 		public void Bits_TestBitmaskLookUpTableGenerators()
 		{
 			Bits.BitmaskLookUpTableGenerate(Bits.kByteBitCount, out byte[] generated8);
-			Assert.IsTrue(generated8.EqualsArray(kBitmaskLookup8));
+			CollectionAssert.AreEqual(kBitmaskLookup8, generated8);
 
 			Bits.BitmaskLookUpTableGenerate(Bits.kInt16BitCount, out ushort[] generated16);
-			Assert.IsTrue(generated16.EqualsArray(kBitmaskLookup16));
+			CollectionAssert.AreEqual(kBitmaskLookup16, generated16);
 
 			Bits.BitmaskLookUpTableGenerate(Bits.kInt32BitCount, out uint[] generated32);
-			Assert.IsTrue(generated32.EqualsArray(kBitmaskLookup32));
+			CollectionAssert.AreEqual(kBitmaskLookup32, generated32);
 
 			Bits.BitmaskLookUpTableGenerate(Bits.kInt64BitCount, out ulong[] generated64);
-			Assert.IsTrue(generated64.EqualsArray(kBitmaskLookup64));
-
+			CollectionAssert.AreEqual(kBitmaskLookup64, generated64);
 		}
 		#endregion
 
