@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers.Binary;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -15,6 +17,12 @@ namespace KSoft.Bitwise.Test
 
 		const ulong kBeforeValueUInt24 = 0x123456;
 		const ulong kAfterValueUInt24 = 0x563412;
+		const int kBenchmarkWarmupIterations = 20_000;
+		const int kBenchmarkIterations = 2_000_000;
+
+		static ushort gBenchmarkUInt16;
+		static uint gBenchmarkUInt32;
+		static ulong gBenchmarkUInt64;
 
 		[TestMethod]
 		public void ByteSwap_SwapIntegersTest()
@@ -49,6 +57,126 @@ namespace KSoft.Bitwise.Test
 			value_after = kAfterValueUInt24;
 			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt24((uint)value_before));
 			Assert.AreEqual((int)value_after,  ByteSwap.SwapInt24 ((int) value_before));
+		}
+
+		[TestMethod]
+		public void SwapNaturalWidthsMatchesBinaryPrimitivesTest()
+		{
+			ushort[] values16 =
+			[
+				0x0000,
+				0x0001,
+				0x00FF,
+				0x8000,
+				0xFFFF,
+			];
+			foreach (ushort value in values16)
+			{
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt16(value));
+				Assert.AreEqual(
+					BinaryPrimitives.ReverseEndianness(unchecked((short)value)),
+					ByteSwap.SwapInt16(unchecked((short)value)));
+			}
+
+			uint[] values32 =
+			[
+				0x00000000,
+				0x00000001,
+				0x00FF00FF,
+				0x80000000,
+				0xFFFFFFFF,
+			];
+			foreach (uint value in values32)
+			{
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt32(value));
+				Assert.AreEqual(
+					BinaryPrimitives.ReverseEndianness(unchecked((int)value)),
+					ByteSwap.SwapInt32(unchecked((int)value)));
+			}
+
+			ulong[] values64 =
+			[
+				0x0000000000000000,
+				0x0000000000000001,
+				0x00FF00FF00FF00FF,
+				0x8000000000000000,
+				0xFFFFFFFFFFFFFFFF,
+			];
+			foreach (ulong value in values64)
+			{
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt64(value));
+				Assert.AreEqual(
+					BinaryPrimitives.ReverseEndianness(unchecked((long)value)),
+					ByteSwap.SwapInt64(unchecked((long)value)));
+			}
+		}
+
+		[TestMethod]
+		public void SwapSignedPartialWidthEdgeCasesTest()
+		{
+			Assert.AreEqual(0x00FFFFFF, ByteSwap.SwapInt24(-1));
+			Assert.AreEqual(0x00000080, ByteSwap.SwapInt24(unchecked((int)0xFF800000)));
+			Assert.AreEqual(0x00FFFF7F, ByteSwap.SwapInt24(0x007FFFFF));
+			Assert.AreEqual(0x00563412U, ByteSwap.SwapUInt24(0xFF123456));
+
+			int int24 = unchecked((int)0xFF800000);
+			uint uint24 = 0xFF123456;
+			ByteSwap.SwapInt24(ref int24);
+			ByteSwap.SwapUInt24(ref uint24);
+			Assert.AreEqual(0x00000080, int24);
+			Assert.AreEqual(0x00563412U, uint24);
+
+			Assert.AreEqual(0x000000FFFFFFFFFFL, ByteSwap.SwapInt40(-1));
+			Assert.AreEqual(0x0000000000000080L, ByteSwap.SwapInt40(unchecked((long)0xFFFFFF8000000000UL)));
+			Assert.AreEqual(0x000000FFFFFFFF7FL, ByteSwap.SwapInt40(0x0000007FFFFFFFFF));
+			Assert.AreEqual(0x0000009A78563412UL, ByteSwap.SwapUInt40(0x00FFFF123456789AUL));
+
+			long int40 = unchecked((long)0xFFFFFF8000000000UL);
+			ulong uint40 = 0x00FFFF123456789AUL;
+			ByteSwap.SwapInt40(ref int40);
+			ByteSwap.SwapUInt40(ref uint40);
+			Assert.AreEqual(0x0000000000000080L, int40);
+			Assert.AreEqual(0x0000009A78563412UL, uint40);
+		}
+
+		[TestMethod]
+		public void SwapFloatingPointPreservesBitPayloadsTest()
+		{
+			uint[] single_bits =
+			[
+				0x00000000,
+				0x80000000,
+				0x3F800000,
+				0x7FC12345,
+				0xFFC12345,
+			];
+			foreach (uint bits in single_bits)
+			{
+				float value = ByteSwap.SingleFromUInt32(bits);
+				float swapped = ByteSwap.SwapSingle(value);
+				Assert.AreEqual(ByteSwap.SwapUInt32(bits), ByteSwap.SingleToUInt32(swapped));
+
+				ByteSwap.SwapSingle(ref value);
+				Assert.AreEqual(ByteSwap.SwapUInt32(bits), ByteSwap.SingleToUInt32(value));
+			}
+
+			ulong[] double_bits =
+			[
+				0x0000000000000000,
+				0x8000000000000000,
+				0x3FF0000000000000,
+				0x7FF8123456789ABC,
+				0xFFF8123456789ABC,
+			];
+			foreach (ulong bits in double_bits)
+			{
+				double value = ByteSwap.DoubleFromUInt64(bits);
+				double swapped = ByteSwap.SwapDouble(value);
+				Assert.AreEqual(ByteSwap.SwapUInt64(bits), ByteSwap.DoubleToUInt64(swapped));
+
+				ByteSwap.SwapDouble(ref value);
+				Assert.AreEqual(ByteSwap.SwapUInt64(bits), ByteSwap.DoubleToUInt64(value));
+			}
 		}
 
 		[TestMethod]
@@ -91,6 +219,35 @@ namespace KSoft.Bitwise.Test
 			buffer_bc = BitConverter.GetBytes((ushort)value);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
 		}
+
+		[TestMethod]
+		public void ReplaceBytesWritesHostEndianAtOffsetsTest()
+		{
+			byte[] buffer = CreateSentinelBuffer(24);
+
+			int next_offset = ByteSwap.ReplaceBytes(buffer, 1, (ushort)0x1234);
+			Assert.AreEqual(1 + sizeof(ushort), next_offset);
+			AssertHostEndianBytes(buffer, 1, 0x1234, sizeof(ushort));
+
+			next_offset = ByteSwap.ReplaceBytesUInt24(buffer, 5, 0x123456);
+			Assert.AreEqual(5 + ByteSwap.kSizeOfUInt24, next_offset);
+			AssertHostEndianBytes(buffer, 5, 0x123456, ByteSwap.kSizeOfUInt24);
+
+			next_offset = ByteSwap.ReplaceBytes(buffer, 9, 0x12345678U);
+			Assert.AreEqual(9 + sizeof(uint), next_offset);
+			AssertHostEndianBytes(buffer, 9, 0x12345678, sizeof(uint));
+
+			next_offset = ByteSwap.ReplaceBytesUInt40(buffer, 14, 0x123456789AUL);
+			Assert.AreEqual(14 + ByteSwap.kSizeOfUInt40, next_offset);
+			AssertHostEndianBytes(buffer, 14, 0x123456789AUL, ByteSwap.kSizeOfUInt40);
+
+			Assert.AreEqual(0xCC, buffer[0]);
+			Assert.AreEqual(0xCC, buffer[4]);
+			Assert.AreEqual(0xCC, buffer[8]);
+			Assert.AreEqual(0xCC, buffer[13]);
+			Assert.AreEqual(0xCC, buffer[19]);
+		}
+
 		// NOTE: ByteSwap_ReplaceBytesTest should be tested before SwapBufferTest (see OrderedTests_ByteSwap)
 		[TestMethod]
 		public void ByteSwap_SwapBufferTest()
@@ -141,6 +298,52 @@ namespace KSoft.Bitwise.Test
 			ByteSwap.SwapInt24(buffer, 0);
 			buffer_bc = BitConverter.GetBytes((uint)value_after);
 			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+		}
+
+		[TestMethod]
+		public void SwapBufferOverlappingWindowsTest()
+		{
+			byte[] buffer =
+			[
+				0x01,
+				0x02,
+				0x03,
+				0x04,
+				0x05,
+				0x06,
+			];
+
+			int next_offset = ByteSwap.SwapInt32(buffer, 0);
+			Assert.AreEqual(sizeof(int), next_offset);
+			CollectionAssert.AreEqual(new byte[] { 0x04, 0x03, 0x02, 0x01, 0x05, 0x06 }, buffer);
+
+			next_offset = ByteSwap.SwapInt32(buffer, 2);
+			Assert.AreEqual(2 + sizeof(int), next_offset);
+			CollectionAssert.AreEqual(new byte[] { 0x04, 0x03, 0x06, 0x05, 0x01, 0x02 }, buffer);
+		}
+
+		[TestMethod]
+		public void BufferOffsetValidationTest()
+		{
+			AssertThrows<ArgumentNullException>(() => ByteSwap.SwapUInt16(null, 0));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 1));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 2));
+
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt24(new byte[3], 1));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt32(new byte[4], 1));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(new byte[5], 1));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt64(new byte[8], 1));
+
+			AssertThrows<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null, 0, 0x1234U));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], -1, 0x1234U));
+			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], 1, 0x12345678U));
+			AssertThrows<ArgumentOutOfRangeException>(
+				() => ByteSwap.ReplaceBytesUInt24(new byte[3], 1, 0x123456));
+			AssertThrows<ArgumentOutOfRangeException>(
+				() => ByteSwap.ReplaceBytesUInt40(new byte[5], 1, 0x123456789AUL));
+			AssertThrows<ArgumentOutOfRangeException>(
+				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(uint) - 1]));
 		}
 
 		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken
@@ -253,6 +456,49 @@ namespace KSoft.Bitwise.Test
 			}
 		}
 
+		private static byte[] CreateSentinelBuffer(int length)
+		{
+			var buffer = new byte[length];
+			for (int x = 0; x < buffer.Length; x++)
+			{
+				buffer[x] = 0xCC;
+			}
+
+			return buffer;
+		}
+
+		private static void AssertHostEndianBytes(byte[] buffer, int offset, ulong value, int byteCount)
+		{
+			for (int x = 0; x < byteCount; x++)
+			{
+				int shift = BitConverter.IsLittleEndian
+					? x * Bits.kByteBitCount
+					: (byteCount - 1 - x) * Bits.kByteBitCount;
+
+				Assert.AreEqual((byte)(value >> shift), buffer[offset + x]);
+			}
+		}
+
+		private static void AssertThrows<TException>(Action action)
+			where TException : Exception
+		{
+			try
+			{
+				action();
+			}
+			catch (TException)
+			{
+				return;
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(string.Format("Expected {0}, got {1}: {2}",
+					typeof(TException).Name, ex.GetType().Name, ex.Message));
+			}
+
+			Assert.Fail(string.Format("Expected {0}, but no exception was thrown.", typeof(TException).Name));
+		}
+
 		private void AssertBytesAreEqual(int bitCount, ulong expectedValue, byte[] buffer, ref int bufferIndex)
 		{
 			var invariant_culture_info = KSoft.Util.InvariantCultureInfo;
@@ -281,5 +527,132 @@ namespace KSoft.Bitwise.Test
 					break;
 			}
 		}
+
+		#region Benchmark
+		[TestMethod]
+		[TestCategory("Benchmark")]
+		public void BenchmarkCurrentVsBinaryPrimitivesPrototype()
+		{
+			WarmUpBenchmarkPrototype();
+
+			TimeSpan current16 = Measure(() => gBenchmarkUInt16 = BenchmarkCurrentUInt16(kBenchmarkIterations));
+			ushort current16_result = gBenchmarkUInt16;
+			TimeSpan bcl16 = Measure(() => gBenchmarkUInt16 = BenchmarkBclUInt16(kBenchmarkIterations));
+			Assert.AreEqual(current16_result, gBenchmarkUInt16);
+
+			TimeSpan current32 = Measure(() => gBenchmarkUInt32 = BenchmarkCurrentUInt32(kBenchmarkIterations));
+			uint current32_result = gBenchmarkUInt32;
+			TimeSpan bcl32 = Measure(() => gBenchmarkUInt32 = BenchmarkBclUInt32(kBenchmarkIterations));
+			Assert.AreEqual(current32_result, gBenchmarkUInt32);
+
+			TimeSpan current64 = Measure(() => gBenchmarkUInt64 = BenchmarkCurrentUInt64(kBenchmarkIterations));
+			ulong current64_result = gBenchmarkUInt64;
+			TimeSpan bcl64 = Measure(() => gBenchmarkUInt64 = BenchmarkBclUInt64(kBenchmarkIterations));
+			Assert.AreEqual(current64_result, gBenchmarkUInt64);
+
+			WriteBenchmarkResult("UInt16", current16, bcl16);
+			WriteBenchmarkResult("UInt32", current32, bcl32);
+			WriteBenchmarkResult("UInt64", current64, bcl64);
+		}
+
+		private static TimeSpan Measure(Action action)
+		{
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			GC.Collect();
+
+			var stopwatch = Stopwatch.StartNew();
+			action();
+			stopwatch.Stop();
+			return stopwatch.Elapsed;
+		}
+
+		private static void WarmUpBenchmarkPrototype()
+		{
+			gBenchmarkUInt16 = BenchmarkCurrentUInt16(kBenchmarkWarmupIterations);
+			gBenchmarkUInt16 = BenchmarkBclUInt16(kBenchmarkWarmupIterations);
+			gBenchmarkUInt32 = BenchmarkCurrentUInt32(kBenchmarkWarmupIterations);
+			gBenchmarkUInt32 = BenchmarkBclUInt32(kBenchmarkWarmupIterations);
+			gBenchmarkUInt64 = BenchmarkCurrentUInt64(kBenchmarkWarmupIterations);
+			gBenchmarkUInt64 = BenchmarkBclUInt64(kBenchmarkWarmupIterations);
+		}
+
+		private static ushort BenchmarkCurrentUInt16(int iterations)
+		{
+			ushort result = 0;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= ByteSwap.SwapUInt16(unchecked((ushort)x));
+			}
+
+			return result;
+		}
+
+		private static ushort BenchmarkBclUInt16(int iterations)
+		{
+			ushort result = 0;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= BinaryPrimitives.ReverseEndianness(unchecked((ushort)x));
+			}
+
+			return result;
+		}
+
+		private static uint BenchmarkCurrentUInt32(int iterations)
+		{
+			uint result = 0;
+			uint value = 0x12345678;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= ByteSwap.SwapUInt32(value + unchecked((uint)x));
+			}
+
+			return result;
+		}
+
+		private static uint BenchmarkBclUInt32(int iterations)
+		{
+			uint result = 0;
+			uint value = 0x12345678;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= BinaryPrimitives.ReverseEndianness(value + unchecked((uint)x));
+			}
+
+			return result;
+		}
+
+		private static ulong BenchmarkCurrentUInt64(int iterations)
+		{
+			ulong result = 0;
+			ulong value = 0x123456789ABCDEF0;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= ByteSwap.SwapUInt64(value + unchecked((uint)x));
+			}
+
+			return result;
+		}
+
+		private static ulong BenchmarkBclUInt64(int iterations)
+		{
+			ulong result = 0;
+			ulong value = 0x123456789ABCDEF0;
+			for (int x = 0; x < iterations; x++)
+			{
+				result ^= BinaryPrimitives.ReverseEndianness(value + unchecked((uint)x));
+			}
+
+			return result;
+		}
+
+		private void WriteBenchmarkResult(string name, TimeSpan current, TimeSpan bcl)
+		{
+			double ratio = bcl.TotalMilliseconds / current.TotalMilliseconds;
+			TestContext.WriteLine("{0}: current={1:F3} ms, BinaryPrimitives={2:F3} ms, bcl/current={3:F3}",
+				name, current.TotalMilliseconds, bcl.TotalMilliseconds, ratio);
+		}
+		#endregion
 	};
 }
