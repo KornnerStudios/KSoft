@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
+using System.Buffers.Binary;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -36,16 +37,28 @@ namespace KSoft.Bitwise
 		public static <#= prim_keyword #> SwapU<#= const_keyword #>(
 			<#= prim_keyword #> value)
 		{
+<# if (!bittable_type.IsUnnaturalWord) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
+<# } else { #>
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
 <# byte_swap_gen.Generate(); #>
+<# } #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap<#= overload_suffix_for_uint #>(
 			ref <#= prim_keyword #> value)
 		{
+<# if (!bittable_type.IsUnnaturalWord) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
+<# } else { #>
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
 <# byte_swap_gen.Generate(); #>
+<# } #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.Code #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -109,16 +122,28 @@ namespace KSoft.Bitwise
 		public static <#= bittable_type.SignedKeyword #> Swap<#= const_keyword #>(
 			<#= bittable_type.SignedKeyword #> value)
 		{
+<# if (!bittable_type.IsUnnaturalWord) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
+<# } else { #>
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
 <# byte_swap_gen.Generate(isSigned: true); #>
+<# } #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap<#= overload_suffix_for_int #>(
 			ref <#= bittable_type.SignedKeyword #> value)
 		{
+<# if (!bittable_type.IsUnnaturalWord) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
+<# } else { #>
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
 <# byte_swap_gen.Generate(isSigned: true); #>
+<# } #>
 		}
 		/// <summary>Swaps a <see cref="<#= bittable_type.SignedCode #>" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>

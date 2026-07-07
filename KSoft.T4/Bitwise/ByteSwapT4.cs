@@ -177,7 +177,7 @@ namespace KSoft.T4.Bitwise
 				// not the last operation so OR this with the next operation
 				if (!lastOperation)
 				{
-					mFile.Write(" | ");
+					mFile.Write(" |");
 				}
 			}
 

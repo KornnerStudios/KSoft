@@ -124,9 +124,9 @@ namespace KSoft.Bitwise
 		public static float SwapSingle(
 			float value)
 		{
-			return new SingleUnion(
-				SwapUInt32(new SingleUnion(value).Integer)
-				).Real;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter bit helpers.
+			return BitConverter.UInt32BitsToSingle(
+				SwapUInt32(BitConverter.SingleToUInt32Bits(value)));
 		}
 		/// <summary>Swaps a <see cref="Single" /> by reference</summary>
 		/// <param name="value"></param>
@@ -134,9 +134,7 @@ namespace KSoft.Bitwise
 		public static void SwapSingle(
 			ref float value)
 		{
-			var union = new SingleUnion(value);
-			Swap(ref union.Integer);
-			value = union.Real;
+			value = SwapSingle(value);
 		}
 		/// <summary>Replaces 4 bytes in an array with a floating-point value</summary>
 		/// <param name="buffer">byte buffer</param>
@@ -152,15 +150,13 @@ namespace KSoft.Bitwise
 
 		public static float SingleFromUInt32(uint bits)
 		{
-			var union = new SingleUnion(bits);
-
-			return union.Real;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt32BitsToSingle.
+			return BitConverter.UInt32BitsToSingle(bits);
 		}
 		public static uint SingleToUInt32(float value)
 		{
-			var union = new SingleUnion(value);
-
-			return union.Integer;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.SingleToUInt32Bits.
+			return BitConverter.SingleToUInt32Bits(value);
 		}
 		#endregion
 		#region Double
@@ -171,9 +167,9 @@ namespace KSoft.Bitwise
 		public static double SwapDouble(
 			double value)
 		{
-			return new DoubleUnion(
-				SwapUInt64(new DoubleUnion(value).Integer)
-				).Real;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter bit helpers.
+			return BitConverter.UInt64BitsToDouble(
+				SwapUInt64(BitConverter.DoubleToUInt64Bits(value)));
 		}
 		/// <summary>Swaps a <see cref="Double" /> by reference</summary>
 		/// <param name="value"></param>
@@ -181,9 +177,7 @@ namespace KSoft.Bitwise
 		public static void SwapDouble(
 			ref double value)
 		{
-			var union = new DoubleUnion(value);
-			Swap(ref union.Integer);
-			value = union.Real;
+			value = SwapDouble(value);
 		}
 		/// <summary>Replaces 8 bytes in an array with a floating-point value</summary>
 		/// <param name="buffer">byte buffer</param>
@@ -199,15 +193,13 @@ namespace KSoft.Bitwise
 
 		public static double DoubleFromUInt64(ulong bits)
 		{
-			var union = new DoubleUnion(bits);
-
-			return union.Real;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt64BitsToDouble.
+			return BitConverter.UInt64BitsToDouble(bits);
 		}
 		public static ulong DoubleToUInt64(double value)
 		{
-			var union = new DoubleUnion(value);
-
-			return union.Integer;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.DoubleToUInt64Bits.
+			return BitConverter.DoubleToUInt64Bits(value);
 		}
 		#endregion
 	};

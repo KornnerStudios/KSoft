@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -18,22 +19,16 @@ namespace KSoft.Bitwise
 		public static ushort SwapUInt16(
 			ushort value)
 		{
-			return
-				(ushort)( 
-					((value >>  8) & 0x00FF) | 
-					((value <<  8) & 0xFF00)
-				);
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt16" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref ushort value)
 		{
-			value =
-				(ushort)( 
-					((value >>  8) & 0x00FF) | 
-					((value <<  8) & 0xFF00)
-				);
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt16" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -99,22 +94,16 @@ namespace KSoft.Bitwise
 		public static short SwapInt16(
 			short value)
 		{
-			return
-				(short)( 
-					((value >>  8) & 0x00FF) | 
-					 (value <<  8)
-				);
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int16" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref short value)
 		{
-			value =
-				(short)( 
-					((value >>  8) & 0x00FF) | 
-					 (value <<  8)
-				);
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int16" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -145,24 +134,16 @@ namespace KSoft.Bitwise
 		public static uint SwapUInt32(
 			uint value)
 		{
-			return
-				((value >> 24) & 0x000000FF) | 
-				((value >>  8) & 0x0000FF00) | 
-				((value <<  8) & 0x00FF0000) | 
-				((value << 24) & 0xFF000000)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt32" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref uint value)
 		{
-			value =
-				((value >> 24) & 0x000000FF) | 
-				((value >>  8) & 0x0000FF00) | 
-				((value <<  8) & 0x00FF0000) | 
-				((value << 24) & 0xFF000000)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -238,24 +219,16 @@ namespace KSoft.Bitwise
 		public static int SwapInt32(
 			int value)
 		{
-			return
-				((value >> 24) & 0x000000FF) | 
-				((value >>  8) & 0x0000FF00) | 
-				((value <<  8) & 0x00FF0000) | 
-				 (value << 24)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int32" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref int value)
 		{
-			value =
-				((value >> 24) & 0x000000FF) | 
-				((value >>  8) & 0x0000FF00) | 
-				((value <<  8) & 0x00FF0000) | 
-				 (value << 24)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int32" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -286,32 +259,16 @@ namespace KSoft.Bitwise
 		public static ulong SwapUInt64(
 			ulong value)
 		{
-			return
-				((value >> 56) & 0x00000000000000FF) | 
-				((value >> 40) & 0x000000000000FF00) | 
-				((value >> 24) & 0x0000000000FF0000) | 
-				((value >>  8) & 0x00000000FF000000) | 
-				((value <<  8) & 0x000000FF00000000) | 
-				((value << 24) & 0x0000FF0000000000) | 
-				((value << 40) & 0x00FF000000000000) | 
-				((value << 56) & 0xFF00000000000000)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt64" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref ulong value)
 		{
-			value =
-				((value >> 56) & 0x00000000000000FF) | 
-				((value >> 40) & 0x000000000000FF00) | 
-				((value >> 24) & 0x0000000000FF0000) | 
-				((value >>  8) & 0x00000000FF000000) | 
-				((value <<  8) & 0x000000FF00000000) | 
-				((value << 24) & 0x0000FF0000000000) | 
-				((value << 40) & 0x00FF000000000000) | 
-				((value << 56) & 0xFF00000000000000)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="UInt64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -407,32 +364,16 @@ namespace KSoft.Bitwise
 		public static long SwapInt64(
 			long value)
 		{
-			return
-				((value >> 56) & 0x00000000000000FF) | 
-				((value >> 40) & 0x000000000000FF00) | 
-				((value >> 24) & 0x0000000000FF0000) | 
-				((value >>  8) & 0x00000000FF000000) | 
-				((value <<  8) & 0x000000FF00000000) | 
-				((value << 24) & 0x0000FF0000000000) | 
-				((value << 40) & 0x00FF000000000000) | 
-				 (value << 56)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			return BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int64" /> by reference</summary>
 		/// <param name="value"></param>
 		public static void Swap(
 			ref long value)
 		{
-			value =
-				((value >> 56) & 0x00000000000000FF) | 
-				((value >> 40) & 0x000000000000FF00) | 
-				((value >> 24) & 0x0000000000FF0000) | 
-				((value >>  8) & 0x00000000FF000000) | 
-				((value <<  8) & 0x000000FF00000000) | 
-				((value << 24) & 0x0000FF0000000000) | 
-				((value << 40) & 0x00FF000000000000) | 
-				 (value << 56)
-				;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.
+			value = BinaryPrimitives.ReverseEndianness(value);
 		}
 		/// <summary>Swaps a <see cref="Int64" /> at a position in a bye array</summary>
 		/// <param name="buffer">source array</param>
@@ -466,9 +407,10 @@ namespace KSoft.Bitwise
 		public static uint SwapUInt24(
 			uint value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
-				((value >> 16) & 0x000000FF) | 
-				((value >>  0) & 0x0000FF00) | 
+				((value >> 16) & 0x000000FF) |
+				((value >>  0) & 0x0000FF00) |
 				((value << 16) & 0x00FF0000)
 				;
 		}
@@ -477,9 +419,10 @@ namespace KSoft.Bitwise
 		public static void SwapUInt24(
 			ref uint value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
-				((value >> 16) & 0x000000FF) | 
-				((value >>  0) & 0x0000FF00) | 
+				((value >> 16) & 0x000000FF) |
+				((value >>  0) & 0x0000FF00) |
 				((value << 16) & 0x00FF0000)
 				;
 		}
@@ -553,9 +496,10 @@ namespace KSoft.Bitwise
 		public static int SwapInt24(
 			int value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
-				((value >> 16) & 0x000000FF) | 
-				((value >>  0) & 0x0000FF00) | 
+				((value >> 16) & 0x000000FF) |
+				((value >>  0) & 0x0000FF00) |
 				((value << 16) & 0x00FF0000)
 				;
 		}
@@ -564,9 +508,10 @@ namespace KSoft.Bitwise
 		public static void SwapInt24(
 			ref int value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
-				((value >> 16) & 0x000000FF) | 
-				((value >>  0) & 0x0000FF00) | 
+				((value >> 16) & 0x000000FF) |
+				((value >>  0) & 0x0000FF00) |
 				((value << 16) & 0x00FF0000)
 				;
 		}
@@ -602,11 +547,12 @@ namespace KSoft.Bitwise
 		public static ulong SwapUInt40(
 			ulong value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
+				((value >> 32) & 0x00000000000000FF) |
+				((value >> 16) & 0x000000000000FF00) |
+				((value >>  0) & 0x0000000000FF0000) |
+				((value << 16) & 0x00000000FF000000) |
 				((value << 32) & 0x000000FF00000000)
 				;
 		}
@@ -615,11 +561,12 @@ namespace KSoft.Bitwise
 		public static void SwapUInt40(
 			ref ulong value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
+				((value >> 32) & 0x00000000000000FF) |
+				((value >> 16) & 0x000000000000FF00) |
+				((value >>  0) & 0x0000000000FF0000) |
+				((value << 16) & 0x00000000FF000000) |
 				((value << 32) & 0x000000FF00000000)
 				;
 		}
@@ -703,11 +650,12 @@ namespace KSoft.Bitwise
 		public static long SwapInt40(
 			long value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			return
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
+				((value >> 32) & 0x00000000000000FF) |
+				((value >> 16) & 0x000000000000FF00) |
+				((value >>  0) & 0x0000000000FF0000) |
+				((value << 16) & 0x00000000FF000000) |
 				((value << 32) & 0x000000FF00000000)
 				;
 		}
@@ -716,11 +664,12 @@ namespace KSoft.Bitwise
 		public static void SwapInt40(
 			ref long value)
 		{
+			// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 			value =
-				((value >> 32) & 0x00000000000000FF) | 
-				((value >> 16) & 0x000000000000FF00) | 
-				((value >>  0) & 0x0000000000FF0000) | 
-				((value << 16) & 0x00000000FF000000) | 
+				((value >> 32) & 0x00000000000000FF) |
+				((value >> 16) & 0x000000000000FF00) |
+				((value >>  0) & 0x0000000000FF0000) |
+				((value << 16) & 0x00000000FF000000) |
 				((value << 32) & 0x000000FF00000000)
 				;
 		}

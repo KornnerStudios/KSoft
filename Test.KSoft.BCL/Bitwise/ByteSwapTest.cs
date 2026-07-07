@@ -112,6 +112,39 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
+		public void SwapNaturalWidthByRefMatchesReturnValueTest()
+		{
+			// The return-value and by-ref overloads are generated as separate bodies. Keep both covered so the
+			// natural-width BCL route cannot accidentally modernize only one overload family.
+			ushort u16 = 0x1234;
+			ByteSwap.Swap(ref u16);
+			Assert.AreEqual(ByteSwap.SwapUInt16(0x1234), u16);
+
+			short i16_original = unchecked((short)0x9234);
+			short i16 = i16_original;
+			ByteSwap.Swap(ref i16);
+			Assert.AreEqual(ByteSwap.SwapInt16(i16_original), i16);
+
+			uint u32 = 0x12345678U;
+			ByteSwap.Swap(ref u32);
+			Assert.AreEqual(ByteSwap.SwapUInt32(0x12345678U), u32);
+
+			int i32_original = unchecked((int)0x92345678U);
+			int i32 = i32_original;
+			ByteSwap.Swap(ref i32);
+			Assert.AreEqual(ByteSwap.SwapInt32(i32_original), i32);
+
+			ulong u64 = 0x123456789ABCDEF0UL;
+			ByteSwap.Swap(ref u64);
+			Assert.AreEqual(ByteSwap.SwapUInt64(0x123456789ABCDEF0UL), u64);
+
+			long i64_original = unchecked((long)0x923456789ABCDEF0UL);
+			long i64 = i64_original;
+			ByteSwap.Swap(ref i64);
+			Assert.AreEqual(ByteSwap.SwapInt64(i64_original), i64);
+		}
+
+		[TestMethod]
 		public void SwapSignedPartialWidthEdgeCasesTest()
 		{
 			Assert.AreEqual(0x00FFFFFF, ByteSwap.SwapInt24(-1));
