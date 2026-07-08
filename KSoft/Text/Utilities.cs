@@ -30,9 +30,9 @@ namespace KSoft.Text
 		/// <param name="value">Enum value to convert to a string</param>
 		/// <returns></returns>
 		public static string EnumToString<TEnum>(TEnum value)
-			where TEnum : struct, IFormattable
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
-			return value.ToString("G", null);
+			return value.ToString("G");
 		}
 		/// <summary>
 		/// Takes an enum value (whose type is assumed to be attributed with
@@ -42,17 +42,17 @@ namespace KSoft.Text
 		/// <param name="value">Enum value to convert to a string</param>
 		/// <returns></returns>
 		public static string EnumToFlagsString<TEnum>(TEnum value)
-			where TEnum : struct, IFormattable
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
-			return value.ToString("F", null);
+			return value.ToString("F");
 		}
 		/// <summary>Takes an enum value and returns it in a hexadecimal formatted string</summary>
 		/// <param name="value">Enum value to convert to a string</param>
 		/// <returns></returns>
 		public static string EnumToHexString<TEnum>(TEnum value)
-			where TEnum : struct, IFormattable
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
-			return value.ToString("X", null);
+			return value.ToString("X");
 		}
 		#endregion
 

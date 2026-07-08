@@ -11,7 +11,7 @@ namespace KSoft.IO
 	partial class BitStream
 	{
 		public BitStream Stream<TEnum>(ref TEnum value, int bitCount, IEnumBitStreamer<TEnum> implementation)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires(implementation != null);
 

@@ -104,7 +104,7 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	[Contracts.ContractClass(typeof(IEnumBinaryStreamerContract<>))]
 	public interface IEnumBinaryStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		/// <summary>Stream a <typeparamref name="TEnum"/> value from a <see cref="BinaryReader"/></summary>
 		/// <param name="s">Reader we're streaming from</param>
@@ -122,7 +122,7 @@ namespace KSoft.IO
 	};
 	[Contracts.ContractClassFor(typeof(IEnumBinaryStreamer<>))]
 	abstract class IEnumBinaryStreamerContract<TEnum> : IEnumBinaryStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		public TEnum Read(BinaryReader s)
 		{
@@ -152,13 +152,13 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	[Contracts.ContractClass(typeof(IEnumEndianStreamerContract<>))]
 	public interface IEnumEndianStreamer<TEnum> : IEnumBinaryStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		void Stream(IO.EndianStream s, ref TEnum value);
 	};
 	[Contracts.ContractClassFor(typeof(IEnumEndianStreamer<>))]
 	abstract class IEnumEndianStreamerContract<TEnum> : IEnumEndianStreamer<TEnum>
-		where TEnum : struct
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		public abstract TEnum Read(BinaryReader s);
 		public abstract void Read(BinaryReader s, out TEnum value);
@@ -177,7 +177,7 @@ namespace KSoft.IO
 	{
 		#region IEnumBinaryStreamer
 		public static IEnumBinaryStreamer<TEnum> ForBinary<TEnum, TStreamType>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TStreamType : struct
 		{
 			Contract.Ensures(Contract.Result<IEnumBinaryStreamer<TEnum>>() != null);
@@ -185,7 +185,7 @@ namespace KSoft.IO
 			return EnumBinaryStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumBinaryStreamer<TEnum> ForBinary<TEnum>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Ensures(Contract.Result<IEnumBinaryStreamer<TEnum>>() != null);
 
@@ -195,7 +195,7 @@ namespace KSoft.IO
 
 		#region IEnumEndianStreamer
 		public static IEnumEndianStreamer<TEnum> For<TEnum, TStreamType>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TStreamType : struct
 		{
 			Contract.Ensures(Contract.Result<IEnumEndianStreamer<TEnum>>() != null);
@@ -203,7 +203,7 @@ namespace KSoft.IO
 			return EnumBinaryStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumEndianStreamer<TEnum> For<TEnum>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Ensures(Contract.Result<IEnumEndianStreamer<TEnum>>() != null);
 
@@ -216,7 +216,7 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <typeparam name="TStreamType">Integer-type to stream the enum value as</typeparam>
 	public class EnumBinaryStreamer<TEnum, TStreamType> : EnumBinaryStreamerBase, IEnumEndianStreamer<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		where TStreamType : struct
 	{
 		class MethodGenerationArgs
@@ -435,7 +435,7 @@ namespace KSoft.IO
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <remarks>Implicitly uses the Enum's underlying type for the stream type</remarks>
 	public sealed class EnumBinaryStreamer<TEnum> : EnumBinaryStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 	};
 }

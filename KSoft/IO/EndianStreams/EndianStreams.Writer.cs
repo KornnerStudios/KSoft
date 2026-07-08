@@ -286,7 +286,7 @@ namespace KSoft.IO
 		}
 
 		public void Write<TEnum>(TEnum value, IEnumEndianStreamer<TEnum> implementation)
-			where TEnum : struct
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires(implementation != null);
 

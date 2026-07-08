@@ -6,8 +6,9 @@ namespace KSoft.Reflection
 	/// <typeparam name="TEnum"></typeparam>
 	/// <remarks>'From' methods can be unforgiving. Make sure you know what you're doing</remarks>
 	public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
+		// #VITA_MEASURE: Keep compiled no-boxing converters until BCL/Unsafe alternatives prove parity.
 		public static readonly Func<TEnum, byte> ToByte =   GenerateToMethod  <byte>();
 		public static readonly Func<byte, TEnum> FromByte = GenerateFromMethod<byte>();
 

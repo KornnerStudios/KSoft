@@ -540,7 +540,7 @@ namespace KSoft
 		/// </summary>
 		public static bool TryParseEnum<TEnum>(string str, out TEnum value
 			, bool ignoreCase = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			value = default;
 			return TryParseEnumOpt(str, ref value, ignoreCase);
@@ -551,7 +551,7 @@ namespace KSoft
 		/// <remarks>Opt = Optional, as it we won't overwrite 'value' on failure (can't overload based on ref/out alone)</remarks>
 		public static bool TryParseEnumOpt<TEnum>(string str, ref TEnum value
 			, bool ignoreCase = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (string.IsNullOrEmpty(str))
 			{

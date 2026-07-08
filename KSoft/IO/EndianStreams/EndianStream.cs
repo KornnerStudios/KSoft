@@ -636,7 +636,7 @@ namespace KSoft.IO
 		}
 
 		public EndianStream Stream<TEnum>(ref TEnum value, IEnumEndianStreamer<TEnum> implementation)
-			where TEnum : struct
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Requires(implementation != null);
 
@@ -1068,7 +1068,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public EndianStream StreamVersionEnum<TEnum>(ref TEnum version
 			, TEnum maxCount)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (IsReading)
 				version = VersionOutOfRangeException.AssertZeroBasedEnum(Reader, maxCount);

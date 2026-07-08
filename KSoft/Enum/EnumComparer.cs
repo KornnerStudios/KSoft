@@ -14,7 +14,7 @@ namespace KSoft
 	public static class EnumComparer
 	{
 		public static EnumComparer<TEnum> For<TEnum>()
-			where TEnum : struct, IComparable, IConvertible, IFormattable
+			where TEnum : struct, Enum, IComparable, IConvertible, IFormattable
 		{
 			Contract.Ensures(Contract.Result<EnumComparer<TEnum>>() != null);
 
@@ -36,8 +36,9 @@ namespace KSoft
 	/// <typeparam name="TEnum">The type of the Enum.</typeparam>
 	/// <remarks>ATTN: This code is based on the following article: http://www.codeproject.com/KB/cs/EnumComparer.aspx</remarks>
 	public sealed class EnumComparer<TEnum> : Reflection.EnumUtilBase<TEnum>, IComparer<TEnum>, IEqualityComparer<TEnum>
-		where TEnum : struct, IComparable, IConvertible, IFormattable
+		where TEnum : struct, Enum, IComparable, IConvertible, IFormattable
 	{
+		// #VITA_MEASURE: Keep expression delegates until default enum comparers prove no-boxing parity.
 		const string kCompareMethodName = "CompareTo";
 
 		static readonly Func<TEnum, TEnum, bool> kEqualsMethod;

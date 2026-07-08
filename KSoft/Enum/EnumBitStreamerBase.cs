@@ -126,7 +126,7 @@ namespace KSoft.IO
 	public static class EnumBitStreamer
 	{
 		public static IEnumBitStreamer<TEnum> For<TEnum, TStreamType, TOptions>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TStreamType : struct
 			where TOptions : EnumBitStreamerOptions, new()
 		{
@@ -135,7 +135,7 @@ namespace KSoft.IO
 			return EnumBitStreamer<TEnum, TStreamType, TOptions>.Instance;
 		}
 		public static IEnumBitStreamer<TEnum> For<TEnum, TStreamType>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TStreamType : struct
 		{
 			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
@@ -143,7 +143,7 @@ namespace KSoft.IO
 			return EnumBitStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumBitStreamer<TEnum> For<TEnum>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
 
@@ -151,7 +151,7 @@ namespace KSoft.IO
 		}
 
 		public static IEnumBitStreamer<TEnum> ForWithOptions<TEnum, TOptions>()
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TOptions : EnumBitStreamerOptions, new()
 		{
 			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);

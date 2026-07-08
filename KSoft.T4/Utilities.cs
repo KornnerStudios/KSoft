@@ -13,6 +13,7 @@ namespace KSoft.T4
 		{
 			var sb = new System.Text.StringBuilder("struct");
 
+			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(Enum).Name);
 			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IComparable).Name);
 			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IFormattable).Name);
 			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IConvertible).Name);

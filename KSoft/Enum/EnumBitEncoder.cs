@@ -79,7 +79,7 @@ namespace KSoft
 	};
 
 	public sealed class EnumBitEncoder<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		//[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields",
 		//	Justification = "x32 could probably just be wrapped in #if DEBUG...but what if you don't ever run debug?")]

@@ -340,14 +340,14 @@ namespace KSoft.IO
 
 		[SuppressMessage("Style", "IDE0251:Make member 'readonly'")]
 		public bool SetEnumValue<TEnum>(string valueName, TEnum value)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			MiniJSON.Json.SetValue(mData, valueName, value.ToString());
 			return true;
 		}
 		[SuppressMessage("Style", "IDE0251:Make member 'readonly'")]
 		public bool SetEnumValue<TEnum>(string valueName, TEnum value, TEnum skipWritingIfThisValue)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (value.Equals(skipWritingIfThisValue))
 			{
@@ -363,7 +363,7 @@ namespace KSoft.IO
 		public bool SetFlagsValue<TEnum>(string valueName, BitVector32 value
 			, TEnum maxValue
 			, string valueSeperator = ",", bool useArray = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (value.IsAllClear)
 			{
@@ -387,7 +387,7 @@ namespace KSoft.IO
 		public bool SetFlagsValue<TEnum>(string valueName, BitVector64 value
 			, TEnum maxValue
 			, string valueSeperator = ",", bool useArray = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (value.IsAllClear)
 			{
@@ -755,7 +755,7 @@ namespace KSoft.IO
 		}
 
 		public readonly bool GetEnumValue<TEnum>(string valueName, ref TEnum retVal)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			object value = TryGetValueForName(valueName);
 			if (value == null)
@@ -787,7 +787,7 @@ namespace KSoft.IO
 		/// <param name="valueSeperator">regex pattern used to seperate values</param>
 		public readonly bool? GetFlagsValue<TEnum>(string valueName, ref BitVector32 retVal
 			, string valueSeperator = ",", bool logFailures = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			object value = TryGetValueForName(valueName);
 			if (value == null)
@@ -832,7 +832,7 @@ namespace KSoft.IO
 		/// <param name="valueSeperator">regex pattern used to seperate values</param>
 		public readonly bool? GetFlagsValue<TEnum>(string valueName, ref BitVector64 retVal
 			, string valueSeperator = ",", bool logFailures = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			object value = TryGetValueForName(valueName);
 			if (value == null)

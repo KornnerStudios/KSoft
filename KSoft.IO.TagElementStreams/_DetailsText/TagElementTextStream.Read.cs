@@ -159,7 +159,7 @@ namespace KSoft.IO
 		const bool kNoExcept = true;
 
 		protected bool ReadEnumInternal<TEnum>(string enumString, ref TEnum enumValue)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			var result = TagElementStreamParseEnumUtil.Parse(IgnoreCaseOnEnums,
 				enumString, ref enumValue);
@@ -175,7 +175,7 @@ namespace KSoft.IO
 			return result == TagElementStreamParseEnumResult.Success;
 		}
 		protected bool ReadEnumInternal<TEnum>(string enumString, ref int enumValue)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			var result = TagElementStreamParseEnumUtil.Parse<TEnum>(IgnoreCaseOnEnums,
 				enumString, ref enumValue);

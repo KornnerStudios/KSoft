@@ -144,7 +144,7 @@ namespace KSoft.Reflection
 	/// <typeparam name="TEnum">Enum type we're dealing with</typeparam>
 	/// <remarks>Not used as a base for utils which have a non-generic core, eg. EnumBinaryStreamerBase</remarks>
 	public abstract class EnumUtilBase<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		/// <summary>Enum type we're dealing with</summary>
 		protected static readonly Type kEnumType =				typeof(TEnum);
@@ -156,8 +156,9 @@ namespace KSoft.Reflection
 		/// <summary>Does the underlying enumeration have a <see cref="FlagsAttribute"/>?</summary>
 		protected static readonly bool kIsFlags =				kEnumType.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
 
-		protected static readonly string[] kEnumNames =			System.Enum.GetNames(kEnumType);
-		protected static readonly TEnum[] kEnumValues =			(TEnum[])System.Enum.GetValues(kEnumType);
+		// #VITA_SHIM: Generic Enum metadata avoids Type-based array creation once enum constraints are explicit.
+		protected static readonly string[] kEnumNames =			System.Enum.GetNames<TEnum>();
+		protected static readonly TEnum[] kEnumValues =			System.Enum.GetValues<TEnum>();
 
 		/// <summary>
 		/// Sign extends the Enum value's hash-code if its underlying type is:
@@ -228,7 +229,7 @@ namespace KSoft.Reflection
 		#endregion
 	};
 	public sealed class EnumUtil<TEnum>: EnumUtilBase<TEnum>
-		where TEnum : struct, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 	{
 		/// <summary>Enum type we're dealing with</summary>
 		public static Type EnumType					=> kEnumType;

@@ -12,6 +12,7 @@ namespace KSoft.Reflection
 	public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>
 		where TEnum : <#= UtilT4.EnumConstraintsCode() #>
 	{
+		// #VITA_MEASURE: Keep compiled no-boxing converters until BCL/Unsafe alternatives prove parity.
 <# foreach (var int_type in PrimitiveDefinitions.Numbers) { #>
 <#	if(!int_type.IsInteger) continue;
 #>

@@ -983,7 +983,7 @@ namespace KSoft.Collections
 
 		#region Enum interfaces
 		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
@@ -994,7 +994,7 @@ namespace KSoft.Collections
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool Test<TEnum>(TEnum bit)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			int bitIndex = bit.ToInt32(null);
 			ValidateBit(bit, bitIndex);
@@ -1004,7 +1004,7 @@ namespace KSoft.Collections
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public BitSet Set<TEnum>(TEnum bit, bool value = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			int bitIndex = bit.ToInt32(null);
 			ValidateBit(bit, bitIndex);
@@ -1017,7 +1017,7 @@ namespace KSoft.Collections
 		public string ToString<TEnum>(TEnum maxCount
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, bool stateFilter = true)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (Cardinality == 0)
 			{
@@ -1075,7 +1075,7 @@ namespace KSoft.Collections
 		public bool TryParseFlags<TEnum>(string line
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			// LINQ stmt allows there to be whitespace around the commas
 			return TryParseFlags<TEnum>(
@@ -1088,7 +1088,7 @@ namespace KSoft.Collections
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool TryParseFlags<TEnum>(IEnumerable<string> collection
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			if (collection == null)
 			{
@@ -1114,7 +1114,7 @@ namespace KSoft.Collections
 
 		private bool? TryParseFlag<TEnum>(string flagStr
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
 		{
 			const bool ignore_case = true;
 
