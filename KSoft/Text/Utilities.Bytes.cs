@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -85,8 +86,20 @@ namespace KSoft.Text
 
 		#region Byte arrays
 		public const int kDefaultHexDigitsPerLine = 16;
+		const int kHexStreamBytesPerChunk = 256;
+		private static readonly Type[] kTextWriterSpanWriteParameterTypes = [typeof(ReadOnlySpan<char>)];
 
-		// #REVIEW: Instead of doing byte.ToString("X2") we could just have a lookup table...
+		// TextWriter's base Write(ReadOnlySpan<char>) implementation does not delegate through Write(string).
+		// Some legacy/custom writers only override Write(string), which worked with the old per-byte ToString path.
+		// Detect span-aware writers so common writers avoid chunk strings, but fall back to bounded string chunks to
+		// preserve output behavior for string-only writers.
+		private static bool TextWriterOverridesSpanWrite(TextWriter stream)
+		{
+			MethodInfo spanWriteMethod = stream.GetType().GetMethod(nameof(TextWriter.Write),
+				kTextWriterSpanWriteParameterTypes);
+
+			return spanWriteMethod != null && spanWriteMethod.DeclaringType != typeof(TextWriter);
+		}
 
 		#region ByteArrayToString (byte[] to string)
 		/// <summary>Converts an array of bytes to a hex string</summary>
@@ -105,13 +118,8 @@ namespace KSoft.Text
 
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			var sb = new StringBuilder(count * 2);
-			for (int x = startIndex; x < (startIndex+count); x++)
-			{
-				sb.Append(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
-			}
-
-			return sb.ToString();
+			// #VITA_SHIM: Preserve KSoft's uppercase hex string API while routing exact-format output through the BCL.
+			return Convert.ToHexString(data, startIndex, count);
 		}
 		/// <summary>Converts an array of bytes to a hex string and outputs it to the stream</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
@@ -128,9 +136,29 @@ namespace KSoft.Text
 			Contract.Requires(count > 0);
 			Contract.Requires((startIndex+count) <= data.Length);
 
-			for (int x = startIndex; x < (startIndex+count); x++)
+			// #VITA_SHIM: TextWriter output uses BCL hex conversion in bounded stack chunks to avoid a hidden full string.
+			ReadOnlySpan<byte> source = data.AsSpan(startIndex, count);
+			Span<char> buffer = stackalloc char[kHexStreamBytesPerChunk * 2];
+			bool canWriteSpan = TextWriterOverridesSpanWrite(stream);
+			while (!source.IsEmpty)
 			{
-				stream.Write(data[x].ToString("X2", KSoft.Util.InvariantCultureInfo));
+				int chunkLength = Math.Min(source.Length, kHexStreamBytesPerChunk);
+				ReadOnlySpan<byte> chunk = source.Slice(0, chunkLength);
+				if (!Convert.TryToHexString(chunk, buffer, out int charsWritten))
+				{
+					throw new InvalidOperationException("Hex conversion failed for a pre-sized destination buffer.");
+				}
+
+				ReadOnlySpan<char> text = buffer.Slice(0, charsWritten);
+				if (canWriteSpan)
+				{
+					stream.Write(text);
+				}
+				else
+				{
+					stream.Write(text.ToString());
+				}
+				source = source.Slice(chunkLength);
 			}
 		}
 		/// <summary>Converts an array of bytes to a hex string</summary>
@@ -167,6 +195,31 @@ namespace KSoft.Text
 		#endregion
 
 		#region ByteStringToArray (string to byte[])
+		private static bool IsBclHexString(string data, int startIndex, int count)
+		{
+			int endIndex = startIndex + count;
+			for (int x = startIndex; x < endIndex; x++)
+			{
+				char c = data[x];
+				if (c > 0x7F || !CharIsDigit(c))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		private static void ConvertHexStringToArray(byte[] bytes, string data, int startIndex, int count)
+		{
+			System.Buffers.OperationStatus status = Convert.FromHexString(data.AsSpan(startIndex, count),
+				bytes.AsSpan(0, count / 2), out int charsConsumed, out int bytesWritten);
+			if (status != System.Buffers.OperationStatus.Done || charsConsumed != count || bytesWritten != (count / 2))
+			{
+				throw new InvalidOperationException("Hex conversion failed for a pre-validated source string.");
+			}
+		}
+
 		public static byte[] ByteStringToArray(byte[] bytes, string data, int startIndex, int count)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
@@ -175,7 +228,7 @@ namespace KSoft.Text
 			Contract.Requires(count > 0);
 			Contract.Requires((startIndex+count) <= data.Length);
 			Contract.Requires(
-				( ((data.Length-startIndex)-count) % 2) == 0,
+				(count % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
 			Contract.Requires<ArgumentNullException>(bytes != null);
@@ -184,6 +237,13 @@ namespace KSoft.Text
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			Array.Clear(bytes, 0, bytes.Length);
+
+			// #VITA_SHIM: Strict hex input can use the BCL converter; legacy non-hex digit behavior falls back below.
+			if (IsBclHexString(data, startIndex, count))
+			{
+				ConvertHexStringToArray(bytes, data, startIndex, count);
+				return bytes;
+			}
 
 			for ( int x = startIndex, index = 0
 				; x < (startIndex+count)
@@ -206,7 +266,7 @@ namespace KSoft.Text
 				"Can't byte-ify a string that's not even!"
 			);
 			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Requires(bytes.Length >= (data.Length/2));
+			Contract.Requires(bytes.Length >= ((data.Length-startIndex)/2));
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
@@ -226,11 +286,17 @@ namespace KSoft.Text
 			Contract.Requires(count > 0);
 			Contract.Requires((startIndex+count) <= data.Length);
 			Contract.Requires(
-				( ((data.Length-startIndex)-count) % 2) == 0,
+				(count % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			// #VITA_SHIM: Strict hex input can allocate directly through the BCL without changing the public result shape.
+			if (IsBclHexString(data, startIndex, count))
+			{
+				return Convert.FromHexString(data.AsSpan(startIndex, count));
+			}
 
 			byte[] bytes = new byte[count / 2];
 			return ByteStringToArray(bytes, data, startIndex, count);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Text.Test
@@ -21,6 +23,18 @@ namespace KSoft.Text.Test
 				"20617373206269746368" + System.Environment.NewLine
 			;
 		};
+
+		sealed class StringOnlyTextWriter
+			: TextWriter
+		{
+			private readonly StringBuilder mStringBuilder = new StringBuilder();
+
+			public override Encoding Encoding => Encoding.UTF8;
+
+			public override void Write(string value) => mStringBuilder.Append(value);
+
+			public override string ToString() => mStringBuilder.ToString();
+		}
 
 		[TestMethod]
 		public void Text_ByteArraysUtilTest()
@@ -46,6 +60,68 @@ namespace KSoft.Text.Test
 			test_value = Util.ByteArrayToAlignedString(test_data);
 			Assert.AreEqual(StringConstants.kDataStringAsAlignedByteString, test_value);
 			// #TODO_UNITTEST: Test ByteArrayToAlignedOutput
+		}
+
+		[TestMethod]
+		public void Text_ByteArrayToStreamTest()
+		{
+			StringWriter writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
+			Util.ByteArrayToStream(StringConstants.kDataBytes, writer);
+			Assert.AreEqual(StringConstants.kDataString, writer.ToString());
+
+			writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
+			Util.ByteArrayToStream(StringConstants.kDataBytes, writer, 1, 2);
+			Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), writer.ToString());
+
+			byte[] chunkedData = new byte[513];
+			for (int x = 0; x < chunkedData.Length; x++)
+			{
+				chunkedData[x] = (byte)x;
+			}
+			writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
+			Util.ByteArrayToStream(chunkedData, writer);
+			Assert.AreEqual(Convert.ToHexString(chunkedData), writer.ToString());
+
+			StringOnlyTextWriter stringOnlyWriter = new StringOnlyTextWriter();
+			Util.ByteArrayToStream(StringConstants.kDataBytes, stringOnlyWriter);
+			Assert.AreEqual(StringConstants.kDataString, stringOnlyWriter.ToString());
+		}
+
+		[TestMethod]
+		public void Text_ByteStringToArrayTest()
+		{
+			CollectionAssert.AreEqual(StringConstants.kDataBytes, Util.ByteStringToArray(StringConstants.kDataString));
+			CollectionAssert.AreEqual(new byte[] { 0x37, 0xBE }, Util.ByteStringToArray(StringConstants.kDataString, 2, 4));
+			CollectionAssert.AreEqual(new byte[] { 0x13, 0x37 }, Util.ByteStringToArray("0013370", 2, 4));
+			CollectionAssert.AreEqual(new byte[] { 0xCA, 0xFE }, Util.ByteStringToArray("cafe"));
+		}
+
+		[TestMethod]
+		public void Text_ByteStringToArrayDestinationTest()
+		{
+			byte[] destination = [0xFF, 0xFF, 0xFF];
+			byte[] result = Util.ByteStringToArray(destination, "001337", 2, 4);
+			Assert.AreSame(destination, result);
+			CollectionAssert.AreEqual(new byte[] { 0x13, 0x37, 0x00 }, destination);
+
+			destination = [0xFF];
+			result = Util.ByteStringToArray(destination, "0013", 2);
+			Assert.AreSame(destination, result);
+			CollectionAssert.AreEqual(new byte[] { 0x13 }, destination);
+
+			destination = [0xFF, 0xFF];
+			result = Util.ByteStringToArray(destination, "0G");
+			Assert.AreSame(destination, result);
+			CollectionAssert.AreEqual(new byte[] { 0x10, 0x00 }, destination);
+		}
+
+		[TestMethod]
+		public void Text_ByteStringToArrayLegacyInvalidDigitFallbackTest()
+		{
+			// Legacy parsing accepts base-36 digit values before clamping the composed byte value.
+			CollectionAssert.AreEqual(new byte[] { 0x10 }, Util.ByteStringToArray("0G"));
+			CollectionAssert.AreEqual(new byte[] { 0x00 }, Util.ByteStringToArray("G0"));
+			CollectionAssert.AreEqual(new byte[] { 0x00 }, Util.ByteStringToArray("GG"));
 		}
 
 
