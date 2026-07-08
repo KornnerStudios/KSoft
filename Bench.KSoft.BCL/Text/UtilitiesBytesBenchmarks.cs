@@ -1,0 +1,59 @@
+using System;
+using System.IO;
+using System.Text;
+using BenchmarkDotNet.Attributes;
+
+namespace Bench.KSoft.BCL.Text;
+
+[MemoryDiagnoser]
+[BenchmarkCategory("Text", "Hex")]
+public class UtilitiesBytesBenchmarks
+{
+	private byte[] mData = [];
+	private string mHexString = "";
+	private CountingTextWriter mWriter = new CountingTextWriter();
+
+	[Params(16, 1024, 65536)]
+	public int Length { get; set; }
+
+	[GlobalSetup]
+	public void GlobalSetup()
+	{
+		byte[] data = new byte[Length];
+		Random random = new Random(42);
+		random.NextBytes(data);
+
+		mData = data;
+		mHexString = Convert.ToHexString(data);
+		mWriter = new CountingTextWriter();
+	}
+
+	[Benchmark]
+	public string ByteArrayToString() =>
+		global::KSoft.Text.Util.ByteArrayToString(mData);
+
+	[Benchmark]
+	public byte[] ByteStringToArray() =>
+		global::KSoft.Text.Util.ByteStringToArray(mHexString);
+
+	[Benchmark]
+	public long ByteArrayToStream()
+	{
+		global::KSoft.Text.Util.ByteArrayToStream(mData, mWriter);
+		return mWriter.CharsWritten;
+	}
+
+	sealed class CountingTextWriter
+		: TextWriter
+	{
+		public long CharsWritten { get; private set; }
+
+		public override Encoding Encoding => Encoding.UTF8;
+
+		public override void Write(ReadOnlySpan<char> buffer) =>
+			CharsWritten += buffer.Length;
+
+		public override void Write(string value) =>
+			CharsWritten += value?.Length ?? 0;
+	}
+}
