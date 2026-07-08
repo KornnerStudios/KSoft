@@ -1,4 +1,6 @@
-﻿#if CONTRACTS_FULL_SHIM
+﻿using System;
+using System.Buffers.Binary;
+#if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
@@ -13,10 +15,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadUInt16()"/>
 		public override ushort ReadUInt16()
 		{
-			var value = base.ReadUInt16();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt16(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(ushort)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadUInt16LittleEndian(bytes)
+				: BinaryPrimitives.ReadUInt16BigEndian(bytes);
 		}
 
 		/// <summary>Reads a signed 16-bit integer</summary>
@@ -24,10 +28,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadInt16()"/>
 		public override short ReadInt16()
 		{
-			var value = base.ReadInt16();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt16(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(short)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadInt16LittleEndian(bytes)
+				: BinaryPrimitives.ReadInt16BigEndian(bytes);
 		}
 
 		/// <summary>Reads a unsigned 32-bit integer</summary>
@@ -35,10 +41,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadUInt32()"/>
 		public override uint ReadUInt32()
 		{
-			var value = base.ReadUInt32();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt32(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(uint)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadUInt32LittleEndian(bytes)
+				: BinaryPrimitives.ReadUInt32BigEndian(bytes);
 		}
 
 		/// <summary>Reads a signed 32-bit integer</summary>
@@ -46,10 +54,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadInt32()"/>
 		public override int ReadInt32()
 		{
-			var value = base.ReadInt32();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt32(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(int)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadInt32LittleEndian(bytes)
+				: BinaryPrimitives.ReadInt32BigEndian(bytes);
 		}
 
 		/// <summary>Reads a unsigned 64-bit integer</summary>
@@ -57,10 +67,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadUInt64()"/>
 		public override ulong ReadUInt64()
 		{
-			var value = base.ReadUInt64();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt64(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadUInt64LittleEndian(bytes)
+				: BinaryPrimitives.ReadUInt64BigEndian(bytes);
 		}
 
 		/// <summary>Reads a signed 64-bit integer</summary>
@@ -68,10 +80,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadInt64()"/>
 		public override long ReadInt64()
 		{
-			var value = base.ReadInt64();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt64(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(long)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadInt64LittleEndian(bytes)
+				: BinaryPrimitives.ReadInt64BigEndian(bytes);
 		}
 
 		/// <summary>Reads a single-precision number</summary>
@@ -79,10 +93,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadSingle()"/>
 		public override float ReadSingle()
 		{
-			var value = base.ReadSingle();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapSingle(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(float)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadSingleLittleEndian(bytes)
+				: BinaryPrimitives.ReadSingleBigEndian(bytes);
 		}
 
 		/// <summary>Reads a double-precision number</summary>
@@ -90,10 +106,12 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryReader.ReadDouble()"/>
 		public override double ReadDouble()
 		{
-			var value = base.ReadDouble();
-			return !mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapDouble(value);
+			// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(double)];
+			BaseStream.ReadExactly(bytes);
+			return ByteOrder == Shell.EndianFormat.Little
+				? BinaryPrimitives.ReadDoubleLittleEndian(bytes)
+				: BinaryPrimitives.ReadDoubleBigEndian(bytes);
 		}
 
 
@@ -328,9 +346,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(ushort)"/>
 		public override void Write(ushort value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt16(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(ushort)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteUInt16LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteUInt16BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a signed 16-bit integer</summary>
@@ -338,9 +364,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(short)"/>
 		public override void Write(short value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt16(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(short)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteInt16LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteInt16BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a unsigned 32-bit integer</summary>
@@ -348,9 +382,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(uint)"/>
 		public override void Write(uint value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt32(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(uint)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteUInt32LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteUInt32BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a signed 32-bit integer</summary>
@@ -358,9 +400,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(int)"/>
 		public override void Write(int value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt32(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(int)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteInt32LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteInt32BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a unsigned 64-bit integer</summary>
@@ -368,9 +418,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(ulong)"/>
 		public override void Write(ulong value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapUInt64(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteUInt64LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteUInt64BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a signed 64-bit integer</summary>
@@ -378,9 +436,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(long)"/>
 		public override void Write(long value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapInt64(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(long)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteInt64LittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteInt64BigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a single-precision number</summary>
@@ -388,9 +454,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(float)"/>
 		public override void Write(float value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapSingle(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(float)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteSingleLittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteSingleBigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 		/// <summary>Writes a double-precision number</summary>
@@ -398,9 +472,17 @@ namespace KSoft.IO
 		/// <seealso cref="System.IO.BinaryWriter.Write(double)"/>
 		public override void Write(double value)
 		{
-			base.Write(!mRequiresByteSwap
-				? value
-				: Bitwise.ByteSwap.SwapDouble(value));
+			// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.
+			Span<byte> bytes = stackalloc byte[sizeof(double)];
+			if (ByteOrder == Shell.EndianFormat.Little)
+			{
+				BinaryPrimitives.WriteDoubleLittleEndian(bytes, value);
+			}
+			else
+			{
+				BinaryPrimitives.WriteDoubleBigEndian(bytes, value);
+			}
+			base.Write(bytes);
 		}
 
 

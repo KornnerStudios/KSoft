@@ -128,6 +128,7 @@ namespace KSoft.IO
 		}
 
 		#region Write group tag
+		// #VITA_KEEP: tag helpers preserve KSoft character/group-tag ordering semantics.
 		/// <summary>Writes a tag id (four character code)</summary>
 		/// <param name="tag">Big-endian ordered tag id</param>
 		public void WriteTag32(char[] tag)
@@ -172,6 +173,7 @@ namespace KSoft.IO
 
 		// #TODO: generate with T4
 		#region Write numerics
+		// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 		/// <summary>Writes a signed 24-bit integer</summary>
 		/// <param name="value"></param>
 		public void WriteInt24(int value)

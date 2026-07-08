@@ -174,6 +174,7 @@ namespace KSoft.IO
 		}
 
 		#region Read group tag
+		// #VITA_KEEP: tag helpers preserve KSoft character/group-tag ordering semantics.
 		/// <summary>Reads a tag id (four character code)</summary>
 		/// <param name="tag">Array to populate</param>
 		/// <returns>Big-endian ordered tag id</returns>
@@ -273,6 +274,7 @@ namespace KSoft.IO
 
 		// #TODO: generate with T4
 		#region Read numerics
+		// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.
 		/// <summary>Reads a signed 24-bit integer</summary>
 		/// <returns></returns>
 		/// <remarks>Sign extends the value read from the stream</remarks>
