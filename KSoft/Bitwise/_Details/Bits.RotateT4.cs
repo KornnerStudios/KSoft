@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -16,6 +17,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kByteBitCount);
 
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (byte)( (x << shift) | (x >> (kByteBitCount - shift)) );
 		}
 		[Contracts.Pure]
@@ -24,6 +26,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kByteBitCount);
 
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (byte)( (x >> shift) | (x << (kByteBitCount - shift)) );
 		}
 
@@ -33,6 +36,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt16BitCount);
 
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (ushort)( (x << shift) | (x >> (kInt16BitCount - shift)) );
 		}
 		[Contracts.Pure]
@@ -41,6 +45,7 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt16BitCount);
 
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (ushort)( (x >> shift) | (x << (kInt16BitCount - shift)) );
 		}
 
@@ -50,7 +55,8 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt32BitCount);
 
-			return (uint)( (x << shift) | (x >> (kInt32BitCount - shift)) );
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateLeft.
+			return BitOperations.RotateLeft(x, shift);
 		}
 		[Contracts.Pure]
 		public static uint RotateRight(uint x, int shift)
@@ -58,7 +64,8 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt32BitCount);
 
-			return (uint)( (x >> shift) | (x << (kInt32BitCount - shift)) );
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateRight.
+			return BitOperations.RotateRight(x, shift);
 		}
 
 		[Contracts.Pure]
@@ -67,7 +74,8 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt64BitCount);
 
-			return (ulong)( (x << shift) | (x >> (kInt64BitCount - shift)) );
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateLeft.
+			return BitOperations.RotateLeft(x, shift);
 		}
 		[Contracts.Pure]
 		public static ulong RotateRight(ulong x, int shift)
@@ -75,7 +83,8 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < kInt64BitCount);
 
-			return (ulong)( (x >> shift) | (x << (kInt64BitCount - shift)) );
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateRight.
+			return BitOperations.RotateRight(x, shift);
 		}
 
 	};

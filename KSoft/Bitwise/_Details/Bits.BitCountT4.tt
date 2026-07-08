@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft
@@ -21,17 +22,20 @@ namespace KSoft
 <# } #>
 #endif
 
-		// #TODO_DOTNET replace BitCount with System.Numerics.BitOperations.PopCount
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
-<#	var code_gen = new BitwiseT4.FastBitCountCodeGenerator(
-		this, bittable_type);
-
-		// #TODO: the formula doesn't work with 16-bits correctly...not sure who's fault it is yet
+<#	var prim_keyword = bittable_type.Keyword;
 		if (bittable_type.Code == TypeCode.UInt16)
 			continue;
-
-	code_gen.Generate();
 #>
+		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
+		/// <param name="bits">Integer whose bits to count</param>
+		/// <returns></returns>
+		[Contracts.Pure]
+		public static int BitCount(<#= prim_keyword #> bits)
+		{
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.PopCount.
+			return BitOperations.PopCount(bits);
+		}
 
 <# } #>
 

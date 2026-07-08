@@ -1,4 +1,5 @@
 ﻿
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -135,13 +136,10 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(byte n)
 		{
-			if (n == 0)			{ return -1; }
-			int pos = 0;
-			if (n >= 1 << 4)	{ n >>= 4;	pos += 4; }
-			if (n >= 1 << 2)	{ n >>= 2;	pos += 2; }
-			if (n >= 1 << 1)	{ pos += 1; }
-
-			return pos;
+			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
+			return n == 0
+				? -1
+				: BitOperations.Log2(n);
 		}
 
 		/// <summary>Get the largest power of 2 that is less than or equal to the input (positive) number</summary>
@@ -154,14 +152,10 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(ushort n)
 		{
-			if (n == 0)			{ return -1; }
-			int pos = 0;
-			if (n >= 1 << 8)	{ n >>= 8;	pos += 8; }
-			if (n >= 1 << 4)	{ n >>= 4;	pos += 4; }
-			if (n >= 1 << 2)	{ n >>= 2;	pos += 2; }
-			if (n >= 1 << 1)	{ pos += 1; }
-
-			return pos;
+			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
+			return n == 0
+				? -1
+				: BitOperations.Log2(n);
 		}
 
 		/// <summary>Get the largest power of 2 that is less than or equal to the input (positive) number</summary>
@@ -174,15 +168,10 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(uint n)
 		{
-			if (n == 0)			{ return -1; }
-			int pos = 0;
-			if (n >= 1 << 16)	{ n >>= 16;	pos += 16; }
-			if (n >= 1 << 8)	{ n >>= 8;	pos += 8; }
-			if (n >= 1 << 4)	{ n >>= 4;	pos += 4; }
-			if (n >= 1 << 2)	{ n >>= 2;	pos += 2; }
-			if (n >= 1 << 1)	{ pos += 1; }
-
-			return pos;
+			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
+			return n == 0
+				? -1
+				: BitOperations.Log2(n);
 		}
 
 		/// <summary>Get the largest power of 2 that is less than or equal to the input (positive) number</summary>
@@ -195,16 +184,10 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(ulong n)
 		{
-			if (n == 0)			{ return -1; }
-			int pos = 0;
-			if (n >= 1 << 32)	{ n >>= 32;	pos += 32; }
-			if (n >= 1 << 16)	{ n >>= 16;	pos += 16; }
-			if (n >= 1 << 8)	{ n >>= 8;	pos += 8; }
-			if (n >= 1 << 4)	{ n >>= 4;	pos += 4; }
-			if (n >= 1 << 2)	{ n >>= 2;	pos += 2; }
-			if (n >= 1 << 1)	{ pos += 1; }
-
-			return pos;
+			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
+			return n == 0
+				? -1
+				: BitOperations.Log2(n);
 		}
 
 		#endregion

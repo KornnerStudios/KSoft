@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -72,14 +73,10 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FloorLog2(<#= bittable_type.Keyword #> n)
 		{
-			if (n == 0)			{ return -1; }
-			int pos = 0;
-<#		for (int x = bittable_type.SizeOfInBits >> 1; x > 1; x >>= 1) { #>
-			if (n >= 1 << <#= x #>)	{ n >>= <#= x #>;	pos += <#= x #>; }
-<#		} #>
-			if (n >= 1 << 1)	{ pos += 1; }
-
-			return pos;
+			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
+			return n == 0
+				? -1
+				: BitOperations.Log2(n);
 		}
 
 <# } #>

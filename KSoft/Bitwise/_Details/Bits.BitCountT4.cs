@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft
@@ -70,20 +71,14 @@ namespace KSoft
 
 #endif
 
-		// #TODO_DOTNET replace BitCount with System.Numerics.BitOperations.PopCount
 		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
 		/// <param name="bits">Integer whose bits to count</param>
 		/// <returns></returns>
 		[Contracts.Pure]
 		public static int BitCount(byte bits)
 		{
-			uint x = bits;
-			x =  x - ((x >> 1) & 0x55);
-			x = (x & 0x33) + ((x >> 2) & 0x33);
-			x =  x + (x >> 4) & 0x0F;
-			x = (x * 0x01) >> 0;
-
-			return (int)x;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.PopCount.
+			return BitOperations.PopCount(bits);
 		}
 
 		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
@@ -92,13 +87,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int BitCount(uint bits)
 		{
-			uint x = bits;
-			x =  x - ((x >> 1) & 0x55555555);
-			x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
-			x =  x + (x >> 4) & 0x0F0F0F0F;
-			x = (x * 0x01010101) >> 24;
-
-			return (int)x;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.PopCount.
+			return BitOperations.PopCount(bits);
 		}
 
 		/// <summary>Count the number of 'on' bits in an unsigned integer</summary>
@@ -107,13 +97,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int BitCount(ulong bits)
 		{
-			ulong x = bits;
-			x =  x - ((x >> 1) & 0x5555555555555555);
-			x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333);
-			x =  x + (x >> 4) & 0x0F0F0F0F0F0F0F0F;
-			x = (x * 0x0101010101010101) >> 56;
-
-			return (int)x;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.PopCount.
+			return BitOperations.PopCount(bits);
 		}
 
 

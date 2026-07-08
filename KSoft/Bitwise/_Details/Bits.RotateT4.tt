@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -25,7 +26,13 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < k<#= const_keyword #>BitCount);
 
+<# if (bittable_type.Code == TypeCode.UInt32 || bittable_type.Code == TypeCode.UInt64) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateLeft.
+			return BitOperations.RotateLeft(x, shift);
+<# } else { #>
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (<#= prim_keyword #>)( (x << shift) | (x >> (k<#= const_keyword #>BitCount - shift)) );
+<# } #>
 		}
 		[Contracts.Pure]
 		public static <#= prim_keyword #> RotateRight(<#= prim_keyword #> x, int shift)
@@ -33,7 +40,13 @@ namespace KSoft
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);
 			Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < k<#= const_keyword #>BitCount);
 
+<# if (bittable_type.Code == TypeCode.UInt32 || bittable_type.Code == TypeCode.UInt64) { #>
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.RotateRight.
+			return BitOperations.RotateRight(x, shift);
+<# } else { #>
+			// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.
 			return (<#= prim_keyword #>)( (x >> shift) | (x << (k<#= const_keyword #>BitCount - shift)) );
+<# } #>
 		}
 
 <# } #>

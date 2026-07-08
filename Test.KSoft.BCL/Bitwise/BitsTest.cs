@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -14,7 +15,6 @@ namespace KSoft.Bitwise.Test
 		[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields")]
 		const ulong kMiddleNybbles = 0x6666666666666666UL; // Bit pattern middle bits are set in a nybble
 
-		// #TODO_DOTNET replace BitCount with System.Numerics.BitOperations.PopCount
 		#region BitCount
 		[TestMethod]
 		public void Bits_BitCountTest()
@@ -225,7 +225,73 @@ namespace KSoft.Bitwise.Test
 		}
 		#endregion
 
+		#region Rotate
+		[TestMethod]
+		public void RotateMajorWidthsMatchBitOperationsTest()
+		{
+			const uint kUInt32Value = 0x81234567U;
+			foreach (int shift in new[] { 0, 1, 7, 16, Bits.kInt32BitCount-1 })
+			{
+				Assert.AreEqual(BitOperations.RotateLeft(kUInt32Value, shift), Bits.RotateLeft(kUInt32Value, shift),
+					$"uint left shift={shift}");
+				Assert.AreEqual(BitOperations.RotateRight(kUInt32Value, shift), Bits.RotateRight(kUInt32Value, shift),
+					$"uint right shift={shift}");
+			}
+
+			const ulong kUInt64Value = 0x8123456789ABCDEFUL;
+			foreach (int shift in new[] { 0, 1, 7, 32, Bits.kInt64BitCount-1 })
+			{
+				Assert.AreEqual(BitOperations.RotateLeft(kUInt64Value, shift), Bits.RotateLeft(kUInt64Value, shift),
+					$"ulong left shift={shift}");
+				Assert.AreEqual(BitOperations.RotateRight(kUInt64Value, shift), Bits.RotateRight(kUInt64Value, shift),
+					$"ulong right shift={shift}");
+			}
+		}
+
+		[TestMethod]
+		public void RotateNarrowWidthsStayWidthLimitedTest()
+		{
+			// BitOperations only exposes 32/64-bit rotates. These assertions catch accidental use for byte/ushort,
+			// where the high bit must wrap back into the narrow value rather than disappear after a cast.
+			Assert.AreEqual((byte)0x03, Bits.RotateLeft((byte)0x81, 1));
+			Assert.AreEqual((byte)0xC0, Bits.RotateRight((byte)0x81, 1));
+			Assert.AreEqual((ushort)0x0003, Bits.RotateLeft((ushort)0x8001, 1));
+			Assert.AreEqual((ushort)0xC000, Bits.RotateRight((ushort)0x8001, 1));
+		}
+		#endregion
+
 		#region Leading/Trailing ZerosCount
+		[TestMethod]
+		public void LeadingZerosCountNarrowWidthsStayWidthLimitedTest()
+		{
+			Assert.AreEqual(Bits.kByteBitCount, (int)Bits.LeadingZerosCount(byte.MinValue));
+			Assert.AreEqual(0, (int)Bits.LeadingZerosCount(byte.MaxValue));
+			Assert.AreEqual(7, (int)Bits.LeadingZerosCount((byte)0x01));
+			Assert.AreEqual(1, (int)Bits.LeadingZerosCount((byte)0x40));
+
+			Assert.AreEqual(Bits.kInt16BitCount, (int)Bits.LeadingZerosCount(ushort.MinValue));
+			Assert.AreEqual(0, (int)Bits.LeadingZerosCount(ushort.MaxValue));
+			Assert.AreEqual(15, (int)Bits.LeadingZerosCount((ushort)0x0001));
+			Assert.AreEqual(1, (int)Bits.LeadingZerosCount((ushort)0x4000));
+		}
+
+		[TestMethod]
+		public void TrailingZerosCountMatchesBitOperationsTest()
+		{
+			foreach (uint value in new[] { 0U, 1U, 0x10U, 0x80000000U, 0xF0001000U, uint.MaxValue })
+			{
+				Assert.AreEqual(BitOperations.TrailingZeroCount(value), (int)Bits.TrailingZerosCount(value),
+					$"uint value=0x{value:X8}");
+			}
+
+			foreach (ulong value in new[] { 0UL, 1UL, 0x10UL, 0x8000000000000000UL, 0xF000100000000000UL,
+				ulong.MaxValue })
+			{
+				Assert.AreEqual(BitOperations.TrailingZeroCount(value), (int)Bits.TrailingZerosCount(value),
+					$"ulong value=0x{value:X16}");
+			}
+		}
+
 		[TestMethod]
 		public void Bits_LeadingZerosCountTest()
 		{

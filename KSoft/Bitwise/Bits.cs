@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -29,12 +30,6 @@ namespace KSoft
 
 		#region MultiplyDeBruijnBitPosition
 		static readonly byte[] kMultiplyDeBruijnBitPositionHighestBitSet32 = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
-		static readonly byte[] kMultiplyDeBruijnBitPositionLeadingZeros32 = GenerateMultiplyDeBruijnBitPositionLeadingZeros32();
-		static readonly byte[] kMultiplyDeBruijnBitPositionTrailingZeros32 = /*new byte[kInt32BitCount]*/
-		[
-			0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
-			31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-		];
 
 		static byte[] GenerateMultiplyDeBruijnBitPositionHighestBitSet32()
 		{
@@ -43,18 +38,6 @@ namespace KSoft
 				0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
 				8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
 			];
-		}
-
-		static byte[] GenerateMultiplyDeBruijnBitPositionLeadingZeros32()
-		{
-			var src = GenerateMultiplyDeBruijnBitPositionHighestBitSet32();
-			var dst = new byte[kInt32BitCount];
-			for (int x = 0; x < dst.Length; x++)
-			{
-				dst[x] = (byte)(src[x] + 1);
-			}
-
-			return dst;
 		}
 		#endregion
 
@@ -330,7 +313,8 @@ namespace KSoft
 		public static byte LeadingZerosCount(byte value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kByteBitCount);
-			return (byte)( LeadingZerosCount((uint)value) - (kByteBitCount * 3) );
+			// #VITA_SHIM: Keep KSoft's byte-width result while using the BCL 32-bit primitive.
+			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 3) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
@@ -339,7 +323,8 @@ namespace KSoft
 		public static byte LeadingZerosCount(ushort value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt16BitCount);
-			return (byte)( LeadingZerosCount((uint)value) - (kByteBitCount * 2) );
+			// #VITA_SHIM: Keep KSoft's ushort-width result while using the BCL 32-bit primitive.
+			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 2) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
@@ -348,20 +333,8 @@ namespace KSoft
 		public static byte LeadingZerosCount(uint value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
-			if (value == 0)
-			{
-				return kInt32BitCount;
-			}
-
-			value |= value >> 1; // first round down to one less than a power of 2
-			value |= value >> 2;
-			value |= value >> 4;
-			value |= value >> 8;
-			value |= value >> 16;
-
-			// subtract the log base 2 from the number of bits in the integer
-			uint index = (value * 0x07C4ACDDU) >> 27;
-			return (byte)(kInt32BitCount - kMultiplyDeBruijnBitPositionLeadingZeros32[index]);
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
+			return (byte)BitOperations.LeadingZeroCount(value);
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
@@ -370,15 +343,8 @@ namespace KSoft
 		public static byte LeadingZerosCount(ulong value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
-
-			byte count = LeadingZerosCount(GetHighBits(value));
-			// The high bits were all zero, continue checking low bits
-			if (count == kInt32BitCount)
-			{
-				count += LeadingZerosCount(GetLowBits(value));
-			}
-
-			return count;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
+			return (byte)BitOperations.LeadingZeroCount(value);
 		}
 		#endregion
 
@@ -390,16 +356,8 @@ namespace KSoft
 		public static byte TrailingZerosCount(uint value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
-			if (value == 0)
-			{
-				return kInt32BitCount;
-			}
-
-			// instead of (value & -value), where the op result is a long, we do this to keep it all 32-bit
-			uint ls1b = (~value) + 1; // two's complement
-			ls1b = value & ls1b; // least significant 1 bit
-			uint index = (ls1b * 0x077CB531U) >> 27;
-			return kMultiplyDeBruijnBitPositionTrailingZeros32[index];
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
+			return (byte)BitOperations.TrailingZeroCount(value);
 		}
 		/// <summary>Count the "rightmost" consecutive zero bits (trailing) in an unsigned integer</summary>
 		/// <param name="value"></param>
@@ -408,15 +366,8 @@ namespace KSoft
 		public static byte TrailingZerosCount(ulong value)
 		{
 			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
-
-			byte count = TrailingZerosCount(GetLowBits(value));
-			// The low bits were all zero, continue checking high bits
-			if (count == kInt32BitCount)
-			{
-				count += TrailingZerosCount(GetHighBits(value));
-			}
-
-			return count;
+			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
+			return (byte)BitOperations.TrailingZeroCount(value);
 		}
 		#endregion
 
