@@ -59,29 +59,6 @@ namespace KSoft
 <# } #>
 		#endregion
 
-		#region FloorLog2 - Unsigned Integer
-<# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
-<#
-#>
-		/// <summary>Get the largest power of 2 that is less than or equal to the input (positive) number</summary>
-		/// <param name="n">Positive number's log2 to deduce</param>
-		/// <returns>
-		/// The floor form of log2(<paramref name="n"/>).
-		///
-		/// Or -1 if <paramref name="n"/> is 0.
-		/// </returns>
-		[Contracts.Pure]
-		public static int FloorLog2(<#= bittable_type.Keyword #> n)
-		{
-			// #VITA_SHIM: Keep KSoft's zero sentinel while using BitOperations.Log2 for non-zero values.
-			return n == 0
-				? -1
-				: BitOperations.Log2(n);
-		}
-
-<# } #>
-		#endregion
-
 		#region IsSigned
 <# foreach (var bittable_type in BitwiseT4.BittableTypes_Unsigned) { #>
 <#
