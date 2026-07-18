@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using KSoft.SourceGeneration.Bitwise;
 using KSoft.SourceGeneration.Diagnostics;
@@ -37,31 +38,31 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 
 			if (generationInput.Options.IsEnabled(GeneratorFeature.SourceGenerationSmokeTest))
 			{
-				sourceContext.AddSource(
-					SmokeSourceBuilder.HintName,
-					SourceText.From(SmokeSourceBuilder.Build(), Encoding.UTF8));
+				AddSource(sourceContext, SmokeSourceBuilder.HintName, SmokeSourceBuilder.Build);
 			}
 
 			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsBitCount))
 			{
-				sourceContext.AddSource(
-					BitsBitCountSourceBuilder.HintName,
-					SourceText.From(BitsBitCountSourceBuilder.Build(), Encoding.UTF8));
+				AddSource(sourceContext, BitsBitCountSourceBuilder.HintName, BitsBitCountSourceBuilder.Build);
 			}
 
 			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsRotate))
 			{
-				sourceContext.AddSource(
-					BitsRotateSourceBuilder.HintName,
-					SourceText.From(BitsRotateSourceBuilder.Build(), Encoding.UTF8));
+				AddSource(sourceContext, BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build);
 			}
 
 			if (generationInput.Options.IsEnabled(GeneratorFeature.IntegerMath))
 			{
-				sourceContext.AddSource(
-					IntegerMathSourceBuilder.HintName,
-					SourceText.From(IntegerMathSourceBuilder.Build(), Encoding.UTF8));
+				AddSource(sourceContext, IntegerMathSourceBuilder.HintName, IntegerMathSourceBuilder.Build);
 			}
 		});
+	}
+
+	private static void AddSource(SourceProductionContext context, string hintName, Func<string> buildSource)
+	{
+		ExceptionHelpers.ThrowIfNullOrEmpty(hintName, nameof(hintName));
+		ExceptionHelpers.ThrowIfNull(buildSource, nameof(buildSource));
+
+		context.AddSource(hintName, SourceText.From(buildSource(), Encoding.UTF8));
 	}
 };
