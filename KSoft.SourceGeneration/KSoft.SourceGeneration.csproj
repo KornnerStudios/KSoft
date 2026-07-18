@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>KSoft.SourceGeneration</RootNamespace>
+		<AssemblyName>KSoft.SourceGeneration</AssemblyName>
+		<IsRoslynComponent>true</IsRoslynComponent>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<!-- RS2008: Release tracking files are intentionally omitted while the generator is internal-only groundwork. -->
+		<NoWarn>$(NoWarn);RS2008</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
+	</ItemGroup>
+</Project>
