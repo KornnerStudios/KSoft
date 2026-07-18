@@ -10,6 +10,7 @@
     <!-- Source-generation feature flags default off so checked-in T4 output remains the rollback path. -->
     <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">false</KSoftGenerateBitsBitCount>
     <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">false</KSoftGenerateBitsRotate>
+    <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
@@ -17,6 +18,7 @@
     <!-- CompilerVisibleProperty exposes MSBuild feature flags to the Roslyn generator as build_property.* values. -->
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsBitCount" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +37,10 @@
     <KSoftGeneratedSource Include="BitsRotate"
         Condition=" '$(KSoftGenerateBitsRotate)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.RotateT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="IntegerMath"
+        Condition=" '$(KSoftGenerateIntegerMath)' == 'true' ">
+      <RollbackCompile>Math\_Details\IntegerMathT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
   <PropertyGroup>

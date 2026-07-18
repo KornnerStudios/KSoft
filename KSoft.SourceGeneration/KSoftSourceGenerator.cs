@@ -1,6 +1,7 @@
 using System.Text;
 using KSoft.SourceGeneration.Bitwise;
 using KSoft.SourceGeneration.Diagnostics;
+using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
 using KSoft.SourceGeneration.SmokeTests;
 using Microsoft.CodeAnalysis;
@@ -53,6 +54,13 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 				sourceContext.AddSource(
 					BitsRotateSourceBuilder.HintName,
 					SourceText.From(BitsRotateSourceBuilder.Build(), Encoding.UTF8));
+			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.IntegerMath))
+			{
+				sourceContext.AddSource(
+					IntegerMathSourceBuilder.HintName,
+					SourceText.From(IntegerMathSourceBuilder.Build(), Encoding.UTF8));
 			}
 		});
 	}
