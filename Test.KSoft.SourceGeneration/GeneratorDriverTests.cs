@@ -35,6 +35,23 @@ public sealed class GeneratorDriverTests
 	[TestMethod]
 	public void GeneratorEmitsBitCountWhenFeatureIsEnabledTest()
 	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.BitsBitCount,
+			BitsBitCountSourceBuilder.HintName);
+	}
+
+	[TestMethod]
+	public void GeneratorEmitsRotateWhenFeatureIsEnabledTest()
+	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.BitsRotate,
+			BitsRotateSourceBuilder.HintName);
+	}
+
+	public TestContext TestContext { get; set; }
+
+	private void AssertGeneratorEmitsSource(GeneratorFeature feature, string hintName)
+	{
 		CSharpCompilation compilation = CSharpCompilation.Create(
 			"GeneratorSmoke",
 			[CSharpSyntaxTree.ParseText("internal static class Input { }", cancellationToken: TestContext.CancellationToken)],
@@ -42,7 +59,7 @@ public sealed class GeneratorDriverTests
 		var optionsProvider = new AnalyzerConfigOptionsProviderStub(new AnalyzerConfigOptionsStub(
 			new Dictionary<string, string>
 			{
-				[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+				[GeneratorOptions.BuildPropertyNameFor(feature)] = "true",
 			}));
 		var driver = CSharpGeneratorDriver.Create(
 			[new KSoftSourceGenerator().AsSourceGenerator()],
@@ -56,8 +73,6 @@ public sealed class GeneratorDriverTests
 
 		Assert.IsEmpty(diagnostics);
 		Assert.IsTrue(outputCompilation.SyntaxTrees.Any(
-			x => x.FilePath.EndsWith(BitsBitCountSourceBuilder.HintName, StringComparison.Ordinal)));
+			x => x.FilePath.EndsWith(hintName, StringComparison.Ordinal)));
 	}
-
-	public TestContext TestContext { get; set; }
 };

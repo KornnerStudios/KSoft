@@ -47,6 +47,13 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 					BitsBitCountSourceBuilder.HintName,
 					SourceText.From(BitsBitCountSourceBuilder.Build(), Encoding.UTF8));
 			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsRotate))
+			{
+				sourceContext.AddSource(
+					BitsRotateSourceBuilder.HintName,
+					SourceText.From(BitsRotateSourceBuilder.Build(), Encoding.UTF8));
+			}
 		});
 	}
 };
