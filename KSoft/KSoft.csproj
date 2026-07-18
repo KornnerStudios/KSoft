@@ -7,6 +7,36 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Source-generation feature flags default off so checked-in T4 output remains the rollback path. -->
+    <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">false</KSoftGenerateBitsBitCount>
+    <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
+    <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- CompilerVisibleProperty exposes MSBuild feature flags to the Roslyn generator as build_property.* values. -->
+    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsBitCount" />
+    <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      KSoftGeneratedSource is the single registration point for generated surfaces:
+        Include        = logical generated surface name
+        RollbackCompile= checked-in T4 .cs file removed from Compile when the generator is active
+
+      Do not link emitted .g.cs files back into the project. Visual Studio opens those physical files as
+      miscellaneous/non-semantic documents; the analyzer-generated document view has the correct Roslyn model.
+    -->
+    <KSoftGeneratedSource Include="BitsBitCount"
+        Condition=" '$(KSoftGenerateBitsBitCount)' == 'true' ">
+      <RollbackCompile>Bitwise\_Details\Bits.BitCountT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+  </ItemGroup>
+  <PropertyGroup>
+    <!-- Any active KSoftGeneratedSource emits .g.cs files and removes the corresponding rollback Compile item. -->
+    <KSoftGeneratedSourceItems>@(KSoftGeneratedSource)</KSoftGeneratedSourceItems>
+    <KSoftSourceGenerationEnabled Condition=" '$(KSoftGeneratedSourceItems)' != '' ">true</KSoftSourceGenerationEnabled>
+    <KSoftSourceGenerationEnabled Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
+    <EmitCompilerGeneratedFiles Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Bitwise\BitFieldTraits.cs" />
@@ -296,6 +326,10 @@
     <Compile Include="Xml\XmlSerializerWithDeserializeCallback.cs" />
     <Compile Include="Xml\XmlTextWithLocation.cs" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">
+    <!-- Remove checked-in rollback files after explicit Compile includes so Roslyn output owns the surface. -->
+    <Compile Remove="@(KSoftGeneratedSource->'%(RollbackCompile)')" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Bitwise\_Details\Bits.BitCountT4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -444,5 +478,12 @@
       <!--KSoft.T4 is limited to net481, as T4 itself was never updated to target dotnet-->
       <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Load KSoft.SourceGeneration as an analyzer only; KSoft must not reference it at runtime. -->
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj"
+        OutputItemType="Analyzer"
+        ReferenceOutputAssembly="False"
+        PrivateAssets="all" />
   </ItemGroup>
 </Project>

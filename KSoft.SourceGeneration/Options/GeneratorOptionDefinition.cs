@@ -26,13 +26,5 @@ internal readonly struct GeneratorOptionDefinition : IEquatable<GeneratorOptionD
 	}
 
 	public override int GetHashCode()
-	{
-		unchecked
-		{
-			int hash = 17;
-			hash = (hash * 31) + Feature.GetHashCode();
-			hash = (hash * 31) + PropertyName.GetHashCode();
-			return hash;
-		}
-	}
+		=> HashCodeBuilder.Combine(Feature, PropertyName);
 };

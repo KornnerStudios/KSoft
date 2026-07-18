@@ -1,4 +1,3 @@
-using System;
 using KSoft.SourceGeneration.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,7 +22,7 @@ public sealed class SourceWriterTests
 		}
 
 		Assert.AreEqual(
-			string.Join(Environment.NewLine, [
+			string.Join(SourceWriter.NewLine, [
 				"namespace Example",
 				"{",
 				"\tinternal static class Type",
@@ -48,7 +47,7 @@ public sealed class SourceWriterTests
 		}
 
 		Assert.AreEqual(
-			string.Join(Environment.NewLine, [
+			string.Join(SourceWriter.NewLine, [
 				"internal sealed class Type",
 				"{",
 				"\tpublic const int Value = 1;",

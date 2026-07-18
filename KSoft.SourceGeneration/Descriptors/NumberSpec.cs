@@ -175,15 +175,7 @@ internal readonly struct NumberSpec : IEquatable<NumberSpec>
 	}
 
 	public override int GetHashCode()
-	{
-		unchecked
-		{
-			int hash = 17;
-			hash = (hash * 31) + Primitive.GetHashCode();
-			hash = (hash * 31) + OperationWord.GetHashCode();
-			return hash;
-		}
-	}
+		=> HashCodeBuilder.Combine(Primitive, OperationWord);
 
 	private static int SizeOf(TypeCode typeCode)
 		=> typeCode switch

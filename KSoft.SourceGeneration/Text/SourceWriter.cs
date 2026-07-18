@@ -5,6 +5,7 @@ namespace KSoft.SourceGeneration.Text;
 internal sealed class SourceWriter
 {
 	public const string IndentText = "\t";
+	public const string NewLine = "\n";
 
 	private readonly StringBuilder mBuilder = new();
 
@@ -28,7 +29,7 @@ internal sealed class SourceWriter
 
 	public void WriteLine()
 	{
-		mBuilder.AppendLine();
+		mBuilder.Append(NewLine);
 	}
 
 	public void WriteLine(string value)
@@ -40,7 +41,8 @@ internal sealed class SourceWriter
 			AppendIndent();
 		}
 
-		mBuilder.AppendLine(value);
+		mBuilder.Append(value);
+		mBuilder.Append(NewLine);
 	}
 
 	public override string ToString()

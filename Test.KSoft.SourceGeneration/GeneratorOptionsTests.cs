@@ -68,4 +68,37 @@ public sealed class GeneratorOptionsTests
 			GeneratorOptions.PropertyNameFor(GeneratorFeature.BitsBitCount),
 			options.InvalidBooleanProperties[0]);
 	}
+
+	[TestMethod]
+	public void EquivalentFeatureSetsAreEqualTest()
+	{
+		var left = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
+		{
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "false",
+		}));
+		var right = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
+		{
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "false",
+		}));
+
+		Assert.AreEqual(left, right);
+		Assert.AreEqual(left.GetHashCode(), right.GetHashCode());
+	}
+
+	[TestMethod]
+	public void DifferentFeatureSetsAreNotEqualTest()
+	{
+		var left = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
+		{
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+		}));
+		var right = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
+		{
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "true",
+		}));
+
+		Assert.AreNotEqual(left, right);
+	}
 };

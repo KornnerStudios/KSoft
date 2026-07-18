@@ -1,4 +1,5 @@
 using System.Text;
+using KSoft.SourceGeneration.Bitwise;
 using KSoft.SourceGeneration.Diagnostics;
 using KSoft.SourceGeneration.Options;
 using KSoft.SourceGeneration.SmokeTests;
@@ -38,6 +39,13 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 				sourceContext.AddSource(
 					SmokeSourceBuilder.HintName,
 					SourceText.From(SmokeSourceBuilder.Build(), Encoding.UTF8));
+			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsBitCount))
+			{
+				sourceContext.AddSource(
+					BitsBitCountSourceBuilder.HintName,
+					SourceText.From(BitsBitCountSourceBuilder.Build(), Encoding.UTF8));
 			}
 		});
 	}

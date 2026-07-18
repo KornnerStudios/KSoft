@@ -85,15 +85,5 @@ internal readonly struct PrimitiveSpec : IEquatable<PrimitiveSpec>
 	}
 
 	public override int GetHashCode()
-	{
-		unchecked
-		{
-			int hash = 17;
-			hash = (hash * 31) + Keyword.GetHashCode();
-			hash = (hash * 31) + TypeCode.GetHashCode();
-			hash = (hash * 31) + SizeOfInBytes.GetHashCode();
-			hash = (hash * 31) + SimpleDescription.GetHashCode();
-			return hash;
-		}
-	}
+		=> HashCodeBuilder.Combine(Keyword, TypeCode, SizeOfInBytes, SimpleDescription);
 };

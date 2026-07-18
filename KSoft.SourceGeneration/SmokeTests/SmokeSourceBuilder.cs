@@ -21,8 +21,8 @@ internal static class SmokeSourceBuilder
 			writer.WriteLine("internal static class KSoftSourceGenerationSmoke");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("public const int NumberCount = " + PrimitiveCatalog.Numbers.Count + ";");
-				writer.WriteLine("public const int PrimitiveCount = " + PrimitiveCatalog.Primitives.Count + ";");
+				writer.WriteLine($"public const int NumberCount = {PrimitiveCatalog.Numbers.Count};");
+				writer.WriteLine($"public const int PrimitiveCount = {PrimitiveCatalog.Primitives.Count};");
 				writer.WriteLine("public const int BittableUnsignedCount = "
 					+ PrimitiveCatalog.BittableTypesUnsigned.Count + ";");
 				writer.WriteLine("public const int BittableMajorWordCount = "
