@@ -2,6 +2,13 @@ using System;
 
 namespace KSoft.SourceGeneration.Options;
 
+/// <summary>
+/// Describes the MSBuild property that enables a generator feature.
+/// </summary>
+/// <remarks>
+/// Output routing lives in <see cref="GeneratorRegistry" />. This option-only view keeps analyzer config parsing
+/// separate from source-builder dependencies.
+/// </remarks>
 internal readonly struct GeneratorOptionDefinition : IEquatable<GeneratorOptionDefinition>
 {
 	public GeneratorOptionDefinition(GeneratorFeature feature, string propertyName)

@@ -11,18 +11,6 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 {
 	private const string BuildPropertyPrefix = "build_property.";
 
-	private static readonly IReadOnlyList<GeneratorOptionDefinition> kFeatureDefinitions =
-		[
-			new(GeneratorFeature.BitsBitCount, "KSoftGenerateBitsBitCount"),
-			new(GeneratorFeature.BitsRotate, "KSoftGenerateBitsRotate"),
-			new(GeneratorFeature.BitVectors, "KSoftGenerateBitVectors"),
-			new(GeneratorFeature.IntegerMath, "KSoftGenerateIntegerMath"),
-			new(GeneratorFeature.EndianStreamsNumbers, "KSoftGenerateEndianStreamsNumbers"),
-			new(GeneratorFeature.BitStream, "KSoftGenerateBitStream"),
-			new(GeneratorFeature.TagElementStreams, "KSoftGenerateTagElementStreams"),
-			new(GeneratorFeature.SourceGenerationSmokeTest, "KSoftGenerateSourceGenerationSmokeTest"),
-		];
-
 	private readonly GeneratorFeature[] mEnabledFeatures;
 	private readonly string[] mInvalidBooleanProperties;
 
@@ -34,7 +22,10 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 		mInvalidBooleanProperties = invalidBooleanProperties;
 	}
 
-	public static IReadOnlyList<GeneratorOptionDefinition> FeatureDefinitions => kFeatureDefinitions;
+	/// <summary>
+	/// Gets the registry-backed option definitions parsed from analyzer config.
+	/// </summary>
+	public static IReadOnlyList<GeneratorOptionDefinition> FeatureDefinitions => GeneratorRegistry.FeatureDefinitions;
 
 	public IReadOnlyList<string> InvalidBooleanProperties => mInvalidBooleanProperties;
 
@@ -50,9 +41,10 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 	{
 		ExceptionHelpers.ThrowIfNull(globalOptions, nameof(globalOptions));
 
+		// Keep option parsing data-driven so adding a generator feature only updates GeneratorRegistry.
 		var enabledFeatures = new List<GeneratorFeature>();
 		var invalidBooleanProperties = new List<string>();
-		foreach (GeneratorOptionDefinition definition in kFeatureDefinitions)
+		foreach (GeneratorOptionDefinition definition in FeatureDefinitions)
 		{
 			ReadBooleanProperty(globalOptions, definition, enabledFeatures, invalidBooleanProperties);
 		}
@@ -62,7 +54,7 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 
 	public static string PropertyNameFor(GeneratorFeature feature)
 	{
-		foreach (GeneratorOptionDefinition definition in kFeatureDefinitions)
+		foreach (GeneratorOptionDefinition definition in FeatureDefinitions)
 		{
 			if (definition.Feature == feature)
 			{
@@ -84,7 +76,7 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 	public override int GetHashCode()
 	{
 		int hashCode = 17;
-		// Feature order is defined by kFeatureDefinitions, keeping equality and incremental-generator cache keys stable.
+		// Feature order is defined by GeneratorRegistry, keeping equality and incremental-generator cache keys stable.
 		foreach (GeneratorFeature feature in mEnabledFeatures)
 		{
 			hashCode = HashCodeBuilder.Add(hashCode, feature);

@@ -1,12 +1,7 @@
 using System;
 using System.Text;
-using KSoft.SourceGeneration.Bitwise;
-using KSoft.SourceGeneration.Collections;
 using KSoft.SourceGeneration.Diagnostics;
-using KSoft.SourceGeneration.IO;
-using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
-using KSoft.SourceGeneration.SmokeTests;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -38,56 +33,24 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 				return;
 			}
 
-			if (generationInput.Options.IsEnabled(GeneratorFeature.SourceGenerationSmokeTest))
+			// The registry lets one feature emit multiple .g.cs files without adding more incremental pipeline branches.
+			foreach (GeneratorFeatureRegistration feature in GeneratorRegistry.Features)
 			{
-				AddSource(sourceContext, SmokeSourceBuilder.HintName, SmokeSourceBuilder.Build);
-			}
+				if (!generationInput.Options.IsEnabled(feature.Feature))
+				{
+					continue;
+				}
 
-			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsBitCount))
-			{
-				AddSource(sourceContext, BitsBitCountSourceBuilder.HintName, BitsBitCountSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsRotate))
-			{
-				AddSource(sourceContext, BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.BitVectors))
-			{
-				AddSource(sourceContext, BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.IntegerMath))
-			{
-				AddSource(sourceContext, IntegerMathSourceBuilder.HintName, IntegerMathSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.EndianStreamsNumbers))
-			{
-				AddSource(
-					sourceContext,
-					EndianStreamsNumbersSourceBuilder.HintName,
-					EndianStreamsNumbersSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.BitStream))
-			{
-				AddSource(sourceContext, BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build);
-			}
-
-			if (generationInput.Options.IsEnabled(GeneratorFeature.TagElementStreams))
-			{
-				AddSource(sourceContext, TagElementStreamsSourceBuilder.HintName, TagElementStreamsSourceBuilder.Build);
+				foreach (GeneratedSourceRegistration source in feature.Sources)
+				{
+					AddSource(sourceContext, source);
+				}
 			}
 		});
 	}
 
-	private static void AddSource(SourceProductionContext context, string hintName, Func<string> buildSource)
+	private static void AddSource(SourceProductionContext context, GeneratedSourceRegistration source)
 	{
-		ExceptionHelpers.ThrowIfNullOrEmpty(hintName, nameof(hintName));
-		ExceptionHelpers.ThrowIfNull(buildSource, nameof(buildSource));
-
-		context.AddSource(hintName, SourceText.From(buildSource(), Encoding.UTF8));
+		context.AddSource(source.HintName, SourceText.From(source.BuildSource(), Encoding.UTF8));
 	}
 };

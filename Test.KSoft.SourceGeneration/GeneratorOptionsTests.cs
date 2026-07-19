@@ -18,11 +18,10 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateBitsBitCount",
 				"KSoftGenerateBitsRotate",
 				"KSoftGenerateBitVectors",
-				"KSoftGenerateIntegerMath",
-				"KSoftGenerateEndianStreamsNumbers",
 				"KSoftGenerateBitStream",
+				"KSoftGenerateEndianStreamsNumbers",
 				"KSoftGenerateTagElementStreams",
-				"KSoftGenerateSourceGenerationSmokeTest",
+				"KSoftGenerateIntegerMath",
 			},
 			GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray());
 	}
@@ -48,21 +47,19 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "True",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitVectors)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.SourceGenerationSmokeTest)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
 		}));
 
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsBitCount));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsRotate));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitVectors));
-		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.SourceGenerationSmokeTest));
+		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}
 
