@@ -105,4 +105,18 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void HandleBitEncoderRegistersExpectedOutputTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(
+			static x => x.Feature == GeneratorFeature.HandleBitEncoder);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Bitwise.HandleBitEncoder.g.cs",
+			},
+			hints);
+	}
 };

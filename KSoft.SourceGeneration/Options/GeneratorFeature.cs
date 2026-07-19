@@ -11,6 +11,7 @@ internal enum GeneratorFeature
 	BitsRotate,
 	ByteSwap,
 	Flags,
+	HandleBitEncoder,
 
 	// Collections domains.
 	BitVectors,

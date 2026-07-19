@@ -66,6 +66,12 @@ internal static class GeneratorRegistry
 				GeneratorFeature.Flags,
 				"KSoftGenerateFlags",
 				new GeneratedSourceRegistration(FlagsSourceBuilder.HintName, FlagsSourceBuilder.Build)),
+			new(
+				GeneratorFeature.HandleBitEncoder,
+				"KSoftGenerateHandleBitEncoder",
+				new GeneratedSourceRegistration(
+					HandleBitEncoderSourceBuilder.HintName,
+					HandleBitEncoderSourceBuilder.Build)),
 
 			// Collections domains.
 			new(

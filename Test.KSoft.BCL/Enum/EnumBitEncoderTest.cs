@@ -322,5 +322,45 @@ namespace KSoft.Test
 			Assert.AreEqual(ss.ByteOrder, byteOrder);
 			Assert.AreEqual(ss.FixedLength, (short)fixedLength);
 		}
+
+		[TestMethod]
+		public void Enum_HandleBitEncoder64Test()
+		{
+			var enumEncoder = new EnumBitEncoder64<EnumTest>();
+			var payloadTraits = new Bitwise.BitFieldTraits(20);
+			var encoder = new Bitwise.HandleBitEncoder();
+
+			encoder.Encode64(EnumTest.Member3, enumEncoder);
+			encoder.Encode64(0x12345UL, payloadTraits);
+
+			var decoder = new Bitwise.HandleBitEncoder(encoder.GetHandle64());
+			decoder.Decode64(out EnumTest value, enumEncoder);
+			decoder.Decode64(out ulong payload, payloadTraits);
+
+			Assert.AreEqual(EnumTest.Member3, value);
+			Assert.AreEqual(0x12345UL, payload);
+		}
+
+		[TestMethod]
+		public void Enum_HandleBitEncoderNoneableTest()
+		{
+			var encoder = new Bitwise.HandleBitEncoder();
+
+			encoder.EncodeNoneable32(-1, 0x3);
+			encoder.EncodeNoneable32(2, new Bitwise.BitFieldTraits(2));
+			encoder.EncodeNoneable64(-1, 0x3);
+			encoder.EncodeNoneable64(2, new Bitwise.BitFieldTraits(2));
+
+			var decoder = new Bitwise.HandleBitEncoder(encoder.GetHandle64());
+			decoder.DecodeNoneable32(out int none32, 0x3);
+			decoder.DecodeNoneable32(out int value32, new Bitwise.BitFieldTraits(2));
+			decoder.DecodeNoneable64(out long none64, 0x3);
+			decoder.DecodeNoneable64(out long value64, new Bitwise.BitFieldTraits(2));
+
+			Assert.AreEqual(-1, none32);
+			Assert.AreEqual(2, value32);
+			Assert.AreEqual(-1, none64);
+			Assert.AreEqual(2, value64);
+		}
 	};
 }

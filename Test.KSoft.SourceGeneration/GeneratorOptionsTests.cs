@@ -21,6 +21,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateBitsRotate",
 				"KSoftGenerateByteSwap",
 				"KSoftGenerateFlags",
+				"KSoftGenerateHandleBitEncoder",
 				"KSoftGenerateBitVectors",
 				"KSoftGenerateBitStream",
 				"KSoftGenerateEndianStreamsNumbers",
@@ -54,6 +55,7 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "True",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.ByteSwap)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.Flags)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.HandleBitEncoder)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitVectors)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
@@ -67,6 +69,7 @@ public sealed class GeneratorOptionsTests
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsRotate));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.ByteSwap));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.Flags));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.HandleBitEncoder));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitVectors));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
