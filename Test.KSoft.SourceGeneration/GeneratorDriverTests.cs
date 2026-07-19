@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KSoft.SourceGeneration;
 using KSoft.SourceGeneration.Bitwise;
+using KSoft.SourceGeneration.Collections;
 using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
@@ -48,6 +49,14 @@ public sealed class GeneratorDriverTests
 		AssertGeneratorEmitsSource(
 			GeneratorFeature.BitsRotate,
 			BitsRotateSourceBuilder.HintName);
+	}
+
+	[TestMethod]
+	public void GeneratorEmitsBitVectorsWhenFeatureIsEnabledTest()
+	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.BitVectors,
+			BitVectorsSourceBuilder.HintName);
 	}
 
 	[TestMethod]

@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using KSoft.SourceGeneration.Bitwise;
+using KSoft.SourceGeneration.Collections;
 using KSoft.SourceGeneration.Diagnostics;
 using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
@@ -50,6 +51,11 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 			if (generationInput.Options.IsEnabled(GeneratorFeature.BitsRotate))
 			{
 				AddSource(sourceContext, BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build);
+			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.BitVectors))
+			{
+				AddSource(sourceContext, BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build);
 			}
 
 			if (generationInput.Options.IsEnabled(GeneratorFeature.IntegerMath))
