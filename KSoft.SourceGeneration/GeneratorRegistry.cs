@@ -62,6 +62,10 @@ internal static class GeneratorRegistry
 				GeneratorFeature.ByteSwap,
 				"KSoftGenerateByteSwap",
 				new GeneratedSourceRegistration(ByteSwapSourceBuilder.HintName, ByteSwapSourceBuilder.Build)),
+			new(
+				GeneratorFeature.Flags,
+				"KSoftGenerateFlags",
+				new GeneratedSourceRegistration(FlagsSourceBuilder.HintName, FlagsSourceBuilder.Build)),
 
 			// Collections domains.
 			new(
