@@ -58,6 +58,10 @@ internal static class GeneratorRegistry
 				GeneratorFeature.BitsRotate,
 				"KSoftGenerateBitsRotate",
 				new GeneratedSourceRegistration(BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build)),
+			new(
+				GeneratorFeature.ByteSwap,
+				"KSoftGenerateByteSwap",
+				new GeneratedSourceRegistration(ByteSwapSourceBuilder.HintName, ByteSwapSourceBuilder.Build)),
 
 			// Collections domains.
 			new(

@@ -12,6 +12,7 @@
     <KSoftGenerateBitsCore Condition=" '$(KSoftGenerateBitsCore)' == '' ">false</KSoftGenerateBitsCore>
     <KSoftGenerateBitsEncoding Condition=" '$(KSoftGenerateBitsEncoding)' == '' ">false</KSoftGenerateBitsEncoding>
     <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">false</KSoftGenerateBitsRotate>
+    <KSoftGenerateByteSwap Condition=" '$(KSoftGenerateByteSwap)' == '' ">false</KSoftGenerateByteSwap>
     <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsNumbers
@@ -26,6 +27,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsCore" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsEncoding" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateByteSwap" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
@@ -80,6 +82,10 @@
     <KSoftGeneratedSource Include="BitsRotate"
         Condition=" '$(KSoftGenerateBitsRotate)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.RotateT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="ByteSwap"
+        Condition=" '$(KSoftGenerateByteSwap)' == 'true' ">
+      <RollbackCompile>Bitwise\_Details\ByteSwapT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitVectors"
         Condition=" '$(KSoftGenerateBitVectors)' == 'true' ">

@@ -79,4 +79,17 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void ByteSwapRegistersExpectedOutputTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.ByteSwap);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Bitwise.ByteSwap.g.cs",
+			},
+			hints);
+	}
 };
