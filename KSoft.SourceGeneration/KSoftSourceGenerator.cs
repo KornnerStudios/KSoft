@@ -64,6 +64,11 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 					EndianStreamsNumbersSourceBuilder.HintName,
 					EndianStreamsNumbersSourceBuilder.Build);
 			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.BitStream))
+			{
+				AddSource(sourceContext, BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build);
+			}
 		});
 	}
 

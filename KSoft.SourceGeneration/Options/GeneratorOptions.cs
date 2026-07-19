@@ -17,6 +17,7 @@ internal sealed class GeneratorOptions : IEquatable<GeneratorOptions>
 			new(GeneratorFeature.BitsRotate, "KSoftGenerateBitsRotate"),
 			new(GeneratorFeature.IntegerMath, "KSoftGenerateIntegerMath"),
 			new(GeneratorFeature.EndianStreamsNumbers, "KSoftGenerateEndianStreamsNumbers"),
+			new(GeneratorFeature.BitStream, "KSoftGenerateBitStream"),
 			new(GeneratorFeature.SourceGenerationSmokeTest, "KSoftGenerateSourceGenerationSmokeTest"),
 		];
 

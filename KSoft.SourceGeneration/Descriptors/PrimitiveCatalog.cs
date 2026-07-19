@@ -119,6 +119,34 @@ internal static class PrimitiveCatalog
 		];
 
 	/// <summary>
+	/// Integer-like primitive types used by the BitStream generated read, write, and serialize surfaces.
+	/// </summary>
+	/// <remarks>Maps to <c>KSoft.T4.Bitwise.BitwiseT4.BitStreambleIntegerTypes</c>.</remarks>
+	public static IReadOnlyList<PrimitiveSpec> BitStreamableIntegerTypes { get; } =
+		[
+			kChar,
+			kByte.Primitive,
+			kSByte.Primitive,
+			kUInt16.Primitive,
+			kInt16.Primitive,
+			kUInt32.Primitive,
+			kInt32.Primitive,
+			kUInt64.Primitive,
+			kInt64.Primitive,
+		];
+
+	/// <summary>
+	/// Non-integer primitive types used by the BitStream generated serialize surfaces.
+	/// </summary>
+	/// <remarks>Maps to <c>KSoft.T4.Bitwise.BitwiseT4.BitStreambleNonIntegerTypes</c>.</remarks>
+	public static IReadOnlyList<PrimitiveSpec> BitStreamableNonIntegerTypes { get; } =
+		[
+			kBool,
+			kSingle.Primitive,
+			kDouble.Primitive,
+		];
+
+	/// <summary>
 	/// 32-bit signed and unsigned integer primitive types used by bitwise generators.
 	/// </summary>
 	/// <remarks>Maps to <c>KSoft.T4.Bitwise.BitwiseT4.BittableTypesInt32</c>.</remarks>

@@ -6,5 +6,6 @@ internal enum GeneratorFeature
 	BitsRotate,
 	IntegerMath,
 	EndianStreamsNumbers,
+	BitStream,
 	SourceGenerationSmokeTest,
 };

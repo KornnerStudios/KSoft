@@ -123,5 +123,231 @@ namespace KSoft.IO.Test
 				}
 			}
 		}
+
+		[TestMethod]
+		public void WriteWord_CrossesCacheBoundary_WritesExpectedBytesTest()
+		{
+			byte[] bytes = WriteWithBitStream(bs =>
+			{
+				bs.WriteWord(0b10101U, 5);
+				Assert.AreEqual(5, bs.BitPosition);
+
+				bs.WriteWord(0xABCDEU, 20);
+				Assert.AreEqual(25, bs.BitPosition);
+
+				bs.WriteWord(0b111U, 3);
+				Assert.AreEqual(28, bs.BitPosition);
+			});
+
+			CollectionAssert.AreEqual(new byte[] { 0xAD, 0x5E, 0x6F, 0x70 }, bytes);
+		}
+
+		[TestMethod]
+		public void ReadWord_CrossesCacheBoundary_ReadsExpectedValuesTest()
+		{
+			ReadWithBitStream(new byte[] { 0xAD, 0x5E, 0x6F, 0x70 }, bs =>
+			{
+				bs.ReadWord(out uint prefix, 5);
+				Assert.AreEqual(0b10101U, prefix);
+				Assert.AreEqual(5, bs.BitPosition);
+
+				bs.ReadWord(out uint middle, 20);
+				Assert.AreEqual(0xABCDEU, middle);
+				Assert.AreEqual(25, bs.BitPosition);
+
+				bs.ReadWord(out uint suffix, 3);
+				Assert.AreEqual(0b111U, suffix);
+				Assert.AreEqual(28, bs.BitPosition);
+			});
+		}
+
+		[TestMethod]
+		public void ReadWriteUInt64_SplitWordCounts_RoundTripsTest()
+		{
+			byte[] bytes = WriteWithBitStream(bs =>
+			{
+				bs.Write(0x89ABCDEFUL, 32);
+				bs.Write(0x1FEDCBA98UL, 33);
+				bs.Write(0x0123456789ABCDEFUL, Bits.kUInt64BitCount);
+			});
+
+			ReadWithBitStream(bytes, bs =>
+			{
+				bs.Read(out ulong value32, 32);
+				Assert.AreEqual(0x89ABCDEFUL, value32);
+
+				bs.Read(out ulong value33, 33);
+				Assert.AreEqual(0x1FEDCBA98UL, value33);
+
+				bs.Read(out ulong value64);
+				Assert.AreEqual(0x0123456789ABCDEFUL, value64);
+			});
+		}
+
+		[TestMethod]
+		public void ReadSigned_TruncatedValues_ControlsSignExtensionTest()
+		{
+			byte[] sbyteBytes = WriteWithBitStream(bs => bs.Write((sbyte)-3, 3));
+			ReadWithBitStream(sbyteBytes, bs => Assert.AreEqual(5, bs.ReadSByte(3)));
+			ReadWithBitStream(sbyteBytes, bs => Assert.AreEqual(-3, bs.ReadSByte(3, signExtend: true)));
+
+			byte[] shortBytes = WriteWithBitStream(bs => bs.Write((short)-321, 10));
+			ReadWithBitStream(shortBytes, bs => Assert.AreEqual(703, bs.ReadInt16(10)));
+			ReadWithBitStream(shortBytes, bs => Assert.AreEqual(-321, bs.ReadInt16(10, signExtend: true)));
+
+			byte[] intBytes = WriteWithBitStream(bs => bs.Write(-123456, 20));
+			ReadWithBitStream(intBytes, bs => Assert.AreEqual(925120, bs.ReadInt32(20)));
+			ReadWithBitStream(intBytes, bs => Assert.AreEqual(-123456, bs.ReadInt32(20, signExtend: true)));
+
+			byte[] longBytes = WriteWithBitStream(bs => bs.Write(-5L, 4));
+			ReadWithBitStream(longBytes, bs => Assert.AreEqual(11L, bs.ReadInt64(4)));
+			ReadWithBitStream(longBytes, bs => Assert.AreEqual(-5L, bs.ReadInt64(4, signExtend: true)));
+		}
+
+		[TestMethod]
+		public void Stream_ScalarDelegates_RoundTripsRepresentativeValuesTest()
+		{
+			char writeChar = 'Z';
+			short writeShort = -17;
+			bool writeBool = true;
+			float writeFloat = Bitwise.ByteSwap.SingleFromUInt32(0xC0A00000U);
+
+			byte[] bytes = WriteWithBitStream(bs =>
+			{
+				bs.Stream(ref writeChar, 7);
+				bs.Stream(ref writeShort, 6, signExtend: true);
+				bs.Stream(ref writeBool);
+				bs.Stream(ref writeFloat);
+			});
+
+			char readChar = default;
+			short readShort = default;
+			bool readBool = default;
+			float readFloat = default;
+			ReadWithBitStream(bytes, bs =>
+			{
+				bs.Stream(ref readChar, 7);
+				bs.Stream(ref readShort, 6, signExtend: true);
+				bs.Stream(ref readBool);
+				bs.Stream(ref readFloat);
+			});
+
+			Assert.AreEqual(writeChar, readChar);
+			Assert.AreEqual(writeShort, readShort);
+			Assert.AreEqual(writeBool, readBool);
+			Assert.AreEqual(BitConverter.SingleToInt32Bits(writeFloat), BitConverter.SingleToInt32Bits(readFloat));
+		}
+
+		[TestMethod]
+		public void StreamFixedArray_SignedValues_RoundTripsWithSignExtensionTest()
+		{
+			var writeValues = new short[] { -3, 2, -1 };
+			byte[] bytes = WriteWithBitStream(bs => bs.StreamFixedArray(writeValues, 3, signExtend: true));
+
+			var readValues = new short[writeValues.Length];
+			ReadWithBitStream(bytes, bs => bs.StreamFixedArray(readValues, 3, signExtend: true));
+
+			CollectionAssert.AreEqual(writeValues, readValues);
+		}
+
+		[TestMethod]
+		public void StreamArray_ByteValues_RoundTripsLengthAndElementsTest()
+		{
+			var writeValues = new byte[] { 1, 2, 3 };
+			byte[] bytes = WriteWithBitStream(bs => bs.StreamArray(ref writeValues, 3, 2));
+
+			byte[] readValues = null;
+			ReadWithBitStream(bytes, bs => bs.StreamArray(ref readValues, 3, 2));
+
+			CollectionAssert.AreEqual(writeValues, readValues);
+		}
+
+		[TestMethod]
+		public void StreamElements_IntValues_RoundTripsCountAndElementsTest()
+		{
+			var writeValues = new List<int> { -1, 3, -2 };
+			byte[] bytes = WriteWithBitStream(bs => bs.StreamElements(writeValues, 3, 3, signExtend: true));
+
+			var readValues = new List<int>();
+			ReadWithBitStream(bytes, bs => bs.StreamElements(readValues, 3, 3, signExtend: true));
+
+			CollectionAssert.AreEqual(writeValues, readValues);
+		}
+
+		[TestMethod]
+		public void StreamElements_SingleValues_RoundTripsBitPatternsTest()
+		{
+			var writeValues = new List<float> {
+				Bitwise.ByteSwap.SingleFromUInt32(0x3F800000U),
+				Bitwise.ByteSwap.SingleFromUInt32(0xFFC00001U),
+			};
+			byte[] bytes = WriteWithBitStream(bs => bs.StreamElements(writeValues, 3));
+
+			var readValues = new List<float>();
+			ReadWithBitStream(bytes, bs => bs.StreamElements(readValues, 3));
+
+			Assert.AreEqual(writeValues.Count, readValues.Count);
+			Assert.AreEqual(BitConverter.SingleToInt32Bits(writeValues[0]), BitConverter.SingleToInt32Bits(readValues[0]));
+			Assert.AreEqual(BitConverter.SingleToInt32Bits(writeValues[1]), BitConverter.SingleToInt32Bits(readValues[1]));
+		}
+
+		[TestMethod]
+		public void StreamDouble_CurrentBehavior_WritesLowerThirtyTwoBitsOnlyTest()
+		{
+			const ulong kWriteBits = 0x3FF3C083126E978DUL;
+			double writeValue = BitConverter.Int64BitsToDouble(unchecked((long)kWriteBits));
+
+			byte[] bytes = WriteWithBitStream(bs => bs.Stream(ref writeValue));
+
+			// Characterizes the retained handwritten double writer; this generator packet must not silently fix it.
+			CollectionAssert.AreEqual(new byte[] { 0x12, 0x6E, 0x97, 0x8D }, bytes);
+
+			double readValue = default;
+			ReadWithBitStream(bytes, bs => bs.Stream(ref readValue));
+
+			Assert.AreEqual(unchecked((long)0x126E978D00000000UL), BitConverter.DoubleToInt64Bits(readValue));
+		}
+
+		[TestMethod]
+		public void ReadWord_AfterShortInitialFill_ReadsZeroPaddedCacheBitsTest()
+		{
+			using (var ms = new MemoryStream(new byte[] { 0xFF }))
+			using (var bs = new IO.BitStream(ms, FileAccess.Read))
+			{
+				bs.StreamMode = FileAccess.Read;
+				bs.ThrowOnOverflow = FileAccess.Read;
+
+				bs.ReadWord(out uint prefix, 7);
+				Assert.AreEqual(0x7FU, prefix);
+
+				bs.ReadWord(out uint suffix, 2);
+				Assert.AreEqual(0b10U, suffix);
+				Assert.AreEqual(9, bs.BitPosition);
+			}
+		}
+
+		static byte[] WriteWithBitStream(Action<IO.BitStream> write)
+		{
+			using (var ms = new MemoryStream())
+			{
+				using (var bs = new IO.BitStream(ms, FileAccess.Write))
+				{
+					bs.StreamMode = FileAccess.Write;
+					write(bs);
+				}
+
+				return ms.ToArray();
+			}
+		}
+
+		static void ReadWithBitStream(byte[] bytes, Action<IO.BitStream> read)
+		{
+			using (var ms = new MemoryStream(bytes))
+			using (var bs = new IO.BitStream(ms, FileAccess.Read))
+			{
+				bs.StreamMode = FileAccess.Read;
+				read(bs);
+			}
+		}
 	};
 }

@@ -66,6 +66,14 @@ public sealed class GeneratorDriverTests
 			EndianStreamsNumbersSourceBuilder.HintName);
 	}
 
+	[TestMethod]
+	public void GeneratorEmitsBitStreamWhenFeatureIsEnabledTest()
+	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.BitStream,
+			BitStreamSourceBuilder.HintName);
+	}
+
 	public TestContext TestContext { get; set; }
 
 	private void AssertGeneratorEmitsSource(GeneratorFeature feature, string hintName)

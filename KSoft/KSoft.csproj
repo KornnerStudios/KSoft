@@ -13,6 +13,7 @@
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsNumbers
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
+    <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">false</KSoftGenerateBitStream>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
@@ -22,6 +23,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
     <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +50,22 @@
     <KSoftGeneratedSource Include="EndianStreamsNumbers"
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitStreamCore"
+        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+      <RollbackCompile>IO\_Details\BitStream.CoreT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitStreamRead"
+        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+      <RollbackCompile>IO\_Details\BitStream.ReadT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitStreamSerialize"
+        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+      <RollbackCompile>IO\_Details\BitStream.SerializeT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitStreamWrite"
+        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+      <RollbackCompile>IO\_Details\BitStream.WriteT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
   <PropertyGroup>
