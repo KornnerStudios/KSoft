@@ -16,6 +16,7 @@ public sealed class GeneratorOptionsTests
 		CollectionAssert.AreEqual(
 			new[] {
 				"KSoftGenerateBitsBitCount",
+				"KSoftGenerateBitsCore",
 				"KSoftGenerateBitsEncoding",
 				"KSoftGenerateBitsRotate",
 				"KSoftGenerateBitVectors",
@@ -46,6 +47,7 @@ public sealed class GeneratorOptionsTests
 		var options = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsCore)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsEncoding)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "True",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitVectors)] = "true",
@@ -56,6 +58,7 @@ public sealed class GeneratorOptionsTests
 		}));
 
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsBitCount));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsCore));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsEncoding));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsRotate));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitVectors));

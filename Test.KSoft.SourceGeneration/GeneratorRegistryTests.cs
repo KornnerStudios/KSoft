@@ -62,4 +62,21 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void BitsCoreRegistersEveryCoreOutputTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.BitsCore);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Bits.BitReverse.g.cs",
+				"KSoft.Bits.BitSwap.g.cs",
+				"KSoft.Bits.Constants.g.cs",
+				"KSoft.Bits.Core.g.cs",
+				"KSoft.Bits.Vectors.g.cs",
+			},
+			hints);
+	}
 };
