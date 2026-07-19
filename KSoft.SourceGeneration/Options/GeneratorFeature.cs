@@ -6,6 +6,7 @@ internal enum GeneratorFeature
 {
 	// Bitwise domains.
 	BitsBitCount,
+	BitsEncoding,
 	BitsRotate,
 
 	// Collections domains.

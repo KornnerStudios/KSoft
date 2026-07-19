@@ -9,6 +9,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <!-- Source-generation feature flags default off so checked-in T4 output remains the rollback path. -->
     <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">false</KSoftGenerateBitsBitCount>
+    <KSoftGenerateBitsEncoding Condition=" '$(KSoftGenerateBitsEncoding)' == '' ">false</KSoftGenerateBitsEncoding>
     <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">false</KSoftGenerateBitsRotate>
     <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
@@ -21,6 +22,7 @@
   <ItemGroup>
     <!-- CompilerVisibleProperty exposes MSBuild feature flags to the Roslyn generator as build_property.* values. -->
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsBitCount" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsEncoding" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
@@ -40,6 +42,18 @@
     <KSoftGeneratedSource Include="BitsBitCount"
         Condition=" '$(KSoftGenerateBitsBitCount)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.BitCountT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitsDecode"
+        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+      <RollbackCompile>Bitwise\_Details\Bits.DecodeT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitsEncode"
+        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+      <RollbackCompile>Bitwise\_Details\Bits.EncodeT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitsNoneableEncoding"
+        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+      <RollbackCompile>Bitwise\_Details\Bits.NoneableEncoding.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsRotate"
         Condition=" '$(KSoftGenerateBitsRotate)' == 'true' ">

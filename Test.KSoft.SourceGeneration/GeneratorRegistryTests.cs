@@ -47,4 +47,19 @@ public sealed class GeneratorRegistryTests
 
 		CollectionAssert.AreEqual(registryProperties, optionProperties);
 	}
+
+	[TestMethod]
+	public void BitsEncodingRegistersEveryEncodingOutputTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.BitsEncoding);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Bits.Decode.g.cs",
+				"KSoft.Bits.Encode.g.cs",
+				"KSoft.Bits.NoneableEncoding.g.cs",
+			},
+			hints);
+	}
 };

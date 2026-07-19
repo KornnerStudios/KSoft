@@ -25,6 +25,18 @@ internal static class GeneratorRegistry
 				"KSoftGenerateBitsBitCount",
 				new GeneratedSourceRegistration(BitsBitCountSourceBuilder.HintName, BitsBitCountSourceBuilder.Build)),
 			new(
+				GeneratorFeature.BitsEncoding,
+				"KSoftGenerateBitsEncoding",
+				new GeneratedSourceRegistration(
+					BitsEncodingSourceBuilder.DecodeHintName,
+					BitsEncodingSourceBuilder.BuildDecode),
+				new GeneratedSourceRegistration(
+					BitsEncodingSourceBuilder.EncodeHintName,
+					BitsEncodingSourceBuilder.BuildEncode),
+				new GeneratedSourceRegistration(
+					BitsEncodingSourceBuilder.NoneableEncodingHintName,
+					BitsEncodingSourceBuilder.BuildNoneableEncoding)),
+			new(
 				GeneratorFeature.BitsRotate,
 				"KSoftGenerateBitsRotate",
 				new GeneratedSourceRegistration(BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build)),
