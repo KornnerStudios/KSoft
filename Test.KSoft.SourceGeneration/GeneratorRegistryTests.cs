@@ -133,4 +133,18 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void EnumsRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.Enums);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.EnumBitEncoder.g.cs",
+				"KSoft.Reflection.EnumValue.g.cs",
+			},
+			hints);
+	}
 };

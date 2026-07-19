@@ -24,6 +24,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateHandleBitEncoder",
 				"KSoftGenerateBitSet",
 				"KSoftGenerateBitVectors",
+				"KSoftGenerateEnums",
 				"KSoftGenerateBitStream",
 				"KSoftGenerateEndianStreamsNumbers",
 				"KSoftGenerateTagElementStreams",
@@ -59,6 +60,7 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.HandleBitEncoder)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitSet)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitVectors)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.Enums)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
@@ -74,6 +76,7 @@ public sealed class GeneratorOptionsTests
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.HandleBitEncoder));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitSet));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitVectors));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.Enums));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));

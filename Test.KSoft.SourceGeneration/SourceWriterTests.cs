@@ -107,6 +107,32 @@ public sealed class SourceWriterTests
 	}
 
 	[TestMethod]
+	public void UnindentedLineBypassesCurrentIndentationTest()
+	{
+		var writer = new SourceWriter();
+
+		writer.WriteLine("if (value)");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteUnindentedLine("#pragma warning disable CA2208");
+			writer.WriteLine("throw new InvalidOperationException();");
+			writer.WriteUnindentedLine("#pragma warning restore CA2208");
+		}
+
+		Assert.AreEqual(
+			string.Join(SourceWriter.NewLine, [
+				"if (value)",
+				"{",
+				"#pragma warning disable CA2208",
+				"\tthrow new InvalidOperationException();",
+				"#pragma warning restore CA2208",
+				"}",
+				"",
+			]),
+			writer.ToString());
+	}
+
+	[TestMethod]
 	public void XmlDocHelpersWriteSingleAndMultiLineElementsTest()
 	{
 		var writer = new SourceWriter();

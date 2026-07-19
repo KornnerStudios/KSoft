@@ -17,6 +17,9 @@ internal enum GeneratorFeature
 	BitSet,
 	BitVectors,
 
+	// Enum domains.
+	Enums,
+
 	// IO domains.
 	BitStream,
 	EndianStreamsNumbers,

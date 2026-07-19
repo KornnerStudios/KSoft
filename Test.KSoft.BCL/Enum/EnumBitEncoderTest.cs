@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Test
@@ -38,6 +39,38 @@ namespace KSoft.Test
 			Member4,
 
 			kNumberOf,
+		};
+		enum EnumByte : byte
+		{
+			Value = 0xAB,
+		};
+		enum EnumSByte : sbyte
+		{
+			Value = 0x7E,
+		};
+		enum EnumUInt16 : ushort
+		{
+			Value = 0x1234,
+		};
+		enum EnumInt16 : short
+		{
+			Value = 0x1234,
+		};
+		enum EnumUInt32 : uint
+		{
+			Value = 0x89ABCDEF,
+		};
+		enum EnumInt32 : int
+		{
+			Value = 0x12345678,
+		};
+		enum EnumUInt64 : ulong
+		{
+			Value = 0x0123456789ABCDEFUL,
+		};
+		enum EnumInt64 : long
+		{
+			Value = 0x1122334455667788L,
 		};
 
 		[System.Flags]
@@ -265,6 +298,76 @@ namespace KSoft.Test
 			TestNone64Helper(EnumTestWithNone.Member3, EnumTestWithNone.None);
 		}
 		#endregion
+
+		[TestMethod]
+		public void Enum_BitEncoder32EndianStreamingUsesUnderlyingTypeTest()
+		{
+			using var ms = new MemoryStream();
+			using (var writer = new IO.EndianWriter(ms, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+			{
+				EnumBitEncoder32<EnumByte>.Write(writer, EnumByte.Value);
+				EnumBitEncoder32<EnumSByte>.Write(writer, EnumSByte.Value);
+				EnumBitEncoder32<EnumUInt16>.Write(writer, EnumUInt16.Value);
+				EnumBitEncoder32<EnumInt16>.Write(writer, EnumInt16.Value);
+				EnumBitEncoder32<EnumUInt32>.Write(writer, EnumUInt32.Value);
+				EnumBitEncoder32<EnumInt32>.Write(writer, EnumInt32.Value);
+			}
+
+			CollectionAssert.AreEqual(
+				new byte[] {
+					0xAB,
+					0x7E,
+					0x12, 0x34,
+					0x12, 0x34,
+					0x89, 0xAB, 0xCD, 0xEF,
+					0x12, 0x34, 0x56, 0x78,
+				},
+				ms.ToArray());
+
+			ms.Position = 0;
+			using var reader = new IO.EndianReader(ms, Shell.EndianFormat.Big);
+
+			EnumBitEncoder32<EnumByte>.Read(reader, out EnumByte byteValue);
+			EnumBitEncoder32<EnumSByte>.Read(reader, out EnumSByte sbyteValue);
+			EnumBitEncoder32<EnumUInt16>.Read(reader, out EnumUInt16 ushortValue);
+			EnumBitEncoder32<EnumInt16>.Read(reader, out EnumInt16 shortValue);
+			EnumBitEncoder32<EnumUInt32>.Read(reader, out EnumUInt32 uintValue);
+			EnumBitEncoder32<EnumInt32>.Read(reader, out EnumInt32 intValue);
+
+			Assert.AreEqual(EnumByte.Value, byteValue);
+			Assert.AreEqual(EnumSByte.Value, sbyteValue);
+			Assert.AreEqual(EnumUInt16.Value, ushortValue);
+			Assert.AreEqual(EnumInt16.Value, shortValue);
+			Assert.AreEqual(EnumUInt32.Value, uintValue);
+			Assert.AreEqual(EnumInt32.Value, intValue);
+		}
+
+		[TestMethod]
+		public void Enum_BitEncoder64EndianStreamingUsesUnderlyingTypeTest()
+		{
+			using var ms = new MemoryStream();
+			using (var writer = new IO.EndianWriter(ms, Shell.EndianFormat.Little) { BaseStreamOwner = false })
+			{
+				EnumBitEncoder64<EnumUInt64>.Write(writer, EnumUInt64.Value);
+				EnumBitEncoder64<EnumInt64>.Write(writer, EnumInt64.Value);
+			}
+
+			CollectionAssert.AreEqual(
+				new byte[] {
+					0xEF, 0xCD, 0xAB, 0x89, 0x67, 0x45, 0x23, 0x01,
+					0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+				},
+				ms.ToArray());
+
+			ms.Position = 0;
+			using var reader = new IO.EndianReader(ms, Shell.EndianFormat.Little);
+
+			EnumBitEncoder64<EnumUInt64>.Read(reader, out EnumUInt64 ulongValue);
+			EnumBitEncoder64<EnumInt64>.Read(reader, out EnumInt64 longValue);
+
+			Assert.AreEqual(EnumUInt64.Value, ulongValue);
+			Assert.AreEqual(EnumInt64.Value, longValue);
+		}
 
 		[TestMethod]
 		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",

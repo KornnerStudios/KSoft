@@ -75,6 +75,15 @@ internal sealed class SourceWriter
 		mBuilder.Append(NewLine);
 	}
 
+	public void WriteUnindentedLine(string value)
+	{
+		ExceptionHelpers.ThrowIfNull(value, nameof(value));
+
+		// Preprocessor directives are column-sensitive in legacy T4 output comparisons.
+		mBuilder.Append(value);
+		mBuilder.Append(NewLine);
+	}
+
 	public void WriteAttribute(string name)
 	{
 		ExceptionHelpers.ThrowIfNullOrEmpty(name, nameof(name));

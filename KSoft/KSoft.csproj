@@ -18,6 +18,7 @@
         Condition=" '$(KSoftGenerateHandleBitEncoder)' == '' ">false</KSoftGenerateHandleBitEncoder>
     <KSoftGenerateBitSet Condition=" '$(KSoftGenerateBitSet)' == '' ">false</KSoftGenerateBitSet>
     <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
+    <KSoftGenerateEnums Condition=" '$(KSoftGenerateEnums)' == '' ">false</KSoftGenerateEnums>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsNumbers
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
@@ -36,6 +37,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateHandleBitEncoder" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitSet" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateEnums" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
@@ -113,6 +115,14 @@
     <KSoftGeneratedSource Include="BitVectors"
         Condition=" '$(KSoftGenerateBitVectors)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\BitVectorsT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="EnumBitEncoder"
+        Condition=" '$(KSoftGenerateEnums)' == 'true' ">
+      <RollbackCompile>Enum\_Details\EnumBitEncoderT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="EnumValue"
+        Condition=" '$(KSoftGenerateEnums)' == 'true' ">
+      <RollbackCompile>Enum\_Details\EnumValueT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="IntegerMath"
         Condition=" '$(KSoftGenerateIntegerMath)' == 'true' ">

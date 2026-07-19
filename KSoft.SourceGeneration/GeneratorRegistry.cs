@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KSoft.SourceGeneration.Bitwise;
 using KSoft.SourceGeneration.Collections;
+using KSoft.SourceGeneration.Enum;
 using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
@@ -87,6 +88,17 @@ internal static class GeneratorRegistry
 				GeneratorFeature.BitVectors,
 				"KSoftGenerateBitVectors",
 				new GeneratedSourceRegistration(BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build)),
+
+			// Enum domains.
+			new(
+				GeneratorFeature.Enums,
+				"KSoftGenerateEnums",
+				new GeneratedSourceRegistration(
+					EnumSourceBuilder.EnumBitEncoderHintName,
+					EnumSourceBuilder.BuildEnumBitEncoder),
+				new GeneratedSourceRegistration(
+					EnumSourceBuilder.EnumValueHintName,
+					EnumSourceBuilder.BuildEnumValue)),
 
 			// IO domains.
 			new(
