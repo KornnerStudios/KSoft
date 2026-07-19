@@ -20,6 +20,8 @@
     <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
     <KSoftGenerateEnums Condition=" '$(KSoftGenerateEnums)' == '' ">false</KSoftGenerateEnums>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
+    <KSoftGenerateEndianStreamsCore
+        Condition=" '$(KSoftGenerateEndianStreamsCore)' == '' ">false</KSoftGenerateEndianStreamsCore>
     <KSoftGenerateEndianStreamsNumbers
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
     <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">false</KSoftGenerateIOExceptions>
@@ -40,6 +42,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEnums" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsCore" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIOExceptions" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
@@ -133,6 +136,15 @@
     <KSoftGeneratedSource Include="EndianStreamsNumbers"
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <!-- EndianStreams.BaseT4.cs also owns the generated KSoft.TypeExtensions endian-stream surface. -->
+    <KSoftGeneratedSource Include="EndianStreamsBase"
+        Condition=" '$(KSoftGenerateEndianStreamsCore)' == 'true' ">
+      <RollbackCompile>IO\_Details\EndianStreams.BaseT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="EndianStreamsVirtualAddressTranslation"
+        Condition=" '$(KSoftGenerateEndianStreamsCore)' == 'true' ">
+      <RollbackCompile>IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="VersionMismatchException"
         Condition=" '$(KSoftGenerateIOExceptions)' == 'true' ">

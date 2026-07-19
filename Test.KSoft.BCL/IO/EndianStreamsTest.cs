@@ -159,6 +159,92 @@ public class EndianStreamsTest : BaseTestClass
 		Assert.AreEqual((ushort)0x1122, values[1]);
 	}
 
+	[TestMethod]
+	public void BaseStateAndTypeExtensionsUseEndianStreamBehaviorTest()
+	{
+		var owner = new object();
+		using var stream = new MemoryStream();
+		using (var writer = new EndianWriter(stream, Shell.EndianFormat.Big, owner, "writer.bin") {
+			BaseStreamOwner = false,
+		})
+		{
+			Assert.AreSame(owner, writer.Owner);
+			Assert.AreEqual("writer.bin", writer.StreamName);
+			Assert.AreEqual(Shell.EndianFormat.Big, writer.ByteOrder);
+			Assert.AreEqual(Values.PtrHandle.Null32, writer.BaseAddress);
+
+			TypeExtensions.Write(true, writer);
+			TypeExtensions.Write((ushort)0x1234, writer);
+			TypeExtensions.Write(0x89ABCDEFU, writer);
+			TypeExtensions.Write(BitConverter.Int64BitsToDouble(unchecked((long)0xFFF8000000000001UL)), writer);
+
+			writer.Seek32(1);
+			Assert.AreEqual(1L, writer.BaseStream.Position);
+			writer.Seek(0, SeekOrigin.End);
+		}
+
+		CollectionAssert.AreEqual(new byte[] {
+			0x01,
+			0x12, 0x34,
+			0x89, 0xAB, 0xCD, 0xEF,
+			0xFF, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+		}, stream.ToArray());
+
+		stream.Position = 0;
+		using var reader = new EndianReader(stream, Shell.EndianFormat.Big, owner, "reader.bin");
+
+		TypeExtensions.Read(reader, out bool boolValue);
+		TypeExtensions.Read(reader, out ushort ushortValue);
+		TypeExtensions.Read(reader, out uint uintValue);
+		TypeExtensions.Read(reader, out double doubleValue);
+
+		Assert.AreSame(owner, reader.Owner);
+		Assert.AreEqual("reader.bin", reader.StreamName);
+		Assert.IsTrue(boolValue);
+		Assert.AreEqual((ushort)0x1234, ushortValue);
+		Assert.AreEqual(0x89ABCDEFU, uintValue);
+		Assert.AreEqual(unchecked((long)0xFFF8000000000001UL), BitConverter.DoubleToInt64Bits(doubleValue));
+	}
+
+	[TestMethod]
+	public void VirtualAddressTranslationTranslatesRelativePointersTest()
+	{
+		using var stream = new MemoryStream();
+		using (var writer = new EndianWriter(stream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+		{
+			Assert.Throws<InvalidOperationException>(
+				() => writer.VirtualAddressTranslationPop());
+
+			writer.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
+			Assert.Throws<InvalidOperationException>(
+				() => writer.VirtualAddressTranslationPop());
+
+			writer.VirtualAddressTranslationPush(new Values.PtrHandle(0x1000U));
+			writer.WriteVirtualAddress(new Values.PtrHandle(0x1020U));
+			writer.WriteVirtualAddress(Values.PtrHandle.InvalidHandle32);
+
+			Assert.AreEqual(new Values.PtrHandle(0x1000U), writer.VirtualAddressTranslationPop());
+		}
+
+		CollectionAssert.AreEqual(new byte[] {
+			0x00, 0x00, 0x00, 0x20,
+			0xFF, 0xFF, 0xFF, 0xFF,
+		}, stream.ToArray());
+
+		stream.Position = 0;
+		using var reader = new EndianReader(stream, Shell.EndianFormat.Big);
+
+		Assert.Throws<InvalidOperationException>(
+			() => reader.ReadVirtualAddress());
+
+		reader.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
+		reader.VirtualAddressTranslationPush(new Values.PtrHandle(0x1000U));
+
+		Assert.AreEqual(new Values.PtrHandle(0x1020U), reader.ReadVirtualAddress());
+		Assert.AreEqual(Values.PtrHandle.InvalidHandle32, reader.ReadVirtualAddress());
+		Assert.AreEqual(new Values.PtrHandle(0x1000U), reader.VirtualAddressTranslationPop());
+	}
+
 	static byte[] WritePrimitives(Shell.EndianFormat byteOrder)
 	{
 		using var ms = new MemoryStream();

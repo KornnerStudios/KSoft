@@ -163,6 +163,21 @@ public sealed class GeneratorRegistryTests
 	}
 
 	[TestMethod]
+	public void EndianStreamsCoreRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.EndianStreamsCore);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.IO.EndianStreams.Base.g.cs",
+				"KSoft.TypeExtensions.EndianStreams.g.cs",
+				"KSoft.IO.EndianStreams.VirtualAddressTranslation.g.cs",
+			},
+			hints);
+	}
+
+	[TestMethod]
 	public void BitStreamRegistersExpectedOutputsTest()
 	{
 		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.BitStream);

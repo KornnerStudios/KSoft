@@ -107,6 +107,18 @@ internal static class GeneratorRegistry
 				new GeneratedSourceRegistration(BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build),
 				new GeneratedSourceRegistration(BitStreamSourceBuilder.CacheHintName, BitStreamSourceBuilder.BuildCache)),
 			new(
+				GeneratorFeature.EndianStreamsCore,
+				"KSoftGenerateEndianStreamsCore",
+				new GeneratedSourceRegistration(
+					EndianStreamsCoreSourceBuilder.BaseHintName,
+					EndianStreamsCoreSourceBuilder.BuildBase),
+				new GeneratedSourceRegistration(
+					EndianStreamsCoreSourceBuilder.TypeExtensionsHintName,
+					EndianStreamsCoreSourceBuilder.BuildTypeExtensions),
+				new GeneratedSourceRegistration(
+					EndianStreamsCoreSourceBuilder.VirtualAddressTranslationHintName,
+					EndianStreamsCoreSourceBuilder.BuildVirtualAddressTranslation)),
+			new(
 				GeneratorFeature.EndianStreamsNumbers,
 				"KSoftGenerateEndianStreamsNumbers",
 				new GeneratedSourceRegistration(
