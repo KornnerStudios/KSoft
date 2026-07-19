@@ -20,6 +20,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateIntegerMath",
 				"KSoftGenerateEndianStreamsNumbers",
 				"KSoftGenerateBitStream",
+				"KSoftGenerateTagElementStreams",
 				"KSoftGenerateSourceGenerationSmokeTest",
 			},
 			GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray());
@@ -48,6 +49,7 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.SourceGenerationSmokeTest)] = "true",
 		}));
 
@@ -56,6 +58,7 @@ public sealed class GeneratorOptionsTests
 		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.SourceGenerationSmokeTest));
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}

@@ -74,6 +74,14 @@ public sealed class GeneratorDriverTests
 			BitStreamSourceBuilder.HintName);
 	}
 
+	[TestMethod]
+	public void GeneratorEmitsTagElementStreamsWhenFeatureIsEnabledTest()
+	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.TagElementStreams,
+			TagElementStreamsSourceBuilder.HintName);
+	}
+
 	public TestContext TestContext { get; set; }
 
 	private void AssertGeneratorEmitsSource(GeneratorFeature feature, string hintName)

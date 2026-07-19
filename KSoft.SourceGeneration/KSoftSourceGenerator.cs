@@ -69,6 +69,11 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 			{
 				AddSource(sourceContext, BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build);
 			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.TagElementStreams))
+			{
+				AddSource(sourceContext, TagElementStreamsSourceBuilder.HintName, TagElementStreamsSourceBuilder.Build);
+			}
 		});
 	}
 

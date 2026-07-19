@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -48,6 +49,41 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		Assert.AreEqual(expected, stream.Document.OuterXml);
 		Assert.IsNull(oldCursor);
 		Assert.AreEqual("root", stream.CursorName);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_GeneratedCollectionSurfaces_StreamExpectedValuesTest()
+	{
+		using var writeStream = XmlElementStream.CreateForWrite("root");
+		var writeValues = new List<int> { 10, 11 };
+		var streamValues = new List<int> { 12, 13 };
+		char[] letters = ['A', 'B'];
+
+		writeStream.WriteElements("item", writeValues, NumeralBase.Hex);
+		writeStream.StreamElements("streamed", streamValues, NumeralBase.Hex);
+		writeStream.StreamFixedArray("letter", letters);
+
+		// Keep this XML whitespace-free: OuterXml is compared exactly and formatted raw strings change the shape.
+		const string expected =
+			"""<root><item>A</item><item>B</item><streamed>C</streamed><streamed>D</streamed>""" +
+			"""<letter>A</letter><letter>B</letter></root>""";
+		Assert.AreEqual(expected, writeStream.Document.OuterXml);
+
+		using var readStream = CreateReadStream(writeStream.Document.OuterXml);
+		var readValues = new List<int>();
+		var readStreamValues = new List<int>();
+		char[] readLetters = new char[3];
+
+		readStream.ReadElements("item", readValues, NumeralBase.Hex);
+		readStream.StreamElements("streamed", readStreamValues, NumeralBase.Hex);
+		int readLetterCount = readStream.ReadFixedArray("letter", readLetters);
+
+		CollectionAssert.AreEqual(writeValues, readValues);
+		CollectionAssert.AreEqual(streamValues, readStreamValues);
+		Assert.AreEqual(2, readLetterCount);
+		Assert.AreEqual('A', readLetters[0]);
+		Assert.AreEqual('B', readLetters[1]);
+		Assert.AreEqual(default, readLetters[2]);
 	}
 
 	[TestMethod]

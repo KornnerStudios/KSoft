@@ -7,5 +7,6 @@ internal enum GeneratorFeature
 	IntegerMath,
 	EndianStreamsNumbers,
 	BitStream,
+	TagElementStreams,
 	SourceGenerationSmokeTest,
 };
