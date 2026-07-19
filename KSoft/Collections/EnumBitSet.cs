@@ -16,7 +16,7 @@ namespace KSoft.Collections
 		: ICollection<TEnum>, System.Collections.ICollection
 		, IComparable<EnumBitSet<TEnum>>, IEquatable<EnumBitSet<TEnum>>
 		, IO.IEndianStreamSerializable
-		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum
 	{
 		static readonly Func<int, TEnum> FromInt32 = Reflection.EnumValue<TEnum>.FromInt32;
 		static readonly Func<TEnum, int> ToInt32 = Reflection.EnumValue<TEnum>.ToInt32;

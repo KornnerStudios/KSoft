@@ -144,7 +144,7 @@ namespace KSoft.Reflection
 	/// <typeparam name="TEnum">Enum type we're dealing with</typeparam>
 	/// <remarks>Not used as a base for utils which have a non-generic core, eg. EnumBinaryStreamerBase</remarks>
 	public abstract class EnumUtilBase<TEnum>
-		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum
 	{
 		/// <summary>Enum type we're dealing with</summary>
 		protected static readonly Type kEnumType =				typeof(TEnum);
@@ -229,7 +229,7 @@ namespace KSoft.Reflection
 		#endregion
 	};
 	public sealed class EnumUtil<TEnum>: EnumUtilBase<TEnum>
-		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum
 	{
 		/// <summary>Enum type we're dealing with</summary>
 		public static Type EnumType					=> kEnumType;

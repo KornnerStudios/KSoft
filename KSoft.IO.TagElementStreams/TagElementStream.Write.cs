@@ -21,7 +21,7 @@ namespace KSoft.IO
 		/// <param name="value">Data to set the element's <see cref="TCursor.InnerText"/> to</param>
 		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		protected abstract void WriteElementEnum<TEnum>(TCursor n, TEnum value, bool isFlags)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		protected abstract void WriteElement(TCursor n, Values.KGuid value);
 		#endregion
@@ -31,7 +31,7 @@ namespace KSoft.IO
 		/// <param name="value">Data to set the <see cref="Cursor"/> to</param>
 		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		public void WriteCursorEnum<TEnum>(TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			WriteElementEnum(Cursor, value, isFlags);
 		}
@@ -82,7 +82,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <remarks>Does not change <see cref="Cursor"/></remarks>
 		public void WriteElementEnum<TEnum>(TName name, TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -103,7 +103,7 @@ namespace KSoft.IO
 		/// <param name="value">Data to set the attribute text to</param>
 		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		public abstract void WriteAttributeEnum<TEnum>(TName name, TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		public abstract void WriteAttribute(TName name, Values.KGuid value);
 		#endregion
@@ -116,7 +116,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
 		public bool WriteElementEnumOptOnTrue<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
@@ -139,7 +139,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
 		public bool WriteElementEnumOptOnFalse<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
@@ -180,7 +180,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
 		public bool WriteAttributeEnumOptOnTrue<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
@@ -203,7 +203,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
 		public bool WriteAttributeEnumOptOnFalse<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);

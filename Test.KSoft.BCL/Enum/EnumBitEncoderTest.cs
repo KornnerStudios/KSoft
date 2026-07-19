@@ -102,8 +102,8 @@ namespace KSoft.Test
 			Justification = "Pretty sure this is a CA bug",
 			Scope = "method", Target = "BitEncode")]
 		void Test32Helper<TEnum, TEnumInformal>(TEnum value)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
-			where TEnumInformal : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
+			where TEnumInformal : struct, Enum
 		{
 			var ebe_formal = new EnumBitEncoder32<TEnum>();
 			var ebe_informal = new EnumBitEncoder32<TEnumInformal>();
@@ -160,7 +160,7 @@ namespace KSoft.Test
 			}
 		}
 		void TestNone32Helper<TEnum>(TEnum value, TEnum noneValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			var ebe = new EnumBitEncoder32<TEnum>();
 
@@ -203,8 +203,8 @@ namespace KSoft.Test
 			Justification = "Pretty sure this is a CA bug",
 			Scope = "method", Target = "BitEncode")]
 		static void Test64Helper<TEnum, TEnumInformal>(TEnum value)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
-			where TEnumInformal : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
+			where TEnumInformal : struct, Enum
 		{
 			var ebe_formal = new EnumBitEncoder64<TEnum>();
 			var ebe_informal = new EnumBitEncoder64<TEnumInformal>();
@@ -261,7 +261,7 @@ namespace KSoft.Test
 			}
 		}
 		void TestNone64Helper<TEnum>(TEnum value, TEnum noneValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			var ebe = new EnumBitEncoder64<TEnum>();
 

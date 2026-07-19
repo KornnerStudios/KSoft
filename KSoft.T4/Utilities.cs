@@ -11,14 +11,7 @@ namespace KSoft.T4
 
 		public static string EnumConstraintsCode()
 		{
-			var sb = new System.Text.StringBuilder("struct");
-
-			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(Enum).Name);
-			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IComparable).Name);
-			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IFormattable).Name);
-			sb.AppendFormat(InvariantCultureInfo, ", {0}", typeof(IConvertible).Name);
-
-			return sb.ToString();
+			return $"struct, {typeof(Enum).Name}";
 		}
 
 		public static NumberCodeDefinition TryGetSignedDefinition(this NumberCodeDefinition def)

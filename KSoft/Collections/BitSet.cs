@@ -983,7 +983,7 @@ namespace KSoft.Collections
 
 		#region Enum interfaces
 		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			if (bitIndex < 0 || bitIndex >= this.Length)
 			{
@@ -994,9 +994,9 @@ namespace KSoft.Collections
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool Test<TEnum>(TEnum bit)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
-			int bitIndex = bit.ToInt32(null);
+			int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);
 			ValidateBit(bit, bitIndex);
 
 			return this[bitIndex];
@@ -1004,9 +1004,9 @@ namespace KSoft.Collections
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public BitSet Set<TEnum>(TEnum bit, bool value = true)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
-			int bitIndex = bit.ToInt32(null);
+			int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);
 			ValidateBit(bit, bitIndex);
 
 			this.Set(bitIndex, value);
@@ -1017,14 +1017,14 @@ namespace KSoft.Collections
 		public string ToString<TEnum>(TEnum maxCount
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, bool stateFilter = true)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			if (Cardinality == 0)
 			{
 				return "";
 			}
 
-			int maxCountValue = maxCount.ToInt32(null);
+			int maxCountValue = Reflection.EnumValue<TEnum>.ToInt32(maxCount);
 			if (maxCountValue < 0 || maxCountValue >= Length)
 			{
 				throw new ArgumentOutOfRangeException(nameof(maxCount), string.Format(Util.InvariantCultureInfo,
@@ -1042,7 +1042,9 @@ namespace KSoft.Collections
 
 			// Find the member which represents bit-0
 			int memberIndex = 0;
-			while (memberIndex < enumMembers.Length && memberIndex < maxCountValue && enumMembers[memberIndex].ToInt32(null) != 0)
+			while (memberIndex < enumMembers.Length &&
+				memberIndex < maxCountValue &&
+				Reflection.EnumValue<TEnum>.ToInt32(enumMembers[memberIndex]) != 0)
 			{
 				memberIndex++;
 			}
@@ -1075,7 +1077,7 @@ namespace KSoft.Collections
 		public bool TryParseFlags<TEnum>(string line
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			// LINQ stmt allows there to be whitespace around the commas
 			return TryParseFlags<TEnum>(
@@ -1088,7 +1090,7 @@ namespace KSoft.Collections
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool TryParseFlags<TEnum>(IEnumerable<string> collection
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			if (collection == null)
 			{
@@ -1114,7 +1116,7 @@ namespace KSoft.Collections
 
 		private bool? TryParseFlag<TEnum>(string flagStr
 			, ICollection<string> errorsOutput = null)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			const bool ignore_case = true;
 
@@ -1132,7 +1134,7 @@ namespace KSoft.Collections
 				return false;
 			}
 
-			int bitIndex = flag.ToInt32(null);
+			int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(flag);
 			if (bitIndex < 0 || bitIndex > Length)
 			{
 				errorsOutput?.AddFormat("Member '{0}'={1} in enum {2} can't be used as a bit index",

@@ -509,7 +509,7 @@ namespace KSoft.IO
 		}
 
 		public TEnum Read<TEnum>(IEnumEndianStreamer<TEnum> implementation)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(implementation != null);
 

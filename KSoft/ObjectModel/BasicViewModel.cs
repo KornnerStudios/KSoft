@@ -32,7 +32,7 @@ namespace KSoft.ObjectModel
 		protected bool SetFieldEnum<TEnum>(ref TEnum field, TEnum value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			return TypeExtensions.SetFieldEnum(this, PropertyChanged,
 				ref field, value, overrideChecks, propertyName);

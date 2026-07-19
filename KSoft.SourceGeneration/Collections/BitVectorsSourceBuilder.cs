@@ -735,7 +735,7 @@ internal static class BitVectorsSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("int bitIndex = bit.ToInt32(null);");
+			writer.WriteLine("int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);");
 			writer.WriteLine("ValidateBit(bit, bitIndex);");
 			writer.WriteLine();
 			writer.WriteLine($"var flag = (({spec.WordKeyword})1) << bitIndex;");
@@ -754,7 +754,7 @@ internal static class BitVectorsSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("int bitIndex = bit.ToInt32(null);");
+			writer.WriteLine("int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);");
 			writer.WriteLine("ValidateBit(bit, bitIndex);");
 			writer.WriteLine();
 			writer.WriteLine($"var flag = (({spec.WordKeyword})1) << bitIndex;");
@@ -863,7 +863,7 @@ internal static class BitVectorsSourceBuilder
 
 	private static void WriteMaxCountValidation(SourceWriter writer)
 	{
-		writer.WriteLine("int maxCountValue = maxCount.ToInt32(null);");
+		writer.WriteLine("int maxCountValue = Reflection.EnumValue<TEnum>.ToInt32(maxCount);");
 		writer.WriteLine("if (maxCountValue < 0 || maxCountValue >= Length)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -888,7 +888,7 @@ internal static class BitVectorsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine("&& memberIndex < maxCountValue");
-			writer.WriteLine("&& enumMembers[memberIndex].ToInt32(null) != 0)");
+			writer.WriteLine("&& Reflection.EnumValue<TEnum>.ToInt32(enumMembers[memberIndex]) != 0)");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -1011,7 +1011,7 @@ internal static class BitVectorsSourceBuilder
 				writer.WriteLine("return false;");
 			}
 			writer.WriteLine();
-			writer.WriteLine("int bitIndex = flag.ToInt32(null);");
+			writer.WriteLine("int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(flag);");
 			writer.WriteLine("if (bitIndex < 0 || bitIndex > Length)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{

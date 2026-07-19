@@ -4,9 +4,13 @@ namespace KSoft.Reflection
 {
 	/// <summary>Utility for converting to and from a given Enum and integer types, without boxing operations but without the safeguards of reflection</summary>
 	/// <typeparam name="TEnum"></typeparam>
-	/// <remarks>'From' methods can be unforgiving. Make sure you know what you're doing</remarks>
+	/// <remarks>
+	/// First use of each closed type compiles converter delegates, which allocates and takes measurable time. Reused
+	/// delegates avoid boxing and per-call allocations.
+	/// 'From' methods can be unforgiving. Make sure you know what you're doing.
+	/// </remarks>
 	public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>
-		where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+		where TEnum : struct, Enum
 	{
 		// #VITA_MEASURE: Keep compiled no-boxing converters until BCL/Unsafe alternatives prove parity.
 		public static readonly Func<TEnum, byte> ToByte =   GenerateToMethod  <byte>();

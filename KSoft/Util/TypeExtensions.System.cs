@@ -1550,7 +1550,7 @@ namespace KSoft
 			, ref TEnum field, TEnum value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			if (theObj == null)
 			{
@@ -1559,7 +1559,7 @@ namespace KSoft
 
 			if (!overrideChecks)
 			{
-				if (field.ToInt64(null) == value.ToInt64(null))
+				if (EqualityComparer<TEnum>.Default.Equals(field, value))
 				{
 					return false;
 				}

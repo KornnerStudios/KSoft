@@ -16,7 +16,7 @@ namespace KSoft.IO
 	internal static class TagElementStreamParseEnumUtil
 	{
 		public static int EnumToInt<TEnum>(TEnum value)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			// Note: Enum's convertible implementation isn't efficient. Uses 'GetValue' which returns the value in a boxed object
 			//return value.ToInt32(null);
@@ -26,7 +26,7 @@ namespace KSoft.IO
 
 		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
 			string str, ref TEnum value)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			bool result = Enum.TryParse(str, ignoreCase, out TEnum temp);
 
@@ -43,7 +43,7 @@ namespace KSoft.IO
 		}
 		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
 			string str, ref int intValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			intValue = 0;
 
@@ -61,7 +61,7 @@ namespace KSoft.IO
 #if false // currently unused. probably obsolete
 		public static bool ParseOpt<TEnum>(bool ignoreCase,
 			string str, out TEnum value)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			bool result = Enum.TryParse(str, ignoreCase, out value);
 
@@ -69,7 +69,7 @@ namespace KSoft.IO
 		}
 		public static bool ParseOpt<TEnum>(bool ignoreCase,
 			string str, out int intValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			intValue = 0;
 
@@ -108,13 +108,13 @@ namespace KSoft.IO
 		/// <param name="n">Node element to read</param>
 		/// <param name="enumValue">value to receive the data</param>
 		protected abstract void ReadElementEnum<TEnum>(TCursor n, ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="n">Node element to read</param>
 		/// <param name="enumValue">value to receive the data</param>
 		protected abstract void ReadElementEnum<TEnum>(TCursor n, ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		protected abstract void ReadElement(TCursor n, ref Values.KGuid value);
 		#endregion
@@ -124,7 +124,7 @@ namespace KSoft.IO
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadCursorEnum<TEnum>(ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			ReadElementEnum(Cursor, ref enumValue);
 		}
@@ -132,7 +132,7 @@ namespace KSoft.IO
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadCursorEnum<TEnum>(ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			ReadElementEnum<TEnum>(Cursor, ref enumValue);
 		}
@@ -141,7 +141,7 @@ namespace KSoft.IO
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public abstract void ReadCursorName<TEnum>(ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		public void ReadCursor(ref Values.KGuid value)
 		{
@@ -161,7 +161,7 @@ namespace KSoft.IO
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadElementEnum<TEnum>(TName name, ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -172,7 +172,7 @@ namespace KSoft.IO
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">value to receive the data</param>
 		public void ReadElementEnum<TEnum>(TName name, ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -193,13 +193,13 @@ namespace KSoft.IO
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
 		public abstract void ReadAttributeEnum<TEnum>(TName name, ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
 		public abstract void ReadAttributeEnum<TEnum>(TName name, ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		public abstract void ReadAttribute(TName name, ref Values.KGuid value);
 		#endregion
@@ -212,7 +212,7 @@ namespace KSoft.IO
 		/// <remarks>If inner text is just an empty string, the stream ignores its existence</remarks>
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadElementEnumOpt<TEnum>(TName name, ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 		/// <summary>Stream out the InnerText of element <paramref name="name"/> into enum <paramref name="value"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Element name</param>
@@ -220,7 +220,7 @@ namespace KSoft.IO
 		/// <remarks>If inner text is just an empty string, the stream ignores its existence</remarks>
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadElementEnumOpt<TEnum>(TName name, ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		public abstract bool ReadElementOpt(TName name, ref Values.KGuid value);
 		#endregion
@@ -232,14 +232,14 @@ namespace KSoft.IO
 		/// <param name="enumValue">enum value to receive the data</param>
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadAttributeEnumOpt<TEnum>(TName name, ref TEnum enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadAttributeEnumOpt<TEnum>(TName name, ref int enumValue)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible;
+			where TEnum : struct, Enum;
 
 		public abstract bool ReadAttributeOpt(TName name, ref Values.KGuid value);
 		#endregion

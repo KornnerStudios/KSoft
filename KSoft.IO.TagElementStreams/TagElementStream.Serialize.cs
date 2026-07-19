@@ -26,7 +26,7 @@ namespace KSoft.IO
 		/// <seealso cref="ReadCursor{TEnum}(TName, ref TEnum)"/>
 		/// <seealso cref="WriteCursor(TName, Enum, bool)"/>
 		public void StreamCursorEnum<TEnum>(ref TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 				 if (IsReading) ReadCursorEnum(ref value);
 			else if (IsWriting) WriteCursorEnum(value, isFlags);
@@ -104,7 +104,7 @@ namespace KSoft.IO
 		/// <seealso cref="ReadElement{TEnum}(TName, ref TEnum)"/>
 		/// <seealso cref="WriteElement(TName, Enum, bool)"/>
 		public void StreamElementEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -113,7 +113,7 @@ namespace KSoft.IO
 		}
 		public void StreamElementEnum<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -191,7 +191,7 @@ namespace KSoft.IO
 		/// <seealso cref="ReadElementOpt{TEnum}(TName, ref TEnum)"/>
 		/// <seealso cref="WriteElementOptOnTrue{TEnum}(TName, Enum, Predicate{TEnum}, bool)"/>
 		public bool StreamElementEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -205,7 +205,7 @@ namespace KSoft.IO
 		}
 		public bool StreamElementEnumOpt<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			Predicate<TEnum> predicate = null, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -307,7 +307,7 @@ namespace KSoft.IO
 		/// <seealso cref="ReadElement{TEnum}(string, ref TEnum)"/>
 		/// <seealso cref="WriteAttribute(string, Enum, bool)"/>
 		public void StreamAttributeEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -316,7 +316,7 @@ namespace KSoft.IO
 		}
 		public void StreamAttributeEnum<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -367,7 +367,7 @@ namespace KSoft.IO
 		/// <seealso cref="ReadAttributeOpt{TEnum}(string, ref TEnum)"/>
 		/// <seealso cref="WriteAttributeOptOnTrue{TEnum}(string, Enum, Predicate{TEnum}, bool)"/>
 		public bool StreamAttributeEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 
@@ -381,7 +381,7 @@ namespace KSoft.IO
 		}
 		public bool StreamAttributeEnumOpt<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
 			Predicate<TEnum> predicate = null, bool isFlags = false)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
 

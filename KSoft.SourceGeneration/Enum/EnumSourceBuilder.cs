@@ -45,8 +45,13 @@ internal static class EnumSourceBuilder
 			"Utility for converting to and from a given Enum and integer types, without boxing operations but " +
 			"without the safeguards of reflection");
 		writer.WriteLine("/// <typeparam name=\"TEnum\"></typeparam>");
+		writer.WriteLine("/// <remarks>");
 		writer.WriteLine(
-			"/// <remarks>'From' methods can be unforgiving. Make sure you know what you're doing</remarks>");
+			"/// First use of each closed type compiles converter delegates, which allocates and takes measurable " +
+			"time. Reused");
+		writer.WriteLine("/// delegates avoid boxing and per-call allocations.");
+		writer.WriteLine("/// 'From' methods can be unforgiving. Make sure you know what you're doing.");
+		writer.WriteLine("/// </remarks>");
 		writer.WriteLine("public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{

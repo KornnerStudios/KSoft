@@ -71,7 +71,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public static TEnum AssertZeroBasedEnum<TEnum>(IO.EndianReader s
 			, TEnum maxCount)
-			where TEnum : struct, Enum, IComparable, IFormattable, IConvertible
+			where TEnum : struct, Enum
 		{
 			var type_code = Reflection.EnumUtil<TEnum>.UnderlyingTypeCode;
 
