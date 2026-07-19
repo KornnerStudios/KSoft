@@ -7,8 +7,6 @@ internal static class HandleBitEncoderSourceBuilder
 {
 	public const string HintName = "KSoft.Bitwise.HandleBitEncoder.g.cs";
 
-	private const string EnumConstraint = "struct, Enum, IComparable, IFormattable, IConvertible";
-
 	public static string Build()
 	{
 		var writer = new SourceWriter();
@@ -125,7 +123,7 @@ internal static class HandleBitEncoderSourceBuilder
 			$"EnumBitEncoder{spec.SizeOfInBits}<TEnum> encoder)");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -211,7 +209,7 @@ internal static class HandleBitEncoderSourceBuilder
 			$"EnumBitEncoder{spec.SizeOfInBits}<TEnum> decoder)");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{

@@ -213,4 +213,26 @@ internal static class PrimitiveCatalog
 			TypeCode.Double	=> "double",
 			_ => throw new ArgumentException(typeCode.ToString(), nameof(typeCode)),
 		};
+
+	/// <summary>
+	/// Gets the canonical numeric descriptor for a supported primitive <see cref="TypeCode" />.
+	/// </summary>
+	/// <param name="typeCode">Type code to map.</param>
+	/// <returns>The shared numeric descriptor used by generated code.</returns>
+	/// <remarks>Maps to the <c>KSoft.T4.PrimitiveDefinitions.k*</c> numeric descriptor fields.</remarks>
+	public static NumberSpec NumberFor(TypeCode typeCode)
+		=> typeCode switch
+		{
+			TypeCode.Byte	=> kByte,
+			TypeCode.SByte	=> kSByte,
+			TypeCode.UInt16	=> kUInt16,
+			TypeCode.Int16	=> kInt16,
+			TypeCode.UInt32	=> kUInt32,
+			TypeCode.Int32	=> kInt32,
+			TypeCode.UInt64	=> kUInt64,
+			TypeCode.Int64	=> kInt64,
+			TypeCode.Single	=> kSingle,
+			TypeCode.Double	=> kDouble,
+			_ => throw new ArgumentException(typeCode.ToString(), nameof(typeCode)),
+		};
 };

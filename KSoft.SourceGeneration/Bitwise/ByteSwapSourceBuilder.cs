@@ -11,53 +11,15 @@ internal static class ByteSwapSourceBuilder
 	private const string kBinaryPrimitivesShimComment =
 		"// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.";
 
+	// Mirrors KSoft.T4.Bitwise.BitwiseT4.ByteSwapableIntegers while deriving primitive metadata from NumberSpec,
+	// the Roslyn-side replacement for KSoft.T4.PrimitiveDefinitions.
 	private static readonly ByteSwapWordSpec[] kWordSpecs =
 		[
-			new(
-				"ushort",
-				"short",
-				"UInt16",
-				"Int16",
-				"Int16",
-				"sizeof(ushort)",
-				2,
-				isUnnaturalWord: false),
-			new(
-				"uint",
-				"int",
-				"UInt32",
-				"Int32",
-				"Int32",
-				"sizeof(uint)",
-				4,
-				isUnnaturalWord: false),
-			new(
-				"ulong",
-				"long",
-				"UInt64",
-				"Int64",
-				"Int64",
-				"sizeof(ulong)",
-				8,
-				isUnnaturalWord: false),
-			new(
-				"uint",
-				"int",
-				"UInt32",
-				"Int32",
-				"Int24",
-				"kSizeOfInt24",
-				3,
-				isUnnaturalWord: true),
-			new(
-				"ulong",
-				"long",
-				"UInt64",
-				"Int64",
-				"Int40",
-				"kSizeOfInt40",
-				5,
-				isUnnaturalWord: true),
+			new(PrimitiveCatalog.NumberFor(TypeCode.UInt16)),
+			new(PrimitiveCatalog.NumberFor(TypeCode.UInt32)),
+			new(PrimitiveCatalog.NumberFor(TypeCode.UInt64)),
+			new(PrimitiveCatalog.NumberFor(TypeCode.UInt32), 24),
+			new(PrimitiveCatalog.NumberFor(TypeCode.UInt64), 40),
 		];
 
 	public static string Build()
@@ -366,50 +328,59 @@ internal static class ByteSwapSourceBuilder
 
 	private static string ByteMask(ByteSwapWordSpec spec, int byteIndex)
 	{
-		int hexDigits = spec.UnsignedKeyword == "ulong"
-			? 16
-			: 8;
 		ulong mask = 0xFFUL << (byteIndex * 8);
-		string format = "X" + hexDigits.ToString(PrimitiveCatalog.InvariantCulture);
-		return "0x" + mask.ToString(format, PrimitiveCatalog.InvariantCulture);
+		// T4 emits masks only for unnatural 24/40-bit words backed by uint/ulong, so storage width is intentional.
+		return "0x" + mask.ToString(spec.WordHexFormat, PrimitiveCatalog.InvariantCulture);
 	}
 
 	private readonly struct ByteSwapWordSpec
 	{
-		public ByteSwapWordSpec(
-			string unsignedKeyword,
-			string signedKeyword,
-			string unsignedCode,
-			string signedCode,
-			string constantKeyword,
-			string sizeOfCode,
-			int sizeOfInBytes,
-			bool isUnnaturalWord)
+		private readonly NumberSpec mStorageSpec;
+		private readonly int mSizeOfInBits;
+
+		public ByteSwapWordSpec(NumberSpec storageSpec)
+			: this(storageSpec, storageSpec.SizeOfInBits)
 		{
-			UnsignedKeyword = unsignedKeyword;
-			SignedKeyword = signedKeyword;
-			UnsignedCode = unsignedCode;
-			SignedCode = signedCode;
-			ConstantKeyword = constantKeyword;
-			SizeOfCode = sizeOfCode;
-			SizeOfInBytes = sizeOfInBytes;
-			IsUnnaturalWord = isUnnaturalWord;
 		}
 
-		public string UnsignedKeyword { get; }
+		public ByteSwapWordSpec(NumberSpec storageSpec, int sizeOfInBits)
+		{
+			if (!storageSpec.IsUnsigned)
+			{
+				throw new ArgumentException("ByteSwap words must use unsigned storage descriptors.", nameof(storageSpec));
+			}
 
-		public string SignedKeyword { get; }
+			if (sizeOfInBits <= 0 ||
+				sizeOfInBits % PrimitiveCatalog.BitsPerByte != 0 ||
+				sizeOfInBits > storageSpec.SizeOfInBits)
+			{
+				throw new ArgumentOutOfRangeException(nameof(sizeOfInBits), sizeOfInBits, "Invalid byte-swap width.");
+			}
 
-		public string UnsignedCode { get; }
+			mStorageSpec = storageSpec;
+			mSizeOfInBits = sizeOfInBits;
+		}
 
-		public string SignedCode { get; }
+		public string UnsignedKeyword => mStorageSpec.Keyword;
 
-		public string ConstantKeyword { get; }
+		public string SignedKeyword => mStorageSpec.SignedKeyword;
 
-		public string SizeOfCode { get; }
+		public string UnsignedCode => mStorageSpec.TypeCode.ToString();
 
-		public int SizeOfInBytes { get; }
+		public string SignedCode => mStorageSpec.SignedTypeCode.ToString();
 
-		public bool IsUnnaturalWord { get; }
+		public string ConstantKeyword => IsUnnaturalWord
+			? "Int" + mSizeOfInBits.ToString(PrimitiveCatalog.InvariantCulture)
+			: mStorageSpec.ConstantKeyword;
+
+		public string SizeOfCode => IsUnnaturalWord
+			? "kSizeOf" + ConstantKeyword
+			: $"sizeof({UnsignedKeyword})";
+
+		public int SizeOfInBytes => mSizeOfInBits / PrimitiveCatalog.BitsPerByte;
+
+		public bool IsUnnaturalWord => mSizeOfInBits != mStorageSpec.SizeOfInBits;
+
+		public string WordHexFormat => mStorageSpec.ToStringHexFormat;
 	}
 }

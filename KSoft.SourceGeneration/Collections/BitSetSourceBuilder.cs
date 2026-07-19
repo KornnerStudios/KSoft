@@ -1,3 +1,4 @@
+using KSoft.SourceGeneration.Descriptors;
 using KSoft.SourceGeneration.Text;
 
 namespace KSoft.SourceGeneration.Collections;
@@ -6,20 +7,6 @@ internal static class BitSetSourceBuilder
 {
 	public const string BitSetHintName = "KSoft.Collections.BitSet.g.cs";
 	public const string EnumeratorsHintName = "KSoft.Collections.IReadOnlyBitSet.Enumerators.g.cs";
-
-	private static readonly BitStateSpec[] kBitStates =
-		[
-			new("Clear", "clear", "0 (clear)", "false"),
-			new("Set", "set", "1 (set)", "true"),
-		];
-
-	private static readonly BitOperationSpec[] kBitOperations =
-		[
-			new("Clear", "void", "return ;", "Bitwise.Flags.Remove", requiresCardinalityUpdate: true),
-			new("Set", "void", "return ;", "Bitwise.Flags.Add", requiresCardinalityUpdate: true),
-			new("Toggle", "void", "return ;", "Bitwise.Flags.Toggle", requiresCardinalityUpdate: true),
-			new("Test", "bool", "return false;", "Bitwise.Flags.TestAny", requiresCardinalityUpdate: false),
-		];
 
 	public static string BuildBitSet()
 	{
@@ -44,7 +31,7 @@ internal static class BitSetSourceBuilder
 		{
 			WriteBitStateMembers(writer);
 			writer.WriteLine();
-			foreach (BitOperationSpec operation in kBitOperations)
+			foreach (BitOperationSpec operation in BitSetCatalog.BitOperations)
 			{
 				WriteBitOperation(writer, operation);
 				writer.WriteLine();
@@ -70,10 +57,11 @@ internal static class BitSetSourceBuilder
 		using (writer.EnterTypeDeclaration("static partial class IReadOnlyBitSetEnumerators"))
 		{
 			// The generated half owns the shared backing fields so the handwritten MoveNext halves stay field-order safe.
-			WriteEnumerator(writer, new EnumeratorSpec("State", "bool", hasStateFilterFields: false));
-			writer.WriteLine();
-			WriteEnumerator(writer, new EnumeratorSpec("StateFilter", "int", hasStateFilterFields: true));
-			writer.WriteLine();
+			foreach (BitSetEnumeratorSpec spec in BitSetCatalog.Enumerators)
+			{
+				WriteEnumerator(writer, spec);
+				writer.WriteLine();
+			}
 		}
 
 		return writer.ToString();
@@ -81,7 +69,7 @@ internal static class BitSetSourceBuilder
 
 	private static void WriteBitStateMembers(SourceWriter writer)
 	{
-		foreach (BitStateSpec state in kBitStates)
+		foreach (BitStateSpec state in BitSetCatalog.BitStates)
 		{
 			writer.WriteXmlDocSummary($"Get the bit index of the next bit which is {state.DocNameVerbose}");
 			writer.WriteXmlDocParam("startBitIndex", "Bit index to start at");
@@ -208,22 +196,22 @@ internal static class BitSetSourceBuilder
 		if (!operation.IsPure)
 		{
 			writer.WriteLine("RecalculateCardinalityUndoRound(x);");
-			if (operation.Name == "Toggle")
+			if (operation.Kind == BitOperationKind.Toggle)
 			{
 				writer.WriteLine($"{operation.FlagsMethod}(ref mArray[x], mArray[x]);");
 			}
 			else
 			{
-				string newValue = operation.Name == "Set"
+				string newValue = operation.Kind == BitOperationKind.Set
 					? "kWordAllBitsSet"
 					: "kWordAllBitsClear";
 				writer.WriteLine($"mArray[x] = {newValue};");
 			}
-			if (operation.Name == "Set")
+			if (operation.Kind == BitOperationKind.Set)
 			{
 				writer.WriteLine("Cardinality += kWordBitCount;");
 			}
-			else if (operation.Name == "Toggle")
+			else if (operation.Kind == BitOperationKind.Toggle)
 			{
 				writer.WriteLine("RecalculateCardinalityRound(x);");
 			}
@@ -255,7 +243,7 @@ internal static class BitSetSourceBuilder
 		}
 	}
 
-	private static void WriteEnumerator(SourceWriter writer, EnumeratorSpec spec)
+	private static void WriteEnumerator(SourceWriter writer, BitSetEnumeratorSpec spec)
 	{
 		writer.WriteLine("[Serializable]");
 		writer.WriteLine($"partial struct {spec.Name}Enumerator");
@@ -333,57 +321,4 @@ internal static class BitSetSourceBuilder
 		}
 	}
 
-	private readonly struct BitStateSpec
-	{
-		public BitStateSpec(string apiName, string docName, string docNameVerbose, string valueKeyword)
-		{
-			ApiName = apiName;
-			DocName = docName;
-			DocNameVerbose = docNameVerbose;
-			ValueKeyword = valueKeyword;
-		}
-
-		public string ApiName { get; }
-		public string DocName { get; }
-		public string DocNameVerbose { get; }
-		public string ValueKeyword { get; }
-	}
-
-	private readonly struct BitOperationSpec
-	{
-		public BitOperationSpec(
-			string name,
-			string resultType,
-			string defaultReturn,
-			string flagsMethod,
-			bool requiresCardinalityUpdate)
-		{
-			Name = name;
-			ResultType = resultType;
-			DefaultReturn = defaultReturn;
-			FlagsMethod = flagsMethod;
-			RequiresCardinalityUpdate = requiresCardinalityUpdate;
-		}
-
-		public string Name { get; }
-		public string ResultType { get; }
-		public string DefaultReturn { get; }
-		public string FlagsMethod { get; }
-		public bool RequiresCardinalityUpdate { get; }
-		public bool IsPure => Name == "Test";
-	}
-
-	private readonly struct EnumeratorSpec
-	{
-		public EnumeratorSpec(string name, string resultKeyword, bool hasStateFilterFields)
-		{
-			Name = name;
-			ResultKeyword = resultKeyword;
-			HasStateFilterFields = hasStateFilterFields;
-		}
-
-		public string Name { get; }
-		public string ResultKeyword { get; }
-		public bool HasStateFilterFields { get; }
-	}
 }

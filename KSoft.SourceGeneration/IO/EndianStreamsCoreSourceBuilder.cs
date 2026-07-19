@@ -9,6 +9,13 @@ internal static class EndianStreamsCoreSourceBuilder
 	public const string TypeExtensionsHintName = "KSoft.TypeExtensions.EndianStreams.g.cs";
 	public const string VirtualAddressTranslationHintName = "KSoft.IO.EndianStreams.VirtualAddressTranslation.g.cs";
 
+	// Maps to KSoft.T4.EndianStreamsT4.ClassNames; EndianStreams owns the reader/writer pair ordering.
+	private static readonly string[] kEndianStreamClassNames =
+		[
+			"EndianReader",
+			"EndianWriter",
+		];
+
 	public static string BuildBase()
 	{
 		var writer = new SourceWriter();
@@ -21,9 +28,16 @@ internal static class EndianStreamsCoreSourceBuilder
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
-		WriteEndianStreamBaseType(writer, "EndianReader");
-		writer.WriteLine();
-		WriteEndianStreamBaseType(writer, "EndianWriter");
+		bool needsSeparator = false;
+		foreach (string typeName in kEndianStreamClassNames)
+		{
+			if (needsSeparator)
+			{
+				writer.WriteLine();
+			}
+			WriteEndianStreamBaseType(writer, typeName);
+			needsSeparator = true;
+		}
 
 		return writer.ToString();
 	}
@@ -60,9 +74,16 @@ internal static class EndianStreamsCoreSourceBuilder
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
-		WriteVirtualAddressTranslationType(writer, "EndianReader");
-		writer.WriteLine();
-		WriteVirtualAddressTranslationType(writer, "EndianWriter");
+		bool needsSeparator = false;
+		foreach (string typeName in kEndianStreamClassNames)
+		{
+			if (needsSeparator)
+			{
+				writer.WriteLine();
+			}
+			WriteVirtualAddressTranslationType(writer, typeName);
+			needsSeparator = true;
+		}
 
 		return writer.ToString();
 	}

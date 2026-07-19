@@ -12,16 +12,24 @@ internal static class TextSourceBuilder
 	public const string NumbersParseHintName = "KSoft.Numbers.Parse.g.cs";
 	public const string CharLookupTablesHintName = "KSoft.Text.CharLookupTables.g.cs";
 
+	// Maps to KSoft.T4.NumbersT4.ParseableIntegersSmall. The Text generator owns this semantic grouping;
+	// PrimitiveCatalog only supplies canonical primitive descriptors.
 	private static readonly IReadOnlyList<NumberSpec> kParseableIntegersSmall =
 		[
-			new NumberSpec(TypeCode.Byte),
-			new NumberSpec(TypeCode.SByte),
-			new NumberSpec(TypeCode.UInt16),
-			new NumberSpec(TypeCode.Int16),
+			PrimitiveCatalog.NumberFor(TypeCode.Byte),
+			PrimitiveCatalog.NumberFor(TypeCode.SByte),
+			PrimitiveCatalog.NumberFor(TypeCode.UInt16),
+			PrimitiveCatalog.NumberFor(TypeCode.Int16),
 		];
 
+	// Maps to KSoft.T4.NumbersT4.ParseableIntegersWordAligned; keep Text-specific parse coverage here.
 	private static readonly IReadOnlyList<NumberSpec> kParseableIntegersWordAligned =
-		PrimitiveCatalog.BittableTypesInt32And64;
+		[
+			PrimitiveCatalog.NumberFor(TypeCode.UInt32),
+			PrimitiveCatalog.NumberFor(TypeCode.Int32),
+			PrimitiveCatalog.NumberFor(TypeCode.UInt64),
+			PrimitiveCatalog.NumberFor(TypeCode.Int64),
+		];
 
 	private static readonly IReadOnlyList<NumberSpec> kIntegerNumbers = PrimitiveCatalog.BittableTypes;
 

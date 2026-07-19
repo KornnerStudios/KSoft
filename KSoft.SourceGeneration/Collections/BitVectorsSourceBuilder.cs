@@ -8,8 +8,6 @@ internal static class BitVectorsSourceBuilder
 {
 	public const string HintName = "KSoft.Collections.BitVectors.g.cs";
 
-	private const string EnumConstraint = "struct, Enum, IComparable, IFormattable, IConvertible";
-
 	public static string Build()
 	{
 		var writer = new SourceWriter();
@@ -711,7 +709,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine("private readonly void ValidateBit<TEnum>(TEnum bit, int bitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -733,7 +731,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine("public readonly bool Test<TEnum>(TEnum bit)");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -752,7 +750,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine($"public {spec.TypeName} Set<TEnum>(TEnum bit, bool value = true)");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -774,7 +772,7 @@ internal static class BitVectorsSourceBuilder
 		{
 			writer.WriteLine(", bool stateFilter = true");
 			writer.WriteLine(", List<string> results = null)");
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -805,7 +803,7 @@ internal static class BitVectorsSourceBuilder
 		{
 			writer.WriteLine(", string valueSeperator = \",\"");
 			writer.WriteLine(", bool stateFilter = true)");
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -925,7 +923,7 @@ internal static class BitVectorsSourceBuilder
 		{
 			writer.WriteLine(", string valueSeperator = \",\"");
 			writer.WriteLine(", ICollection<string> errorsOutput = null)");
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -949,7 +947,7 @@ internal static class BitVectorsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine(", ICollection<string> errorsOutput = null)");
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -986,7 +984,7 @@ internal static class BitVectorsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine(", ICollection<string> errorsOutput = null)");
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{

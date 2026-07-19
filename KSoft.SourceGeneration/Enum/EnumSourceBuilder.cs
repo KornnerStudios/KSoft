@@ -8,8 +8,6 @@ internal static class EnumSourceBuilder
 	public const string EnumBitEncoderHintName = "KSoft.EnumBitEncoder.g.cs";
 	public const string EnumValueHintName = "KSoft.Reflection.EnumValue.g.cs";
 
-	private const string EnumConstraint = "struct, Enum, IComparable, IFormattable, IConvertible";
-
 	public static string BuildEnumBitEncoder()
 	{
 		var writer = new SourceWriter();
@@ -52,7 +50,7 @@ internal static class EnumSourceBuilder
 		writer.WriteLine("public sealed class EnumValue<TEnum> : EnumUtilBase<TEnum>");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.BracesStatement))
 		{
@@ -89,7 +87,7 @@ internal static class EnumSourceBuilder
 			$"IEnumBitEncoder<{spec.Keyword}>");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine($"where TEnum : {EnumConstraint}");
+			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.BracesStatement))
 		{

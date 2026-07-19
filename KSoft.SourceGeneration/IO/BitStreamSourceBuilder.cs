@@ -9,6 +9,10 @@ internal static class BitStreamSourceBuilder
 	public const string HintName = "KSoft.IO.BitStream.g.cs";
 	public const string CacheHintName = "KSoft.IO.BitStream.Cache.g.cs";
 
+	// Maps to KSoft.T4.Bitwise.BitwiseT4.BitStreamCacheWord. The BitStream generator owns the cache role;
+	// PrimitiveCatalog only supplies the UInt32 descriptor.
+	private static readonly NumberSpec kCacheWord = PrimitiveCatalog.NumberFor(TypeCode.UInt32);
+
 	public static string Build()
 	{
 		var writer = new SourceWriter();
@@ -19,7 +23,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
-		writer.WriteLine("using TWord = System.UInt32;");
+		WriteCacheWordAlias(writer);
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
@@ -54,7 +58,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteContractsAliasUsing();
 		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
-		writer.WriteLine("using TWord = System.UInt32;");
+		WriteCacheWordAlias(writer);
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
@@ -68,6 +72,11 @@ internal static class BitStreamSourceBuilder
 		}
 
 		return writer.ToString();
+	}
+
+	private static void WriteCacheWordAlias(SourceWriter writer)
+	{
+		writer.WriteLine($"using TWord = System.{kCacheWord.TypeCode};");
 	}
 
 	private static void WriteCacheFields(SourceWriter writer)
