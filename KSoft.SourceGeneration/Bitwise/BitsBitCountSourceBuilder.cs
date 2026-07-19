@@ -15,7 +15,7 @@ internal static class BitsBitCountSourceBuilder
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Numerics;");
-		writer.WriteLine("using Contracts = System.Diagnostics.Contracts;");
+		writer.WriteContractsAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();

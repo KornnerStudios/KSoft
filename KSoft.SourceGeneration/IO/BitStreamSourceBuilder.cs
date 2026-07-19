@@ -16,11 +16,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System.Collections.Generic;");
-		writer.WriteLine("#if CONTRACTS_FULL_SHIM");
-		writer.WriteLine("using Contract = System.Diagnostics.ContractsShim.Contract;");
-		writer.WriteLine("#else");
-		writer.WriteLine("using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D");
-		writer.WriteLine("#endif");
+		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteLine("using TWord = System.UInt32;");
 		writer.WriteLine();

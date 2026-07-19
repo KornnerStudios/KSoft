@@ -87,6 +87,21 @@ internal sealed class SourceWriter
 		WriteAttribute("Contracts.Pure");
 	}
 
+	public void WriteContractsAliasUsing()
+	{
+		WriteLine("using Contracts = System.Diagnostics.Contracts;");
+	}
+
+	public void WriteContractShimAliasUsing()
+	{
+		// Generated sources keep Contract calls shim-aware while preserving the legacy T4 using shape.
+		WriteLine("#if CONTRACTS_FULL_SHIM");
+		WriteLine("using Contract = System.Diagnostics.ContractsShim.Contract;");
+		WriteLine("#else");
+		WriteLine("using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D");
+		WriteLine("#endif");
+	}
+
 	public void WriteXmlDocSummary(params string[] lines)
 	{
 		WriteXmlDocElement("summary", lines);

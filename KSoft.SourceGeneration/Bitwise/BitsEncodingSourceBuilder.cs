@@ -19,12 +19,8 @@ internal static partial class BitsEncodingSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteLine("using Contracts = System.Diagnostics.Contracts;");
-		writer.WriteLine("#if CONTRACTS_FULL_SHIM");
-		writer.WriteLine("using Contract = System.Diagnostics.ContractsShim.Contract;");
-		writer.WriteLine("#else");
-		writer.WriteLine("using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D");
-		writer.WriteLine("#endif");
+		writer.WriteContractsAliasUsing();
+		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
