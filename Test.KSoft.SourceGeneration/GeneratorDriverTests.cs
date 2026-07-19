@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KSoft.SourceGeneration;
 using KSoft.SourceGeneration.Bitwise;
+using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
 using Microsoft.CodeAnalysis;
@@ -55,6 +56,14 @@ public sealed class GeneratorDriverTests
 		AssertGeneratorEmitsSource(
 			GeneratorFeature.IntegerMath,
 			IntegerMathSourceBuilder.HintName);
+	}
+
+	[TestMethod]
+	public void GeneratorEmitsEndianStreamsNumbersWhenFeatureIsEnabledTest()
+	{
+		AssertGeneratorEmitsSource(
+			GeneratorFeature.EndianStreamsNumbers,
+			EndianStreamsNumbersSourceBuilder.HintName);
 	}
 
 	public TestContext TestContext { get; set; }

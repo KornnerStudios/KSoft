@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using KSoft.SourceGeneration.Bitwise;
 using KSoft.SourceGeneration.Diagnostics;
+using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
 using KSoft.SourceGeneration.SmokeTests;
@@ -54,6 +55,14 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 			if (generationInput.Options.IsEnabled(GeneratorFeature.IntegerMath))
 			{
 				AddSource(sourceContext, IntegerMathSourceBuilder.HintName, IntegerMathSourceBuilder.Build);
+			}
+
+			if (generationInput.Options.IsEnabled(GeneratorFeature.EndianStreamsNumbers))
+			{
+				AddSource(
+					sourceContext,
+					EndianStreamsNumbersSourceBuilder.HintName,
+					EndianStreamsNumbersSourceBuilder.Build);
 			}
 		});
 	}

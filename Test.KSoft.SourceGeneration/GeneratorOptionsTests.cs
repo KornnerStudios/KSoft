@@ -18,6 +18,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateBitsBitCount",
 				"KSoftGenerateBitsRotate",
 				"KSoftGenerateIntegerMath",
+				"KSoftGenerateEndianStreamsNumbers",
 				"KSoftGenerateSourceGenerationSmokeTest",
 			},
 			GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray());
@@ -44,12 +45,14 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "True",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.SourceGenerationSmokeTest)] = "true",
 		}));
 
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsBitCount));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsRotate));
 		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.SourceGenerationSmokeTest));
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}

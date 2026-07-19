@@ -11,6 +11,8 @@
     <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">false</KSoftGenerateBitsBitCount>
     <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">false</KSoftGenerateBitsRotate>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
+    <KSoftGenerateEndianStreamsNumbers
+        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
@@ -19,6 +21,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsBitCount" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
     <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +44,10 @@
     <KSoftGeneratedSource Include="IntegerMath"
         Condition=" '$(KSoftGenerateIntegerMath)' == 'true' ">
       <RollbackCompile>Math\_Details\IntegerMathT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="EndianStreamsNumbers"
+        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == 'true' ">
+      <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
   <PropertyGroup>
