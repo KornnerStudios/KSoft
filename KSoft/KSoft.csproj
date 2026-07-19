@@ -16,6 +16,7 @@
     <KSoftGenerateFlags Condition=" '$(KSoftGenerateFlags)' == '' ">false</KSoftGenerateFlags>
     <KSoftGenerateHandleBitEncoder
         Condition=" '$(KSoftGenerateHandleBitEncoder)' == '' ">false</KSoftGenerateHandleBitEncoder>
+    <KSoftGenerateBitSet Condition=" '$(KSoftGenerateBitSet)' == '' ">false</KSoftGenerateBitSet>
     <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsNumbers
@@ -33,6 +34,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateByteSwap" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateFlags" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateHandleBitEncoder" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateBitSet" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
@@ -99,6 +101,14 @@
     <KSoftGeneratedSource Include="HandleBitEncoder"
         Condition=" '$(KSoftGenerateHandleBitEncoder)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\HandleBitEncoderT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitSet"
+        Condition=" '$(KSoftGenerateBitSet)' == 'true' ">
+      <RollbackCompile>Collections\_Details\BitSetT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="IReadOnlyBitSetEnumerators"
+        Condition=" '$(KSoftGenerateBitSet)' == 'true' ">
+      <RollbackCompile>Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitVectors"
         Condition=" '$(KSoftGenerateBitVectors)' == 'true' ">

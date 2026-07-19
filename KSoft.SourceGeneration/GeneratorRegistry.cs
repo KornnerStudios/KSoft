@@ -75,6 +75,15 @@ internal static class GeneratorRegistry
 
 			// Collections domains.
 			new(
+				GeneratorFeature.BitSet,
+				"KSoftGenerateBitSet",
+				new GeneratedSourceRegistration(
+					BitSetSourceBuilder.BitSetHintName,
+					BitSetSourceBuilder.BuildBitSet),
+				new GeneratedSourceRegistration(
+					BitSetSourceBuilder.EnumeratorsHintName,
+					BitSetSourceBuilder.BuildEnumerators)),
+			new(
 				GeneratorFeature.BitVectors,
 				"KSoftGenerateBitVectors",
 				new GeneratedSourceRegistration(BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build)),

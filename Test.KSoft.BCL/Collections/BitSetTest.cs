@@ -216,6 +216,35 @@ namespace KSoft.Collections.Test
 			Assert.IsTrue(bs.TestBits(0, bs.Length));
 		}
 
+		[TestMethod]
+		public void Collections_BitSetRangeOperationsAcrossMiddleWordsTest()
+		{
+			const int k_length = 100;
+			const int k_range_start = 1;
+			const int k_range_count = k_length - 2;
+
+			var set_bs = new BitSet(k_length);
+			set_bs.SetBits(k_range_start, k_range_count);
+			Assert.AreEqual(k_range_count, set_bs.Cardinality);
+			Assert.IsFalse(set_bs[0]);
+			Assert.IsTrue(set_bs[1]);
+			Assert.IsTrue(set_bs[50]);
+			Assert.IsTrue(set_bs[k_length - 2]);
+			Assert.IsFalse(set_bs[k_length - 1]);
+
+			var clear_bs = new BitSet(k_length, true);
+			clear_bs.ClearBits(k_range_start, k_range_count);
+			Assert.AreEqual(2, clear_bs.Cardinality);
+			Assert.IsTrue(clear_bs[0]);
+			Assert.IsFalse(clear_bs[1]);
+			Assert.IsFalse(clear_bs[50]);
+			Assert.IsFalse(clear_bs[k_length - 2]);
+			Assert.IsTrue(clear_bs[k_length - 1]);
+
+			Assert.IsTrue(set_bs.TestBits(k_range_start, k_range_count));
+			Assert.IsFalse(clear_bs.TestBits(k_range_start, k_range_count));
+		}
+
 		static KeyValuePair<BitArray, BitSet> NewBitSetAndArray(Random rand, int length)
 		{
 			var bitarray = new BitArray(length);

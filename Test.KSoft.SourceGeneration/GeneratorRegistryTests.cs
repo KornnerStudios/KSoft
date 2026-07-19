@@ -119,4 +119,18 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void BitSetRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.BitSet);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Collections.BitSet.g.cs",
+				"KSoft.Collections.IReadOnlyBitSet.Enumerators.g.cs",
+			},
+			hints);
+	}
 };

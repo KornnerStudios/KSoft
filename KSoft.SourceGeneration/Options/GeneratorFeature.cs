@@ -14,6 +14,7 @@ internal enum GeneratorFeature
 	HandleBitEncoder,
 
 	// Collections domains.
+	BitSet,
 	BitVectors,
 
 	// IO domains.
