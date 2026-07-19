@@ -6,6 +6,7 @@ using KSoft.SourceGeneration.Enum;
 using KSoft.SourceGeneration.IO;
 using KSoft.SourceGeneration.Math;
 using KSoft.SourceGeneration.Options;
+using KSoft.SourceGeneration.Text;
 
 namespace KSoft.SourceGeneration;
 
@@ -145,6 +146,20 @@ internal static class GeneratorRegistry
 				GeneratorFeature.IntegerMath,
 				"KSoftGenerateIntegerMath",
 				new GeneratedSourceRegistration(IntegerMathSourceBuilder.HintName, IntegerMathSourceBuilder.Build)),
+
+			// Text domains.
+			new(
+				GeneratorFeature.TextNumbers,
+				"KSoftGenerateTextNumbers",
+				new GeneratedSourceRegistration(
+					TextSourceBuilder.NumbersToStringHintName,
+					TextSourceBuilder.BuildNumbersToString),
+				new GeneratedSourceRegistration(
+					TextSourceBuilder.NumbersParseHintName,
+					TextSourceBuilder.BuildNumbersParse),
+				new GeneratedSourceRegistration(
+					TextSourceBuilder.CharLookupTablesHintName,
+					TextSourceBuilder.BuildCharLookupTables)),
 		];
 
 	// GeneratorOptions consumes option definitions from the registry so there is only one feature/property list.

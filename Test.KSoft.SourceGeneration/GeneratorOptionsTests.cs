@@ -31,6 +31,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateIOExceptions",
 				"KSoftGenerateTagElementStreams",
 				"KSoftGenerateIntegerMath",
+				"KSoftGenerateTextNumbers",
 			},
 			GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray());
 	}
@@ -69,6 +70,7 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IOExceptions)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TextNumbers)] = "true",
 		}));
 
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsBitCount));
@@ -87,6 +89,7 @@ public sealed class GeneratorOptionsTests
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.IOExceptions));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));
 		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TextNumbers));
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}
 

@@ -29,4 +29,7 @@ internal enum GeneratorFeature
 
 	// Math domains.
 	IntegerMath,
+
+	// Text domains.
+	TextNumbers,
 };

@@ -81,6 +81,37 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
+		public void Text_NumbersScalarToStringAndTryParseTest()
+		{
+			Assert.AreEqual("377", Numbers.ToString(byte.MaxValue, NumeralBase.Octal));
+			Assert.AreEqual("-101", Numbers.ToString((short)-5, NumeralBase.Binary));
+			Assert.AreEqual("1Z", Numbers.ToString(71U, 36));
+			Assert.Throws<ArgumentOutOfRangeException>(() => Numbers.ToString(-1, NumeralBase.Hex));
+
+			Assert.IsTrue(Numbers.TryParse("0xFF", out uint uintValue, 16));
+			Assert.AreEqual(255U, uintValue);
+			Assert.IsFalse(Numbers.TryParse(" 0xFF", out uintValue, 16));
+			Assert.IsTrue(Numbers.TryParse("-101", out int intValue, NumeralBase.Binary));
+			Assert.AreEqual(-5, intValue);
+			Assert.IsFalse(Numbers.TryParse("256", out byte byteValue, Numbers.kBase10));
+			Assert.AreEqual((byte)0, byteValue);
+			Assert.IsTrue(Numbers.TryParseRange("xx7Fyy", out byteValue, 2, 2, NumeralBase.Hex));
+			Assert.AreEqual((byte)0x7F, byteValue);
+		}
+
+		[TestMethod]
+		public void Text_NumbersParseStringPreservesNoThrowAndErrorBehaviorTest()
+		{
+			int value = 0;
+			Assert.IsTrue(Numbers.ParseString("123", ref value, noThrow: true));
+			Assert.AreEqual(123, value);
+
+			Assert.IsFalse(Numbers.ParseString(null, ref value, noThrow: true));
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => Numbers.ParseString("123", ref value, noThrow: false, startIndex: 3));
+		}
+
+		[TestMethod]
 		[Description("dotTrace profiling method")]
 		public void Text_NumbersStringListParseTestProfile()
 		{

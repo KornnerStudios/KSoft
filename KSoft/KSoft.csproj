@@ -26,6 +26,8 @@
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
     <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">false</KSoftGenerateIOExceptions>
     <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">false</KSoftGenerateBitStream>
+    <KSoftGenerateTextNumbers
+        Condition=" '$(KSoftGenerateTextNumbers)' == '' ">false</KSoftGenerateTextNumbers>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
@@ -46,6 +48,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIOExceptions" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateTextNumbers" />
     <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +176,18 @@
     <KSoftGeneratedSource Include="BitStreamCache"
         Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.CacheT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="TextNumbersToString"
+        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+      <RollbackCompile>Text\_Details\NumbersToStringT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="TextNumbersParse"
+        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+      <RollbackCompile>Text\_Details\NumbersParseT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="TextCharLookupTables"
+        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+      <RollbackCompile>Text\_Details\CharLookupTablesT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
   <PropertyGroup>

@@ -190,4 +190,19 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void TextNumbersRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.TextNumbers);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.Numbers.ToString.g.cs",
+				"KSoft.Numbers.Parse.g.cs",
+				"KSoft.Text.CharLookupTables.g.cs",
+			},
+			hints);
+	}
 };
