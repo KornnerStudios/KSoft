@@ -147,4 +147,18 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void IOExceptionsRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.IOExceptions);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.IO.VersionMismatchException.g.cs",
+				"KSoft.IO.SignatureMismatchException.g.cs",
+			},
+			hints);
+	}
 };

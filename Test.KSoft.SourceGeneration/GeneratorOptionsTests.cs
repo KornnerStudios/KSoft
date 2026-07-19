@@ -27,6 +27,7 @@ public sealed class GeneratorOptionsTests
 				"KSoftGenerateEnums",
 				"KSoftGenerateBitStream",
 				"KSoftGenerateEndianStreamsNumbers",
+				"KSoftGenerateIOExceptions",
 				"KSoftGenerateTagElementStreams",
 				"KSoftGenerateIntegerMath",
 			},
@@ -63,6 +64,7 @@ public sealed class GeneratorOptionsTests
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.Enums)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
+			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IOExceptions)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
 			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
 		}));
@@ -79,6 +81,7 @@ public sealed class GeneratorOptionsTests
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.Enums));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
+		Assert.IsTrue(options.IsEnabled(GeneratorFeature.IOExceptions));
 		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));
 		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
 		Assert.IsFalse(options.HasInvalidBooleanProperties);

@@ -23,6 +23,7 @@ internal enum GeneratorFeature
 	// IO domains.
 	BitStream,
 	EndianStreamsNumbers,
+	IOExceptions,
 	TagElementStreams,
 
 	// Math domains.

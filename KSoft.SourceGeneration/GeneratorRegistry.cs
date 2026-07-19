@@ -112,6 +112,15 @@ internal static class GeneratorRegistry
 					EndianStreamsNumbersSourceBuilder.HintName,
 					EndianStreamsNumbersSourceBuilder.Build)),
 			new(
+				GeneratorFeature.IOExceptions,
+				"KSoftGenerateIOExceptions",
+				new GeneratedSourceRegistration(
+					IOExceptionsSourceBuilder.VersionMismatchHintName,
+					IOExceptionsSourceBuilder.BuildVersionMismatch),
+				new GeneratedSourceRegistration(
+					IOExceptionsSourceBuilder.SignatureMismatchHintName,
+					IOExceptionsSourceBuilder.BuildSignatureMismatch)),
+			new(
 				GeneratorFeature.TagElementStreams,
 				"KSoftGenerateTagElementStreams",
 				new GeneratedSourceRegistration(

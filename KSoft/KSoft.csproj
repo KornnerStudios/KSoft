@@ -22,6 +22,7 @@
     <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsNumbers
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
+    <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">false</KSoftGenerateIOExceptions>
     <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">false</KSoftGenerateBitStream>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
@@ -40,6 +41,7 @@
     <KSoftSourceGenerationProperty Include="KSoftGenerateEnums" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
+    <KSoftSourceGenerationProperty Include="KSoftGenerateIOExceptions" />
     <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
     <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
   </ItemGroup>
@@ -131,6 +133,14 @@
     <KSoftGeneratedSource Include="EndianStreamsNumbers"
         Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="VersionMismatchException"
+        Condition=" '$(KSoftGenerateIOExceptions)' == 'true' ">
+      <RollbackCompile>IO\_Details\VersionMismatchExceptionT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="SignatureMismatchException"
+        Condition=" '$(KSoftGenerateIOExceptions)' == 'true' ">
+      <RollbackCompile>IO\_Details\SignatureMismatchExceptionT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamCore"
         Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
