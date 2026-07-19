@@ -161,4 +161,18 @@ public sealed class GeneratorRegistryTests
 			},
 			hints);
 	}
+
+	[TestMethod]
+	public void BitStreamRegistersExpectedOutputsTest()
+	{
+		var registration = GeneratorRegistry.Features.Single(static x => x.Feature == GeneratorFeature.BitStream);
+		var hints = registration.Sources.Select(static x => x.HintName).ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				"KSoft.IO.BitStream.g.cs",
+				"KSoft.IO.BitStream.Cache.g.cs",
+			},
+			hints);
+	}
 };

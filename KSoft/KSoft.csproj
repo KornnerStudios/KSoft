@@ -158,6 +158,10 @@
         Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.WriteT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
+    <KSoftGeneratedSource Include="BitStreamCache"
+        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+      <RollbackCompile>IO\_Details\BitStream.CacheT4.cs</RollbackCompile>
+    </KSoftGeneratedSource>
   </ItemGroup>
   <PropertyGroup>
     <!-- Any active KSoftGeneratedSource emits .g.cs files and removes the corresponding rollback Compile item. -->

@@ -104,7 +104,8 @@ internal static class GeneratorRegistry
 			new(
 				GeneratorFeature.BitStream,
 				"KSoftGenerateBitStream",
-				new GeneratedSourceRegistration(BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build)),
+				new GeneratedSourceRegistration(BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build),
+				new GeneratedSourceRegistration(BitStreamSourceBuilder.CacheHintName, BitStreamSourceBuilder.BuildCache)),
 			new(
 				GeneratorFeature.EndianStreamsNumbers,
 				"KSoftGenerateEndianStreamsNumbers",

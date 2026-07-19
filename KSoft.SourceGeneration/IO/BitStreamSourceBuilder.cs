@@ -7,6 +7,7 @@ namespace KSoft.SourceGeneration.IO;
 internal static class BitStreamSourceBuilder
 {
 	public const string HintName = "KSoft.IO.BitStream.g.cs";
+	public const string CacheHintName = "KSoft.IO.BitStream.Cache.g.cs";
 
 	public static string Build()
 	{
@@ -40,6 +41,203 @@ internal static class BitStreamSourceBuilder
 		}
 
 		return writer.ToString();
+	}
+
+	// Keep the cache in its own generated output so the rollback removal mirrors the original T4 file boundary.
+	public static string BuildCache()
+	{
+		var writer = new SourceWriter();
+
+		writer.WriteGeneratedFileHeader();
+		writer.WriteLine("#nullable disable");
+		writer.WriteLine();
+		writer.WriteContractsAliasUsing();
+		writer.WriteContractShimAliasUsing();
+		writer.WriteLine();
+		writer.WriteLine("using TWord = System.UInt32;");
+		writer.WriteLine();
+		writer.WriteFileScopedNamespace("KSoft.IO");
+		writer.WriteLine();
+		using (writer.EnterTypeDeclaration("partial class BitStream"))
+		{
+			WriteCacheFields(writer);
+			writer.WriteLine();
+			WriteCacheOperationsRegion(writer);
+			writer.WriteLine();
+			WriteReadBooleanMethod(writer);
+		}
+
+		return writer.ToString();
+	}
+
+	private static void WriteCacheFields(SourceWriter writer)
+	{
+		writer.WriteXmlDocSummary("Number of bytes in <see cref=\"mCache\"/>");
+		writer.WriteLine("const int kWordByteCount = sizeof(TWord);");
+		writer.WriteXmlDocSummary("Number of bits in <see cref=\"mCache\"/>");
+		writer.WriteLine("const int kWordBitCount = sizeof(TWord) * Bits.kByteBitCount;");
+		writer.WriteXmlDocSummary("Bit count to bit-mask look up table");
+		writer.WriteLine("static readonly TWord[] kBitmaskLUT;");
+		writer.WriteLine();
+		writer.WriteLine("static void InitializeBitmaskLookUpTable(out TWord[] table)");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine("bool success = Bits.GetBitConstants(typeof(TWord),");
+			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
+			{
+				writer.WriteLine("out int _, out int _, out int _, out int _);");
+			}
+			writer.WriteLine("Contract.Assert(success, \"TWord is an invalid type for BitStream\");");
+			writer.WriteLine();
+			writer.WriteLine("Bits.BitmaskLookUpTableGenerate(kWordBitCount, out table);");
+		}
+		writer.WriteLine();
+		writer.WriteLine();
+		writer.WriteXmlDocSummary("The bit cache we use for streaming to/from <see cref=\"BaseStream\"/>");
+		writer.WriteLine("TWord mCache;");
+	}
+
+	private static void WriteCacheOperationsRegion(SourceWriter writer)
+	{
+		writer.WriteLine(
+			"// #REVIEW: change mIoBuffer to be kWordByteCount and do an entire Read/Write() instead of looping?");
+		writer.WriteLine(
+			"// #REVIEW: maybe change the ReadWord implementation to not automatically populate the next word...");
+		using (writer.EnterRegion("Cache operations"))
+		{
+			WriteFillCacheMethod(writer);
+			WriteFlushCacheMethod(writer);
+			writer.WriteLine();
+			WriteExtractWordFromCacheMethod(writer);
+			WritePutWordInCacheMethod(writer);
+		}
+	}
+
+	private static void WriteFillCacheMethod(SourceWriter writer)
+	{
+		writer.WriteXmlDocSummary("Fill the cache with <see cref=\"kWordByteCount\"/> or fewer bytes bytes");
+		writer.WriteLine("void FillCache()");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine("mCache = 0;");
+			writer.WriteLine("mCacheBitIndex = 0;");
+			writer.WriteLine("mCacheBitsStreamedCount = 0;");
+			writer.WriteLine();
+			writer.WriteLine("int byte_count = kWordByteCount-1; // number of bytes to try and read");
+			writer.WriteLine("int shift = kWordBitCount-Bits.kByteBitCount; // start shifting to the MSB");
+			writer.WriteLine("while (\t!IsEndOfStream &&");
+			writer.WriteLine("\t\tbyte_count >= 0 &&");
+			writer.WriteLine("\t\tBaseStream.Read(mIoBuffer, 0, sizeof(byte)) != 0 )");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine("mCache |= ((TWord)mIoBuffer[0]) << shift;");
+				writer.WriteLine("--byte_count;");
+				writer.WriteLine("shift -= Bits.kByteBitCount;");
+				writer.WriteLine("mCacheBitsStreamedCount += Bits.kByteBitCount;");
+			}
+			writer.WriteLine();
+			writer.WriteLine("if (byte_count != -1 && ThrowOnOverflow.CanRead())");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new System.IO.EndOfStreamException(\"Tried to read more bits than the stream has/can see\");");
+			}
+		}
+	}
+
+	private static void WriteFlushCacheMethod(SourceWriter writer)
+	{
+		writer.WriteXmlDocSummary(
+			"Flush the cache to <see cref=\"BaseStream\"/> with <see cref=\"kWordByteCount\"/> or fewer bytes bytes");
+		writer.WriteLine("void FlushCache()");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine(
+				"#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY");
+			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out mCache) == 0);");
+			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out mCacheBitIndex) == 0);");
+			writer.WriteLine("#endif");
+			writer.WriteLine();
+			writer.WriteLine("if (mCacheBitIndex == 0) // no bits to flush!");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine("Contract.Assert(mCache == 0, \"Why is there data in the cache?\");");
+				writer.WriteLine("return;");
+			}
+			writer.WriteLine();
+			writer.WriteLine("mCacheBitsStreamedCount = 0;");
+			writer.WriteLine();
+			writer.WriteLine("int byte_count = (mCacheBitIndex-1) >> Bits.kByteBitShift; // number of bytes to try and write");
+			writer.WriteLine("int shift = kWordBitCount-Bits.kByteBitCount; // start shifting from the MSB");
+			writer.WriteLine("while (\t/*!IsEndOfStream &&*/");
+			writer.WriteLine("\t\tbyte_count >= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine("mIoBuffer[0] = (byte)(mCache >> shift);");
+				writer.WriteLine("BaseStream.Write(mIoBuffer, 0, sizeof(byte));");
+				writer.WriteLine("--byte_count;");
+				writer.WriteLine("shift -= Bits.kByteBitCount;");
+				writer.WriteLine("mCacheBitsStreamedCount += Bits.kByteBitCount;");
+			}
+			writer.WriteLine();
+			writer.WriteLine("if (byte_count != -1 && ThrowOnOverflow.CanWrite())");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new System.IO.EndOfStreamException(\"Tried to write more bits than the stream has/can see\");");
+			}
+			writer.WriteLine();
+			writer.WriteLine("mCache = 0;");
+			writer.WriteLine("mCacheBitIndex = 0;");
+		}
+	}
+
+	private static void WriteExtractWordFromCacheMethod(SourceWriter writer)
+	{
+		writer.WriteLine("/// <remarks>Don't call me unless you are ReadWord</remarks>");
+		writer.WritePurityAnnotation();
+		writer.WriteLine("TWord ExtractWordFromCache(int bitCount)");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine("// amount to shift the bits extracted from mCache");
+			writer.WriteLine("int shift = kWordBitCount - (mCacheBitIndex + bitCount);");
+			writer.WriteLine("TWord word_mask = kBitmaskLUT[bitCount];");
+			writer.WriteLine();
+			writer.WriteLine("TWord word = mCache;");
+			writer.WriteLine("word >>= shift;");
+			writer.WriteLine("word &= word_mask;");
+			writer.WriteLine();
+			writer.WriteLine("return word;");
+		}
+	}
+
+	private static void WritePutWordInCacheMethod(SourceWriter writer)
+	{
+		writer.WriteLine("/// <remarks>Don't call me unless you are WriteWord</remarks>");
+		writer.WriteLine("void PutWordInCache(TWord word, int bitCount)");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine("Contract.Ensures(Contract.OldValue(mCacheBitIndex) == mCacheBitIndex);");
+			writer.WriteLine();
+			writer.WriteLine("// amount to shift word before appending it to mCache bits");
+			writer.WriteLine("int shift = (kWordBitCount - mCacheBitIndex) - bitCount;");
+			writer.WriteLine("TWord word_mask = kBitmaskLUT[bitCount];");
+			writer.WriteLine();
+			writer.WriteLine("word &= word_mask;");
+			writer.WriteLine("word <<= shift;");
+			writer.WriteLine("mCache |= word;");
+		}
+	}
+
+	private static void WriteReadBooleanMethod(SourceWriter writer)
+	{
+		writer.WriteLine("public bool ReadBoolean()");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine("ReadWord(out TWord word, Bits.kBooleanBitCount);");
+			writer.WriteLine();
+			writer.WriteLine("return 1 == word;");
+		}
 	}
 
 	private static void WriteCoreRegion(SourceWriter writer)
