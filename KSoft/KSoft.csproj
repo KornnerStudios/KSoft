@@ -7,27 +7,27 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source-generation feature flags default off so checked-in T4 output remains the rollback path. -->
-    <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">false</KSoftGenerateBitsBitCount>
-    <KSoftGenerateBitsCore Condition=" '$(KSoftGenerateBitsCore)' == '' ">false</KSoftGenerateBitsCore>
-    <KSoftGenerateBitsEncoding Condition=" '$(KSoftGenerateBitsEncoding)' == '' ">false</KSoftGenerateBitsEncoding>
-    <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">false</KSoftGenerateBitsRotate>
-    <KSoftGenerateByteSwap Condition=" '$(KSoftGenerateByteSwap)' == '' ">false</KSoftGenerateByteSwap>
-    <KSoftGenerateFlags Condition=" '$(KSoftGenerateFlags)' == '' ">false</KSoftGenerateFlags>
+    <!-- Source-generation feature flags default on; pass false explicitly to use checked-in T4 rollback files. -->
+    <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">true</KSoftGenerateBitsBitCount>
+    <KSoftGenerateBitsCore Condition=" '$(KSoftGenerateBitsCore)' == '' ">true</KSoftGenerateBitsCore>
+    <KSoftGenerateBitsEncoding Condition=" '$(KSoftGenerateBitsEncoding)' == '' ">true</KSoftGenerateBitsEncoding>
+    <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">true</KSoftGenerateBitsRotate>
+    <KSoftGenerateByteSwap Condition=" '$(KSoftGenerateByteSwap)' == '' ">true</KSoftGenerateByteSwap>
+    <KSoftGenerateFlags Condition=" '$(KSoftGenerateFlags)' == '' ">true</KSoftGenerateFlags>
     <KSoftGenerateHandleBitEncoder
-        Condition=" '$(KSoftGenerateHandleBitEncoder)' == '' ">false</KSoftGenerateHandleBitEncoder>
-    <KSoftGenerateBitSet Condition=" '$(KSoftGenerateBitSet)' == '' ">false</KSoftGenerateBitSet>
-    <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">false</KSoftGenerateBitVectors>
-    <KSoftGenerateEnums Condition=" '$(KSoftGenerateEnums)' == '' ">false</KSoftGenerateEnums>
-    <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">false</KSoftGenerateIntegerMath>
+        Condition=" '$(KSoftGenerateHandleBitEncoder)' == '' ">true</KSoftGenerateHandleBitEncoder>
+    <KSoftGenerateBitSet Condition=" '$(KSoftGenerateBitSet)' == '' ">true</KSoftGenerateBitSet>
+    <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">true</KSoftGenerateBitVectors>
+    <KSoftGenerateEnums Condition=" '$(KSoftGenerateEnums)' == '' ">true</KSoftGenerateEnums>
+    <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">true</KSoftGenerateIntegerMath>
     <KSoftGenerateEndianStreamsCore
-        Condition=" '$(KSoftGenerateEndianStreamsCore)' == '' ">false</KSoftGenerateEndianStreamsCore>
+        Condition=" '$(KSoftGenerateEndianStreamsCore)' == '' ">true</KSoftGenerateEndianStreamsCore>
     <KSoftGenerateEndianStreamsNumbers
-        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">false</KSoftGenerateEndianStreamsNumbers>
-    <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">false</KSoftGenerateIOExceptions>
-    <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">false</KSoftGenerateBitStream>
+        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">true</KSoftGenerateEndianStreamsNumbers>
+    <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">true</KSoftGenerateIOExceptions>
+    <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">true</KSoftGenerateBitStream>
     <KSoftGenerateTextNumbers
-        Condition=" '$(KSoftGenerateTextNumbers)' == '' ">false</KSoftGenerateTextNumbers>
+        Condition=" '$(KSoftGenerateTextNumbers)' == '' ">true</KSoftGenerateTextNumbers>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>

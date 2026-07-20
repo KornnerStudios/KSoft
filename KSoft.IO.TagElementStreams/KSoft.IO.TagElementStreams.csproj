@@ -7,9 +7,9 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source-generation feature flags default off so checked-in T4 output remains the rollback path. -->
+    <!-- Source-generation feature flags default on; pass false explicitly to use checked-in T4 rollback files. -->
     <KSoftGenerateTagElementStreams
-        Condition=" '$(KSoftGenerateTagElementStreams)' == '' ">false</KSoftGenerateTagElementStreams>
+        Condition=" '$(KSoftGenerateTagElementStreams)' == '' ">true</KSoftGenerateTagElementStreams>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath
         Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' "
