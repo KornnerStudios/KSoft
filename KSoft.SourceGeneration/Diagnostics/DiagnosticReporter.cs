@@ -15,4 +15,13 @@ internal static class DiagnosticReporter
 				property));
 		}
 	}
+
+	public static void ReportUnsupportedTargetAssembly(SourceProductionContext context, GenerationInput input)
+	{
+		context.ReportDiagnostic(Diagnostic.Create(
+			DiagnosticDescriptors.UnsupportedTargetAssembly,
+			Location.None,
+			input.AssemblyName,
+			GeneratorTargetAssemblyFacts.ExpectedAssemblyNames));
+	}
 };

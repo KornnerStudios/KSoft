@@ -21,9 +21,11 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 	{
 		var options = context.AnalyzerConfigOptionsProvider
 			.Select(static (provider, _) => GeneratorOptions.From(provider.GlobalOptions));
+		var assemblyName = context.CompilationProvider
+			.Select(static (compilation, _) => compilation.AssemblyName);
 
-		var input = options
-			.Select(static (generatorOptions, _) => new GenerationInput(generatorOptions));
+		var input = options.Combine(assemblyName)
+			.Select(static (value, _) => new GenerationInput(value.Left, value.Right));
 
 		context.RegisterSourceOutput(input, static (sourceContext, generationInput) =>
 		{
@@ -32,15 +34,19 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 			{
 				return;
 			}
-
-			// The registry lets one feature emit multiple .g.cs files without adding more incremental pipeline branches.
-			foreach (GeneratorFeatureRegistration feature in GeneratorRegistry.Features)
+			if (!generationInput.Options.UseSourceGeneration)
 			{
-				if (!generationInput.Options.IsEnabled(feature.Feature))
-				{
-					continue;
-				}
+				return;
+			}
+			if (generationInput.TargetAssembly == GeneratorTargetAssembly.Unsupported)
+			{
+				DiagnosticReporter.ReportUnsupportedTargetAssembly(sourceContext, generationInput);
+				return;
+			}
 
+			foreach (GeneratorFeatureRegistration feature in GeneratorRegistry.FeaturesForTarget(
+				generationInput.TargetAssembly))
+			{
 				foreach (GeneratedSourceRegistration source in feature.Sources)
 				{
 					AddSource(sourceContext, source);

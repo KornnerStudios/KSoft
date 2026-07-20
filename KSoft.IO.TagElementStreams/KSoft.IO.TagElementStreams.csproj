@@ -7,18 +7,16 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source-generation feature flags default on; pass false explicitly to use checked-in T4 rollback files. -->
-    <KSoftGenerateTagElementStreams
-        Condition=" '$(KSoftGenerateTagElementStreams)' == '' ">true</KSoftGenerateTagElementStreams>
+    <!-- Source generation defaults on; pass false explicitly to use checked-in T4 rollback files. -->
+    <KSoftUseSourceGeneration Condition=" '$(KSoftUseSourceGeneration)' == '' ">true</KSoftUseSourceGeneration>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath
         Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' "
         >$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <!-- CompilerVisibleProperty exposes MSBuild feature flags to the Roslyn generator as build_property.* values. -->
-    <KSoftSourceGenerationProperty Include="KSoftGenerateTagElementStreams" />
-    <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
+    <!-- CompilerVisibleProperty exposes the MSBuild switch to the Roslyn generator as build_property.*. -->
+    <CompilerVisibleProperty Include="KSoftUseSourceGeneration" />
   </ItemGroup>
   <ItemGroup>
     <!--
@@ -27,23 +25,23 @@
         RollbackCompile= checked-in T4 .cs file removed from Compile when the generator is active
     -->
     <KSoftGeneratedSource Include="TagElementTextStreamRead"
-        Condition=" '$(KSoftGenerateTagElementStreams)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>_Details\TagElementTextStream.ReadT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TagElementTextStreamWrite"
-        Condition=" '$(KSoftGenerateTagElementStreams)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>_Details\TagElementTextStream.WriteT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TagElementStreamRead"
-        Condition=" '$(KSoftGenerateTagElementStreams)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>_Details\TagElementStream.ReadT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TagElementStreamSerialize"
-        Condition=" '$(KSoftGenerateTagElementStreams)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>_Details\TagElementStream.SerializeT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TagElementStreamWrite"
-        Condition=" '$(KSoftGenerateTagElementStreams)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>_Details\TagElementStream.WriteT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
@@ -110,6 +108,7 @@
     </ProjectReference>
     <!-- Load KSoft.SourceGeneration as an analyzer only; this project must not reference it at runtime. -->
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj"
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' "
         OutputItemType="Analyzer"
         ReferenceOutputAssembly="False"
         PrivateAssets="all" />

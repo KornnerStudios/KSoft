@@ -1,125 +1,75 @@
 using System.Collections.Generic;
-using System.Linq;
 using KSoft.SourceGeneration.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Test.KSoft.SourceGeneration;
 
-#pragma warning disable CA1861 // Avoid constant arrays as arguments
-
 [TestClass]
 public sealed class GeneratorOptionsTests
 {
 	[TestMethod]
-	public void FeatureDefinitionsMatchExpectedPropertyNamesTest()
+	public void UseSourceGenerationPropertyNameMatchesExpectedMSBuildNameTest()
 	{
-		CollectionAssert.AreEqual(
-			new[] {
-				"KSoftGenerateBitsBitCount",
-				"KSoftGenerateBitsCore",
-				"KSoftGenerateBitsEncoding",
-				"KSoftGenerateBitsRotate",
-				"KSoftGenerateByteSwap",
-				"KSoftGenerateFlags",
-				"KSoftGenerateHandleBitEncoder",
-				"KSoftGenerateBitSet",
-				"KSoftGenerateBitVectors",
-				"KSoftGenerateEnums",
-				"KSoftGenerateBitStream",
-				"KSoftGenerateEndianStreamsCore",
-				"KSoftGenerateEndianStreamsNumbers",
-				"KSoftGenerateIOExceptions",
-				"KSoftGenerateTagElementStreams",
-				"KSoftGenerateIntegerMath",
-				"KSoftGenerateTextNumbers",
-			},
-			GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray());
+		Assert.AreEqual("KSoftUseSourceGeneration", GeneratorOptions.UseSourceGenerationProperty);
+		Assert.AreEqual("build_property.KSoftUseSourceGeneration", GeneratorOptions.UseSourceGenerationBuildProperty);
 	}
 
 	[TestMethod]
-	public void MissingPropertiesDefaultToDisabledTest()
+	public void MissingPropertyDefaultsToDisabledTest()
 	{
 		var options = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>()));
 
-		foreach (GeneratorOptionDefinition definition in GeneratorOptions.FeatureDefinitions)
-		{
-			Assert.IsFalse(options.IsEnabled(definition.Feature));
-		}
-
+		Assert.IsFalse(options.UseSourceGeneration);
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}
 
 	[TestMethod]
-	public void CompilerVisibleBooleanPropertiesAreParsedTest()
+	public void CompilerVisibleBooleanPropertyIsParsedTest()
 	{
 		var options = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsCore)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsEncoding)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "True",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.ByteSwap)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.Flags)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.HandleBitEncoder)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitSet)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitVectors)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.Enums)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitStream)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsCore)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.EndianStreamsNumbers)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IOExceptions)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TagElementStreams)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.IntegerMath)] = "false",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.TextNumbers)] = "true",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "True",
 		}));
 
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsBitCount));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsCore));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsEncoding));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitsRotate));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.ByteSwap));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.Flags));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.HandleBitEncoder));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitSet));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitVectors));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.Enums));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.BitStream));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsCore));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.EndianStreamsNumbers));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.IOExceptions));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TagElementStreams));
-		Assert.IsFalse(options.IsEnabled(GeneratorFeature.IntegerMath));
-		Assert.IsTrue(options.IsEnabled(GeneratorFeature.TextNumbers));
+		Assert.IsTrue(options.UseSourceGeneration);
 		Assert.IsFalse(options.HasInvalidBooleanProperties);
 	}
 
 	[TestMethod]
-	public void InvalidBooleanPropertiesAreRecordedTest()
+	public void FalseCompilerVisibleBooleanPropertyIsParsedTest()
 	{
 		var options = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "yes",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "false",
 		}));
 
-		Assert.IsFalse(options.IsEnabled(GeneratorFeature.BitsBitCount));
+		Assert.IsFalse(options.UseSourceGeneration);
+		Assert.IsFalse(options.HasInvalidBooleanProperties);
+	}
+
+	[TestMethod]
+	public void InvalidBooleanPropertyIsRecordedTest()
+	{
+		var options = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
+		{
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "yes",
+		}));
+
+		Assert.IsFalse(options.UseSourceGeneration);
 		Assert.IsTrue(options.HasInvalidBooleanProperties);
-		Assert.AreEqual(
-			GeneratorOptions.PropertyNameFor(GeneratorFeature.BitsBitCount),
-			options.InvalidBooleanProperties[0]);
+		Assert.AreEqual(GeneratorOptions.UseSourceGenerationProperty, options.InvalidBooleanProperties[0]);
 	}
 
 	[TestMethod]
-	public void EquivalentFeatureSetsAreEqualTest()
+	public void EquivalentOptionsAreEqualTest()
 	{
 		var left = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "false",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "true",
 		}));
 		var right = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "false",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "true",
 		}));
 
 		Assert.AreEqual(left, right);
@@ -127,15 +77,15 @@ public sealed class GeneratorOptionsTests
 	}
 
 	[TestMethod]
-	public void DifferentFeatureSetsAreNotEqualTest()
+	public void DifferentOptionsAreNotEqualTest()
 	{
 		var left = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsBitCount)] = "true",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "true",
 		}));
 		var right = GeneratorOptions.From(new AnalyzerConfigOptionsStub(new Dictionary<string, string>
 		{
-			[GeneratorOptions.BuildPropertyNameFor(GeneratorFeature.BitsRotate)] = "true",
+			[GeneratorOptions.UseSourceGenerationBuildProperty] = "false",
 		}));
 
 		Assert.AreNotEqual(left, right);

@@ -25,27 +25,65 @@ public sealed class GeneratorRegistryTests
 	}
 
 	[TestMethod]
-	public void RegistryUsesUniqueFeaturePropertyAndHintNamesTest()
+	public void RegistryUsesUniqueFeatureAndHintNamesTest()
 	{
 		var featureNames = GeneratorRegistry.Features.Select(static x => x.Feature.ToString()).ToArray();
-		var propertyNames = GeneratorRegistry.Features.Select(static x => x.PropertyName).ToArray();
 		var hintNames = GeneratorRegistry.Features
 			.SelectMany(static x => x.Sources)
 			.Select(static x => x.HintName)
 			.ToArray();
 
 		CollectionAssert.AllItemsAreUnique(featureNames);
-		CollectionAssert.AllItemsAreUnique(propertyNames);
 		CollectionAssert.AllItemsAreUnique(hintNames);
 	}
 
 	[TestMethod]
-	public void FeatureDefinitionsAreDerivedFromRegistryTest()
+	public void KSoftTargetOwnsBclFeatureGroupTest()
 	{
-		var registryProperties = GeneratorRegistry.Features.Select(static x => x.PropertyName).ToArray();
-		var optionProperties = GeneratorOptions.FeatureDefinitions.Select(static x => x.PropertyName).ToArray();
+		var features = GeneratorRegistry.FeaturesForTarget(GeneratorTargetAssembly.KSoft)
+			.Select(static x => x.Feature)
+			.ToArray();
 
-		CollectionAssert.AreEqual(registryProperties, optionProperties);
+		CollectionAssert.AreEqual(
+			new[] {
+				GeneratorFeature.BitsBitCount,
+				GeneratorFeature.BitsCore,
+				GeneratorFeature.BitsEncoding,
+				GeneratorFeature.BitsRotate,
+				GeneratorFeature.ByteSwap,
+				GeneratorFeature.Flags,
+				GeneratorFeature.HandleBitEncoder,
+				GeneratorFeature.BitSet,
+				GeneratorFeature.BitVectors,
+				GeneratorFeature.Enums,
+				GeneratorFeature.BitStream,
+				GeneratorFeature.EndianStreamsCore,
+				GeneratorFeature.EndianStreamsNumbers,
+				GeneratorFeature.IOExceptions,
+				GeneratorFeature.IntegerMath,
+				GeneratorFeature.TextNumbers,
+			},
+			features);
+	}
+
+	[TestMethod]
+	public void TagElementStreamsTargetOwnsOnlyTagElementFeatureTest()
+	{
+		var features = GeneratorRegistry.FeaturesForTarget(GeneratorTargetAssembly.KSoftIOTagElementStreams)
+			.Select(static x => x.Feature)
+			.ToArray();
+
+		CollectionAssert.AreEqual(
+			new[] {
+				GeneratorFeature.TagElementStreams,
+			},
+			features);
+	}
+
+	[TestMethod]
+	public void UnsupportedTargetOwnsNoFeaturesTest()
+	{
+		Assert.IsEmpty(GeneratorRegistry.FeaturesForTarget(GeneratorTargetAssembly.Unsupported));
 	}
 
 	[TestMethod]

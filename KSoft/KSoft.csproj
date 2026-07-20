@@ -7,49 +7,16 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source-generation feature flags default on; pass false explicitly to use checked-in T4 rollback files. -->
-    <KSoftGenerateBitsBitCount Condition=" '$(KSoftGenerateBitsBitCount)' == '' ">true</KSoftGenerateBitsBitCount>
-    <KSoftGenerateBitsCore Condition=" '$(KSoftGenerateBitsCore)' == '' ">true</KSoftGenerateBitsCore>
-    <KSoftGenerateBitsEncoding Condition=" '$(KSoftGenerateBitsEncoding)' == '' ">true</KSoftGenerateBitsEncoding>
-    <KSoftGenerateBitsRotate Condition=" '$(KSoftGenerateBitsRotate)' == '' ">true</KSoftGenerateBitsRotate>
-    <KSoftGenerateByteSwap Condition=" '$(KSoftGenerateByteSwap)' == '' ">true</KSoftGenerateByteSwap>
-    <KSoftGenerateFlags Condition=" '$(KSoftGenerateFlags)' == '' ">true</KSoftGenerateFlags>
-    <KSoftGenerateHandleBitEncoder
-        Condition=" '$(KSoftGenerateHandleBitEncoder)' == '' ">true</KSoftGenerateHandleBitEncoder>
-    <KSoftGenerateBitSet Condition=" '$(KSoftGenerateBitSet)' == '' ">true</KSoftGenerateBitSet>
-    <KSoftGenerateBitVectors Condition=" '$(KSoftGenerateBitVectors)' == '' ">true</KSoftGenerateBitVectors>
-    <KSoftGenerateEnums Condition=" '$(KSoftGenerateEnums)' == '' ">true</KSoftGenerateEnums>
-    <KSoftGenerateIntegerMath Condition=" '$(KSoftGenerateIntegerMath)' == '' ">true</KSoftGenerateIntegerMath>
-    <KSoftGenerateEndianStreamsCore
-        Condition=" '$(KSoftGenerateEndianStreamsCore)' == '' ">true</KSoftGenerateEndianStreamsCore>
-    <KSoftGenerateEndianStreamsNumbers
-        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == '' ">true</KSoftGenerateEndianStreamsNumbers>
-    <KSoftGenerateIOExceptions Condition=" '$(KSoftGenerateIOExceptions)' == '' ">true</KSoftGenerateIOExceptions>
-    <KSoftGenerateBitStream Condition=" '$(KSoftGenerateBitStream)' == '' ">true</KSoftGenerateBitStream>
-    <KSoftGenerateTextNumbers
-        Condition=" '$(KSoftGenerateTextNumbers)' == '' ">true</KSoftGenerateTextNumbers>
+    <!-- Source generation defaults on; pass false explicitly to use checked-in T4 rollback files. -->
+    <KSoftUseSourceGeneration Condition=" '$(KSoftUseSourceGeneration)' == '' ">true</KSoftUseSourceGeneration>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
-    <CompilerGeneratedFilesOutputPath Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' ">$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
+    <CompilerGeneratedFilesOutputPath
+        Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' "
+        >$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <!-- CompilerVisibleProperty exposes MSBuild feature flags to the Roslyn generator as build_property.* values. -->
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsBitCount" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsCore" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsEncoding" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitsRotate" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateByteSwap" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateFlags" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateHandleBitEncoder" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitSet" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitVectors" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateEnums" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateIntegerMath" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsCore" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateEndianStreamsNumbers" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateIOExceptions" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateBitStream" />
-    <KSoftSourceGenerationProperty Include="KSoftGenerateTextNumbers" />
-    <CompilerVisibleProperty Include="@(KSoftSourceGenerationProperty)" />
+    <!-- CompilerVisibleProperty exposes the MSBuild switch to the Roslyn generator as build_property.*. -->
+    <CompilerVisibleProperty Include="KSoftUseSourceGeneration" />
   </ItemGroup>
   <ItemGroup>
     <!--
@@ -61,132 +28,132 @@
       miscellaneous/non-semantic documents; the analyzer-generated document view has the correct Roslyn model.
     -->
     <KSoftGeneratedSource Include="BitsBitCount"
-        Condition=" '$(KSoftGenerateBitsBitCount)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.BitCountT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsBitReverse"
-        Condition=" '$(KSoftGenerateBitsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.BitReverseT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsBitSwap"
-        Condition=" '$(KSoftGenerateBitsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.BitSwapT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsConstants"
-        Condition=" '$(KSoftGenerateBitsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.ConstantsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsCore"
-        Condition=" '$(KSoftGenerateBitsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\BitsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsVectors"
-        Condition=" '$(KSoftGenerateBitsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.VectorsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsDecode"
-        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.DecodeT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsEncode"
-        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.EncodeT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsNoneableEncoding"
-        Condition=" '$(KSoftGenerateBitsEncoding)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.NoneableEncoding.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitsRotate"
-        Condition=" '$(KSoftGenerateBitsRotate)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\Bits.RotateT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="ByteSwap"
-        Condition=" '$(KSoftGenerateByteSwap)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\ByteSwapT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="Flags"
-        Condition=" '$(KSoftGenerateFlags)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\FlagsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="HandleBitEncoder"
-        Condition=" '$(KSoftGenerateHandleBitEncoder)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\HandleBitEncoderT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitSet"
-        Condition=" '$(KSoftGenerateBitSet)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Collections\_Details\BitSetT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="IReadOnlyBitSetEnumerators"
-        Condition=" '$(KSoftGenerateBitSet)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitVectors"
-        Condition=" '$(KSoftGenerateBitVectors)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Bitwise\_Details\BitVectorsT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="EnumBitEncoder"
-        Condition=" '$(KSoftGenerateEnums)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Enum\_Details\EnumBitEncoderT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="EnumValue"
-        Condition=" '$(KSoftGenerateEnums)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Enum\_Details\EnumValueT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="IntegerMath"
-        Condition=" '$(KSoftGenerateIntegerMath)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Math\_Details\IntegerMathT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="EndianStreamsNumbers"
-        Condition=" '$(KSoftGenerateEndianStreamsNumbers)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <!-- EndianStreams.BaseT4.cs also owns the generated KSoft.TypeExtensions endian-stream surface. -->
     <KSoftGeneratedSource Include="EndianStreamsBase"
-        Condition=" '$(KSoftGenerateEndianStreamsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.BaseT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="EndianStreamsVirtualAddressTranslation"
-        Condition=" '$(KSoftGenerateEndianStreamsCore)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="VersionMismatchException"
-        Condition=" '$(KSoftGenerateIOExceptions)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\VersionMismatchExceptionT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="SignatureMismatchException"
-        Condition=" '$(KSoftGenerateIOExceptions)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\SignatureMismatchExceptionT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamCore"
-        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.CoreT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamRead"
-        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.ReadT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamSerialize"
-        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.SerializeT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamWrite"
-        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.WriteT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="BitStreamCache"
-        Condition=" '$(KSoftGenerateBitStream)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>IO\_Details\BitStream.CacheT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TextNumbersToString"
-        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Text\_Details\NumbersToStringT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TextNumbersParse"
-        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Text\_Details\NumbersParseT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
     <KSoftGeneratedSource Include="TextCharLookupTables"
-        Condition=" '$(KSoftGenerateTextNumbers)' == 'true' ">
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
       <RollbackCompile>Text\_Details\CharLookupTablesT4.cs</RollbackCompile>
     </KSoftGeneratedSource>
   </ItemGroup>
@@ -194,8 +161,10 @@
     <!-- Any active KSoftGeneratedSource emits .g.cs files and removes the corresponding rollback Compile item. -->
     <KSoftGeneratedSourceItems>@(KSoftGeneratedSource)</KSoftGeneratedSourceItems>
     <KSoftSourceGenerationEnabled Condition=" '$(KSoftGeneratedSourceItems)' != '' ">true</KSoftSourceGenerationEnabled>
-    <KSoftSourceGenerationEnabled Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
-    <EmitCompilerGeneratedFiles Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">true</EmitCompilerGeneratedFiles>
+    <KSoftSourceGenerationEnabled
+        Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
+    <EmitCompilerGeneratedFiles
+        Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Bitwise\BitFieldTraits.cs" />
@@ -641,6 +610,7 @@
   <ItemGroup>
     <!-- Load KSoft.SourceGeneration as an analyzer only; KSoft must not reference it at runtime. -->
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj"
+        Condition=" '$(KSoftUseSourceGeneration)' == 'true' "
         OutputItemType="Analyzer"
         ReferenceOutputAssembly="False"
         PrivateAssets="all" />

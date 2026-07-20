@@ -8,17 +8,20 @@ namespace KSoft.SourceGeneration;
 /// Registers one source-generation domain and the generated files it owns.
 /// </summary>
 /// <remarks>
-/// The MSBuild property controls the whole domain; individual source outputs let a domain builder mirror old T4 file
-/// boundaries when that improves reviewability.
+/// The target assembly owns the domain; individual source outputs let a domain builder mirror old T4 file boundaries
+/// when that improves reviewability.
 /// </remarks>
 internal readonly struct GeneratorFeatureRegistration
 {
 	public GeneratorFeatureRegistration(
+		GeneratorTargetAssembly targetAssembly,
 		GeneratorFeature feature,
-		string propertyName,
 		params GeneratedSourceRegistration[] sources)
 	{
-		ExceptionHelpers.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
+		if (targetAssembly == GeneratorTargetAssembly.Unsupported)
+		{
+			throw new ArgumentOutOfRangeException(nameof(targetAssembly), targetAssembly, "Target assembly is required.");
+		}
 		if (sources == null)
 		{
 			throw new ArgumentNullException(nameof(sources));
@@ -28,23 +31,17 @@ internal readonly struct GeneratorFeatureRegistration
 			throw new ArgumentException("At least one generated source is required.", nameof(sources));
 		}
 
+		TargetAssembly = targetAssembly;
 		Feature = feature;
-		PropertyName = propertyName;
 		Sources = sources;
 	}
 
-	public GeneratorFeature Feature { get; }
+	public GeneratorTargetAssembly TargetAssembly { get; }
 
-	/// <summary>
-	/// Gets the MSBuild property exposed through <c>CompilerVisibleProperty</c>.
-	/// </summary>
-	public string PropertyName { get; }
+	public GeneratorFeature Feature { get; }
 
 	/// <summary>
 	/// Gets all Roslyn source files emitted when <see cref="Feature" /> is enabled.
 	/// </summary>
 	public IReadOnlyList<GeneratedSourceRegistration> Sources { get; }
-
-	public GeneratorOptionDefinition ToOptionDefinition()
-		=> new(Feature, PropertyName);
 };

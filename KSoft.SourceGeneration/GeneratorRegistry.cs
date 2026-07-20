@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KSoft.SourceGeneration.Bitwise;
@@ -11,7 +12,7 @@ using KSoft.SourceGeneration.Text;
 namespace KSoft.SourceGeneration;
 
 /// <summary>
-/// Central registry for feature flags, MSBuild property names, and generated source outputs.
+/// Central registry for target assemblies, feature domains, and generated source outputs.
 /// </summary>
 /// <remarks>
 /// Keep new generator domains here instead of adding parallel option lists or <c>KSoftSourceGenerator</c> branches.
@@ -23,12 +24,12 @@ internal static class GeneratorRegistry
 		[
 			// Bitwise domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitsBitCount,
-				"KSoftGenerateBitsBitCount",
 				new GeneratedSourceRegistration(BitsBitCountSourceBuilder.HintName, BitsBitCountSourceBuilder.Build)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitsCore,
-				"KSoftGenerateBitsCore",
 				new GeneratedSourceRegistration(
 					BitsCoreSourceBuilder.BitReverseHintName,
 					BitsCoreSourceBuilder.BuildBitReverse),
@@ -45,8 +46,8 @@ internal static class GeneratorRegistry
 					BitsCoreSourceBuilder.VectorsHintName,
 					BitsCoreSourceBuilder.BuildVectors)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitsEncoding,
-				"KSoftGenerateBitsEncoding",
 				new GeneratedSourceRegistration(
 					BitsEncodingSourceBuilder.DecodeHintName,
 					BitsEncodingSourceBuilder.BuildDecode),
@@ -57,28 +58,28 @@ internal static class GeneratorRegistry
 					BitsEncodingSourceBuilder.NoneableEncodingHintName,
 					BitsEncodingSourceBuilder.BuildNoneableEncoding)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitsRotate,
-				"KSoftGenerateBitsRotate",
 				new GeneratedSourceRegistration(BitsRotateSourceBuilder.HintName, BitsRotateSourceBuilder.Build)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.ByteSwap,
-				"KSoftGenerateByteSwap",
 				new GeneratedSourceRegistration(ByteSwapSourceBuilder.HintName, ByteSwapSourceBuilder.Build)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.Flags,
-				"KSoftGenerateFlags",
 				new GeneratedSourceRegistration(FlagsSourceBuilder.HintName, FlagsSourceBuilder.Build)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.HandleBitEncoder,
-				"KSoftGenerateHandleBitEncoder",
 				new GeneratedSourceRegistration(
 					HandleBitEncoderSourceBuilder.HintName,
 					HandleBitEncoderSourceBuilder.Build)),
 
 			// Collections domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitSet,
-				"KSoftGenerateBitSet",
 				new GeneratedSourceRegistration(
 					BitSetSourceBuilder.BitSetHintName,
 					BitSetSourceBuilder.BuildBitSet),
@@ -86,14 +87,14 @@ internal static class GeneratorRegistry
 					BitSetSourceBuilder.EnumeratorsHintName,
 					BitSetSourceBuilder.BuildEnumerators)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitVectors,
-				"KSoftGenerateBitVectors",
 				new GeneratedSourceRegistration(BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build)),
 
 			// Enum domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.Enums,
-				"KSoftGenerateEnums",
 				new GeneratedSourceRegistration(
 					EnumSourceBuilder.EnumBitEncoderHintName,
 					EnumSourceBuilder.BuildEnumBitEncoder),
@@ -103,13 +104,13 @@ internal static class GeneratorRegistry
 
 			// IO domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitStream,
-				"KSoftGenerateBitStream",
 				new GeneratedSourceRegistration(BitStreamSourceBuilder.HintName, BitStreamSourceBuilder.Build),
 				new GeneratedSourceRegistration(BitStreamSourceBuilder.CacheHintName, BitStreamSourceBuilder.BuildCache)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.EndianStreamsCore,
-				"KSoftGenerateEndianStreamsCore",
 				new GeneratedSourceRegistration(
 					EndianStreamsCoreSourceBuilder.BaseHintName,
 					EndianStreamsCoreSourceBuilder.BuildBase),
@@ -120,14 +121,14 @@ internal static class GeneratorRegistry
 					EndianStreamsCoreSourceBuilder.VirtualAddressTranslationHintName,
 					EndianStreamsCoreSourceBuilder.BuildVirtualAddressTranslation)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.EndianStreamsNumbers,
-				"KSoftGenerateEndianStreamsNumbers",
 				new GeneratedSourceRegistration(
 					EndianStreamsNumbersSourceBuilder.HintName,
 					EndianStreamsNumbersSourceBuilder.Build)),
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.IOExceptions,
-				"KSoftGenerateIOExceptions",
 				new GeneratedSourceRegistration(
 					IOExceptionsSourceBuilder.VersionMismatchHintName,
 					IOExceptionsSourceBuilder.BuildVersionMismatch),
@@ -135,22 +136,22 @@ internal static class GeneratorRegistry
 					IOExceptionsSourceBuilder.SignatureMismatchHintName,
 					IOExceptionsSourceBuilder.BuildSignatureMismatch)),
 			new(
+				GeneratorTargetAssembly.KSoftIOTagElementStreams,
 				GeneratorFeature.TagElementStreams,
-				"KSoftGenerateTagElementStreams",
 				new GeneratedSourceRegistration(
 					TagElementStreamsSourceBuilder.HintName,
 					TagElementStreamsSourceBuilder.Build)),
 
 			// Math domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.IntegerMath,
-				"KSoftGenerateIntegerMath",
 				new GeneratedSourceRegistration(IntegerMathSourceBuilder.HintName, IntegerMathSourceBuilder.Build)),
 
 			// Text domains.
 			new(
+				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.TextNumbers,
-				"KSoftGenerateTextNumbers",
 				new GeneratedSourceRegistration(
 					TextSourceBuilder.NumbersToStringHintName,
 					TextSourceBuilder.BuildNumbersToString),
@@ -162,11 +163,20 @@ internal static class GeneratorRegistry
 					TextSourceBuilder.BuildCharLookupTables)),
 		];
 
-	// GeneratorOptions consumes option definitions from the registry so there is only one feature/property list.
-	private static readonly IReadOnlyList<GeneratorOptionDefinition> kFeatureDefinitions =
-		kFeatures.Select(static x => x.ToOptionDefinition()).ToArray();
+	private static readonly IReadOnlyList<GeneratorFeatureRegistration> kKSoftFeatures =
+		kFeatures.Where(static x => x.TargetAssembly == GeneratorTargetAssembly.KSoft).ToArray();
+	private static readonly IReadOnlyList<GeneratorFeatureRegistration> kKSoftIOTagElementStreamsFeatures =
+		kFeatures.Where(static x => x.TargetAssembly == GeneratorTargetAssembly.KSoftIOTagElementStreams).ToArray();
 
 	public static IReadOnlyList<GeneratorFeatureRegistration> Features => kFeatures;
 
-	public static IReadOnlyList<GeneratorOptionDefinition> FeatureDefinitions => kFeatureDefinitions;
+	public static IReadOnlyList<GeneratorFeatureRegistration> FeaturesForTarget(GeneratorTargetAssembly targetAssembly)
+	{
+		return targetAssembly switch
+		{
+			GeneratorTargetAssembly.KSoft => kKSoftFeatures,
+			GeneratorTargetAssembly.KSoftIOTagElementStreams => kKSoftIOTagElementStreamsFeatures,
+			_ => Array.Empty<GeneratorFeatureRegistration>(),
+		};
+	}
 };
