@@ -1,15 +1,13 @@
-﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Security.Cryptography
 {
 	partial class Adler32
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+			"CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct BitComputer
 		{
 			uint s1, s2;
@@ -28,9 +26,14 @@ namespace KSoft.Security.Cryptography
 
 			public void Compute(byte[] buffer, int offset, int length)
 			{
-				Contract.Requires<ArgumentNullException>(buffer != null);
-				Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(offset + length <= buffer.Length);
+				ArgumentNullException.ThrowIfNull(buffer);
+				ArgumentOutOfRangeException.ThrowIfNegative(offset);
+				ArgumentOutOfRangeException.ThrowIfNegative(length);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+				if (length > buffer.Length - offset)
+				{
+					throw new ArgumentOutOfRangeException(nameof(length));
+				}
 
 				int buflen = length;
 				for (int blocklen; buflen > 0; buflen -= blocklen)

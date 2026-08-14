@@ -1,9 +1,6 @@
-﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Security.Cryptography
 {
@@ -16,9 +13,14 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Compute(byte[] buffer, int offset, int length, uint adler32 = 1)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset+length <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+			if (length > buffer.Length - offset)
+			{
+				throw new ArgumentOutOfRangeException(nameof(length));
+			}
 
 			var computer = new BitComputer(adler32);
 			computer.Compute(buffer, offset, length);
@@ -27,7 +29,7 @@ namespace KSoft.Security.Cryptography
 		}
 		public static uint Compute(byte[] buffer, uint adler32 = 1)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			return Compute(buffer, 0, buffer.Length, adler32);
 		}
@@ -35,10 +37,16 @@ namespace KSoft.Security.Cryptography
 		public static uint Compute(System.IO.Stream stream, int length, uint adler32 = 1,
 			bool restorePosition = false)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
-			Contract.Requires<InvalidOperationException>(stream.CanRead);
-			Contract.Requires(!restorePosition || stream.CanSeek);
+			ArgumentNullException.ThrowIfNull(stream);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
+			if (!stream.CanRead)
+			{
+				throw new InvalidOperationException();
+			}
+			if (restorePosition && !stream.CanSeek)
+			{
+				throw new InvalidOperationException();
+			}
 
 			long prev_position = restorePosition
 				? stream.Position
