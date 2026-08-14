@@ -1,17 +1,11 @@
-﻿using System;
+#nullable enable
+
+using System;
 using System.IO;
 using System.IO.Compression;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO.Compression
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
-		"CA1062:ValidateArgumentsOfPublicMethods",
-		Justification = "CodeContracts generally handle this already")]
 	public static class ZLib
 	{
 		const int kSizeOfHeader = sizeof(ushort);
@@ -66,8 +60,7 @@ namespace KSoft.IO.Compression
 			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32,
 			bool skipHeader = true)
 		{
-			Contract.Requires<ArgumentNullException>(ms != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			ArgumentNullException.ThrowIfNull(ms);
 
 			if (offset.IsNone()) { offset = 0; }
 			if (length.IsNone()) { length = (int)ms.Length; }
@@ -81,8 +74,7 @@ namespace KSoft.IO.Compression
 			int offset = TypeExtensions.kNoneInt32, int length = TypeExtensions.kNoneInt32,
 			bool skipHeader = true)
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			ArgumentNullException.ThrowIfNull(bytes);
 
 			if (offset.IsNone()) { offset = 0; }
 			if (length.IsNone()) { length = bytes.Length; }
@@ -99,8 +91,8 @@ namespace KSoft.IO.Compression
 			out uint adler, byte[] compressedBytes,
 			bool trimCompressedBytes = true, bool noZlibHeaderOrFooter = true)
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Requires<ArgumentNullException>(compressedBytes != null);
+			ArgumentNullException.ThrowIfNull(bytes);
+			ArgumentNullException.ThrowIfNull(compressedBytes);
 
 			adler = ComputeAdler32(bytes);
 
@@ -128,8 +120,8 @@ namespace KSoft.IO.Compression
 		public static uint LowLevelDecompress(byte[] compressedBytes, byte[] uncompressedBytes,
 			bool noHeader = true)
 		{
-			Contract.Requires<ArgumentNullException>(compressedBytes != null);
-			Contract.Requires<ArgumentNullException>(uncompressedBytes != null);
+			ArgumentNullException.ThrowIfNull(compressedBytes);
+			ArgumentNullException.ThrowIfNull(uncompressedBytes);
 
 			using (var compressed_stream = new MemoryStream(compressedBytes, writable: false))
 			using (var zip = CreateDecompressionStream(compressed_stream, noHeader, leaveOpen: false))
@@ -141,8 +133,7 @@ namespace KSoft.IO.Compression
 
 		public static byte[] LowLevelCompress(byte[] bytes, Shell.EndianFormat byteOrder)
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			ArgumentNullException.ThrowIfNull(bytes);
 
 			byte[] result = new byte[sizeof(int)];
 			// Setup the decompressed size header
@@ -169,10 +160,10 @@ namespace KSoft.IO.Compression
 		public static byte[] LowLevelDecompress(byte[] bytes, int uncompressedSize,
 			int skipHeaderLength = sizeof(uint))
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Requires<ArgumentOutOfRangeException>(uncompressedSize >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(skipHeaderLength >= 0);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			ArgumentNullException.ThrowIfNull(bytes);
+			ArgumentOutOfRangeException.ThrowIfNegative(uncompressedSize);
+			ArgumentOutOfRangeException.ThrowIfNegative(skipHeaderLength);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(skipHeaderLength, bytes.Length);
 
 			byte[] result = new byte[uncompressedSize];
 			using (var compressed_stream = new MemoryStream(bytes, skipHeaderLength,

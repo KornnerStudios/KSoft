@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.IO.Compression.Test
@@ -14,6 +14,20 @@ namespace KSoft.IO.Compression.Test
 			byte[] compressed_buffer = new byte[bytes.Length + 64];
 			return ZLib.LowLevelCompress(bytes, level, out adler, compressed_buffer,
 				noZlibHeaderOrFooter: noZlibHeaderOrFooter);
+		}
+
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
 		}
 
 		[TestMethod]
@@ -91,6 +105,85 @@ namespace KSoft.IO.Compression.Test
 				noZlibHeaderOrFooter: false, out uint _);
 
 			CollectionAssert.AreEqual(kSampleData, ZLib.BufferFromBytes(compressed, length: kSampleData.Length));
+		}
+
+		[TestMethod]
+		public void BufferFromStream_NullStream_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("ms", () => ZLib.BufferFromStream(null));
+		}
+
+		[TestMethod]
+		public void BufferFromBytes_NullBytes_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("bytes", () => ZLib.BufferFromBytes(null));
+		}
+
+		[TestMethod]
+		public void LowLevelCompress_NullBytes_ThrowsArgumentNullException()
+		{
+			byte[] scratch = new byte[32];
+
+			AssertThrowsArgumentNull("bytes", () =>
+				ZLib.LowLevelCompress(null, ZLib.kBestCompression, out uint _, scratch));
+		}
+
+		[TestMethod]
+		public void LowLevelCompress_NullCompressedBytes_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("compressedBytes", () =>
+				ZLib.LowLevelCompress(kSampleData, ZLib.kBestCompression, out uint _, null));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompress_NullCompressedBytes_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("compressedBytes", () =>
+				ZLib.LowLevelDecompress(null, new byte[kSampleData.Length]));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompress_NullUncompressedBytes_ThrowsArgumentNullException()
+		{
+			byte[] compressed = Compress(kSampleData, ZLib.kBestCompression,
+				noZlibHeaderOrFooter: true, out uint _);
+
+			AssertThrowsArgumentNull("uncompressedBytes", () =>
+				ZLib.LowLevelDecompress(compressed, null));
+		}
+
+		[TestMethod]
+		public void LowLevelCompressWithSizeHeader_NullBytes_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("bytes", () =>
+				ZLib.LowLevelCompress(null, Shell.EndianFormat.Little));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompressWithSizeHeader_NullBytes_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull("bytes", () => ZLib.LowLevelDecompress(null, 0));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompressWithSizeHeader_NegativeUncompressedSize_ThrowsArgumentOutOfRangeException()
+		{
+			AssertThrowsArgumentOutOfRange("uncompressedSize", () =>
+				ZLib.LowLevelDecompress(Array.Empty<byte>(), -1));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompressWithSizeHeader_NegativeSkipHeaderLength_ThrowsArgumentOutOfRangeException()
+		{
+			AssertThrowsArgumentOutOfRange("skipHeaderLength", () =>
+				ZLib.LowLevelDecompress(Array.Empty<byte>(), 0, -1));
+		}
+
+		[TestMethod]
+		public void LowLevelDecompressWithSizeHeader_SkipHeaderPastEnd_ThrowsArgumentOutOfRangeException()
+		{
+			AssertThrowsArgumentOutOfRange("skipHeaderLength", () =>
+				ZLib.LowLevelDecompress(Array.Empty<byte>(), 0, 1));
 		}
 	}
 }
