@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using Expr = System.Linq.Expressions.Expression;
 
 namespace KSoft.IO
 {
 	using EnumUtils = Reflection.EnumUtils;
 
-	/// <summary>Utility for auto-generating methods for streaming enum types to/from bitstreams</summary>
+	/// <summary>Utility for streaming enum types to/from bitstreams</summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <typeparam name="TStreamType">Integer-type to stream the enum value as</typeparam>
 	/// <typeparam name="TOptions">TBD</typeparam>
+	/// <remarks>
+	/// Streamers cache one typed method per stream type instead of compiling expression delegates for every closed enum
+	/// streamer. Numeric casts between stream type and enum backing type are still handled by
+	/// <see cref="Reflection.EnumValue{TEnum}"/>. Decode applies none-sentinel adjustment before optional bit swap;
+	/// encode applies those options in the same order before writing.
+	/// </remarks>
 	public class EnumBitStreamer<TEnum, TStreamType, TOptions> : EnumBitStreamerBase, IEnumBitStreamer<TEnum>
 		where TEnum : struct, Enum
 		where TStreamType : struct
@@ -18,27 +22,17 @@ namespace KSoft.IO
 	{
 		class MethodGenerationArgs
 		{
-			/// <summary>Integer-type to stream the enum value as</summary>
-			public readonly Type StreamType;
-			/// <summary>Enum type to stream</summary>
-			public readonly Type EnumType;
-			/// <summary><see cref="EnumType"/>'s integer type used to represent its raw value</summary>
-			public readonly Type UnderlyingType;
-			/// <summary>True when <see cref="UnderlyingType"/> != <see cref="StreamType"/></summary>
-			public readonly bool UnderlyingTypeNeedsConversion;
-			public readonly bool UseUnderlyingType;
+			/// <summary>Integer type code to stream the enum value as</summary>
+			public readonly TypeCode StreamTypeCode;
 			public readonly bool StreamTypeIsSigned;
 
 			public TOptions Options;
 
-			void AssertStreamTypeIsValid(out bool isSigned)
+			void AssertStreamTypeIsValid(Type streamType)
 			{
-				var tc = Type.GetTypeCode(StreamType);
-				isSigned = tc.IsSigned();
-
-				if (!EnumUtils.TypeIsSupported(tc))
+				if (!EnumUtils.TypeIsSupported(StreamTypeCode))
 				{
-					var message = string.Format(Util.InvariantCultureInfo, "{0} is an invalid stream type", StreamType);
+					var message = string.Format(Util.InvariantCultureInfo, "{0} is an invalid stream type", streamType);
 
 					throw new NotSupportedException(message);
 				}
@@ -46,42 +40,46 @@ namespace KSoft.IO
 
 			public MethodGenerationArgs()
 			{
-				EnumType = typeof(TEnum);
-				StreamType = typeof(TStreamType);
-				UnderlyingType = Enum.GetUnderlyingType(EnumType);
+				Type enum_type = typeof(TEnum);
+				Type stream_type = typeof(TStreamType);
+				Type underlying_type = Enum.GetUnderlyingType(enum_type);
 
-				// Check if the user wants us to always use the underlying type
-				UseUnderlyingType = StreamType == typeof(EnumBinaryStreamerUseUnderlyingType);
-				if (UseUnderlyingType)
+				// Preserve the single-type-parameter streamer shape by resolving the marker type to the enum's backing
+				// type once per closed generic streamer.
+				if (stream_type == typeof(EnumBinaryStreamerUseUnderlyingType))
 				{
-					StreamType = UnderlyingType;
+					stream_type = underlying_type;
 				}
 
-				EnumUtils.AssertTypeIsEnum(EnumType);
-				EnumUtils.AssertUnderlyingTypeIsSupported(EnumType, UnderlyingType);
-				AssertStreamTypeIsValid(out StreamTypeIsSigned);
-
-				UnderlyingTypeNeedsConversion = UnderlyingType != StreamType;
+				EnumUtils.AssertTypeIsEnum(enum_type);
+				EnumUtils.AssertUnderlyingTypeIsSupported(enum_type, underlying_type);
+				StreamTypeCode = Type.GetTypeCode(stream_type);
+				StreamTypeIsSigned = StreamTypeCode.IsSigned();
+				AssertStreamTypeIsValid(stream_type);
 
 				Options = new TOptions();
 
 				if (Options.UseNoneSentinelEncoding)
 				{
-					if (StreamType == typeof(sbyte) || StreamType == typeof(byte))
+					// None-sentinel encoding maps an enum value of -1 to encoded zero by adding one before write and
+					// subtracting one after read. Byte-sized stream types do not have enough room for that sentinel.
+					if (stream_type == typeof(sbyte) || stream_type == typeof(byte))
 					{
 						throw new ArgumentException(
 							"{0}: UseNoneSentinelEncoding can't operate on (s)byte types (StreamType)",
-							EnumType.FullName);
+							enum_type.FullName);
 					}
 				}
 				#region Options.BitSwap
 				if (Options.BitSwap)
 				{
+					// Bit swapping is a bit-order transform for unsigned flag-style payloads. Signed stream types have
+					// sign-extension semantics, so accepting them here would make the encoded bits ambiguous.
 					if (StreamTypeIsSigned)
 					{
 						throw new ArgumentException(
 							"{0}: Bit-swapping only makes sense on flags/unsigned types, but StreamType is signed",
-							EnumType.FullName);
+							enum_type.FullName);
 					}
 				}
 				else
@@ -89,202 +87,391 @@ namespace KSoft.IO
 					if (Options.BitSwapGuardAgainstOneBit)
 					{
 						Debug.Trace.IO.TraceInformation("{0}'s {1} says we should guard against one bit cases, but not bitswap",
-							EnumType.FullName, typeof(TOptions).FullName);
+							enum_type.FullName, typeof(TOptions).FullName);
 					}
 				}
 				#endregion
 			}
 		};
 
-		/// <summary>Auto-generated method for reading enum values</summary>
+		/// <summary>Cached method for reading enum values</summary>
 		static readonly ReadDelegate kRead;
-		/// <summary>Auto-generated method for writing enum values</summary>
+		/// <summary>Cached method for writing enum values</summary>
 		static readonly Action<IO.BitStream, TEnum, int> kWrite;
+		static readonly bool kUseNoneSentinelEncoding;
+		static readonly bool kSignExtend;
+		static readonly bool kBitSwap;
+		static readonly bool kBitSwapGuardAgainstOneBit;
 
 		/// <summary>Object for referencing the streamer functionality as an instance instead of as a type</summary>
 		public static readonly IEnumBitStreamer<TEnum> Instance;
 
-		/// <summary>Initializes the <see cref="EnumBitStreamer{TEnum}"/> class by generating the IO methods.</summary>
+		/// <summary>Initializes the <see cref="EnumBitStreamer{TEnum}"/> class by caching the IO methods.</summary>
 		static EnumBitStreamer()
 		{
 			var generation_args = new MethodGenerationArgs();
-			MethodInfo read_method_info, write_method_info, swap_method;
-			#region Get read/write method info
-			if (generation_args.UseUnderlyingType)
-			{
-				// Since we use a type-parameter hack to imply we want to use the underlying type
-				// for the TStreamType, we have to use reflection to instantiate StreamType<>
-				// using kUnderlyingType, which kStreamType is set to up above
-				var stream_type_gen_class = typeof(StreamType<>);
-				var stream_type_class = stream_type_gen_class.MakeGenericType(generation_args.StreamType);
-				read_method_info = stream_type_class.GetField("kRead").GetValue(null) as MethodInfo;
-				write_method_info = stream_type_class.GetField("kWrite").GetValue(null) as MethodInfo;
-				swap_method = stream_type_class.GetField("kBitSwap").GetValue(null) as MethodInfo;
-			}
-			else
-			{
-				// If we don't use the type-parameter hack and instead are explicitly given the
-				// integer type, we can safely instantiate StreamType<> without reflection
-				read_method_info = StreamType<TStreamType>.kRead;
-				write_method_info = StreamType<TStreamType>.kWrite;
-				swap_method = StreamType<TStreamType>.kBitSwap;
-			}
-			#endregion
 
-			kRead = GenerateReadMethod(generation_args, read_method_info, swap_method);
-			kWrite = GenerateWriteMethod(generation_args, write_method_info, swap_method);
+			// Cache option values beside the read/write delegates so hot calls do not construct or inspect options.
+			kUseNoneSentinelEncoding = generation_args.Options.UseNoneSentinelEncoding;
+			kSignExtend = generation_args.Options.SignExtend;
+			kBitSwap = generation_args.Options.BitSwap;
+			kBitSwapGuardAgainstOneBit = generation_args.Options.BitSwapGuardAgainstOneBit;
+
+			kRead = CreateReadMethod(generation_args.StreamTypeCode);
+			kWrite = CreateWriteMethod(generation_args.StreamTypeCode);
 
 			Instance = new EnumBitStreamer<TEnum, TStreamType, TOptions>();
 		}
 
-		#region Method generators
+		#region Streamer delegates
 		/// <summary>Signature for a method which reads a <typeparamref name="TEnum"/> value from a stream</summary>
 		/// <param name="s">Reader we're streaming from</param>
 		/// <param name="v">Value read from the stream</param>
 		/// <param name="bitCount"></param>
 		public delegate void ReadDelegate(IO.BitStream s, out TEnum v, int bitCount);
 
-		/// <summary>Generates a method similar to this:
-		/// <code>
-		/// void Read(IO.BitStream s, out TEnum v, int bitCount)
-		/// {
-		///     v = (UnderlyingType)s.Read[TStreamType](bitCount);
-		/// }
-		/// </code>
-		/// </summary>
-		/// <param name="args"></param>
-		/// <param name="readMethodInfo"></param>
-		/// <param name="bitSwapMethod"></param>
-		/// <returns>The generated method.</returns>
-		/// <remarks>
-		/// If <see cref="args.UnderlyingType"/> is the same as <typeparamref name="TStreamType"/>, no conversion code is generated
-		/// </remarks>
-		static ReadDelegate GenerateReadMethod(MethodGenerationArgs args, MethodInfo readMethodInfo, MethodInfo bitSwapMethod)
+		static ReadDelegate CreateReadMethod(TypeCode streamTypeCode)
 		{
-			// Get a "ref type" of the enum we're dealing with so we can define the enum value as an 'out' parameter
-			var enum_ref = args.EnumType.MakeByRefType();
-
-			//////////////////////////////////////////////////////////////////////////
-			// Define the generated method's parameters
-			var param_s =		Expr.Parameter(kBitStreamType, "s");					// BitStream s
-			var param_v =		Expr.Parameter(enum_ref, "v");							// ref TEnum v
-			var param_bc =		Expr.Parameter(typeof(int), "bitCount");				// int bitCount
-
-			//////////////////////////////////////////////////////////////////////////
-			// Define the Read call
-			Expr call_read;
-			if (args.StreamTypeIsSigned)
+			// Choose the exact BitStream read overload once. This replaces the old reflection/expression tree path while
+			// still preserving the caller-selected stream width.
+			return streamTypeCode switch
 			{
-				call_read =		Expr.Call(param_s, readMethodInfo, param_bc, Expr.Constant(args.Options.SignExtend));
-			}
-			else
-			{
-				call_read =		Expr.Call(param_s, readMethodInfo, param_bc);           // i.e., 's.Read<Type>(bitCount)'
-			}
-
-			if (args.Options.UseNoneSentinelEncoding)
-			{
-				call_read = Expr.Decrement(call_read);
-			}
-
-			#region options.BitSwap
-			if (args.Options.BitSwap)
-			{
-				// i.e., Bits.BitSwap( Read(), bitCount-1 );
-				var start_bit_index = Expr.Decrement(param_bc);
-				Expr swap_call = Expr.Call(null, bitSwapMethod, call_read, start_bit_index);
-
-				// i.e., bitCount-1 ? Bits.BitSwap( Read(), bitCount-1 ) : Read() ;
-				if (args.Options.BitSwapGuardAgainstOneBit)
-				{
-					var start_bit_index_is_not_zero = Expr.NotEqual(start_bit_index, Expr.Constant(0, typeof(int)));
-					swap_call = Expr.Condition(start_bit_index_is_not_zero,
-						swap_call, call_read);
-				}
-
-				call_read = swap_call;
-			}
-			#endregion
-
-			var read_result =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're reading,
-									Expr.Convert(call_read, args.UnderlyingType) :		// we need to cast the Read result from TStreamType to UnderlyingType
-									(Expr)call_read;
-
-			//////////////////////////////////////////////////////////////////////////
-			// Define the member assignment
-			var param_v_member =Expr.PropertyOrField(param_v, EnumUtils.kMemberName);	// i.e., 'v.value__'
-			// i.e., 'v.value__ = s.Read<Type>()' or 'v.value__ = (UnderlyingType)s.Read<Type>()'
-			var assign =		Expr.Assign(param_v_member, read_result);
-
-			//////////////////////////////////////////////////////////////////////////
-			// Generate a method based on the expression tree we've built
-			var lambda =		Expr.Lambda<ReadDelegate>(assign, param_s, param_v, param_bc);
-			return lambda.Compile();
+				TypeCode.Byte => ReadByte,
+				TypeCode.SByte => ReadSByte,
+				TypeCode.UInt16 => ReadUInt16,
+				TypeCode.Int16 => ReadInt16,
+				TypeCode.UInt32 => ReadUInt32,
+				TypeCode.Int32 => ReadInt32,
+				TypeCode.UInt64 => ReadUInt64,
+				TypeCode.Int64 => ReadInt64,
+				_ => throw new NotSupportedException(),
+			};
 		}
 
-		/// <summary>Generates a method similar to this:
-		/// <code>
-		/// void Write(IO.BitStream s, TEnum v, int bitCount)
-		/// {
-		///     s.Write((TStreamType)v, bitCount);
-		/// }
-		/// </code>
-		/// </summary>
-		/// <returns>The generated method.</returns>
-		/// <param name="args"></param>
-		/// <param name="writeMethodInfo"></param>
-		/// <param name="bitSwapMethod"></param>
-		/// <remarks>
-		/// If <see cref="args.UnderlyingType"/> is the same as <typeparamref name="TStreamType"/>, no conversion code is generated
-		/// </remarks>
-		static Action<IO.BitStream, TEnum, int> GenerateWriteMethod(MethodGenerationArgs args, MethodInfo writeMethodInfo, MethodInfo bitSwapMethod)
+		static Action<IO.BitStream, TEnum, int> CreateWriteMethod(TypeCode streamTypeCode)
 		{
-			//////////////////////////////////////////////////////////////////////////
-			// Define the generated method's parameters
-			var param_s =		Expr.Parameter(kBitStreamType, "s");					// BitStream s
-			var param_v =		Expr.Parameter(args.EnumType, "v");							// TEnum v
-			var param_bc =		Expr.Parameter(typeof(int), "bitCount");				// int bitCount
-
-			//////////////////////////////////////////////////////////////////////////
-			// Define the member access
-			var param_v_member =Expr.PropertyOrField(param_v, EnumUtils.kMemberName);	// i.e., 'v.value__'
-			var write_param =	args.UnderlyingTypeNeedsConversion ?					// If the underlying type is different from the type we're writing,
-									Expr.Convert(param_v_member, args.StreamType) :		// we need to cast the Write param from UnderlyingType to TStreamType
-									(Expr)param_v_member;
-
-			if (args.Options.UseNoneSentinelEncoding)
+			// Choose the matching BitStream write overload once; each typed delegate only performs the option transforms
+			// needed for that stream type and then converts through EnumValue<TEnum>.
+			return streamTypeCode switch
 			{
-				write_param = Expr.Increment(write_param);
+				TypeCode.Byte => WriteByte,
+				TypeCode.SByte => WriteSByte,
+				TypeCode.UInt16 => WriteUInt16,
+				TypeCode.Int16 => WriteInt16,
+				TypeCode.UInt32 => WriteUInt32,
+				TypeCode.Int32 => WriteInt32,
+				TypeCode.UInt64 => WriteUInt64,
+				TypeCode.Int64 => WriteInt64,
+				_ => throw new NotSupportedException(),
+			};
+		}
+
+		// Unsigned stream types can participate in bit-swap. Signed stream types only apply sign extension through the
+		// BitStream read overload and optional none-sentinel adjustment.
+		static void ReadByte(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeUnsignedByte(s.ReadByte(bitCount), bitCount);
+			v = Reflection.EnumValue<TEnum>.FromByte(value);
+		}
+
+		static void ReadSByte(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeSignedSByte(s.ReadSByte(bitCount, kSignExtend));
+			v = Reflection.EnumValue<TEnum>.FromSByte(value);
+		}
+
+		static void ReadUInt16(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeUnsignedUInt16(s.ReadUInt16(bitCount), bitCount);
+			v = Reflection.EnumValue<TEnum>.FromUInt16(value);
+		}
+
+		static void ReadInt16(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeSignedInt16(s.ReadInt16(bitCount, kSignExtend));
+			v = Reflection.EnumValue<TEnum>.FromInt16(value);
+		}
+
+		static void ReadUInt32(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeUnsignedUInt32(s.ReadUInt32(bitCount), bitCount);
+			v = Reflection.EnumValue<TEnum>.FromUInt32(value);
+		}
+
+		static void ReadInt32(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeSignedInt32(s.ReadInt32(bitCount, kSignExtend));
+			v = Reflection.EnumValue<TEnum>.FromInt32(value);
+		}
+
+		static void ReadUInt64(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeUnsignedUInt64(s.ReadUInt64(bitCount), bitCount);
+			v = Reflection.EnumValue<TEnum>.FromUInt64(value);
+		}
+
+		static void ReadInt64(IO.BitStream s, out TEnum v, int bitCount)
+		{
+			var value = DecodeSignedInt64(s.ReadInt64(bitCount, kSignExtend));
+			v = Reflection.EnumValue<TEnum>.FromInt64(value);
+		}
+
+		static void WriteByte(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeUnsignedByte(Reflection.EnumValue<TEnum>.ToByte(value), bitCount), bitCount);
+		}
+
+		static void WriteSByte(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeSignedSByte(Reflection.EnumValue<TEnum>.ToSByte(value)), bitCount);
+		}
+
+		static void WriteUInt16(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeUnsignedUInt16(Reflection.EnumValue<TEnum>.ToUInt16(value), bitCount), bitCount);
+		}
+
+		static void WriteInt16(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeSignedInt16(Reflection.EnumValue<TEnum>.ToInt16(value)), bitCount);
+		}
+
+		static void WriteUInt32(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeUnsignedUInt32(Reflection.EnumValue<TEnum>.ToUInt32(value), bitCount), bitCount);
+		}
+
+		static void WriteInt32(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeSignedInt32(Reflection.EnumValue<TEnum>.ToInt32(value)), bitCount);
+		}
+
+		static void WriteUInt64(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeUnsignedUInt64(Reflection.EnumValue<TEnum>.ToUInt64(value), bitCount), bitCount);
+		}
+
+		static void WriteInt64(IO.BitStream s, TEnum value, int bitCount)
+		{
+			s.Write(EncodeSignedInt64(Reflection.EnumValue<TEnum>.ToInt64(value)), bitCount);
+		}
+
+		// Keep the transform order from the generated expression delegates:
+		// read raw bits -> subtract the none sentinel -> optionally bit-swap -> convert to TEnum.
+		static byte DecodeUnsignedByte(byte value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((byte)(value - 1));
 			}
 
-			#region options.BitSwap
-			if (args.Options.BitSwap)
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static sbyte DecodeSignedSByte(sbyte value)
+		{
+			if (kUseNoneSentinelEncoding)
 			{
-				// i.e., Bits.BitSwap( value, bitCount-1 );
-				var start_bit_index = Expr.Decrement(param_bc);
-				Expr swap_call = Expr.Call(null, bitSwapMethod, write_param, start_bit_index);
-
-				// i.e., bitCount-1 ? Bits.BitSwap( value, bitCount-1 ) : value ;
-				if (args.Options.BitSwapGuardAgainstOneBit)
-				{
-					var start_bit_index_is_not_zero = Expr.NotEqual(start_bit_index, Expr.Constant(0, typeof(int)));
-					swap_call = Expr.Condition(start_bit_index_is_not_zero,
-						swap_call, write_param);
-				}
-
-				write_param = swap_call;
+				value = unchecked((sbyte)(value - 1));
 			}
-			#endregion
 
-			//////////////////////////////////////////////////////////////////////////
-			// Define the Write call
-			// i.e., 's.Write(v.value__, bitCount)' or 's.Write((TStreamType)v.value__, bitCount)'
-			var call_write =	Expr.Call(param_s, writeMethodInfo, write_param, param_bc);
+			return value;
+		}
 
-			//////////////////////////////////////////////////////////////////////////
-			// Generate a method based on the expression tree we've built
-			var lambda = Expr.Lambda<Action<IO.BitStream, TEnum, int>>(call_write, param_s, param_v, param_bc);
-			return lambda.Compile();
+		static ushort DecodeUnsignedUInt16(ushort value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((ushort)(value - 1));
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static short DecodeSignedInt16(short value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((short)(value - 1));
+			}
+
+			return value;
+		}
+
+		static uint DecodeUnsignedUInt32(uint value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value - 1);
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static int DecodeSignedInt32(int value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value - 1);
+			}
+
+			return value;
+		}
+
+		static ulong DecodeUnsignedUInt64(ulong value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value - 1);
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static long DecodeSignedInt64(long value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value - 1);
+			}
+
+			return value;
+		}
+
+		// Encode mirrors decode in the same order before the final write:
+		// convert from TEnum -> add the none sentinel -> optionally bit-swap -> write raw bits.
+		static byte EncodeUnsignedByte(byte value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((byte)(value + 1));
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static sbyte EncodeSignedSByte(sbyte value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((sbyte)(value + 1));
+			}
+
+			return value;
+		}
+
+		static ushort EncodeUnsignedUInt16(ushort value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((ushort)(value + 1));
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static short EncodeSignedInt16(short value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked((short)(value + 1));
+			}
+
+			return value;
+		}
+
+		static uint EncodeUnsignedUInt32(uint value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value + 1);
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static int EncodeSignedInt32(int value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value + 1);
+			}
+
+			return value;
+		}
+
+		static ulong EncodeUnsignedUInt64(ulong value, int bitCount)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value + 1);
+			}
+
+			return ApplyBitSwap(value, bitCount);
+		}
+
+		static long EncodeSignedInt64(long value)
+		{
+			if (kUseNoneSentinelEncoding)
+			{
+				value = unchecked(value + 1);
+			}
+
+			return value;
+		}
+
+		// BitStream uses a bit count, but Bits.BitSwap expects the zero-based index of the highest participating bit.
+		// The one-bit guard preserves existing callers that requested a no-op for single-bit flag fields.
+		static byte ApplyBitSwap(byte value, int bitCount)
+		{
+			if (!kBitSwap)
+			{
+				return value;
+			}
+
+			int start_bit_index = bitCount - 1;
+			return kBitSwapGuardAgainstOneBit && start_bit_index == 0
+				? value
+				: Bits.BitSwap(value, start_bit_index);
+		}
+
+		static ushort ApplyBitSwap(ushort value, int bitCount)
+		{
+			if (!kBitSwap)
+			{
+				return value;
+			}
+
+			int start_bit_index = bitCount - 1;
+			return kBitSwapGuardAgainstOneBit && start_bit_index == 0
+				? value
+				: Bits.BitSwap(value, start_bit_index);
+		}
+
+		static uint ApplyBitSwap(uint value, int bitCount)
+		{
+			if (!kBitSwap)
+			{
+				return value;
+			}
+
+			int start_bit_index = bitCount - 1;
+			return kBitSwapGuardAgainstOneBit && start_bit_index == 0
+				? value
+				: Bits.BitSwap(value, start_bit_index);
+		}
+
+		static ulong ApplyBitSwap(ulong value, int bitCount)
+		{
+			if (!kBitSwap)
+			{
+				return value;
+			}
+
+			int start_bit_index = bitCount - 1;
+			return kBitSwapGuardAgainstOneBit && start_bit_index == 0
+				? value
+				: Bits.BitSwap(value, start_bit_index);
 		}
 		#endregion
 
@@ -329,7 +516,7 @@ namespace KSoft.IO
 		#endregion
 	};
 
-	/// <summary>Utility for auto-generating methods for streaming enum types to/from bitstreams</summary>
+	/// <summary>Utility for streaming enum types to/from bitstreams</summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <typeparam name="TStreamType">Integer-type to stream the enum value as</typeparam>
 	/// <remarks>Uses the default options in <see cref="EnumBitStreamerOptions"/></remarks>
@@ -339,7 +526,7 @@ namespace KSoft.IO
 	{
 	};
 
-	/// <summary>Utility for auto-generating methods for streaming enum types to/from bitstreams</summary>
+	/// <summary>Utility for streaming enum types to/from bitstreams</summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
 	/// <remarks>Implicitly uses the Enum's underlying type for the stream type</remarks>
 	public sealed class EnumBitStreamer<TEnum> : EnumBitStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType>
@@ -347,7 +534,8 @@ namespace KSoft.IO
 	{
 	};
 
-	public sealed class EnumBitStreamerWithOptions<TEnum, TOptions> : EnumBitStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType, TOptions>
+	public sealed class EnumBitStreamerWithOptions<TEnum, TOptions>
+		: EnumBitStreamer<TEnum, EnumBinaryStreamerUseUnderlyingType, TOptions>
 		where TEnum : struct, Enum
 		where TOptions : EnumBitStreamerOptions, new()
 	{
