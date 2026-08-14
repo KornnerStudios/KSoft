@@ -16,6 +16,35 @@ namespace KSoft.IO.Compression
 	{
 		const int kSizeOfHeader = sizeof(ushort);
 
+		public const int kNoCompression = 0;
+		public const int kBestCompression = 9;
+
+		static ZLibCompressionOptions CreateCompressionOptions(int level)
+		{
+			return new ZLibCompressionOptions { CompressionLevel = level };
+		}
+
+		static Stream CreateCompressionStream(Stream stream, int level, bool noZlibHeaderOrFooter, bool leaveOpen)
+		{
+			var options = CreateCompressionOptions(level);
+
+			return noZlibHeaderOrFooter
+				? new DeflateStream(stream, options, leaveOpen)
+				: new ZLibStream(stream, options, leaveOpen);
+		}
+
+		static Stream CreateDecompressionStream(Stream stream, bool noHeader, bool leaveOpen)
+		{
+			return noHeader
+				? new DeflateStream(stream, CompressionMode.Decompress, leaveOpen)
+				: new ZLibStream(stream, CompressionMode.Decompress, leaveOpen);
+		}
+
+		static uint ComputeAdler32(byte[] bytes)
+		{
+			return Security.Cryptography.Adler32.Compute(bytes);
+		}
+
 		static byte[] BufferFromStream(DeflateStream dec, int offset, int length, bool skipHeader)
 		{
 			byte[] result;
@@ -66,30 +95,34 @@ namespace KSoft.IO.Compression
 		}
 
 
-		public const int kNoCompression = ICSharpCode.SharpZipLib.Zip.Compression.Deflater.NO_COMPRESSION;
-		public const int kBestCompression = ICSharpCode.SharpZipLib.Zip.Compression.Deflater.BEST_COMPRESSION;
-
 		public static byte[] LowLevelCompress(byte[] bytes, int level,
 			out uint adler, byte[] compressedBytes,
 			bool trimCompressedBytes = true, bool noZlibHeaderOrFooter = true)
 		{
-			int compressed_size;
+			Contract.Requires<ArgumentNullException>(bytes != null);
+			Contract.Requires<ArgumentNullException>(compressedBytes != null);
 
-			var zip = new ICSharpCode.SharpZipLib.Zip.Compression.Deflater(level, noZlibHeaderOrFooter);
+			adler = ComputeAdler32(bytes);
+
+			if (trimCompressedBytes)
 			{
-				zip.SetInput(bytes);
-				zip.Finish();
-				compressed_size = zip.Deflate(compressedBytes);
-				adler = (uint)zip.Adler;
-
-				if (trimCompressedBytes)
+				using (var compressed_stream = new MemoryStream())
 				{
-					byte[] cmp_data = compressedBytes;
-					Array.Resize(ref cmp_data, compressed_size);
-					compressedBytes = cmp_data;
+					using (var zip = CreateCompressionStream(compressed_stream, level, noZlibHeaderOrFooter,
+						leaveOpen: true))
+					{
+						zip.Write(bytes, 0, bytes.Length);
+					}
+
+					return compressed_stream.ToArray();
 				}
 			}
 
+			using (var fixed_stream = new MemoryStream(compressedBytes, writable: true))
+			using (var zip = CreateCompressionStream(fixed_stream, level, noZlibHeaderOrFooter, leaveOpen: true))
+			{
+				zip.Write(bytes, 0, bytes.Length);
+			}
 			return compressedBytes;
 		}
 		public static uint LowLevelDecompress(byte[] compressedBytes, byte[] uncompressedBytes,
@@ -98,12 +131,12 @@ namespace KSoft.IO.Compression
 			Contract.Requires<ArgumentNullException>(compressedBytes != null);
 			Contract.Requires<ArgumentNullException>(uncompressedBytes != null);
 
-			var zip = new ICSharpCode.SharpZipLib.Zip.Compression.Inflater(noHeader);
+			using (var compressed_stream = new MemoryStream(compressedBytes, writable: false))
+			using (var zip = CreateDecompressionStream(compressed_stream, noHeader, leaveOpen: false))
 			{
-				zip.SetInput(compressedBytes);
-				zip.Inflate(uncompressedBytes);
+				zip.ReadExactly(uncompressedBytes);
 			}
-			return (uint)zip.Adler;
+			return ComputeAdler32(uncompressedBytes);
 		}
 
 		public static byte[] LowLevelCompress(byte[] bytes, Shell.EndianFormat byteOrder)
@@ -120,17 +153,16 @@ namespace KSoft.IO.Compression
 			}
 			Array.Copy(size_bytes, result, size_bytes.Length);
 
-			var zip = new ICSharpCode.SharpZipLib.Zip.Compression.Deflater(
-				ICSharpCode.SharpZipLib.Zip.Compression.Deflater.BEST_COMPRESSION, false);
+			using (var ms = new MemoryStream())
 			{
-				zip.SetInput(bytes);
-				zip.Finish();
-				byte[] temp = new byte[bytes.Length];
-				int compressed_size = zip.Deflate(temp);
+				ms.Write(size_bytes, 0, size_bytes.Length);
+				using (var zip = CreateCompressionStream(ms, kBestCompression,
+					noZlibHeaderOrFooter: false, leaveOpen: true))
+				{
+					zip.Write(bytes, 0, bytes.Length);
+				}
 
-				Contract.Assert(compressed_size <= bytes.Length);
-				Array.Resize(ref result, sizeof(int) + compressed_size);
-				Array.Copy(temp, 0, result, sizeof(int), compressed_size);
+				result = ms.ToArray();
 			}
 			return result;
 		}
@@ -143,10 +175,11 @@ namespace KSoft.IO.Compression
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] result = new byte[uncompressedSize];
-			var zip = new ICSharpCode.SharpZipLib.Zip.Compression.Inflater();
+			using (var compressed_stream = new MemoryStream(bytes, skipHeaderLength,
+				bytes.Length - skipHeaderLength, writable: false))
+			using (var zip = new ZLibStream(compressed_stream, CompressionMode.Decompress, leaveOpen: false))
 			{
-				zip.SetInput(bytes, skipHeaderLength, bytes.Length - skipHeaderLength); // skip the decompressed size header
-				zip.Inflate(result);
+				zip.ReadExactly(result);
 			}
 			return result;
 		}

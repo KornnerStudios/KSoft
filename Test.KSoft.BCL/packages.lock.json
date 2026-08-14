@@ -136,6 +136,13 @@
       "ksoft": {
         "type": "Project"
       },
+      "ksoft.compression": {
+        "type": "Project",
+        "dependencies": {
+          "KSoft": "[1.0.0, )",
+          "KSoft.Security": "[1.0.0, )"
+        }
+      },
       "ksoft.io.tagelementstreams": {
         "type": "Project",
         "dependencies": {
