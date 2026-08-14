@@ -1,8 +1,6 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
@@ -37,7 +35,7 @@ namespace KSoft.Security.Cryptography
 
 		protected override void EncryptBlock(byte[] input, byte[] output, int offset)
 		{
-			Contract.Assert(false); // #TODO
+			throw new NotImplementedException("XTEA256 encryption is not implemented.");
 		}
 
 		protected override void DecryptBlock(byte[] input, byte[] output, int offset)
