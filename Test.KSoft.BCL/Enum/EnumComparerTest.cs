@@ -15,6 +15,11 @@ namespace KSoft.Test
 			BigValueNeg = long.MinValue + 1,
 			BigValuePos = long.MaxValue - 1,
 		};
+		enum TestUnsignedEnum : ulong
+		{
+			Zero = 0,
+			BigValue = ulong.MaxValue - 1,
+		};
 
 		[TestMethod]
 		public void Enum_ComparerGetHashCodeTest()
@@ -97,6 +102,22 @@ namespace KSoft.Test
 			ksoft_equals = ksoft.Compare(TestEnum.BigValuePos, TestEnum.BigValueNeg);
 			msnet_equals = msnet.Compare(TestEnum.BigValuePos, TestEnum.BigValueNeg);
 			Assert.AreEqual(msnet_equals, ksoft_equals);
+		}
+
+		[TestMethod]
+		public void Enum_ComparerUnsignedOrderingMatchesDefaultComparerTest()
+		{
+			var ksoft = EnumComparer.For<TestUnsignedEnum>();
+			var msnet = Comparer<TestUnsignedEnum>.Default;
+
+			Assert.AreEqual(
+				msnet.Compare(TestUnsignedEnum.Zero, TestUnsignedEnum.BigValue),
+				ksoft.Compare(TestUnsignedEnum.Zero, TestUnsignedEnum.BigValue));
+			Assert.AreEqual(
+				msnet.Compare(TestUnsignedEnum.BigValue, TestUnsignedEnum.Zero),
+				ksoft.Compare(TestUnsignedEnum.BigValue, TestUnsignedEnum.Zero));
+			Assert.IsTrue(ksoft.Compare(TestUnsignedEnum.Zero, TestUnsignedEnum.BigValue) < 0);
+			Assert.IsTrue(ksoft.Compare(TestUnsignedEnum.BigValue, TestUnsignedEnum.Zero) > 0);
 		}
 	};
 }
