@@ -220,7 +220,6 @@
     <Compile Include="Enum\EnumBitStreamer.cs" />
     <Compile Include="Enum\EnumBitStreamerBase.cs" />
     <Compile Include="Enum\EnumBitStreamerOptions.cs" />
-    <Compile Include="Enum\EnumComparer.cs" />
     <Compile Include="Enum\EnumFlags.cs" />
     <Compile Include="Enum\IEnumBitStreamer.cs" />
     <Compile Include="Enum\Reflection.cs" />

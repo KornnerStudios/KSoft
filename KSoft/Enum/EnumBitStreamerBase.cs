@@ -76,11 +76,9 @@ namespace KSoft.IO
 			int capacity = EnumUtils.kSupportedTypeCodes.Length;
 			int unsigned_capacity = capacity >> 1; // number of unsigned types should be half the total types
 
-			// #NOTE: The EnumComparer<TypeCode> may not be needed for .NET 4 environments:
-			// http://www.codeproject.com/Messages/3968802/Re-What-about-Net-4-0.aspx
-			kReadMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
-			kWriteMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EnumComparer<TypeCode>.Instance);
-			kBitSwapMethods = new Dictionary<TypeCode, MethodInfo>(unsigned_capacity, EnumComparer<TypeCode>.Instance);
+			kReadMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EqualityComparer<TypeCode>.Default);
+			kWriteMethods = new Dictionary<TypeCode, MethodInfo>(capacity, EqualityComparer<TypeCode>.Default);
+			kBitSwapMethods = new Dictionary<TypeCode, MethodInfo>(unsigned_capacity, EqualityComparer<TypeCode>.Default);
 
 			InitializeReadMethods();
 			InitializeWriteMethods();
