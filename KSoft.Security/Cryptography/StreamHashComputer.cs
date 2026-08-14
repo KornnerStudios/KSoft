@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+		"CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct StreamHashComputer<T>
 		where T : HashAlgorithm
 	{
@@ -18,7 +16,7 @@ namespace KSoft.Security.Cryptography
 
 		private readonly T mAlgo;
 		private readonly Stream mInputStream;
-		private byte[] mScratchBuffer;
+		private byte[]? mScratchBuffer;
 		private long mStartOffset;
 		private long mCount;
 		private readonly bool mRestorePosition;
@@ -31,13 +29,21 @@ namespace KSoft.Security.Cryptography
 		/// </summary>
 		public readonly bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
 
-		public StreamHashComputer(T algo, Stream inputStream
-			, bool restorePosition = false
-			, byte[] preallocatedBuffer = null)
+		public StreamHashComputer(T algo,
+			Stream inputStream,
+			bool restorePosition = false,
+			byte[]? preallocatedBuffer = null)
 		{
-			Contract.Requires<ArgumentNullException>(inputStream != null);
-			Contract.Requires<ArgumentException>(inputStream.CanSeek);
-			Contract.Requires<ArgumentException>(preallocatedBuffer == null || preallocatedBuffer.Length > 0);
+			ArgumentNullException.ThrowIfNull(algo);
+			ArgumentNullException.ThrowIfNull(inputStream);
+			if (!inputStream.CanSeek)
+			{
+				throw new ArgumentException("Input stream must support seeking.", nameof(inputStream));
+			}
+			if (preallocatedBuffer != null && preallocatedBuffer.Length == 0)
+			{
+				throw new ArgumentException("Preallocated buffer must not be empty.", nameof(preallocatedBuffer));
+			}
 
 			mAlgo = algo;
 			mInputStream = inputStream;
@@ -51,15 +57,28 @@ namespace KSoft.Security.Cryptography
 
 		public void SetRangeAtCurrentOffset(long count)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 			SetRangeAndOffset(TypeExtensions.kNone, count);
 		}
 		public void SetRangeAndOffset(long offset, long count)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= InputStream.Length);
+			if (!offset.IsNoneOrPositive())
+			{
+				throw new ArgumentOutOfRangeException(nameof(offset));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (!offset.IsNone())
+			{
+				if (offset > InputStream.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(offset));
+				}
+				if (count > InputStream.Length - offset)
+				{
+					throw new ArgumentOutOfRangeException(nameof(count));
+				}
+			}
 
 			mStartOffset = offset;
 			mCount = count;
@@ -67,26 +86,31 @@ namespace KSoft.Security.Cryptography
 
 		public T Compute()
 		{
-			Contract.Requires<InvalidOperationException>(StartOffset.IsNoneOrPositive(),
-				"You need to call SetRange before calling this");
-			Contract.Requires<InvalidOperationException>(Count >= 0,
-				"You need to call SetRange before calling this");
+			const string set_range_required_message = "You need to call SetRange before calling this";
+			if (!StartOffset.IsNoneOrPositive())
+			{
+				throw new InvalidOperationException(set_range_required_message);
+			}
+			if (Count < 0)
+			{
+				throw new InvalidOperationException(set_range_required_message);
+			}
 
 			#region prologue
 			mAlgo.Initialize();
 
 			int buffer_size;
-			byte[] buffer;
-
-			bool uses_preallocated_buffer = mScratchBuffer != null;
-			if (!uses_preallocated_buffer)
+			byte[]? scratch_buffer = mScratchBuffer;
+			bool uses_preallocated_buffer = scratch_buffer != null;
+			if (scratch_buffer == null)
 			{
 				buffer_size = System.Math.Min((int)Count, kMaxScratchBufferSize);
-				mScratchBuffer = new byte[buffer_size];
+				scratch_buffer = new byte[buffer_size];
+				mScratchBuffer = scratch_buffer;
 			}
 
-			buffer = mScratchBuffer;
-			buffer_size = mScratchBuffer.Length;
+			byte[] buffer = scratch_buffer;
+			buffer_size = buffer.Length;
 
 			long orig_pos = mInputStream.Position;
 			if (!StartOffsetIsStreamPosition && StartOffset != orig_pos)
@@ -123,7 +147,8 @@ namespace KSoft.Security.Cryptography
 				bytes_remaining -= num_bytes_read;
 			}
 
-			mAlgo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
+			// Yes, 0 bytes; all bytes should have been taken care of already.
+			mAlgo.TransformFinalBlock(buffer, 0, 0);
 
 			#region epilogue
 			if (mRestorePosition)

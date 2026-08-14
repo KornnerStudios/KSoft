@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+		"CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct StreamBlockHashComputer<T>
 		where T : BlockHashAlgorithm
 	{
@@ -26,11 +24,16 @@ namespace KSoft.Security.Cryptography
 		/// </summary>
 		public readonly bool StartOffsetIsStreamPosition { get { return mStartOffset.IsNone(); } }
 
-		public StreamBlockHashComputer(T algo, Stream inputStream
-			, bool restorePosition = false)
+		public StreamBlockHashComputer(T algo,
+			Stream inputStream,
+			bool restorePosition = false)
 		{
-			Contract.Requires<ArgumentNullException>(inputStream != null);
-			Contract.Requires<ArgumentException>(inputStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(algo);
+			ArgumentNullException.ThrowIfNull(inputStream);
+			if (!inputStream.CanSeek)
+			{
+				throw new ArgumentException("Input stream must support seeking.", nameof(inputStream));
+			}
 
 			mAlgo = algo;
 			mInputStream = inputStream;
@@ -43,15 +46,28 @@ namespace KSoft.Security.Cryptography
 
 		public void SetRangeAtCurrentOffset(long count)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 			SetRangeAndOffset(TypeExtensions.kNone, count);
 		}
 		public void SetRangeAndOffset(long offset, long count)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset + count) <= InputStream.Length);
+			if (!offset.IsNoneOrPositive())
+			{
+				throw new ArgumentOutOfRangeException(nameof(offset));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (!offset.IsNone())
+			{
+				if (offset > InputStream.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(offset));
+				}
+				if (count > InputStream.Length - offset)
+				{
+					throw new ArgumentOutOfRangeException(nameof(count));
+				}
+			}
 
 			mStartOffset = offset;
 			mCount = count;
@@ -59,10 +75,15 @@ namespace KSoft.Security.Cryptography
 
 		public readonly T Compute()
 		{
-			Contract.Requires<InvalidOperationException>(StartOffset.IsNoneOrPositive(),
-				"You need to call SetRange before calling this");
-			Contract.Requires<InvalidOperationException>(Count >= 0,
-				"You need to call SetRange before calling this");
+			const string set_range_required_message = "You need to call SetRange before calling this";
+			if (!StartOffset.IsNoneOrPositive())
+			{
+				throw new InvalidOperationException(set_range_required_message);
+			}
+			if (Count < 0)
+			{
+				throw new InvalidOperationException(set_range_required_message);
+			}
 
 			#region prologue
 			mAlgo.Initialize();
@@ -105,7 +126,8 @@ namespace KSoft.Security.Cryptography
 				bytes_remaining -= num_bytes_read;
 			}
 
-			mAlgo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
+			// Yes, 0 bytes; all bytes should have been taken care of already.
+			mAlgo.TransformFinalBlock(buffer, 0, 0);
 
 			#region epilogue
 			if (mRestorePosition)
