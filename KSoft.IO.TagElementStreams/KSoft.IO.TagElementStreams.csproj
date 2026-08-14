@@ -73,32 +73,12 @@
     <Compile Include="DefaultSerializers\Shell.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Read.cs" />
-    <Compile Include="_Details\TagElementTextStream.ReadT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TagElementTextStream.ReadT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="_Details\TagElementTextStream.ReadT4.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Write.cs" />
-    <Compile Include="_Details\TagElementTextStream.WriteT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TagElementTextStream.WriteT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="_Details\TagElementStream.ReadT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TagElementStream.ReadT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="_Details\TagElementStream.SerializeT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TagElementStream.SerializeT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="_Details\TagElementStream.WriteT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TagElementStream.WriteT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="_Details\TagElementTextStream.WriteT4.cs" />
+    <Compile Include="_Details\TagElementStream.ReadT4.cs" />
+    <Compile Include="_Details\TagElementStream.SerializeT4.cs" />
+    <Compile Include="_Details\TagElementStream.WriteT4.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
@@ -116,27 +96,5 @@
   <ItemGroup>
     <!-- Remove checked-in T4 rollback files when the matching Roslyn feature is active. -->
     <Compile Remove="@(KSoftGeneratedSource->'%(RollbackCompile)')" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="_Details\TagElementTextStream.ReadT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TagElementTextStream.ReadT4.cs</LastGenOutput>
-    </None>
-    <None Include="_Details\TagElementTextStream.WriteT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TagElementTextStream.WriteT4.cs</LastGenOutput>
-    </None>
-    <None Include="_Details\TagElementStream.ReadT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TagElementStream.ReadT4.cs</LastGenOutput>
-    </None>
-    <None Include="_Details\TagElementStream.SerializeT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TagElementStream.SerializeT4.cs</LastGenOutput>
-    </None>
-    <None Include="_Details\TagElementStream.WriteT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TagElementStream.WriteT4.cs</LastGenOutput>
-    </None>
   </ItemGroup>
 </Project>

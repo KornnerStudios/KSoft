@@ -21,10 +21,6 @@
     <VitaVisualStudioVersion>v$([MSBuild]::Multiply($(VisualStudioVersion), 10))</VitaVisualStudioVersion>
   </PropertyGroup>
 
-  <!--This won't exist when running under 'dotnet test' / $(MSBuildRuntimeType)==Core-->
-  <Import           Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets"
-          Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets')" />
-
   <Import           Project="$(VitaRootDir)user\config\msbuild\VitaUserConfig.props"
           Condition="Exists('$(VitaRootDir)user\config\msbuild\VitaUserConfig.props')" />
   <Import           Project="VitaCommonConfig.props" />

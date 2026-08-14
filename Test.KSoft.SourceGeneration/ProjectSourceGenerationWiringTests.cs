@@ -75,6 +75,30 @@ public sealed class ProjectSourceGenerationWiringTests
 		}
 	}
 
+	[TestMethod]
+	public void ProjectsDoNotUseLegacyT4BuildMetadataTest()
+	{
+		foreach (ProjectFile project in ProjectFiles())
+		{
+			var document = LoadProject(project);
+			var projectReferenceIncludes = ElementsNamed(document, "ProjectReference")
+				.Select(static x => (string)x.Attribute("Include"))
+				.ToArray();
+
+			Assert.IsFalse(
+				projectReferenceIncludes.Any(static x => x.Contains("KSoft.T4", StringComparison.Ordinal)),
+				project.DisplayName);
+			Assert.IsFalse(
+				ElementsNamed(document, "Generator")
+					.Any(static x => string.Equals(x.Value, "TextTemplatingFileGenerator", StringComparison.Ordinal)),
+				project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "LastGenOutput"), project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "AutoGen"), project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "DesignTime"), project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "DependentUpon"), project.DisplayName);
+		}
+	}
+
 	private static IReadOnlyList<ProjectFile> ProjectFiles()
 	{
 		return new[] {

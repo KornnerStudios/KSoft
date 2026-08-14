@@ -179,71 +179,19 @@
     <Compile Include="Bitwise\Int24.cs" />
     <Compile Include="Bitwise\NumberUnions.cs" />
     <Compile Include="Bitwise\Single24.cs" />
-    <Compile Include="Bitwise\_Details\Bits.BitCountT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.BitCountT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.BitReverseT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.BitReverseT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.BitSwapT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.BitSwapT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.ConstantsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.ConstantsT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.DecodeT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.DecodeT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.EncodeT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.EncodeT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.NoneableEncoding.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.NoneableEncoding.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.RotateT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.RotateT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\Bits.VectorsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Bits.VectorsT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\BitsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitsT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\BitVectorsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitVectorsT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\ByteSwapT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ByteSwapT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Bitwise\_Details\FlagsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FlagsT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Bitwise\_Details\Bits.BitCountT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.BitReverseT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.BitSwapT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.ConstantsT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.DecodeT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.EncodeT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.NoneableEncoding.cs" />
+    <Compile Include="Bitwise\_Details\Bits.RotateT4.cs" />
+    <Compile Include="Bitwise\_Details\Bits.VectorsT4.cs" />
+    <Compile Include="Bitwise\_Details\BitsT4.cs" />
+    <Compile Include="Bitwise\_Details\BitVectorsT4.cs" />
+    <Compile Include="Bitwise\_Details\ByteSwapT4.cs" />
+    <Compile Include="Bitwise\_Details\FlagsT4.cs" />
     <Compile Include="Collections\BitSet.cs" />
     <Compile Include="Collections\ClrDictionaryInspector.cs" />
     <Compile Include="Collections\EnumBitSet.cs" />
@@ -257,16 +205,8 @@
     <Compile Include="Collections\PropertyComparer.cs" />
     <Compile Include="Collections\StringSegment.cs" />
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
-    <Compile Include="Collections\_Details\BitSetT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitSetT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IReadOnlyBitSet.EnumeratorsT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Collections\_Details\BitSetT4.cs" />
+    <Compile Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs" />
     <Compile Include="Debug\ArgumentNoneException.cs" />
     <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
     <Compile Include="Debug\ContractShim.cs" />
@@ -284,18 +224,10 @@
     <Compile Include="Enum\EnumFlags.cs" />
     <Compile Include="Enum\IEnumBitStreamer.cs" />
     <Compile Include="Enum\Reflection.cs" />
-    <Compile Include="Enum\_Details\EnumBitEncoderT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EnumBitEncoderT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Enum\_Details\EnumBitEncoderT4.cs" />
     <Compile Include="Enum\_Details\EnumFlags.V1.cs" />
     <Compile Include="Enum\_Details\EnumFlags.V2.cs" />
-    <Compile Include="Enum\_Details\EnumValueT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EnumValueT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Enum\_Details\EnumValueT4.cs" />
     <Compile Include="IO\BitStream\BitStream.cs" />
     <Compile Include="IO\BitStream\BitStream.Serialize.cs" />
     <Compile Include="IO\BitStream\IBitStreamSerializable.cs" />
@@ -322,62 +254,18 @@
     <Compile Include="IO\StreamPositionContext.cs" />
     <Compile Include="IO\TextStreamReadErrorState.cs" />
     <Compile Include="IO\VersionMismatchException.cs" />
-    <Compile Include="IO\_Details\BitStream.CacheT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitStream.CacheT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\BitStream.CoreT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitStream.CoreT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\BitStream.ReadT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitStream.ReadT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\BitStream.SerializeT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitStream.SerializeT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\BitStream.WriteT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BitStream.WriteT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\EndianStreams.BaseT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EndianStreams.BaseT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\EndianStreams.NumbersT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EndianStreams.NumbersT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EndianStreams.VirtualAddressTranslationT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\SignatureMismatchExceptionT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SignatureMismatchExceptionT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="IO\_Details\VersionMismatchExceptionT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VersionMismatchExceptionT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="IO\_Details\BitStream.CacheT4.cs" />
+    <Compile Include="IO\_Details\BitStream.CoreT4.cs" />
+    <Compile Include="IO\_Details\BitStream.ReadT4.cs" />
+    <Compile Include="IO\_Details\BitStream.SerializeT4.cs" />
+    <Compile Include="IO\_Details\BitStream.WriteT4.cs" />
+    <Compile Include="IO\_Details\EndianStreams.BaseT4.cs" />
+    <Compile Include="IO\_Details\EndianStreams.NumbersT4.cs" />
+    <Compile Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs" />
+    <Compile Include="IO\_Details\SignatureMismatchExceptionT4.cs" />
+    <Compile Include="IO\_Details\VersionMismatchExceptionT4.cs" />
     <Compile Include="Math\IntegerMath.cs" />
-    <Compile Include="Math\_Details\IntegerMathT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IntegerMathT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Math\_Details\IntegerMathT4.cs" />
     <Compile Include="Memory\Strings\Enums.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.Enumerator.cs" />
@@ -410,21 +298,9 @@
     <Compile Include="Text\TextLineInfoException.cs" />
     <Compile Include="Text\Utilities.Bytes.cs" />
     <Compile Include="Text\Utilities.cs" />
-    <Compile Include="Text\_Details\CharLookupTablesT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CharLookupTablesT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Text\_Details\NumbersParseT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NumbersParseT4.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Text\_Details\NumbersToStringT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NumbersToStringT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Text\_Details\CharLookupTablesT4.cs" />
+    <Compile Include="Text\_Details\NumbersParseT4.cs" />
+    <Compile Include="Text\_Details\NumbersToStringT4.cs" />
     <Compile Include="Util\LowLevel.cs" />
     <Compile Include="Util\LowLevel.StructBitManager.cs" />
     <Compile Include="Util\Predicates.cs" />
@@ -441,11 +317,7 @@
     <Compile Include="Values\GroupTag\GroupTagData64.cs" />
     <Compile Include="Values\Guid.cs" />
     <Compile Include="Values\Handles\PtrHandle.cs" />
-    <Compile Include="Bitwise\_Details\HandleBitEncoderT4.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>HandleBitEncoderT4.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Bitwise\_Details\HandleBitEncoderT4.cs" />
     <Compile Include="Xml\XmlAttributeWithLocation.cs" />
     <Compile Include="Xml\XmlCDataSectionWithLocation.cs" />
     <Compile Include="Xml\XmlDocumentWithLocation.cs" />
@@ -457,155 +329,6 @@
   <ItemGroup Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">
     <!-- Remove checked-in rollback files after explicit Compile includes so Roslyn output owns the surface. -->
     <Compile Remove="@(KSoftGeneratedSource->'%(RollbackCompile)')" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Bitwise\_Details\Bits.BitCountT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.BitCountT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.BitReverseT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.BitReverseT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.BitSwapT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.BitSwapT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.ConstantsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.ConstantsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.DecodeT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.DecodeT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.EncodeT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.EncodeT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.NoneableEncoding.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.NoneableEncoding.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.RotateT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.RotateT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\Bits.VectorsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Bits.VectorsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\BitsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\BitVectorsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitVectorsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\ByteSwapT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ByteSwapT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\FlagsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FlagsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Collections\_Details\BitSetT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitSetT4.cs</LastGenOutput>
-    </None>
-    <None Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IReadOnlyBitSet.EnumeratorsT4.cs</LastGenOutput>
-    </None>
-    <None Include="Enum\_Details\EnumBitEncoderT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EnumBitEncoderT4.cs</LastGenOutput>
-    </None>
-    <None Include="Enum\_Details\EnumValueT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EnumValueT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\BitStream.CacheT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitStream.CacheT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\BitStream.CoreT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitStream.CoreT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\BitStream.ReadT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitStream.ReadT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\BitStream.SerializeT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitStream.SerializeT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\BitStream.WriteT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BitStream.WriteT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\EndianStreams.BaseT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EndianStreams.BaseT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\EndianStreams.NumbersT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EndianStreams.NumbersT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EndianStreams.VirtualAddressTranslationT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\SignatureMismatchExceptionT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SignatureMismatchExceptionT4.cs</LastGenOutput>
-    </None>
-    <None Include="IO\_Details\VersionMismatchExceptionT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VersionMismatchExceptionT4.cs</LastGenOutput>
-    </None>
-    <None Include="Math\_Details\IntegerMathT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IntegerMathT4.cs</LastGenOutput>
-    </None>
-    <None Include="Text\_Details\CharLookupTablesT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharLookupTablesT4.cs</LastGenOutput>
-    </None>
-    <None Include="Text\_Details\NumbersParseT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NumbersParseT4.cs</LastGenOutput>
-    </None>
-    <None Include="Text\_Details\NumbersToStringT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NumbersToStringT4.cs</LastGenOutput>
-    </None>
-    <None Include="Bitwise\_Details\HandleBitEncoderT4.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>HandleBitEncoderT4.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <!--We do not want to reference KSoft.T4 under 'dotnet test', which runs msbuild as 'Core', as it won't have T4 extensions-->
-  <ItemGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
-    <!--
-      NOTE: There are no uses of KSoft.T4 in the cs files themselves, only the .tt files.
-      However, KSoft.T4 MUST be build before KSoft. If the sln's entry for KSoft is not setup correctly
-      (with a ProjectDependencies to KSoft.T4), the dll will not exist and this will force the build to occur.
-
-      We also do not want to reference KSoft.T4 under 'dotnet test'
-    -->
-    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.T4\KSoft.T4.csproj"
-        Condition="!Exists('$(VitaSolutionFamilyBinPath)KSoft.T4.dll')">
-      <Project>{17ab134c-9c71-4ccf-84d9-d90f6dd58a0a}</Project>
-      <Name>KSoft.T4</Name>
-      <Private>False</Private>
-      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
-      <!--KSoft.T4 is limited to net481, as T4 itself was never updated to target dotnet-->
-      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <!-- Load KSoft.SourceGeneration as an analyzer only; KSoft must not reference it at runtime. -->
