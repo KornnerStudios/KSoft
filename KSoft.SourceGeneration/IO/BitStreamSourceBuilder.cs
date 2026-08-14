@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using KSoft.SourceGeneration.Descriptors;
 using KSoft.SourceGeneration.Text;
 
@@ -12,6 +13,26 @@ internal static class BitStreamSourceBuilder
 	// Maps to KSoft.T4.Bitwise.BitwiseT4.BitStreamCacheWord. The BitStream generator owns the cache role;
 	// PrimitiveCatalog only supplies the UInt32 descriptor.
 	private static readonly NumberSpec kCacheWord = PrimitiveCatalog.NumberFor(TypeCode.UInt32);
+	// Maps to KSoft.T4.Bitwise.BitwiseT4.BitStreambleIntegerTypes. The BitStream generator owns streamable groups.
+	private static readonly IReadOnlyList<PrimitiveSpec> kStreamableIntegerTypes =
+		[
+			PrimitiveCatalog.Char,
+			PrimitiveCatalog.NumberFor(TypeCode.Byte).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.SByte).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.UInt16).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.Int16).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.UInt32).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.Int32).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.UInt64).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.Int64).Primitive,
+		];
+	// Maps to KSoft.T4.Bitwise.BitwiseT4.BitStreambleNonIntegerTypes. The BitStream generator owns streamable groups.
+	private static readonly IReadOnlyList<PrimitiveSpec> kStreamableNonIntegerTypes =
+		[
+			PrimitiveCatalog.Bool,
+			PrimitiveCatalog.NumberFor(TypeCode.Single).Primitive,
+			PrimitiveCatalog.NumberFor(TypeCode.Double).Primitive,
+		];
 
 	public static string Build()
 	{
@@ -265,13 +286,13 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteReadRegion(SourceWriter writer)
 	{
-		foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+		foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 		{
 			WriteReadScalarMethod(writer, typeSpec);
 			writer.WriteLine();
 		}
 
-		foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+		foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 		{
 			WriteReadOutMethod(writer, typeSpec);
 			writer.WriteLine();
@@ -280,7 +301,7 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteWriteRegion(SourceWriter writer)
 	{
-		foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+		foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 		{
 			WriteWriteMethod(writer, typeSpec);
 			writer.WriteLine();
@@ -289,13 +310,13 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteStreamValueRegion(SourceWriter writer)
 	{
-		foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+		foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 		{
 			WriteStreamValueMethod(writer, typeSpec);
 			writer.WriteLine();
 		}
 
-		foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableNonIntegerTypes)
+		foreach (PrimitiveSpec typeSpec in kStreamableNonIntegerTypes)
 		{
 			WriteStreamNonIntegerValueMethod(writer, typeSpec);
 			writer.WriteLine();
@@ -306,13 +327,13 @@ internal static class BitStreamSourceBuilder
 	{
 		using (writer.EnterRegion("StreamFixedArray"))
 		{
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 			{
 				WriteStreamFixedArrayMethod(writer, typeSpec);
 				writer.WriteLine();
 			}
 
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableNonIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableNonIntegerTypes)
 			{
 				WriteStreamNonIntegerFixedArrayMethod(writer, typeSpec);
 				writer.WriteLine();
@@ -324,13 +345,13 @@ internal static class BitStreamSourceBuilder
 	{
 		using (writer.EnterRegion("StreamArray"))
 		{
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 			{
 				WriteStreamArrayMethod(writer, typeSpec);
 				writer.WriteLine();
 			}
 
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableNonIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableNonIntegerTypes)
 			{
 				WriteStreamNonIntegerArrayMethod(writer, typeSpec);
 				writer.WriteLine();
@@ -342,13 +363,13 @@ internal static class BitStreamSourceBuilder
 	{
 		using (writer.EnterRegion("StreamList"))
 		{
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableIntegerTypes)
 			{
 				WriteStreamElementsMethod(writer, typeSpec);
 				writer.WriteLine();
 			}
 
-			foreach (PrimitiveSpec typeSpec in PrimitiveCatalog.BitStreamableNonIntegerTypes)
+			foreach (PrimitiveSpec typeSpec in kStreamableNonIntegerTypes)
 			{
 				WriteStreamNonIntegerElementsMethod(writer, typeSpec);
 				writer.WriteLine();
