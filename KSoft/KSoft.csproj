@@ -224,8 +224,6 @@
     <Compile Include="Enum\IEnumBitStreamer.cs" />
     <Compile Include="Enum\Reflection.cs" />
     <Compile Include="Enum\_Details\EnumBitEncoderT4.cs" />
-    <Compile Include="Enum\_Details\EnumFlags.V1.cs" />
-    <Compile Include="Enum\_Details\EnumFlags.V2.cs" />
     <Compile Include="Enum\_Details\EnumValueT4.cs" />
     <Compile Include="IO\BitStream\BitStream.cs" />
     <Compile Include="IO\BitStream\BitStream.Serialize.cs" />

@@ -1,85 +1,89 @@
 ﻿using System;
-using Expr = System.Linq.Expressions.Expression;
-using ExprParam = System.Linq.Expressions.ParameterExpression;
 
 namespace KSoft
 {
-	using EnumUtils = Reflection.EnumUtils;
-
-	internal sealed partial class EnumFlags<TEnum> : Reflection.EnumUtilBase<TEnum>
+	internal sealed class EnumFlags<TEnum> : Reflection.EnumUtilBase<TEnum>
 		where TEnum : struct, Enum
 	{
-		#region Signatures
-		delegate TEnum ModifyDelegate(TEnum value, TEnum flags);
-		delegate void ModifyByRefDelegate(ref TEnum value, TEnum flags);
-
-		delegate TEnum ModifyCondDelegate(bool addOrRemove, TEnum value, TEnum flags);
-		delegate void ModifyByRefCondDelegate(bool addOrRemove, ref TEnum value, TEnum flags);
-		#endregion
-
-		/// <summary>Initializes the <see cref="EnumFlags{TEnum}"/> class by generating the needed methods</summary>
 		static EnumFlags()
 		{
-			EnumUtils.AssertTypeIsFlagsEnum(kEnumType);
+			Reflection.EnumUtils.AssertTypeIsFlagsEnum(kEnumType);
 		}
 
-		#region Method generators
-		static ExprParam GenerateParamValue(bool byRef)
+		public static TEnum Add(TEnum value, TEnum flags)
 		{
-			return Expr.Parameter(byRef
-				? kEnumTypeByRef
-				: kEnumType, "value");							// [ref] TEnum value
+			return kUnderlyingTypeCode switch
+			{
+				TypeCode.Byte => Reflection.EnumValue<TEnum>.FromByte(unchecked(
+					(byte)(Reflection.EnumValue<TEnum>.ToByte(value) | Reflection.EnumValue<TEnum>.ToByte(flags)))),
+				TypeCode.SByte => Reflection.EnumValue<TEnum>.FromSByte(unchecked(
+					(sbyte)(Reflection.EnumValue<TEnum>.ToSByte(value) | Reflection.EnumValue<TEnum>.ToSByte(flags)))),
+				TypeCode.UInt16 => Reflection.EnumValue<TEnum>.FromUInt16(unchecked(
+					(ushort)(Reflection.EnumValue<TEnum>.ToUInt16(value) | Reflection.EnumValue<TEnum>.ToUInt16(flags)))),
+				TypeCode.Int16 => Reflection.EnumValue<TEnum>.FromInt16(unchecked(
+					(short)(Reflection.EnumValue<TEnum>.ToInt16(value) | Reflection.EnumValue<TEnum>.ToInt16(flags)))),
+				TypeCode.UInt32 => Reflection.EnumValue<TEnum>.FromUInt32(
+					Reflection.EnumValue<TEnum>.ToUInt32(value) | Reflection.EnumValue<TEnum>.ToUInt32(flags)),
+				TypeCode.Int32 => Reflection.EnumValue<TEnum>.FromInt32(
+					Reflection.EnumValue<TEnum>.ToInt32(value) | Reflection.EnumValue<TEnum>.ToInt32(flags)),
+				TypeCode.UInt64 => Reflection.EnumValue<TEnum>.FromUInt64(
+					Reflection.EnumValue<TEnum>.ToUInt64(value) | Reflection.EnumValue<TEnum>.ToUInt64(flags)),
+				TypeCode.Int64 => Reflection.EnumValue<TEnum>.FromInt64(
+					Reflection.EnumValue<TEnum>.ToInt64(value) | Reflection.EnumValue<TEnum>.ToInt64(flags)),
+				_ => throw new InvalidOperationException($"Unsupported enum underlying type {kUnderlyingType}."),
+			};
 		}
-		static ExprParam GenerateParamFlags()
+		public static void Add(ref TEnum value, TEnum flags)
 		{
-			return Expr.Parameter(kEnumType, "flags");			// TEnum flags
+			value = Add(value, flags);
 		}
-		static ExprParam GenerateParamAddOrRemove()
+
+		public static TEnum Remove(TEnum value, TEnum flags)
 		{
-			return Expr.Parameter(typeof(bool), "addOrRemove");	// bool addOrRemove
+			return kUnderlyingTypeCode switch
+			{
+				TypeCode.Byte => Reflection.EnumValue<TEnum>.FromByte(unchecked(
+					(byte)(Reflection.EnumValue<TEnum>.ToByte(value) & ~Reflection.EnumValue<TEnum>.ToByte(flags)))),
+				TypeCode.SByte => Reflection.EnumValue<TEnum>.FromSByte(unchecked(
+					(sbyte)(Reflection.EnumValue<TEnum>.ToSByte(value) & ~Reflection.EnumValue<TEnum>.ToSByte(flags)))),
+				TypeCode.UInt16 => Reflection.EnumValue<TEnum>.FromUInt16(unchecked(
+					(ushort)(Reflection.EnumValue<TEnum>.ToUInt16(value) & ~Reflection.EnumValue<TEnum>.ToUInt16(flags)))),
+				TypeCode.Int16 => Reflection.EnumValue<TEnum>.FromInt16(unchecked(
+					(short)(Reflection.EnumValue<TEnum>.ToInt16(value) & ~Reflection.EnumValue<TEnum>.ToInt16(flags)))),
+				TypeCode.UInt32 => Reflection.EnumValue<TEnum>.FromUInt32(
+					Reflection.EnumValue<TEnum>.ToUInt32(value) & ~Reflection.EnumValue<TEnum>.ToUInt32(flags)),
+				TypeCode.Int32 => Reflection.EnumValue<TEnum>.FromInt32(
+					Reflection.EnumValue<TEnum>.ToInt32(value) & ~Reflection.EnumValue<TEnum>.ToInt32(flags)),
+				TypeCode.UInt64 => Reflection.EnumValue<TEnum>.FromUInt64(
+					Reflection.EnumValue<TEnum>.ToUInt64(value) & ~Reflection.EnumValue<TEnum>.ToUInt64(flags)),
+				TypeCode.Int64 => Reflection.EnumValue<TEnum>.FromInt64(
+					Reflection.EnumValue<TEnum>.ToInt64(value) & ~Reflection.EnumValue<TEnum>.ToInt64(flags)),
+				_ => throw new InvalidOperationException($"Unsupported enum underlying type {kUnderlyingType}."),
+			};
+		}
+		public static void Remove(ref TEnum value, TEnum flags)
+		{
+			value = Remove(value, flags);
 		}
 
-		// Note: Both AndAssign and OrAssign were added in .NET 4 (their sans Assign counterparts are 3.5)
-		// However, they're not supported by the Portable Class Library
-		// More so, neither AndAssign or OrAssign work as expected with Enum.value__. IE, value__ isn't updated
-
-		// The binary operator Or is not defined for the types 'TEnum' and 'TEnum'.
-		#endregion
-
-		// By-Val	By-Ref	Cmp
-		// 1		1		R
-		// 1		1		R
-		// 1		2		R
-		//
-
-		#region Static interface
-		public static TEnum Add(TEnum value, TEnum flags)		{ return	V1.kAddFlags(value, flags); }
-		public static void Add(ref TEnum value, TEnum flags)	{			V1.kAddFlagsByRef(ref value, flags); }
-
-		public static TEnum Remove(TEnum value, TEnum flags)	{ return	V1.kRemoveFlags(value, flags); }
-		public static void Remove(ref TEnum value, TEnum flags)	{			V1.kRemoveFlagsByRef(ref value, flags); }
-
-		/// <summary>Adds or removes the given flags from the provided value, returning the result</summary>
-		/// <param name="addOrRemove">ie, "true or false"</param>
-		/// <param name="value"></param>
-		/// <param name="flags"></param>
-		/// <returns></returns>
 		public static TEnum Modify(bool addOrRemove, TEnum value, TEnum flags)
 		{
-			return V2.kModifyFlags(addOrRemove, value, flags);
+			return addOrRemove
+				? Add(value, flags)
+				: Remove(value, flags);
 		}
-		/// <summary>Adds or removes the given flags from the provided value</summary>
-		/// <param name="addOrRemove">ie, "true or false"</param>
-		/// <param name="value"></param>
-		/// <param name="flags"></param>
 		public static void Modify(bool addOrRemove, ref TEnum value, TEnum flags)
 		{
-			V1.kModifyFlagsByRef(addOrRemove, ref value, flags);
+			value = Modify(addOrRemove, value, flags);
 		}
-
-		#endregion
 	};
 
+	/// <summary>Utility for mutating flags enum values without spelling out bitwise operations at call sites</summary>
+	/// <remarks>
+	/// Generic enum constraints do not make bitwise operators available on <typeparamref name="TEnum"/>. This helper keeps
+	/// readable one-line flag mutation call sites while reusing <see cref="Reflection.EnumValue{TEnum}"/> conversion
+	/// delegates instead of maintaining a separate expression-compiled delegate family.
+	/// </remarks>
 	public static class EnumFlags
 	{
 		#region Add
