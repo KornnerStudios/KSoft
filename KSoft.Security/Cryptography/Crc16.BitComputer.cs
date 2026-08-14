@@ -1,15 +1,13 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
 	partial class Crc16
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",
+			"CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 		public struct BitComputer
 		{
 			readonly Definition mDefinition;
@@ -17,14 +15,14 @@ namespace KSoft.Security.Cryptography
 
 			public BitComputer(Definition definition)
 			{
-				Contract.Requires(definition != null);
+				ArgumentNullException.ThrowIfNull(definition);
 
 				mDefinition = definition;
 				mCrc = mDefinition.InitialValue;
 			}
 			public BitComputer(Definition definition, ushort initialValue)
 			{
-				Contract.Requires(definition != null);
+				ArgumentNullException.ThrowIfNull(definition);
 
 				mDefinition = definition;
 				mCrc = initialValue;
@@ -43,13 +41,18 @@ namespace KSoft.Security.Cryptography
 
 			public void Compute(byte[] buffer, int offset, int length)
 			{
-				Contract.Requires<ArgumentNullException>(buffer != null);
-				Contract.Requires<ArgumentOutOfRangeException>(offset >= 0 && length >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(offset+length <= buffer.Length);
+				ArgumentNullException.ThrowIfNull(buffer);
+				ArgumentOutOfRangeException.ThrowIfNegative(offset);
+				ArgumentOutOfRangeException.ThrowIfNegative(length);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
+				if (length > buffer.Length - offset)
+				{
+					throw new ArgumentOutOfRangeException(nameof(length));
+				}
 
 				for (int x = 0; x < length; x++)
 				{
-					mDefinition.ComputeUpdate(buffer[offset+x], ref mCrc);
+					mDefinition.ComputeUpdate(buffer[offset + x], ref mCrc);
 				}
 			}
 

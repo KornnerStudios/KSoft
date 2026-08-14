@@ -1,8 +1,6 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
@@ -44,22 +42,29 @@ namespace KSoft.Security.Cryptography
 					crc_table[index] = (ushort)crc;
 				}
 
-				Contract.Assert(crc_table[1] != 0);
-				Contract.Assert(crc_table[crc_table.Length-1] != 0);
+				System.Diagnostics.Debug.Assert(crc_table[1] != 0);
+				System.Diagnostics.Debug.Assert(crc_table[crc_table.Length - 1] != 0);
 
 				return crc_table;
 			}
 
-			public Definition(ushort polynomial = kDefaultPolynomial, ushort initialValue = ushort.MaxValue, ushort xorIn = 0, ushort xorOut = 0, params ushort[] crcTable)
+			public Definition(ushort polynomial = kDefaultPolynomial,
+				ushort initialValue = ushort.MaxValue,
+				ushort xorIn = 0,
+				ushort xorOut = 0,
+				params ushort[]? crcTable)
 			{
-				Contract.Requires(crcTable.IsNullOrEmpty() || crcTable.Length == kCrcTableSize);
+				if (crcTable != null && crcTable.Length != 0 && crcTable.Length != kCrcTableSize)
+				{
+					throw new ArgumentException("CRC tables must contain 256 entries.", nameof(crcTable));
+				}
 
 				mPolynomial = polynomial;
 				mInitialValue = initialValue;
 				mXorIn = xorIn;
 				mXorOut = xorOut;
 
-				mCrcTable = crcTable.IsNullOrEmpty()
+				mCrcTable = crcTable == null || crcTable.Length == 0
 					? BuildCrcTable(Polynomial)
 					: crcTable;
 			}
@@ -68,7 +73,8 @@ namespace KSoft.Security.Cryptography
 			{
 				value &= 0xFF;
 				ushort a = (ushort) (crc << 8);
-				ushort b = (ushort)((crc >> 8) & 0x00FFFFFF); // don't include the top most byte in case there was somehow any carry
+				// Don't include the topmost byte in case there was somehow any carry.
+				ushort b = (ushort)((crc >> 8) & 0x00FFFFFF);
 				ushort c = CrcTable[(b ^ value) & 0xFF];
 				return (ushort)(a ^ c);
 			}

@@ -1,10 +1,7 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using HashAlgorithm = System.Security.Cryptography.HashAlgorithm;
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
@@ -28,7 +25,10 @@ namespace KSoft.Security.Cryptography
 
 		public new static CrcHash32 Create(string algName)
 		{
-			return (CrcHash32)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
+			ArgumentNullException.ThrowIfNull(algName);
+
+			return (CrcHash32)(System.Security.Cryptography.CryptoConfig.CreateFromName(algName)
+				?? throw new InvalidOperationException($"'{algName}' is not registered as a CRC-32 hash algorithm."));
 		}
 		public new static CrcHash32 Create()
 		{
@@ -52,12 +52,13 @@ namespace KSoft.Security.Cryptography
 
 		public CrcHash32(Crc32.Definition definition)
 		{
-			Contract.Requires(definition != null);
+			ArgumentNullException.ThrowIfNull(definition);
 
 			base.HashSizeValue = Bits.kInt32BitCount;
 
 			mDefinition = definition;
 			mHashBytes = new byte[sizeof(uint)];
+			Initialize();
 		}
 
 		public override void Initialize()
