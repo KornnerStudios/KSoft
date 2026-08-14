@@ -1,10 +1,25 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Security.Cryptography.Test
 {
 	[TestClass]
-	public class TigerHashTest : BaseTestClass
+	public sealed class TigerHashTest : BaseTestClass
 	{
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgument(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void Cryptography_TigerHashVersionOneTest()
 		{
@@ -33,7 +48,30 @@ namespace KSoft.Security.Cryptography.Test
 				"09c11330283a27efb51930aa7dc1ec624ff738a8d9bdd3df");
 		}
 
-		private void TestTiger(string algName,
+		[TestMethod]
+		public void Create_RegisteredAlgorithms_ReturnsExpectedTigerHashType()
+		{
+			using TigerHash tiger = TigerHash.Create();
+			using TigerHash2 tiger2 = TigerHash2.Create();
+			using TigerHashBase tigerBase = TigerHashBase.Create(TigerHash.kAlgorithmName);
+			using TigerHashBase tiger2Base = TigerHashBase.Create(TigerHash2.kAlgorithmName);
+
+			Assert.IsInstanceOfType<TigerHash>(tiger);
+			Assert.IsInstanceOfType<TigerHash2>(tiger2);
+			Assert.IsInstanceOfType<TigerHash>(tigerBase);
+			Assert.IsInstanceOfType<TigerHash2>(tiger2Base);
+		}
+
+		[TestMethod]
+		public void Create_InvalidAlgorithmName_ThrowsArgumentException()
+		{
+			AssertThrowsArgumentNull("algName", () => TigerHashBase.Create(null));
+			AssertThrowsArgument("algName", () => TigerHashBase.Create("not-a-tiger-hash"));
+			AssertThrowsArgument("algName", () => TigerHash.Create(TigerHash2.kAlgorithmName));
+			AssertThrowsArgument("algName", () => TigerHash2.Create(TigerHash.kAlgorithmName));
+		}
+
+		static void TestTiger(string algName,
 			string inputString,
 			string expectedHashByteString)
 		{

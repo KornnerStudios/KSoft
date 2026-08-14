@@ -1,14 +1,11 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 // #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
 // which means the algo's Initialize method will be executed before the call returns!
 // .netframework did not do this:
-// https://github.com/microsoft/referencesource/blob/ec9fa9ae770d522a5b5f0607898044b7478574a3/mscorlib/system/security/cryptography/hashalgorithm.cs#L172
+// See microsoft/referencesource mscorlib HashAlgorithm.TransformFinalBlock.
 //#define TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 
 namespace KSoft.Security.Cryptography
@@ -28,7 +25,7 @@ namespace KSoft.Security.Cryptography
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.TigerHash";
 
-		public new static TigerHash Create(string algName) => (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
+		public new static TigerHash Create(string algName) => CreateRegisteredHash<TigerHash>(algName);
 		public new static TigerHash Create() => Create(kAlgorithmName);
 		#endregion
 
@@ -51,8 +48,8 @@ namespace KSoft.Security.Cryptography
 		#region Registeration
 		public const string kAlgorithmName = "KSoft.Security.Cryptography.TigerHash2";
 
-		public new static TigerHash Create(string algName) => (TigerHash)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
-		public new static TigerHash Create() => Create(kAlgorithmName);
+		public new static TigerHash2 Create(string algName) => CreateRegisteredHash<TigerHash2>(algName);
+		public new static TigerHash2 Create() => Create(kAlgorithmName);
 		#endregion
 
 		public TigerHash2()
@@ -82,11 +79,21 @@ namespace KSoft.Security.Cryptography
 
 		public new static TigerHashBase Create(string algName)
 		{
-			Contract.Requires(
-				TigerHash .kAlgorithmName.Equals(algName, StringComparison.InvariantCulture) ||
-				TigerHash2.kAlgorithmName.Equals(algName, StringComparison.InvariantCulture));
+			return CreateRegisteredHash<TigerHashBase>(algName);
+		}
 
-			return (TigerHashBase)System.Security.Cryptography.CryptoConfig.CreateFromName(algName);
+		protected static T CreateRegisteredHash<T>(string algName)
+			where T : TigerHashBase
+		{
+			ArgumentNullException.ThrowIfNull(algName);
+
+			if (System.Security.Cryptography.CryptoConfig.CreateFromName(algName) is T hash)
+			{
+				return hash;
+			}
+
+			throw new ArgumentException($"'{algName}' is not registered as a {typeof(T).Name} algorithm.",
+				nameof(algName));
 		}
 		#endregion
 
@@ -97,7 +104,8 @@ namespace KSoft.Security.Cryptography
 		const ulong kRegister1 = 0xFEDCBA9876543210UL;
 		const ulong kRegister2 = 0xF096A5B4C3B2E187UL;
 
-		ulong[] mRegs, mX;
+		readonly ulong[] mRegs = new ulong[3];
+		readonly ulong[] mX = new ulong[kWordCount];
 
 		public TigerHashVersion Version { get; set; }
 
@@ -209,26 +217,13 @@ namespace KSoft.Security.Cryptography
 		{
 			base.Initialize();
 
-			if (mRegs == null)
-			{
-				mRegs = new ulong[3];
-			}
-
 			mRegs[0] = kRegister0;
 			mRegs[1] = kRegister1;
 			mRegs[2] = kRegister2;
 
-			if (mX == null)
-			{
-				mX = new ulong[kWordCount];
-			}
-			else
-			{
-				Array.Resize(ref mX, kWordCount);
-				Array.Clear(mX, 0, kWordCount);
-			}
+			Array.Clear(mX, 0, kWordCount);
 
-			Contract.Assert(Version == TigerHashVersion.V1 || Version == TigerHashVersion.V2,
+			System.Diagnostics.Debug.Assert(Version == TigerHashVersion.V1 || Version == TigerHashVersion.V2,
 				"TigerHash version is not recognized");
 		}
 
@@ -291,7 +286,9 @@ namespace KSoft.Security.Cryptography
 
 		void ProcessBlockOfWords(byte[] inputBuffer, int inputOffset, int blockCount)
 		{
-			for (int block_index = 0, block_offset_in_input = inputOffset; block_index < blockCount; block_index++, block_offset_in_input += BlockSize)
+			for (int block_index = 0, block_offset_in_input = inputOffset;
+				block_index < blockCount;
+				block_index++, block_offset_in_input += BlockSize)
 			{
 				CopyBlock(inputBuffer, block_offset_in_input);
 
@@ -306,7 +303,8 @@ namespace KSoft.Security.Cryptography
 
 		protected override byte[] ProcessFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
 		{
-			// it's okay to modify inputBuffer here since it's the final block and it's actually BlockHashAlgorithm's internal buffer
+			// It's okay to modify inputBuffer here since it's the final block and actually
+			// BlockHashAlgorithm's internal buffer.
 
 			ulong msg_bit_length = ((ulong)TotalBytesProcessed + (ulong)inputCount) << 3;
 
@@ -320,7 +318,8 @@ namespace KSoft.Security.Cryptography
 
 			Array.Clear(inputBuffer, inputCount, BlockSize-inputCount);
 
-			// write the padding byte then align up to the next word boundary (proceeding bytes are already zero due to above Clear)
+			// Write the padding byte then align up to the next word boundary. Proceeding bytes are
+			// already zero due to the Clear above.
 			int input_offset = inputCount;
 			inputBuffer[input_offset++] = (byte)Version; // padding byte
 			input_offset = IntegerMath.Align(IntegerMath.kInt64AlignmentBit, input_offset);
@@ -345,12 +344,10 @@ namespace KSoft.Security.Cryptography
 			}
 			ProcessBlock(inputBuffer, inputOffset, 1);
 
-			if (HashValue == null)
-			{
-				HashValue = new byte[ActualHashValueArrayLength];
-			}
-			Bits.ArrayCopy(mRegs, 0, HashValue, 0, mRegs.Length);
-			return HashValue;
+			HashValue ??= new byte[ActualHashValueArrayLength];
+			byte[] hash_value = HashValue;
+			Bits.ArrayCopy(mRegs, 0, hash_value, 0, mRegs.Length);
+			return hash_value;
 		}
 
 		#region S-Boxes
