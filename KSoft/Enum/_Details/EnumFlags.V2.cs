@@ -24,9 +24,6 @@ namespace KSoft
 			public static readonly ModifyCondDelegate kModifyFlags = GenerateModifyFlagsMethod();
 			public static readonly ModifyByRefCondDelegate kModifyFlagsByRef = GenerateModifyFlagsMethodByRef();
 
-			public static readonly ReadDelegate kTestFlags = GenerateTestFlagsMethod();
-
-
 			static Exprs.BinaryExpression GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var param_v_member=Expr.PropertyOrField(paramV, EnumUtils.kMemberName);	// value.value__
@@ -155,26 +152,6 @@ namespace KSoft
 				return lambda.Compile();
 			}
 
-			static ReadDelegate GenerateTestFlagsMethod()
-			{
-				//////////////////////////////////////////////////////////////////////////
-				// Define the generated method's parameters and return constructs
-				var param_v = GenerateParamValue(false);
-				var param_f = GenerateParamFlags();
-
-				//////////////////////////////////////////////////////////////////////////
-				// return (value & flags) == flags
-				var param_v_member = Expr.PropertyOrField(param_v, EnumUtils.kMemberName);
-				var param_f_member = Expr.PropertyOrField(param_f, EnumUtils.kMemberName);
-
-				var and = Expr.And(param_v_member, param_f_member);
-				var equ = Expr.Equal(and, param_f_member);
-
-				//////////////////////////////////////////////////////////////////////////
-				// Generate a method based on the expression tree we've built
-				var lambda = Expr.Lambda<ReadDelegate>(equ, param_v, param_f);
-				return lambda.Compile();
-			}
 		};
 	};
 }

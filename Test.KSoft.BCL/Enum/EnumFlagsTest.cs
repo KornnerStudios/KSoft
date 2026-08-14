@@ -30,7 +30,6 @@ namespace KSoft.Test
 				Assert.IsInstanceOfType<System.NotSupportedException>(ex.InnerException);
 			}
 		}
-
 		[System.Flags]
 		enum FlagsEnum
 		{
@@ -39,7 +38,6 @@ namespace KSoft.Test
 			Flag2 = 1<<2,
 			Flag3 = 1<<3,
 		};
-
 		[TestMethod]
 		public void Enum_FlagsAddTest()
 		{
@@ -84,13 +82,6 @@ namespace KSoft.Test
 			const FlagsEnum kExpectedResult2 = FlagsEnum.Flag2;
 			FlagsEnum e2 = EnumFlags.Modify(false, e1, FlagsEnum.Flag0);
 			Assert.AreEqual(kExpectedResult2, e2);
-		}
-		[TestMethod]
-		public void Enum_FlagsTest()
-		{
-			FlagsEnum e = FlagsEnum.Flag0 | FlagsEnum.Flag2;
-			Assert.IsTrue(EnumFlags.Test(e, FlagsEnum.Flag2));
-			Assert.IsTrue(EnumFlags.Test(e, FlagsEnum.Flag0 | FlagsEnum.Flag2));
 		}
 	};
 }

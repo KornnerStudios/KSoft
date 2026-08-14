@@ -15,8 +15,6 @@ namespace KSoft
 
 		delegate TEnum ModifyCondDelegate(bool addOrRemove, TEnum value, TEnum flags);
 		delegate void ModifyByRefCondDelegate(bool addOrRemove, ref TEnum value, TEnum flags);
-
-		delegate bool ReadDelegate(TEnum value, TEnum flags);
 		#endregion
 
 		/// <summary>Initializes the <see cref="EnumFlags{TEnum}"/> class by generating the needed methods</summary>
@@ -66,14 +64,19 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <param name="flags"></param>
 		/// <returns></returns>
-		public static TEnum Modify(bool addOrRemove, TEnum value, TEnum flags)		{ return	V2.kModifyFlags(addOrRemove, value, flags); }
+		public static TEnum Modify(bool addOrRemove, TEnum value, TEnum flags)
+		{
+			return V2.kModifyFlags(addOrRemove, value, flags);
+		}
 		/// <summary>Adds or removes the given flags from the provided value</summary>
 		/// <param name="addOrRemove">ie, "true or false"</param>
 		/// <param name="value"></param>
 		/// <param name="flags"></param>
-		public static void Modify(bool addOrRemove, ref TEnum value, TEnum flags)	{			V1.kModifyFlagsByRef(addOrRemove, ref value, flags); }
+		public static void Modify(bool addOrRemove, ref TEnum value, TEnum flags)
+		{
+			V1.kModifyFlagsByRef(addOrRemove, ref value, flags);
+		}
 
-		public static bool Test(TEnum value, TEnum flags)		{ return	V1.kTestFlags(value, flags); }
 		#endregion
 	};
 
@@ -117,11 +120,5 @@ namespace KSoft
 			EnumFlags<TEnum>.Modify(addOrRemove, ref value, flags);
 		}
 		#endregion
-
-		public static bool Test<TEnum>(TEnum value, TEnum flags)
-			where TEnum : struct, Enum
-		{
-			return EnumFlags<TEnum>.Test(value, flags);
-		}
 	};
 }

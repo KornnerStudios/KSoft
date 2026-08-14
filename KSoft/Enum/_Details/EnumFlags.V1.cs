@@ -22,9 +22,6 @@ namespace KSoft
 			public static readonly ModifyCondDelegate kModifyFlags = GenerateModifyFlagsMethod();
 			public static readonly ModifyByRefCondDelegate kModifyFlagsByRef = GenerateModifyFlagsMethodByRef();
 
-			public static readonly ReadDelegate kTestFlags = GenerateTestFlagsMethod();
-
-
 			static Exprs.UnaryExpression GenerateAddFlagsGuts(ExprParam paramV, ExprParam paramF)
 			{
 				var v_as_int = Expr.Convert(paramV, kUnderlyingType);					// integer v = (integer)value
@@ -149,26 +146,6 @@ namespace KSoft
 				return lambda.Compile();
 			}
 
-			static ReadDelegate GenerateTestFlagsMethod()
-			{
-				//////////////////////////////////////////////////////////////////////////
-				// Define the generated method's parameters and return constructs
-				var param_v = GenerateParamValue(false);
-				var param_f = GenerateParamFlags();
-
-				//////////////////////////////////////////////////////////////////////////
-				// return (value & flags) == flags
-				var v_as_int = Expr.Convert(param_v, kUnderlyingType);
-				var f_as_int = Expr.Convert(param_f, kUnderlyingType);
-
-				var and = Expr.Convert(Expr.And(v_as_int, f_as_int), kEnumType);
-				var equ = Expr.Equal(and, param_f);
-
-				//////////////////////////////////////////////////////////////////////////
-				// Generate a method based on the expression tree we've built
-				var lambda = Expr.Lambda<ReadDelegate>(equ, param_v, param_f);
-				return lambda.Compile();
-			}
 		};
 	};
 }
