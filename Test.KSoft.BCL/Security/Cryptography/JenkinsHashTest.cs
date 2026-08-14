@@ -1,10 +1,25 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Security.Cryptography.Test
 {
 	[TestClass]
-	public class JenkinsHashTest : BaseTestClass
+	public sealed class JenkinsHashTest : BaseTestClass
 	{
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentException(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void Cryptography_JenkinsHashTest()
 		{
@@ -43,6 +58,26 @@ namespace KSoft.Security.Cryptography.Test
 			TestLookup3(k_inputs[0], k_expected_outputs[0]);
 			TestLookup3(k_inputs[1], k_expected_outputs[1]);
 			TestLookup3(k_inputs[2], k_expected_outputs[2], 1);
+		}
+
+		[TestMethod]
+		public void Hash_InvalidBuffers_ThrowArgumentException()
+		{
+			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((byte[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((char[])null));
+			AssertThrowsArgumentException("buffer", () => JenkinsHash.Hash(""));
+		}
+
+		[TestMethod]
+		public void LookupHashes_NullBuffers_ThrowArgumentNullException()
+		{
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((byte[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((char[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((string)null));
+
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((byte[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((char[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((string)null));
 		}
 	};
 }

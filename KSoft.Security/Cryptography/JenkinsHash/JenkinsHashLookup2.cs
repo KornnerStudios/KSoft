@@ -1,8 +1,6 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
@@ -113,7 +111,7 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Hash(byte[] buffer, uint seed = 0, int index = 0, int length = -1)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			if (length.IsNone())
 			{
@@ -134,7 +132,7 @@ namespace KSoft.Security.Cryptography
 		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
 		public static uint Hash(char[] buffer, uint seed = 0, int index = 0, int length = -1)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			if (length.IsNone())
 			{
@@ -155,7 +153,7 @@ namespace KSoft.Security.Cryptography
 		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
 		public static uint Hash(string buffer, uint seed = 0)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			int length = buffer.Length;
 			int index = 0;

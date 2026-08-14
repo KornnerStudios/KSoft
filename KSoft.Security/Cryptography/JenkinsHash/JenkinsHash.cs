@@ -1,8 +1,6 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+
+#nullable enable
 
 namespace KSoft.Security.Cryptography
 {
@@ -40,9 +38,9 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Hash(byte[] buffer, int index = 0, int length = -1)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
-			if(length == -1)
+			if (length == -1)
 			{
 				length = buffer.Length - index;
 			}
@@ -51,7 +49,7 @@ namespace KSoft.Security.Cryptography
 
 			for (int x = 0; x < length; x++)
 			{
-				hash = HashChar(hash, (char)buffer[index+x]);
+				hash = HashChar(hash, (char)buffer[index + x]);
 			}
 
 			return HashEnd(hash);
@@ -59,9 +57,9 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Hash(char[] buffer, int index = 0, int length = -1)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
-			if(length == -1)
+			if (length == -1)
 			{
 				length = buffer.Length - index;
 			}
@@ -70,7 +68,7 @@ namespace KSoft.Security.Cryptography
 
 			for (int x = 0; x < length; x++)
 			{
-				hash = HashChar(hash, buffer[index+x]);
+				hash = HashChar(hash, buffer[index + x]);
 			}
 
 			return HashEnd(hash);
@@ -78,7 +76,7 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Hash(string buffer)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(buffer));
+			ArgumentException.ThrowIfNullOrEmpty(buffer);
 
 			uint hash = 0;
 
