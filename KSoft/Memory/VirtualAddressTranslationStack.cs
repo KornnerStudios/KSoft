@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Memory
 {
@@ -32,14 +29,12 @@ namespace KSoft.Memory
 		public VirtualAddressTranslationStack(Shell.ProcessorSize ptrSize, int capacity)
 			: base(capacity != 0 ? capacity : kDefaultCapacity)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(
-				ptrSize == Shell.ProcessorSize.x32 || ptrSize == Shell.ProcessorSize.x64);
-
-			switch (ptrSize)
+			mNull = ptrSize switch
 			{
-			case Shell.ProcessorSize.x32: mNull = Values.PtrHandle.Null32; break;
-			case Shell.ProcessorSize.x64: mNull = Values.PtrHandle.Null64; break;
-			}
+				Shell.ProcessorSize.x32 => Values.PtrHandle.Null32,
+				Shell.ProcessorSize.x64 => Values.PtrHandle.Null64,
+				_ => throw new ArgumentOutOfRangeException(nameof(ptrSize)),
+			};
 
 			mCurrentPA = mNull;
 		}
@@ -95,7 +90,9 @@ namespace KSoft.Memory
 		/// <summary>Read a VA from a stream, and translate it into a PA</summary>
 		/// <param name="s">Stream to read from</param>
 		/// <returns>VA + <see cref="CurrentAddress"/></returns>
-		/// <remarks>If the VA read is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is returned without fix-up</remarks>
+		/// <remarks>
+		/// If the VA read is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is returned without fix-up.
+		/// </remarks>
 		public Values.PtrHandle ReadVirtualAsPhysicalAddress(IO.EndianReader s)
 		{
 			Values.PtrHandle va = mNull;
@@ -111,7 +108,10 @@ namespace KSoft.Memory
 		/// <summary>Translate a PA to a VA and write it to a stream</summary>
 		/// <param name="s">Stream to write to</param>
 		/// <param name="pa">PA to translate to a VA (ie, PA - <see cref="CurrentAddress"/>)</param>
-		/// <remarks>If <paramref name="pa"/> is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it streamed without fix-up</remarks>
+		/// <remarks>
+		/// If <paramref name="pa"/> is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is streamed
+		/// without fix-up.
+		/// </remarks>
 		public void WritePhysicalAsVirtualAddress(IO.EndianWriter s, Values.PtrHandle pa)
 		{
 			var va = pa.IsInvalidHandle
