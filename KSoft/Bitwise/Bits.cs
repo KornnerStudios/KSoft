@@ -8,6 +8,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+#nullable enable
+
 namespace KSoft
 {
 	/// <summary>Utility class for bit level manipulation</summary>
@@ -131,16 +133,21 @@ namespace KSoft
 				TSrc[] src, int srcOffset,
 				int srcCopyCount)
 			{
-				Contract.Requires<ArgumentNullException>(dst != null);
-				Contract.Requires<ArgumentNullException>(src != null);
-				Contract.Requires<ArgumentOutOfRangeException>(srcCopyCount >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(
-					dstOffset >= 0 && dstOffset < dst.Length);
-				Contract.Requires<ArgumentOutOfRangeException>(
-					srcOffset >= 0 && srcOffset < src.Length);
-
-				Contract.Requires<ArgumentOutOfRangeException>(
-					(srcOffset+srcCopyCount) <= src.Length);
+				ArgumentNullException.ThrowIfNull(dst);
+				ArgumentNullException.ThrowIfNull(src);
+				ArgumentOutOfRangeException.ThrowIfNegative(srcCopyCount);
+				if (dstOffset < 0 || dstOffset >= dst.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(dstOffset));
+				}
+				if (srcOffset < 0 || srcOffset >= src.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(srcOffset));
+				}
+				if (srcCopyCount > src.Length - srcOffset)
+				{
+					throw new ArgumentOutOfRangeException(nameof(srcCopyCount));
+				}
 
 				CopyInternal(dst, dstOffset, src, srcOffset, srcCopyCount);
 			}
@@ -148,9 +155,9 @@ namespace KSoft
 			public void Copy(TDst[] dst, TSrc[] src,
 				int srcCopyCount)
 			{
-				Contract.Requires<ArgumentNullException>(dst != null);
-				Contract.Requires<ArgumentNullException>(src != null);
-				Contract.Requires<ArgumentOutOfRangeException>(srcCopyCount >= 0);
+				ArgumentNullException.ThrowIfNull(dst);
+				ArgumentNullException.ThrowIfNull(src);
+				ArgumentOutOfRangeException.ThrowIfNegative(srcCopyCount);
 
 				CopyInternal(dst, 0, src, 0, srcCopyCount);
 			}
