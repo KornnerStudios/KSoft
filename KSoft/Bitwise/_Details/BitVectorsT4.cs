@@ -125,15 +125,19 @@ namespace KSoft.Collections
 		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
 		public bool this[int frombitIndex, int toBitIndex] {
 			readonly get {
-				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(frombitIndex, Length);
+				ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 
 				int bitCount = toBitIndex - frombitIndex;
 				return bitCount > 0 && TestBits(frombitIndex, bitCount);
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(frombitIndex, Length);
+				ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 
 				// handle the cases of the set already being all 1's or 0's
 				if (value && Cardinality == Length)
@@ -183,8 +187,10 @@ namespace KSoft.Collections
 		#region Access (ranged)
 		public void ClearBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -202,8 +208,10 @@ namespace KSoft.Collections
 
 		public void SetBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -221,8 +229,10 @@ namespace KSoft.Collections
 
 		public void ToggleBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -241,8 +251,10 @@ namespace KSoft.Collections
 		[Contracts.Pure]
 		public readonly bool TestBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -408,8 +420,8 @@ namespace KSoft.Collections
 				, bool stateFilter, int startBitIndex = 0
 				)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < vector.Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, vector.Length);
 
 				mStateFilter = stateFilter;
 				mStartBitIndex = startBitIndex-1;
@@ -797,15 +809,19 @@ namespace KSoft.Collections
 		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
 		public bool this[int frombitIndex, int toBitIndex] {
 			readonly get {
-				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(frombitIndex, Length);
+				ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 
 				int bitCount = toBitIndex - frombitIndex;
 				return bitCount > 0 && TestBits(frombitIndex, bitCount);
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(frombitIndex, Length);
+				ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 
 				// handle the cases of the set already being all 1's or 0's
 				if (value && Cardinality == Length)
@@ -855,8 +871,10 @@ namespace KSoft.Collections
 		#region Access (ranged)
 		public void ClearBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -874,8 +892,10 @@ namespace KSoft.Collections
 
 		public void SetBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -893,8 +913,10 @@ namespace KSoft.Collections
 
 		public void ToggleBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -913,8 +935,10 @@ namespace KSoft.Collections
 		[Contracts.Pure]
 		public readonly bool TestBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			if (bitCount <= 0)
 			{
@@ -1080,8 +1104,8 @@ namespace KSoft.Collections
 				, bool stateFilter, int startBitIndex = 0
 				)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < vector.Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, vector.Length);
 
 				mStateFilter = stateFilter;
 				mStartBitIndex = startBitIndex-1;

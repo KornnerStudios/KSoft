@@ -26,7 +26,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorLengthIn<#= bittable_type.GetVectorsSuffix() #>(int bitsCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);
 
 			return (bitsCount + (k<#= const_keyword #>BitCount-1)) >> k<#= const_keyword #>BitShift;
 		}
@@ -46,7 +46,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>LE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const <#= prim_keyword #> k_one = 1;
 
 			return (<#= prim_keyword #>)(k_one << (bitIndex % k<#= const_keyword #>BitCount));
@@ -57,7 +57,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>BE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const <#= prim_keyword #> k_one = 1;
 			const <#= prim_keyword #> k_most_significant_bit = k_one << (k<#= const_keyword #>BitCount - 1);
 
@@ -71,7 +71,7 @@ namespace KSoft
 		public static <#= prim_keyword #> VectorElementBitMaskIn<#= vector_suffix #>(int bitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementBitMaskIn<#= vector_suffix #>BE(bitIndex)
@@ -105,7 +105,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>LE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (<#= prim_keyword #>)(<#= prim_keyword #>.MaxValue << startBitIndex);
 		}
@@ -115,7 +115,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>BE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (<#= prim_keyword #>)(<#= prim_keyword #>.MaxValue >> startBitIndex);
 		}
@@ -127,7 +127,7 @@ namespace KSoft
 		public static <#= prim_keyword #> VectorElementSectionBitMaskIn<#= vector_suffix #>(int startBitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementSectionBitMaskIn<#= vector_suffix #>BE(startBitIndex)
@@ -188,7 +188,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorIndexIn<#= vector_suffix #>(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return bitIndex >> k<#= const_keyword #>BitShift;
 		}
@@ -208,8 +208,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorBitIndexIn<#= vector_suffix #>(int index, int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);
 
 			return (index << k<#= const_keyword #>BitShift) + bitOffset;
 		}
@@ -228,7 +228,7 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public static void VectorBitCursorIn<#= vector_suffix #>(int bitIndex, out int index, out int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			index = VectorIndexIn<#= vector_suffix #>(bitIndex);
 			bitOffset = bitIndex & k<#= const_keyword #>BitMod;

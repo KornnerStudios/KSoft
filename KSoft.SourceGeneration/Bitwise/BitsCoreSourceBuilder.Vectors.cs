@@ -40,7 +40,7 @@ internal static partial class BitsCoreSourceBuilder
 				writer.WriteLine($"public static int VectorLengthIn{VectorWordName(typeSpec)}(int bitsCount)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);");
+					writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);");
 					writer.WriteLine();
 					writer.WriteLine(
 						$"return (bitsCount + ({GeneralBitCountConstantName(typeSpec)}-1)) " +
@@ -73,7 +73,7 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine($"/*public*/ static {typeSpec.Keyword} VectorElementBitMaskIn{wordName}LE(int bitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
 			writer.WriteLine($"const {typeSpec.Keyword} k_one = 1;");
 			writer.WriteLine();
 			writer.WriteLine(
@@ -85,7 +85,7 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine($"/*public*/ static {typeSpec.Keyword} VectorElementBitMaskIn{wordName}BE(int bitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
 			writer.WriteLine($"const {typeSpec.Keyword} k_one = 1;");
 			writer.WriteLine(
 				$"const {typeSpec.Keyword} k_most_significant_bit = k_one << " +
@@ -105,7 +105,7 @@ internal static partial class BitsCoreSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
 			writer.WriteLine();
 			writer.WriteLine("return byteOrder == Shell.EndianFormat.Big");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
@@ -141,7 +141,7 @@ internal static partial class BitsCoreSourceBuilder
 			$"/*public*/ static {typeSpec.Keyword} VectorElementSectionBitMaskIn{wordName}LE(int startBitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);");
 			writer.WriteLine();
 			writer.WriteLine($"return ({typeSpec.Keyword})({typeSpec.Keyword}.MaxValue << startBitIndex);");
 		}
@@ -152,7 +152,7 @@ internal static partial class BitsCoreSourceBuilder
 			$"/*public*/ static {typeSpec.Keyword} VectorElementSectionBitMaskIn{wordName}BE(int startBitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);");
 			writer.WriteLine();
 			writer.WriteLine($"return ({typeSpec.Keyword})({typeSpec.Keyword}.MaxValue >> startBitIndex);");
 		}
@@ -167,7 +167,7 @@ internal static partial class BitsCoreSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);");
 			writer.WriteLine();
 			writer.WriteLine("return byteOrder == Shell.EndianFormat.Big");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
@@ -270,7 +270,7 @@ internal static partial class BitsCoreSourceBuilder
 				writer.WriteLine($"public static int VectorIndexIn{wordName}(int bitIndex)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);");
+					writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
 					writer.WriteLine();
 					writer.WriteLine($"return bitIndex >> {GeneralBitShiftConstantName(typeSpec)};");
 				}
@@ -297,8 +297,8 @@ internal static partial class BitsCoreSourceBuilder
 				writer.WriteLine($"public static int VectorBitIndexIn{wordName}(int index, int bitOffset)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(index >= 0);");
-					writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);");
+					writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(index);");
+					writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);");
 					writer.WriteLine();
 					writer.WriteLine($"return (index << {GeneralBitShiftConstantName(typeSpec)}) + bitOffset;");
 				}
@@ -325,7 +325,7 @@ internal static partial class BitsCoreSourceBuilder
 					$"public static void VectorBitCursorIn{wordName}(int bitIndex, out int index, out int bitOffset)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);");
+					writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
 					writer.WriteLine();
 					writer.WriteLine($"index = VectorIndexIn{wordName}(bitIndex);");
 					writer.WriteLine($"bitOffset = bitIndex & {GeneralBitModConstantName(typeSpec)};");

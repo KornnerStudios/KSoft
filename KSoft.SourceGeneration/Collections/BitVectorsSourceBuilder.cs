@@ -320,9 +320,10 @@ internal static class BitVectorsSourceBuilder
 
 	private static void WriteRangeContracts(SourceWriter writer)
 	{
-		writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);");
-		writer.WriteLine(
-			"Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(frombitIndex);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(frombitIndex, Length);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);");
 	}
 
 	private static void WriteRangedAccessRegion(SourceWriter writer, BitVectorSpec spec)
@@ -357,8 +358,13 @@ internal static class BitVectorsSourceBuilder
 			"(int startBitIndex, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, Length);");
+			writer.WriteLine("if ((startBitIndex+bitCount) > Length)");
+			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
+			{
+				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(bitCount));");
+			}
 			writer.WriteLine();
 			writer.WriteLine("if (bitCount <= 0)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -604,8 +610,8 @@ internal static class BitVectorsSourceBuilder
 			}
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);");
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < vector.Length);");
+				writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);");
+				writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, vector.Length);");
 				writer.WriteLine();
 				writer.WriteLine("mStateFilter = stateFilter;");
 				writer.WriteLine("mStartBitIndex = startBitIndex-1;");

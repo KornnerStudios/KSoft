@@ -17,7 +17,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorLengthInBytes(int bitsCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);
 
 			return (bitsCount + (kByteBitCount-1)) >> kByteBitShift;
 		}
@@ -28,7 +28,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorLengthInInt16(int bitsCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);
 
 			return (bitsCount + (kInt16BitCount-1)) >> kInt16BitShift;
 		}
@@ -39,7 +39,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorLengthInInt32(int bitsCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);
 
 			return (bitsCount + (kInt32BitCount-1)) >> kInt32BitShift;
 		}
@@ -50,7 +50,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorLengthInInt64(int bitsCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitsCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitsCount);
 
 			return (bitsCount + (kInt64BitCount-1)) >> kInt64BitShift;
 		}
@@ -64,7 +64,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static byte VectorElementBitMaskInBytesLE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const byte k_one = 1;
 
 			return (byte)(k_one << (bitIndex % kByteBitCount));
@@ -75,7 +75,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static byte VectorElementBitMaskInBytesBE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const byte k_one = 1;
 			const byte k_most_significant_bit = k_one << (kByteBitCount - 1);
 
@@ -89,7 +89,7 @@ namespace KSoft
 		public static byte VectorElementBitMaskInBytes(int bitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementBitMaskInBytesBE(bitIndex)
@@ -114,7 +114,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ushort VectorElementBitMaskInInt16LE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const ushort k_one = 1;
 
 			return (ushort)(k_one << (bitIndex % kInt16BitCount));
@@ -125,7 +125,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ushort VectorElementBitMaskInInt16BE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const ushort k_one = 1;
 			const ushort k_most_significant_bit = k_one << (kInt16BitCount - 1);
 
@@ -139,7 +139,7 @@ namespace KSoft
 		public static ushort VectorElementBitMaskInInt16(int bitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementBitMaskInInt16BE(bitIndex)
@@ -164,7 +164,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static uint VectorElementBitMaskInInt32LE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const uint k_one = 1;
 
 			return (uint)(k_one << (bitIndex % kInt32BitCount));
@@ -175,7 +175,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static uint VectorElementBitMaskInInt32BE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const uint k_one = 1;
 			const uint k_most_significant_bit = k_one << (kInt32BitCount - 1);
 
@@ -189,7 +189,7 @@ namespace KSoft
 		public static uint VectorElementBitMaskInInt32(int bitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementBitMaskInInt32BE(bitIndex)
@@ -214,7 +214,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ulong VectorElementBitMaskInInt64LE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const ulong k_one = 1;
 
 			return (ulong)(k_one << (bitIndex % kInt64BitCount));
@@ -225,7 +225,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ulong VectorElementBitMaskInInt64BE(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 			const ulong k_one = 1;
 			const ulong k_most_significant_bit = k_one << (kInt64BitCount - 1);
 
@@ -239,7 +239,7 @@ namespace KSoft
 		public static ulong VectorElementBitMaskInInt64(int bitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementBitMaskInInt64BE(bitIndex)
@@ -267,7 +267,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static byte VectorElementSectionBitMaskInBytesLE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (byte)(byte.MaxValue << startBitIndex);
 		}
@@ -277,7 +277,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static byte VectorElementSectionBitMaskInBytesBE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (byte)(byte.MaxValue >> startBitIndex);
 		}
@@ -289,7 +289,7 @@ namespace KSoft
 		public static byte VectorElementSectionBitMaskInBytes(int startBitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementSectionBitMaskInBytesBE(startBitIndex)
@@ -314,7 +314,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ushort VectorElementSectionBitMaskInInt16LE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (ushort)(ushort.MaxValue << startBitIndex);
 		}
@@ -324,7 +324,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ushort VectorElementSectionBitMaskInInt16BE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (ushort)(ushort.MaxValue >> startBitIndex);
 		}
@@ -336,7 +336,7 @@ namespace KSoft
 		public static ushort VectorElementSectionBitMaskInInt16(int startBitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementSectionBitMaskInInt16BE(startBitIndex)
@@ -361,7 +361,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static uint VectorElementSectionBitMaskInInt32LE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (uint)(uint.MaxValue << startBitIndex);
 		}
@@ -371,7 +371,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static uint VectorElementSectionBitMaskInInt32BE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (uint)(uint.MaxValue >> startBitIndex);
 		}
@@ -383,7 +383,7 @@ namespace KSoft
 		public static uint VectorElementSectionBitMaskInInt32(int startBitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementSectionBitMaskInInt32BE(startBitIndex)
@@ -408,7 +408,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ulong VectorElementSectionBitMaskInInt64LE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (ulong)(ulong.MaxValue << startBitIndex);
 		}
@@ -418,7 +418,7 @@ namespace KSoft
 		[Contracts.Pure]
 		/*public*/ static ulong VectorElementSectionBitMaskInInt64BE(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return (ulong)(ulong.MaxValue >> startBitIndex);
 		}
@@ -430,7 +430,7 @@ namespace KSoft
 		public static ulong VectorElementSectionBitMaskInInt64(int startBitIndex,
 			Shell.EndianFormat byteOrder = kVectorWordFormat)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
 
 			return byteOrder == Shell.EndianFormat.Big
 				? VectorElementSectionBitMaskInInt64BE(startBitIndex)
@@ -521,7 +521,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorIndexInBytes(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return bitIndex >> kByteBitShift;
 		}
@@ -532,7 +532,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorIndexInInt16(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return bitIndex >> kInt16BitShift;
 		}
@@ -543,7 +543,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorIndexInInt32(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return bitIndex >> kInt32BitShift;
 		}
@@ -554,7 +554,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorIndexInInt64(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			return bitIndex >> kInt64BitShift;
 		}
@@ -569,8 +569,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorBitIndexInBytes(int index, int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);
 
 			return (index << kByteBitShift) + bitOffset;
 		}
@@ -582,8 +582,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorBitIndexInInt16(int index, int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);
 
 			return (index << kInt16BitShift) + bitOffset;
 		}
@@ -595,8 +595,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorBitIndexInInt32(int index, int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);
 
 			return (index << kInt32BitShift) + bitOffset;
 		}
@@ -608,8 +608,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int VectorBitIndexInInt64(int index, int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(bitOffset >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitOffset);
 
 			return (index << kInt64BitShift) + bitOffset;
 		}
@@ -623,7 +623,7 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public static void VectorBitCursorInBytes(int bitIndex, out int index, out int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			index = VectorIndexInBytes(bitIndex);
 			bitOffset = bitIndex & kByteBitMod;
@@ -635,7 +635,7 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public static void VectorBitCursorInInt16(int bitIndex, out int index, out int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			index = VectorIndexInInt16(bitIndex);
 			bitOffset = bitIndex & kInt16BitMod;
@@ -647,7 +647,7 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public static void VectorBitCursorInInt32(int bitIndex, out int index, out int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			index = VectorIndexInInt32(bitIndex);
 			bitOffset = bitIndex & kInt32BitMod;
@@ -659,7 +659,7 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public static void VectorBitCursorInInt64(int bitIndex, out int index, out int bitOffset)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
 
 			index = VectorIndexInInt64(bitIndex);
 			bitOffset = bitIndex & kInt64BitMod;
