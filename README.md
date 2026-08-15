@@ -28,9 +28,13 @@ The BCL aims to provide a compartmentalized framework which provides functionali
 
 Compartmentalized in that non-critical systems like KSoft.Security are outside the actual root assembly, just named "KSoft".
 
-Example functionality which you can't find in the .NET framework is a BitStream class. We also provide utilities for treating and using Enums as actual bit flags, in an optimized and complete manner.
+Example functionality which you can't find in the .NET framework is a BitStream class. We also provide utilities for
+treating and using Enums as actual bit flags, in an optimized and complete manner.
 
-We're also very, very reliant on using [T4 Text Templates][MsdnT4] to generate most code which would otherwise be copy and pasted to fit the context of like-wise types. For example, our static KSoft.Bits (located in KSoft's _Bitwise_ folder) class uses a single T4 template to generate the BitCount() method for the usual unsigned integer types (UInt32, etc)
+KSoft historically relied on [T4 Text Templates][MsdnT4] for generated source such as numeric overload matrices. Current
+modernization work is retiring the T4 source in favor of Roslyn source generators. The checked-in `.tt` and `KSoft.T4`
+assets should be treated as historical source; git history and the `pre-t4-removal` tag are the rollback record once
+those files are removed.
 
 [MsdnT4]: http://msdn.microsoft.com/en-us/library/bb126445.aspx
 
@@ -62,7 +66,8 @@ If there are other .NET languages which don't (easily) offer bit flag operations
 ## Building
 Before you try building any of the projects, first [read the requirements](https://bitbucket.org/KornnerStudios/ksoft/wiki/Requirements) you may need.
 
-KSoft.T4 should always be the first thing that gets built. It's the meta assembly used by many of the T4 documents that are found in all the other assemblies. It's only needed when building projects, not at runtime.
+Current active builds do not require Visual Studio TextTemplating or `KSoft.T4`. Historical commits before
+`pre-t4-removal` may still require `KSoft.T4` first because it was the meta assembly used by the T4 documents.
 
 **NOTE**: The BCL contains some C++/cli projects, which cause the 'Win32' Platform to be defined. The only projects that get built with this active platform are these C++/cli projects. Instead, you should opt for the 'x86' Platform which will also build the .NET assemblies. Long story short, *don't* select 'Win32' for your active configuration.
 
