@@ -8,6 +8,8 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 using Interop = System.Runtime.InteropServices;
 
+#nullable enable
+
 namespace KSoft.Values
 {
 	// http://www.ietf.org/rfc/rfc4122.txt
@@ -15,15 +17,31 @@ namespace KSoft.Values
 
 	public enum UuidVersion
 	{
-		TimeBased,
+		/// <summary>Time-based UUID layout defined by RFC 4122 and RFC 9562 version 1</summary>
+		/// <remarks>
+		/// Only this layout is supported by <see cref="KGuid.Timestamp"/>, <see cref="KGuid.ClockSequence"/>, and
+		/// <see cref="KGuid.Node"/>.
+		/// </remarks>
+		TimeBased = 1,
 		/// <summary>DCE Security, with embedded POSIX UIDs</summary>
-		DCE,
+		DCE = 2,
 		/// <summary>Name-based, with MD5</summary>
-		NameBasedMd5,
+		NameBasedMd5 = 3,
 		/// <summary>(Pseudo-)Randomly generated</summary>
-		Random,
+		Random = 4,
 		/// <summary>Name-based, with SHA1</summary>
-		NameBasedSha1,
+		NameBasedSha1 = 5,
+		/// <summary>Time-ordered UUID layout defined by RFC 9562 version 6</summary>
+		/// <remarks>Version 6 reorders version 1 timestamp fields and does not use the version 1 property layout.</remarks>
+		ReorderedTimeBased = 6,
+		/// <summary>Unix Epoch time-ordered UUID layout defined by RFC 9562 version 7</summary>
+		/// <remarks>
+		/// .NET exposes creation through <see cref="Guid.CreateVersion7()"/> and
+		/// <see cref="Guid.CreateVersion7(DateTimeOffset)"/>.
+		/// </remarks>
+		UnixEpochTimeBased = 7,
+		/// <summary>Application-defined UUID layout reserved by RFC 9562 version 8</summary>
+		ApplicationDefined = 8,
 
 		/// <remarks>4 bits</remarks>
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
@@ -56,9 +74,6 @@ namespace KSoft.Values
 		#region Constants
 		public const int kSizeOf = sizeof(int) + (sizeof(short) * 2) + (sizeof(byte) * 8);
 
-		const int kVersionBitCount = 4;
-		const int kVersionBitShift = Bits.kInt16BitCount - kVersionBitCount;
-
 		const int kVariantBitCount = 3;
 		const int kVariantBitShift = Bits.kByteBitCount - kVariantBitCount;
 
@@ -80,36 +95,27 @@ namespace KSoft.Values
 		{
 			const string kData1Name = "_a";
 			public static readonly Func<Guid, int> GetData1;
-			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, int> SetData1;
 
 			const string kData2Name = "_b";
 			public static readonly Func<Guid, short> GetData2;
-			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> SetData2;
 
 			const string kData3Name = "_c";
 			public static readonly Func<Guid, short> GetData3;
-			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, short> SetData3;
 
 			public static readonly Func<Guid, byte>[] GetData4;
-			public static readonly Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[] SetData4;
 
 			static SysGuid()
 			{
 				GetData1 = Reflection.Util.GenerateMemberGetter			<Guid, int>		(kData1Name);
-				SetData1 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, int>		(kData1Name);
 				GetData2 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData2Name);
-				SetData2 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	(kData2Name);
 				GetData3 = Reflection.Util.GenerateMemberGetter			<Guid, short>	(kData3Name);
-				SetData3 = Reflection.Util.GenerateValueTypeMemberSetter<Guid, short>	(kData3Name);
 
 				string[] kData4Names = ["_d", "_e", "_f", "_g", "_h", "_i", "_j", "_k"];
 				GetData4 = new Func<Guid, byte>[kData4Names.Length];
-				SetData4 = new Reflection.Util.ValueTypeMemberSetterDelegate<Guid, byte>[kData4Names.Length];
 
 				for (int x = 0; x < kData4Names.Length; x++)
 				{
 					GetData4[x] = Reflection.Util.GenerateMemberGetter			<Guid, byte>(kData4Names[x]);
-					SetData4[x] = Reflection.Util.GenerateValueTypeMemberSetter	<Guid, byte>(kData4Names[x]);
 				}
 			}
 		};
@@ -147,11 +153,11 @@ namespace KSoft.Values
 
 		public readonly long MostSignificantBits { get {
 			ulong result = (uint)SysGuid.GetData1(mData);
-			result <<= Bits.kInt32BitCount;
 
-			result |= (ushort)SysGuid.GetData2(mData);
 			result <<= Bits.kInt16BitCount;
+			result |= (ushort)SysGuid.GetData2(mData);
 
+			result <<= Bits.kInt16BitCount;
 			result |= (ushort)SysGuid.GetData3(mData);
 
 			return (long)result;
@@ -163,7 +169,7 @@ namespace KSoft.Values
 		} }
 
 		#region Version and Variant
-		public readonly UuidVersion Version => (UuidVersion)(SysGuid.GetData3(mData) >> kVersionBitShift);
+		public readonly UuidVersion Version => (UuidVersion)mData.Version;
 
 		public readonly UuidVariant Variant { get {
 			int raw = SysGuid.GetData4[0](mData) >> kVariantBitShift;
@@ -190,9 +196,18 @@ namespace KSoft.Values
 		#endregion
 
 		#region TimeBased properties
+		readonly void ThrowIfNotTimeBased(string memberName)
+		{
+			if (Version != UuidVersion.TimeBased)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Tried to get the {0} of a non-time-based GUID",
+					memberName));
+			}
+		}
+
 		public readonly long Timestamp { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
-				"Tried to get the Timestamp of a non-time-based GUID");
+			ThrowIfNotTimeBased(nameof(Timestamp));
 
 			ulong msb = (ulong)MostSignificantBits;
 			ulong result = (msb & 0xFFF) << 48;
@@ -201,10 +216,8 @@ namespace KSoft.Values
 
 			return (long)result;
 		} }
-
 		public readonly int ClockSequence { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
-				"Tried to get the ClockSequence of a non-time-based GUID");
+			ThrowIfNotTimeBased(nameof(ClockSequence));
 
 			// NOTE: While the Variant field is 3-bits, both the Java and RFC implementations
 			// seem to lob the two MSB off, instead of 0x1F
@@ -213,19 +226,18 @@ namespace KSoft.Values
 
 			return (hi << 8) | lo;
 		} }
-
 		public readonly long Node { get {
-			Contract.Requires<InvalidOperationException>(Version == UuidVersion.TimeBased,
-				"Tried to get the Node of a non-time-based GUID");
+			ThrowIfNotTimeBased(nameof(Node));
 
 			long result = 0;
 
-			for (int x = 2; x < SysGuid.GetData4.Length; x++, result <<= Bits.kByteBitCount)
-				{
-					result |= SysGuid.GetData4[x](mData);
-				}
+			for (int x = 2; x < SysGuid.GetData4.Length; x++)
+			{
+				result <<= Bits.kByteBitCount;
+				result |= SysGuid.GetData4[x](mData);
+			}
 
-				return result;
+			return result;
 		} }
 		#endregion
 
@@ -261,9 +273,9 @@ namespace KSoft.Values
 		/// <see cref="Guid.ToString()"/>
 		public override readonly string ToString()								=> mData.ToString();
 		/// <see cref="Guid.ToString(string)"/>
-		public readonly string ToString(string format)							=> mData.ToString(format);
+		public readonly string ToString(string? format)							=> mData.ToString(format);
 		/// <see cref="Guid.ToString(string, IFormatProvider)"/>
-		public readonly string ToString(string format, IFormatProvider provider)=> mData.ToString(format, provider);
+		public readonly string ToString(string? format, IFormatProvider? provider)=> mData.ToString(format, provider);
 
 		/// <summary>
 		/// 32 digits: 00000000000000000000000000000000
@@ -280,14 +292,9 @@ namespace KSoft.Values
 		#region IEndianStreamable Members
 		public void Read(IO.EndianReader s)
 		{
-			SysGuid.SetData1(ref mData, s.ReadInt32());
-			SysGuid.SetData2(ref mData, s.ReadInt16());
-			SysGuid.SetData3(ref mData, s.ReadInt16());
-
-			foreach (var data4 in SysGuid.SetData4)
-			{
-				data4(ref mData, s.ReadByte());
-			}
+			mData = new Guid(s.ReadInt32(), s.ReadInt16(), s.ReadInt16(),
+				s.ReadByte(), s.ReadByte(), s.ReadByte(), s.ReadByte(),
+				s.ReadByte(), s.ReadByte(), s.ReadByte(), s.ReadByte());
 		}
 
 		public readonly void Write(IO.EndianWriter s)
@@ -320,7 +327,7 @@ namespace KSoft.Values
 		#endregion
 
 		#region IComparable Members
-		public readonly int CompareTo(object obj)
+		public readonly int CompareTo(object? obj)
 		{
 			if (obj == null)
 			{
@@ -342,7 +349,7 @@ namespace KSoft.Values
 		#endregion
 
 		#region IEquatable Members
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			if (obj is KGuid kg)
 			{
@@ -385,7 +392,7 @@ namespace KSoft.Values
 		#endregion
 
 		#region IComparer<KGuid> Members
-		readonly int System.Collections.IComparer.Compare(object x, object y)
+		readonly int System.Collections.IComparer.Compare(object? x, object? y)
 		{
 			if (x == y)
 			{
@@ -469,8 +476,10 @@ namespace KSoft.Values
 			result = Empty;
 			return false;
 		}
-		internal static bool TryParseExactNoStyle(string input, out KGuid result) => TryParseExact(input, kFormatNoStyle, out result);
-		internal static bool TryParseExactHyphenated(string input, out KGuid result) => TryParseExact(input, kFormatHyphenated, out result);
+		internal static bool TryParseExactNoStyle(string input, out KGuid result) =>
+			TryParseExact(input, kFormatNoStyle, out result);
+		internal static bool TryParseExactHyphenated(string input, out KGuid result) =>
+			TryParseExact(input, kFormatHyphenated, out result);
 		#endregion
 
 		#region Byte Utils
@@ -478,16 +487,19 @@ namespace KSoft.Values
 
 		public readonly void ToByteBuffer(byte[] buffer, int index = 0)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((index+kSizeOf) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			if (index > buffer.Length - kSizeOf)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
 
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData1(mData)); index += sizeof(int);
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData2(mData)); index += sizeof(short);
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData3(mData)); index += sizeof(short);
 			for (int x = 0; x < 8; x++, index++)
 			{
-				buffer[x] = SysGuid.GetData4[x](mData);
+				buffer[index] = SysGuid.GetData4[x](mData);
 			}
 		}
 		#endregion
