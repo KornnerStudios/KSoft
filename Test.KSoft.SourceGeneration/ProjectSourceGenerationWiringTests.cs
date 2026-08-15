@@ -39,26 +39,16 @@ public sealed class ProjectSourceGenerationWiringTests
 	}
 
 	[TestMethod]
-	public void GeneratedSourceItemsUseSingleSourceGenerationSwitchTest()
+	public void ProjectsDoNotCarryRollbackCompileMetadataTest()
 	{
 		foreach (ProjectFile project in ProjectFiles())
 		{
 			var document = LoadProject(project);
-			var generatedSources = ElementsNamed(document, "KSoftGeneratedSource").ToArray();
-			var rollbackCompileItems = generatedSources
-				.Select(static x => x.Element("RollbackCompile")?.Value)
-				.ToArray();
+			var generatedSources = ElementsNamed(document, "KSoftGeneratedSource");
+			var rollbackCompileItems = ElementsNamed(document, "RollbackCompile");
 
-			CollectionAssert.AllItemsAreUnique(rollbackCompileItems, project.DisplayName);
-			foreach (XElement generatedSource in generatedSources)
-			{
-				Assert.AreEqual(kSingleSwitchCondition, (string)generatedSource.Attribute("Condition"), project.DisplayName);
-				XElement rollbackCompile = generatedSource.Element("RollbackCompile");
-				if (rollbackCompile != null)
-				{
-					Assert.IsFalse(string.IsNullOrWhiteSpace(rollbackCompile.Value));
-				}
-			}
+			Assert.IsEmpty(generatedSources, project.DisplayName);
+			Assert.IsEmpty(rollbackCompileItems, project.DisplayName);
 		}
 	}
 

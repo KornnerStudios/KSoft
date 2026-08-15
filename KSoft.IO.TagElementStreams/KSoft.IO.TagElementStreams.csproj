@@ -5,9 +5,9 @@
     <RootNamespace>KSoft.IO</RootNamespace>
     <AssemblyName>KSoft.IO.TagElementStreams</AssemblyName>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
+    <!-- Keep an explicit source list so hand-authored partials and generated surfaces stay reviewable. -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source generation defaults on; pass false explicitly to use checked-in T4 rollback files. -->
+    <!-- Source generation is authoritative for former T4 surfaces. -->
     <KSoftUseSourceGeneration Condition=" '$(KSoftUseSourceGeneration)' == '' ">true</KSoftUseSourceGeneration>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath
@@ -18,37 +18,9 @@
     <!-- CompilerVisibleProperty exposes the MSBuild switch to the Roslyn generator as build_property.*. -->
     <CompilerVisibleProperty Include="KSoftUseSourceGeneration" />
   </ItemGroup>
-  <ItemGroup>
-    <!--
-      KSoftGeneratedSource is the single registration point for generated surfaces:
-        Include        = logical generated surface name
-        RollbackCompile= checked-in T4 .cs file removed from Compile when the generator is active
-    -->
-    <KSoftGeneratedSource Include="TagElementTextStreamRead"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>_Details\TagElementTextStream.ReadT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TagElementTextStreamWrite"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>_Details\TagElementTextStream.WriteT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TagElementStreamRead"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>_Details\TagElementStream.ReadT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TagElementStreamSerialize"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>_Details\TagElementStream.SerializeT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TagElementStreamWrite"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>_Details\TagElementStream.WriteT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-  </ItemGroup>
   <PropertyGroup>
-    <!-- Any active KSoftGeneratedSource emits .g.cs files and removes the corresponding rollback Compile item. -->
-    <KSoftGeneratedSourceItems>@(KSoftGeneratedSource)</KSoftGeneratedSourceItems>
-    <KSoftSourceGenerationEnabled Condition=" '$(KSoftGeneratedSourceItems)' != '' ">true</KSoftSourceGenerationEnabled>
+    <!-- Do not link emitted .g.cs files back into the project; Roslyn owns the semantic generated document view. -->
+    <KSoftSourceGenerationEnabled Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">true</KSoftSourceGenerationEnabled>
     <KSoftSourceGenerationEnabled
         Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
     <EmitCompilerGeneratedFiles
@@ -73,12 +45,7 @@
     <Compile Include="DefaultSerializers\Shell.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Read.cs" />
-    <Compile Include="_Details\TagElementTextStream.ReadT4.cs" />
     <Compile Include="_DetailsText\TagElementTextStream.Write.cs" />
-    <Compile Include="_Details\TagElementTextStream.WriteT4.cs" />
-    <Compile Include="_Details\TagElementStream.ReadT4.cs" />
-    <Compile Include="_Details\TagElementStream.SerializeT4.cs" />
-    <Compile Include="_Details\TagElementStream.WriteT4.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
@@ -92,9 +59,5 @@
         OutputItemType="Analyzer"
         ReferenceOutputAssembly="False"
         PrivateAssets="all" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Remove checked-in T4 rollback files when the matching Roslyn feature is active. -->
-    <Compile Remove="@(KSoftGeneratedSource->'%(RollbackCompile)')" />
   </ItemGroup>
 </Project>
