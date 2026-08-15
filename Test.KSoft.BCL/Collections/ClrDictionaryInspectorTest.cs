@@ -8,6 +8,20 @@ namespace KSoft.Collections.Test
 	[TestClass]
 	public class ClrDictionaryInspectorTest : BaseTestClass
 	{
+		static void AssertThrowsArgumentNull(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void Collections_ClrDictionaryInspectorIntTest()
 		{
@@ -35,6 +49,31 @@ namespace KSoft.Collections.Test
 						x, collision_count);
 				}
 			}
+		}
+
+		[TestMethod]
+		public void Collections_ClrDictionaryInspectorConstructorNull_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull(() => _ = new ClrDictionaryInspector<int, int>(null!), "dic");
+		}
+
+		[TestMethod]
+		public void Collections_ClrDictionaryInspectorDicEntryGetNextGuards_ThrowExpectedExceptions()
+		{
+			var last = new ClrDictionaryInspector<int, int>.DicEntry { NextEntryIndex = TypeExtensions.kNone };
+			var inspector = new ClrDictionaryInspector<int, int>(new Dictionary<int, int>());
+
+			AssertThrowsArgumentNull(() => _ = last.GetNext(null!), "inspector");
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = last.GetNext(inspector));
+		}
+
+		[TestMethod]
+		public void Collections_ClrDictionaryInspectorGetEntriesInBucketGuards_ThrowArgumentOutOfRangeException()
+		{
+			var inspector = new ClrDictionaryInspector<int, int>(new Dictionary<int, int>());
+
+			AssertThrowsArgumentOutOfRange(() => inspector.GetEntriesInBucket(-1).ToArray(), "bucketIndex");
+			AssertThrowsArgumentOutOfRange(() => inspector.GetEntriesInBucket(0).ToArray(), "bucketIndex");
 		}
 	};
 }

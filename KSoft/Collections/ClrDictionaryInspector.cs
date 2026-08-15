@@ -52,8 +52,9 @@ namespace KSoft.Collections
 
 			public readonly DicEntry GetNext(ClrDictionaryInspector<TKey, TValue> inspector)
 			{
-				Contract.Requires<ArgumentNullException>(inspector != null);
-				Contract.Requires<InvalidOperationException>(!IsLast);
+				ArgumentNullException.ThrowIfNull(inspector);
+				if (IsLast)
+					throw new InvalidOperationException();
 
 				return inspector.Entries[NextEntryIndex];
 			}
@@ -131,7 +132,7 @@ namespace KSoft.Collections
 
 		public ClrDictionaryInspector(Dictionary<TKey, TValue> dic)
 		{
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 
 			mDic = dic;
 			mExpectedVersion = Version;
@@ -185,7 +186,8 @@ namespace KSoft.Collections
 
 		public IEnumerable<DicEntry> GetEntriesInBucket(int bucketIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bucketIndex >= 0 && bucketIndex < Buckets.Count);
+			ArgumentOutOfRangeException.ThrowIfNegative(bucketIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bucketIndex, Buckets.Count);
 
 			for (int x = Buckets[bucketIndex]; x >= 0; x = Entries[x].NextEntryIndex)
 			{
