@@ -149,7 +149,7 @@ namespace KSoft
 		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream,
 			long bufferLength)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferLength);
 
 			stream.VirtualBufferStart = stream.BaseStream.Position;
 			stream.VirtualBufferLength = bufferLength;
@@ -175,7 +175,7 @@ namespace KSoft
 		public static IO.IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(this IO.IKSoftStreamWithVirtualBuffer stream,
 			long bufferLength)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bufferLength > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferLength);
 
 			return new IO.IKSoftStreamWithVirtualBufferAndBookmark(stream, bufferLength);
 		}
@@ -311,7 +311,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static MS.StringStorageWidthType FromEncoding(Encoding enc)
 		{
-			Contract.Requires<ArgumentNullException>(enc != null);
+			ArgumentNullException.ThrowIfNull(enc);
 
 			return enc switch
 			{
