@@ -66,11 +66,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + <#= bittable_type.SizeOfInBytes #></returns>
 		public static int SwapU<#= const_keyword #>(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+<#= bittable_type.SizeOfCode #> <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - <#= bittable_type.SizeOfCode #>);
 
 <# byte_access_gen.GenerateByteDeclarations(); #>
 <# byte_access_gen.GenerateBytesFromBuffer(); #>
@@ -92,11 +90,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytes<#= overload_suffix_for_uint #>(byte[] buffer, int offset,
 			<#= prim_keyword #> value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+<#= bittable_type.SizeOfCode #> <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - <#= bittable_type.SizeOfCode #>);
 
 <# byte_access_gen.GenerateByteDeclarations(); #>
 			if (BitConverter.IsLittleEndian) {

@@ -246,17 +246,10 @@ internal static class ByteSwapSourceBuilder
 
 	private static void WriteBufferContracts(SourceWriter writer, ByteSwapWordSpec spec)
 	{
-		writer.WriteLine("Contract.Requires<ArgumentNullException>(buffer != null);");
-		writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(");
-		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-		{
-			writer.WriteLine("offset >= 0 && offset < buffer.Length);");
-		}
-		writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(");
-		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-		{
-			writer.WriteLine($"offset+{spec.SizeOfCode} <= buffer.Length);");
-		}
+		writer.WriteLine("ArgumentNullException.ThrowIfNull(buffer);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(offset);");
+		writer.WriteLine(
+			$"ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - {spec.SizeOfCode});");
 	}
 
 	private static void WriteByteDeclarations(SourceWriter writer, ByteSwapWordSpec spec)

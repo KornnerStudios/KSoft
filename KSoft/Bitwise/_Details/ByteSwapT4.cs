@@ -36,11 +36,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + 2</returns>
 		public static int SwapUInt16(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(ushort) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(ushort));
 
 			byte b0, b1;
 			b0 = buffer[offset++];
@@ -64,11 +62,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytes(byte[] buffer, int offset,
 			ushort value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(ushort) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(ushort));
 
 			byte b0, b1;
 			if (BitConverter.IsLittleEndian) {
@@ -151,11 +147,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + 4</returns>
 		public static int SwapUInt32(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(uint) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(uint));
 
 			byte b0, b1, b2, b3;
 			b0 = buffer[offset++];
@@ -183,11 +177,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytes(byte[] buffer, int offset,
 			uint value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(uint) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(uint));
 
 			byte b0, b1, b2, b3;
 			if (BitConverter.IsLittleEndian) {
@@ -276,11 +268,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + 8</returns>
 		public static int SwapUInt64(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(ulong) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(ulong));
 
 			byte b0, b1, b2, b3, b4, b5, b6, b7;
 			b0 = buffer[offset++];
@@ -316,11 +306,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytes(byte[] buffer, int offset,
 			ulong value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+sizeof(ulong) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - sizeof(ulong));
 
 			byte b0, b1, b2, b3, b4, b5, b6, b7;
 			if (BitConverter.IsLittleEndian) {
@@ -432,11 +420,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + 3</returns>
 		public static int SwapUInt24(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+kSizeOfInt24 <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - kSizeOfInt24);
 
 			byte b0, b1, b2;
 			b0 = buffer[offset++];
@@ -462,11 +448,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytesUInt24(byte[] buffer, int offset,
 			uint value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+kSizeOfInt24 <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - kSizeOfInt24);
 
 			byte b0, b1, b2;
 			if (BitConverter.IsLittleEndian) {
@@ -576,11 +560,9 @@ namespace KSoft.Bitwise
 		/// <returns>offset + 5</returns>
 		public static int SwapUInt40(byte[] buffer, int offset)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+kSizeOfInt40 <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - kSizeOfInt40);
 
 			byte b0, b1, b2, b3, b4;
 			b0 = buffer[offset++];
@@ -610,11 +592,9 @@ namespace KSoft.Bitwise
 		public static int ReplaceBytesUInt40(byte[] buffer, int offset,
 			ulong value)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset >= 0 && offset < buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(
-				offset+kSizeOfInt40 <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - kSizeOfInt40);
 
 			byte b0, b1, b2, b3, b4;
 			if (BitConverter.IsLittleEndian) {
