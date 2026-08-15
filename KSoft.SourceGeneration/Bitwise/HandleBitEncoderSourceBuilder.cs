@@ -15,8 +15,6 @@ internal static class HandleBitEncoderSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteLine("using System.Diagnostics.CodeAnalysis;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Bitwise");
 		writer.WriteLine();
@@ -127,7 +125,7 @@ internal static class HandleBitEncoderSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(encoder != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(encoder);");
 			writer.WriteLine();
 			writer.WriteLine("encoder.BitEncode(value, ref mBits.u64, ref mBitIndex);");
 		}
@@ -141,7 +139,7 @@ internal static class HandleBitEncoderSourceBuilder
 		writer.WriteLine($"public void Encode{spec.SizeOfInBits}({spec.Keyword} value, {spec.Keyword} bitMask)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(bitMask != 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfZero(bitMask);");
 			writer.WriteLine();
 			writer.WriteLine("Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, bitMask);");
 		}
@@ -156,8 +154,8 @@ internal static class HandleBitEncoderSourceBuilder
 			$"public void EncodeNoneable{spec.SizeOfInBits}({spec.SignedKeyword} value, {spec.Keyword} bitMask)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(bitMask != 0);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(value.IsNoneOrPositive());");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfZero(bitMask);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfLessThan(value, -1);");
 			writer.WriteLine();
 			writer.WriteLine("Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, bitMask);");
 		}
@@ -172,7 +170,7 @@ internal static class HandleBitEncoderSourceBuilder
 			$"public void Encode{spec.SizeOfInBits}({spec.Keyword} value, Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) throw new ArgumentException(null, nameof(traits));");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"Bits.BitEncodeEnum(value, ref mBits.u64, ref mBitIndex, traits.Bitmask{spec.SizeOfInBits});");
@@ -189,8 +187,8 @@ internal static class HandleBitEncoderSourceBuilder
 			"Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(!traits.IsEmpty);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(value.IsNoneOrPositive());");
+			writer.WriteLine("if (traits.IsEmpty) throw new ArgumentException(null, nameof(traits));");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfLessThan(value, -1);");
 			writer.WriteLine();
 			writer.WriteLine(
 				"Bits.BitEncodeEnum((ulong)(value+1), ref mBits.u64, ref mBitIndex, " +
@@ -213,7 +211,7 @@ internal static class HandleBitEncoderSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(decoder != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(decoder);");
 			writer.WriteLine();
 			writer.WriteLine("value = decoder.BitDecode(mBits.u64, ref mBitIndex);");
 		}
@@ -227,7 +225,7 @@ internal static class HandleBitEncoderSourceBuilder
 		writer.WriteLine($"public void Decode{spec.SizeOfInBits}(out {spec.Keyword} value, {spec.Keyword} bitMask)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(bitMask != 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfZero(bitMask);");
 			writer.WriteLine();
 			writer.WriteLine($"value = ({spec.Keyword})Bits.BitDecode(mBits.u64, ref mBitIndex, bitMask);");
 		}
@@ -242,7 +240,7 @@ internal static class HandleBitEncoderSourceBuilder
 			$"public void DecodeNoneable{spec.SizeOfInBits}(out {spec.SignedKeyword} value, {spec.Keyword} bitMask)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(bitMask != 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfZero(bitMask);");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"value = ({spec.SignedKeyword})Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, bitMask);");
@@ -258,7 +256,7 @@ internal static class HandleBitEncoderSourceBuilder
 			$"public void Decode{spec.SizeOfInBits}(out {spec.Keyword} value, Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) throw new ArgumentException(null, nameof(traits));");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"value = ({spec.Keyword})Bits.BitDecode(mBits.u64, ref mBitIndex, " +
@@ -276,7 +274,7 @@ internal static class HandleBitEncoderSourceBuilder
 			"Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentException>(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) throw new ArgumentException(null, nameof(traits));");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"value = ({spec.SignedKeyword})Bits.BitDecodeNoneable(mBits.u64, ref mBitIndex, " +
