@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
+
+#nullable enable
 
 namespace KSoft.Reflection
 {
@@ -58,11 +54,13 @@ namespace KSoft.Reflection
 		/// <summary>Assert the properties of an enum type are valid for any Enum Utils code</summary>
 		/// <param name="kEnumType">Enum type in question</param>
 		/// <param name="kUnderlyingType">Optional. <paramref name="kEnumType"/>'s underlying type</param>
-		/// <remarks>If <paramref name="kUnderlyingType"/> is null, we use the type info found in <paramref name="kEnumType"/></remarks>
+		/// <remarks>
+		/// If <paramref name="kUnderlyingType"/> is null, we use the type info found in <paramref name="kEnumType"/>.
+		/// </remarks>
 		/// <exception cref="NotSupportedException">Thrown when the underlying type is unsupported</exception>
-		public static void AssertUnderlyingTypeIsSupported(Type kEnumType, Type kUnderlyingType)
+		public static void AssertUnderlyingTypeIsSupported(Type kEnumType, Type? kUnderlyingType)
 		{
-			Contract.Requires<ArgumentNullException>(kEnumType != null);
+			ArgumentNullException.ThrowIfNull(kEnumType);
 
 			if (kUnderlyingType == null)
 			{
@@ -87,7 +85,7 @@ namespace KSoft.Reflection
 		/// <exception cref="NotSupportedException">Thrown when <paramref name="theType"/> is not an Enum</exception>
 		public static void AssertTypeIsEnum(Type theType)
 		{
-			Contract.Requires<ArgumentNullException>(theType != null);
+			ArgumentNullException.ThrowIfNull(theType);
 
 			if (theType.IsEnum)
 			{
@@ -102,7 +100,7 @@ namespace KSoft.Reflection
 
 		public static void AssertTypeIsFlagsEnum(Type theType)
 		{
-			Contract.Requires<ArgumentNullException>(theType != null);
+			ArgumentNullException.ThrowIfNull(theType);
 
 			AssertTypeIsEnum(theType);
 
@@ -117,12 +115,13 @@ namespace KSoft.Reflection
 			throw new NotSupportedException(message);
 		}
 
-		[Contracts.Pure]
 		public static List<FieldInfo> GetEnumFields(Type enumType)
 		{
-			Contract.Requires<ArgumentNullException>(enumType != null);
-			Contract.Requires<ArgumentException>(enumType.IsEnum);
-			Contract.Ensures(Contract.Result<List<FieldInfo>>() != null);
+			ArgumentNullException.ThrowIfNull(enumType);
+			if (!enumType.IsEnum)
+			{
+				throw new ArgumentException("Type must be an enum.", nameof(enumType));
+			}
 
 			var fields = enumType.GetFields();
 			var results = new List<FieldInfo>(fields.Length - 1);
