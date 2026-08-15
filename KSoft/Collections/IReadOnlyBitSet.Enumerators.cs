@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -12,9 +7,8 @@ namespace KSoft.Collections
 		public partial struct StateEnumerator
 		{
 			public StateEnumerator(IReadOnlyBitSet bitset)
-				: this(bitset, false)
+				: this(Util.ThrowIfNull(bitset), false)
 			{
-				Contract.Requires<ArgumentNullException>(bitset != null);
 			}
 
 			public bool MoveNext()
@@ -33,11 +27,13 @@ namespace KSoft.Collections
 		public partial struct StateFilterEnumerator
 		{
 			public StateFilterEnumerator(IReadOnlyBitSet bitset, bool stateFilter, int startBitIndex = 0)
-				: this(bitset, false)
+				: this(Util.ThrowIfNull(bitset), false)
 			{
-				Contract.Requires<ArgumentNullException>(bitset != null);
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < bitset.Length || bitset.Length == 0);
+				ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
+				if (startBitIndex >= bitset.Length && bitset.Length != 0)
+				{
+					throw new ArgumentOutOfRangeException(nameof(startBitIndex));
+				}
 
 				mStateFilter = stateFilter;
 				mStartBitIndex = startBitIndex-1;

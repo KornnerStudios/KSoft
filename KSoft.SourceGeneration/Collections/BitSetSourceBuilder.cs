@@ -17,7 +17,6 @@ internal static class BitSetSourceBuilder
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteLine(
 			"using StateFilterEnumerator = KSoft.Collections.IReadOnlyBitSetEnumerators.StateFilterEnumerator;");
@@ -91,8 +90,7 @@ internal static class BitSetSourceBuilder
 			writer.WriteLine($"public StateFilterEnumeratorWrapper {state.ApiName}BitIndicesStartingAt(int startBitIndex)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);");
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);");
+				writer.WriteLine("ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));");
 				writer.WriteLine();
 				writer.WriteLine($"return new(new StateFilterEnumerator(this, {state.ValueKeyword}, startBitIndex));");
 			}
@@ -111,8 +109,7 @@ internal static class BitSetSourceBuilder
 		{
 			if (!operation.IsPure)
 			{
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);");
-				writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);");
+				writer.WriteLine("ThrowIfBitRangeOutOfRange(startBitIndex, bitCount);");
 				writer.WriteLine();
 			}
 			writer.WriteLine("if (bitCount <= 0)");

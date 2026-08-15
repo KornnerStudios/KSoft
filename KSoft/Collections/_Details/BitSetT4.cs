@@ -1,10 +1,5 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -29,8 +24,7 @@ namespace KSoft.Collections
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper ClearBitIndicesStartingAt(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			return new(new StateFilterEnumerator(this, false, startBitIndex));
 		}
@@ -50,8 +44,7 @@ namespace KSoft.Collections
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper SetBitIndicesStartingAt(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			return new(new StateFilterEnumerator(this, true, startBitIndex));
 		}
@@ -59,8 +52,7 @@ namespace KSoft.Collections
 
 		public void ClearBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ThrowIfBitRangeOutOfRange(startBitIndex, bitCount);
 
 			if (bitCount <= 0)
 			{
@@ -105,8 +97,7 @@ namespace KSoft.Collections
 
 		public void SetBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ThrowIfBitRangeOutOfRange(startBitIndex, bitCount);
 
 			if (bitCount <= 0)
 			{
@@ -152,8 +143,7 @@ namespace KSoft.Collections
 
 		public void ToggleBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ThrowIfBitRangeOutOfRange(startBitIndex, bitCount);
 
 			if (bitCount <= 0)
 			{

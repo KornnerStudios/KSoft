@@ -43,5 +43,18 @@ namespace KSoft.Test
 			x = null;
 			Assert.IsTrue(Util.GenericReferenceEquals(x, y));
 		}
+
+		[TestMethod]
+		public void Util_ThrowIfNullTest()
+		{
+			var value = new object();
+
+			Assert.AreSame(value, Util.ThrowIfNull(value));
+
+			value = null;
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(() => Util.ThrowIfNull(value));
+
+			Assert.AreEqual(nameof(value), exception.ParamName);
+		}
 	};
 }

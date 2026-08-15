@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -39,6 +40,23 @@ namespace KSoft
 			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			ref T unused)
 		{}
+
+		/// <summary>Throws when <paramref name="value"/> is null, otherwise returns <paramref name="value"/>.</summary>
+		/// <typeparam name="T">Reference type to validate</typeparam>
+		/// <param name="value">Value to validate</param>
+		/// <param name="paramName">Caller argument expression for <paramref name="value"/></param>
+		/// <returns><paramref name="value"/> after null validation</returns>
+		#nullable enable
+		[return: NotNull]
+		public static T ThrowIfNull<T>(
+			[NotNull] T? value,
+			[CallerArgumentExpression(nameof(value))] string? paramName = null)
+			where T : class
+		{
+			ArgumentNullException.ThrowIfNull(value, paramName);
+			return value;
+		}
+		#nullable restore
 
 		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
 

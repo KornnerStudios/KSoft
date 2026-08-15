@@ -5,11 +5,6 @@
 <#@ import namespace="KSoft.T4.Bitwise" #>
 using System;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -35,8 +30,7 @@ namespace KSoft.Collections
 		/// <param name="startBitIndex">Bit index to start at</param>
 		public StateFilterEnumeratorWrapper <#= state_def.ApiName #>BitIndicesStartingAt(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			return new(new StateFilterEnumerator(this, <#= state_def.ValueKeyword #>, startBitIndex));
 		}
@@ -50,8 +44,7 @@ namespace KSoft.Collections
 		public <#= op.ResultType() #> <#= op #>Bits(int startBitIndex, int bitCount)
 		{
 <#	if (op != BitOperation.Test) { /* Contract specified in IReadOnlyBitSet */ #>
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ThrowIfBitRangeOutOfRange(startBitIndex, bitCount);
 
 <#	} #>
 			if (bitCount <= 0)

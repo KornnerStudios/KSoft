@@ -111,6 +111,47 @@ namespace KSoft.Collections
 		int mVersion;
 		#endregion
 
+		#region Guard helpers
+		static void ThrowIfArraySegmentOutOfRange(int index, int length, int arrayLength)
+		{
+			if (index < 0 || index >= arrayLength)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
+			if (length > arrayLength - index)
+			{
+				throw new ArgumentOutOfRangeException(nameof(length));
+			}
+		}
+
+		void ThrowIfBitIndexOutOfRange(int bitIndex, string paramName)
+		{
+			if (bitIndex < 0 || bitIndex >= Length)
+			{
+				throw new ArgumentOutOfRangeException(paramName);
+			}
+		}
+
+		void ThrowIfBitRangeOutOfRange(int startBitIndex, int bitCount)
+		{
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
+			if (bitCount > Length - startBitIndex)
+			{
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
+			}
+		}
+
+		void ThrowIfBitSpanOutOfRange(int frombitIndex, int toBitIndex)
+		{
+			ThrowIfBitIndexOutOfRange(frombitIndex, nameof(frombitIndex));
+			if (toBitIndex < frombitIndex || toBitIndex > Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(toBitIndex));
+			}
+		}
+		#endregion
+
 		/// <summary>Size of a single implementation word, in bytes, used in the internal array to represent this bit set</summary>
 		public int UnderlyingWordSize => sizeof(TWord);
 		/// <summary>Number of implementation words <b>used</b> in the internal array to represent this bit set</summary>
@@ -132,8 +173,11 @@ namespace KSoft.Collections
 		public int Length {
 			get => mLength;
 			set {
-				Contract.Requires<InvalidOperationException>(!FixedLength);
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				if (FixedLength)
+				{
+					throw new InvalidOperationException();
+				}
+				ArgumentOutOfRangeException.ThrowIfNegative(value);
 				if (value == mLength)
 				{
 					return;
@@ -256,7 +300,7 @@ namespace KSoft.Collections
 
 		public BitSet(int length, bool defaultValue = false, bool fixedLength = true)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 
 			mVersion = 0;
 			InitializeArrayWithDefault(length, defaultValue, out mLength);
@@ -265,10 +309,8 @@ namespace KSoft.Collections
 
 		public BitSet(byte[] bytes, int index, int length, bool fixedLength = true)
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < bytes.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((index+length) <= bytes.Length);
+			ArgumentNullException.ThrowIfNull(bytes);
+			ThrowIfArraySegmentOutOfRange(index, length, bytes.Length);
 
 			mVersion = 0;
 			InitializeArrayFromBytes(bytes, index, length, out mLength);
@@ -280,10 +322,8 @@ namespace KSoft.Collections
 
 		public BitSet(bool[] values, int index, int length, bool fixedLength = true)
 		{
-			Contract.Requires<ArgumentNullException>(values != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < values.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((index + length) <= values.Length);
+			ArgumentNullException.ThrowIfNull(values);
+			ThrowIfArraySegmentOutOfRange(index, length, values.Length);
 
 			mVersion = 0;
 			InitializeArrayFromBools(values, index, length, out mLength);
@@ -295,7 +335,7 @@ namespace KSoft.Collections
 
 		public BitSet(BitSet set)
 		{
-			Contract.Requires<ArgumentNullException>(set != null);
+			ArgumentNullException.ThrowIfNull(set);
 
 			mArray = new TWord[set.mArray.Length];
 			Array.Copy(set.mArray, mArray, mArray.Length);
@@ -381,12 +421,12 @@ namespace KSoft.Collections
 		#region Access
 		public bool this[int bitIndex] {
 			get {
-				// REMINDER: Contract for bitIndex already specified by IReadOnlyBitSet's contract
+				ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 				return GetInternal(bitIndex);
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+				ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 				SetInternal(bitIndex, value);
 			}
@@ -398,14 +438,13 @@ namespace KSoft.Collections
 		/// <remarks>If <paramref name="toBitIndex"/> == <paramref name="frombitIndex"/> this will always return false</remarks>
 		public bool this[int frombitIndex, int toBitIndex] {
 			get {
-				// REMINDER: Contracts already specified by IReadOnlyBitSet's contract
+				ThrowIfBitSpanOutOfRange(frombitIndex, toBitIndex);
 
 				int bitCount = toBitIndex - frombitIndex;
 				return bitCount > 0 && TestBits(frombitIndex, bitCount);
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-				Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+				ThrowIfBitSpanOutOfRange(frombitIndex, toBitIndex);
 
 				// handle the cases of the set already being all 1's or 0's
 				if (value && Cardinality == Length)
@@ -450,7 +489,12 @@ namespace KSoft.Collections
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
-		public bool Get(int bitIndex) => GetInternal(bitIndex);
+		public bool Get(int bitIndex)
+		{
+			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
+
+			return GetInternal(bitIndex);
+		}
 
 		void SetInternal(int wordIndex, TWord bitmask, bool value)
 		{
@@ -487,7 +531,7 @@ namespace KSoft.Collections
 		/// <param name="value">New value of the bit</param>
 		public void Set(int bitIndex, bool value)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 			SetInternal(bitIndex, value);
 		}
@@ -497,7 +541,7 @@ namespace KSoft.Collections
 		/// <returns>The bit's new value</returns>
 		public bool Toggle(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 			bool old_value = GetInternal(bitIndex, out int index, out TWord bitmask);
 			bool new_value = !old_value;
@@ -540,6 +584,8 @@ namespace KSoft.Collections
 
 		public int NextBitIndex(int startBitIndex, bool stateFilter)
 		{
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
+
 			kVectorBitCursorInT(startBitIndex, out int index, out int bit_offset);
 
 			// get a mask for the the bits that start at bit_offset, thus ignoring bits that came before startBitIndex
@@ -584,7 +630,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public BitSet And(BitSet value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			if (!object.ReferenceEquals(value, this) && value.Length > 0)
 			{
@@ -611,7 +657,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public BitSet AndNot(BitSet value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			// we're clearing with ourself, just clear all the bits
 			if (object.ReferenceEquals(value, this))
@@ -645,7 +691,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public BitSet Or(BitSet value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			// test Cardinality, not Length, to optimally handle empty and all-zeros bitsets.
 			// if value is all-zeros, no bits in this would get modified.
@@ -673,7 +719,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public BitSet Xor(BitSet value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			// we're clearing with ourself, just clear all the bits
 			if (object.ReferenceEquals(value, this))
@@ -759,6 +805,7 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		public bool IsSubsetOf(IReadOnlyBitSet other)
 		{
+			ArgumentNullException.ThrowIfNull(other);
 			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
 
 			// THIS is a subset of OTHER if it contains the same set bits as OTHER
@@ -772,6 +819,7 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		public bool IsSupersetOf(IReadOnlyBitSet other)
 		{
+			ArgumentNullException.ThrowIfNull(other);
 			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
 
 			// THIS is a superset of OTHER if it contains the same set bits as OTHER
@@ -785,6 +833,7 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		public bool Overlaps(IReadOnlyBitSet other)
 		{
+			ArgumentNullException.ThrowIfNull(other);
 			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
 
 			if (object.ReferenceEquals(other, this))
@@ -818,6 +867,7 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		public bool OverlapsSansZeros(IReadOnlyBitSet other)
 		{
+			ArgumentNullException.ThrowIfNull(other);
 			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
 
 			if (object.ReferenceEquals(other, this))

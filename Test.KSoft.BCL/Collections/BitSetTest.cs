@@ -10,6 +10,155 @@ namespace KSoft.Collections.Test
 	[TestClass]
 	public class BitSetTest : BaseTestClass
 	{
+		enum SampleEnumBit
+		{
+			First,
+			Second,
+			Third,
+		}
+
+		[Flags]
+		enum SampleFlagsBit
+		{
+			First = 1,
+			Second = 2,
+		}
+
+		enum SampleNoneEnumBit
+		{
+			None = -1,
+			First = 0,
+		}
+
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		[TestMethod]
+		public void Collections_BitSetConstructorGuardsTest()
+		{
+			AssertThrowsArgumentOutOfRange("length", () => new BitSet(-1));
+			AssertThrowsArgumentNull("bytes", () => new BitSet((byte[])null!, 0, 1));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new byte[1], -1, 1));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new byte[0], 0, 0));
+			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new byte[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new byte[2], 1, 2));
+			AssertThrowsArgumentNull("values", () => new BitSet((bool[])null!, 0, 1));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new bool[1], -1, 1));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new bool[0], 0, 0));
+			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new bool[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new bool[2], 1, 2));
+			AssertThrowsArgumentNull("set", () => new BitSet((BitSet)null!));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetLengthSetterGuardsTest()
+		{
+			var fixedLength = new BitSet(1);
+			var growable = new BitSet(1, fixedLength: false);
+
+			Assert.ThrowsExactly<InvalidOperationException>(() => fixedLength.Length = 2);
+			AssertThrowsArgumentOutOfRange("value", () => growable.Length = -1);
+		}
+
+		[TestMethod]
+		public void Collections_BitSetAccessGuardsTest()
+		{
+			var bs = new BitSet(4);
+
+			AssertThrowsArgumentOutOfRange("bitIndex", () => _ = bs[-1]);
+			AssertThrowsArgumentOutOfRange("bitIndex", () => _ = bs[4]);
+			AssertThrowsArgumentOutOfRange("bitIndex", () => bs[-1] = true);
+			AssertThrowsArgumentOutOfRange("bitIndex", () => bs[4] = true);
+			AssertThrowsArgumentOutOfRange("bitIndex", () => bs.Get(-1));
+			AssertThrowsArgumentOutOfRange("bitIndex", () => bs.Set(4, true));
+			AssertThrowsArgumentOutOfRange("bitIndex", () => bs.Toggle(-1));
+			AssertThrowsArgumentOutOfRange("frombitIndex", () => _ = bs[-1, 0]);
+			AssertThrowsArgumentOutOfRange("frombitIndex", () => _ = bs[4, 4]);
+			AssertThrowsArgumentOutOfRange("toBitIndex", () => _ = bs[2, 1]);
+			AssertThrowsArgumentOutOfRange("toBitIndex", () => _ = bs[2, 5]);
+			AssertThrowsArgumentOutOfRange("frombitIndex", () => bs[-1, 0] = true);
+			AssertThrowsArgumentOutOfRange("toBitIndex", () => bs[2, 5] = true);
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => bs.NextClearBitIndex(-1));
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => bs.NextSetBitIndex(4));
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => new BitSet().NextClearBitIndex());
+		}
+
+		[TestMethod]
+		public void Collections_BitSetRangeGuardTest()
+		{
+			var bs = new BitSet(4, true);
+
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => bs.ClearBits(-1, 0));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bs.ClearBits(3, 2));
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => bs.SetBits(4, 0));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bs.SetBits(2, 3));
+			AssertThrowsArgumentOutOfRange("startBitIndex", () => bs.ToggleBits(-1, 0));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bs.ToggleBits(1, 4));
+			bs.ClearBits(1, -1);
+			bs.SetBits(1, -1);
+			bs.ToggleBits(1, -1);
+
+			Assert.AreEqual(4, bs.Cardinality);
+			Assert.IsFalse(bs.TestBits(1, -1));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetEnumeratorGuardsTest()
+		{
+			AssertThrowsArgumentNull("bitset", () => new IReadOnlyBitSetEnumerators.StateEnumerator(null!));
+			AssertThrowsArgumentNull("bitset", () => new IReadOnlyBitSetEnumerators.StateFilterEnumerator(null!, true));
+			AssertThrowsArgumentOutOfRange(
+				"startBitIndex",
+				() => new IReadOnlyBitSetEnumerators.StateFilterEnumerator(new BitSet(4), true, -1));
+			AssertThrowsArgumentOutOfRange(
+				"startBitIndex",
+				() => new IReadOnlyBitSetEnumerators.StateFilterEnumerator(new BitSet(4), true, 4));
+
+			var emptyEnumerator = new IReadOnlyBitSetEnumerators.StateFilterEnumerator(new BitSet(), true, 1);
+
+			Assert.IsFalse(emptyEnumerator.MoveNext());
+		}
+
+		[TestMethod]
+		public void Collections_BitSetBitOperationGuardsTest()
+		{
+			var bs = new BitSet(1);
+
+			AssertThrowsArgumentNull("value", () => bs.And(null!));
+			AssertThrowsArgumentNull("value", () => bs.AndNot(null!));
+			AssertThrowsArgumentNull("value", () => bs.Or(null!));
+			AssertThrowsArgumentNull("value", () => bs.Xor(null!));
+			AssertThrowsArgumentNull("other", () => bs.IsSubsetOf(null!));
+			AssertThrowsArgumentNull("other", () => bs.IsSupersetOf(null!));
+			AssertThrowsArgumentNull("other", () => bs.Overlaps(null!));
+			AssertThrowsArgumentNull("other", () => bs.OverlapsSansZeros(null!));
+		}
+
+		[TestMethod]
+		public void Collections_EnumBitSetGuardTest()
+		{
+			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleFlagsBit>());
+			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleNoneEnumBit>());
+
+			var bs = new EnumBitSet<SampleEnumBit>();
+
+			AssertThrowsArgumentNull("value", () => bs.And(null!));
+			AssertThrowsArgumentNull("value", () => bs.AndNot(null!));
+			AssertThrowsArgumentNull("value", () => bs.Or(null!));
+			AssertThrowsArgumentNull("value", () => bs.Xor(null!));
+		}
+
 		[TestMethod]
 		public void Collections_BitSetBitIndicesEnumeratorTest()
 		{

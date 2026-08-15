@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -50,8 +45,14 @@ namespace KSoft.Collections
 		/// <param name="invalidSentinelValue">Member or value to use when an operation results in an invalid value (eg, NextSetBit)</param>
 		public EnumBitSet(TEnum invalidSentinelValue = default)
 		{
-			Contract.Requires<ArgumentException>(!Reflection.EnumUtil<TEnum>.IsFlags, CtorExceptionMsgTEnumIsFlags);
-			Contract.Requires<ArgumentException>(!EnumBitEncoder32<TEnum>.kHasNone, CtorExceptionMsgTEnumHasNone);
+			if (Reflection.EnumUtil<TEnum>.IsFlags)
+			{
+				throw new ArgumentException(CtorExceptionMsgTEnumIsFlags);
+			}
+			if (EnumBitEncoder32<TEnum>.kHasNone)
+			{
+				throw new ArgumentException(CtorExceptionMsgTEnumHasNone);
+			}
 
 			mBits = new BitSet(kBitSetLength);
 			mInvalidSentinelValue = invalidSentinelValue;
@@ -154,7 +155,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public EnumBitSet<TEnum> And(EnumBitSet<TEnum> value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			mBits.And(value.mBits);
 			return this;
@@ -164,7 +165,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public EnumBitSet<TEnum> AndNot(EnumBitSet<TEnum> value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			mBits.AndNot(value.mBits);
 			return this;
@@ -174,7 +175,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public EnumBitSet<TEnum> Or(EnumBitSet<TEnum> value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			mBits.Or(value.mBits);
 			return this;
@@ -184,7 +185,7 @@ namespace KSoft.Collections
 		/// <returns>Returns the current instance</returns>
 		public EnumBitSet<TEnum> Xor(EnumBitSet<TEnum> value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			mBits.Xor(value.mBits);
 			return this;
