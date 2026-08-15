@@ -106,6 +106,12 @@ namespace KSoft.Collections
 	[Contracts.ContractClassFor(typeof(IReadOnlyBitSet))]
 	abstract class IReadOnlyBitSetContract : IReadOnlyBitSet
 	{
+		void ThrowIfBitIndexOutOfRange(int bitIndex, string paramName)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex, paramName);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Length, paramName);
+		}
+
 		public int Length { get {
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
@@ -129,42 +135,40 @@ namespace KSoft.Collections
 
 		#region Access
 		public bool this[int bitIndex] { get {
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 			throw new NotImplementedException();
 		} }
 		public bool this[int frombitIndex, int toBitIndex] { get {
-			Contract.Requires<ArgumentOutOfRangeException>(frombitIndex >= 0 && frombitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>(toBitIndex >= frombitIndex && toBitIndex <= Length);
+			ThrowIfBitIndexOutOfRange(frombitIndex, nameof(frombitIndex));
+			ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 
 			throw new NotImplementedException();
 		} }
 
 		public bool Get(int bitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < Length);
+			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
 
 			throw new NotImplementedException();
 		}
 
 		public int NextBitIndex(int startBitIndex, bool stateFilter)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			throw new NotImplementedException();
 		}
 		public int NextClearBitIndex(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			throw new NotImplementedException();
 		}
 		public int NextSetBitIndex(int startBitIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex < Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
 
 			throw new NotImplementedException();
 		}
@@ -174,8 +178,9 @@ namespace KSoft.Collections
 
 		public bool TestBits(int startBitIndex, int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(startBitIndex >= 0 && startBitIndex < Length);
-			Contract.Requires<ArgumentOutOfRangeException>((startBitIndex+bitCount) <= Length);
+			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
+			if ((startBitIndex+bitCount) > Length)
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
 
 			throw new NotImplementedException();
 		}
@@ -184,25 +189,25 @@ namespace KSoft.Collections
 		#region ISet-like interfaces
 		public bool IsSubsetOf(IReadOnlyBitSet other)
 		{
-			Contract.Requires<ArgumentNullException>(other != null);
+			ArgumentNullException.ThrowIfNull(other);
 
 			throw new NotImplementedException();
 		}
 		public bool IsSupersetOf(IReadOnlyBitSet other)
 		{
-			Contract.Requires<ArgumentNullException>(other != null);
+			ArgumentNullException.ThrowIfNull(other);
 
 			throw new NotImplementedException();
 		}
 		public bool Overlaps(IReadOnlyBitSet other)
 		{
-			Contract.Requires<ArgumentNullException>(other != null);
+			ArgumentNullException.ThrowIfNull(other);
 
 			throw new NotImplementedException();
 		}
 		public bool OverlapsSansZeros(IReadOnlyBitSet other)
 		{
-			Contract.Requires<ArgumentNullException>(other != null);
+			ArgumentNullException.ThrowIfNull(other);
 
 			throw new NotImplementedException();
 		}
