@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Collections.Generic
 {
@@ -18,7 +15,9 @@ namespace KSoft.Collections.Generic
 
 		/// <summary>Validate the property used for this comparison is valid</summary>
 		/// <param name="type"></param>
-		/// <param name="checkPropertyOwner">Should we validate that the property is a member of <paramref name="type"/>?</param>
+		/// <param name="checkPropertyOwner">
+		/// Should we validate that the property is a member of <paramref name="type"/>?
+		/// </param>
 		/// <exception cref="MemberAccessException" />
 		/// <exception cref="MissingMemberException" />
 		void ValidateProperty(Type type, bool checkPropertyOwner = false)
@@ -47,7 +46,7 @@ namespace KSoft.Collections.Generic
 		/// <exception cref="MissingMemberException" />
 		public PropertyComparer(System.Reflection.PropertyInfo property, SortDirection direction = SortDirection.Ascending)
 		{
-			Contract.Requires<ArgumentNullException>(property != null);
+			ArgumentNullException.ThrowIfNull(property);
 
 			var type = typeof(T);
 
@@ -61,7 +60,7 @@ namespace KSoft.Collections.Generic
 		/// <param name="direction">Direction of comparison results</param>
 		/// <exception cref="MemberAccessException" />
 		/// <exception cref="MissingMemberException" />
-		public PropertyComparer(string propertyName = null, SortDirection direction = SortDirection.Ascending)
+		public PropertyComparer(string? propertyName = null, SortDirection direction = SortDirection.Ascending)
 		{
 			var type = typeof(T);
 
@@ -100,12 +99,12 @@ namespace KSoft.Collections.Generic
 		}
 		/// <summary>Build a default comparer with <see cref="SortDirection.Ascending">Ascending</see> results</summary>
 		public PropertyComparer()
-			: this((string)null, SortDirection.Ascending)
+			: this((string?)null, SortDirection.Ascending)
 		{
 		}
 		#endregion
 
-		public override int Compare(T x, T y)
+		public override int Compare(T? x, T? y)
 		{
 			// #REVIEW: would be better off having a variant impl that generates a LINQ expression for the compare.
 			// Would require a TProp (property's type) generic param, but we'd also be avoiding any boxing
@@ -114,9 +113,9 @@ namespace KSoft.Collections.Generic
 			// #REVIEW: I think it's safe to cast to IComparable<T>
 			// unless you're still using .NET 1 assemblies...why would you do such a thing?
 			var obj1 = mProperty.GetValue(x, null) as IComparable;
-			var obj2 = mProperty.GetValue(y, null) as IComparable;
+			var obj2 = mProperty.GetValue(y, null);
 
-			int result = obj1.CompareTo(obj2);
+			int result = obj1!.CompareTo(obj2);
 
 			if (mDirection != SortDirection.Ascending)
 			{
