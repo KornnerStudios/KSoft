@@ -533,7 +533,7 @@ internal static class TextSourceBuilder
 		{
 			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
 			writer.WriteLine("Contract.Requires(radix >= 2 && radix <= digits.Length);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
 			writer.WriteLine("result = 0;");
 			writer.WriteLine();
 			writer.WriteLine($"{returnPrefix} != null && startIndex < s.Length &&");
@@ -546,7 +546,7 @@ internal static class TextSourceBuilder
 		{
 			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
 			writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
 			writer.WriteLine("result = 0;");
 			writer.WriteLine();
 			writer.WriteLine($"{returnPrefix} != null && startIndex < s.Length &&");
@@ -559,8 +559,8 @@ internal static class TextSourceBuilder
 		{
 			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
 			writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(length >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
 			writer.WriteLine("result = 0;");
 			writer.WriteLine();
 			writer.WriteLine("return s != null && startIndex+length <= s.Length &&");

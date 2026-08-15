@@ -12,6 +12,13 @@ namespace KSoft.Text.Test
 			-516,517,519,520,521,522,523,-1258,
 		];
 
+		static void AssertArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		#region StringListDesc related
 		void VerifyTryParseInt32List(System.Collections.Generic.IEnumerable<int?> results)
 		{
@@ -97,6 +104,19 @@ namespace KSoft.Text.Test
 			Assert.AreEqual((byte)0, byteValue);
 			Assert.IsTrue(Numbers.TryParseRange("xx7Fyy", out byteValue, 2, 2, NumeralBase.Hex));
 			Assert.AreEqual((byte)0x7F, byteValue);
+		}
+
+		[TestMethod]
+		public void Text_NumbersTryParseInvalidRangesThrowExpectedExceptions()
+		{
+			AssertArgumentOutOfRange("startIndex",
+				() => Numbers.TryParse("123", out int _, Numbers.kBase10, -1));
+			AssertArgumentOutOfRange("startIndex",
+				() => Numbers.TryParse("123", out int _, NumeralBase.Decimal, -1));
+			AssertArgumentOutOfRange("startIndex",
+				() => Numbers.TryParseRange("123", out int _, -1, 1));
+			AssertArgumentOutOfRange("length",
+				() => Numbers.TryParseRange("123", out int _, 0, -1));
 		}
 
 		[TestMethod]

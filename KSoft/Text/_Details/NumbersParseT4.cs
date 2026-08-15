@@ -62,7 +62,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -72,7 +72,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -82,8 +82,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -156,7 +156,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -166,7 +166,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -176,8 +176,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -232,7 +232,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -242,7 +242,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -252,8 +252,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -326,7 +326,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -336,7 +336,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return s != null && startIndex < s.Length &&
@@ -346,8 +346,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -373,7 +373,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -383,7 +383,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -393,8 +393,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -419,7 +419,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -429,7 +429,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -439,8 +439,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -465,7 +465,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -475,7 +475,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -485,8 +485,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
@@ -511,7 +511,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(radix >= 2 && radix <= digits.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -521,7 +521,7 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			result = 0;
 
 			return  s != null && startIndex < s.Length &&
@@ -531,8 +531,8 @@ namespace KSoft
 		{
 			Contract.Requires(!string.IsNullOrEmpty(digits));
 			Contract.Requires(IsValidLookupTable(radix, digits));
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			result = 0;
 
 			return s != null && startIndex+length <= s.Length &&
