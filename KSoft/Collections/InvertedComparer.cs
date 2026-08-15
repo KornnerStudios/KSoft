@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Collections
 {
@@ -15,12 +12,13 @@ namespace KSoft.Collections
 
 		public InvertedComparer(IComparer comparer)
 		{
-			Contract.Requires<ArgumentNullException>(comparer != null);
+			ArgumentNullException.ThrowIfNull(comparer);
+
 			mComparer = comparer;
 		}
 
 		#region IComparer Members
-		public int Compare(object x, object y)
+		public int Compare(object? x, object? y)
 		{
 			return -mComparer.Compare(x, y);
 		}
@@ -33,12 +31,13 @@ namespace KSoft.Collections
 
 		public InvertedComparer(IComparer<T> comparer)
 		{
-			Contract.Requires<ArgumentNullException>(comparer != null);
+			ArgumentNullException.ThrowIfNull(comparer);
+
 			mComparer = comparer;
 		}
 
 		#region IComparer<T> Members
-		public int Compare(T x, T y)
+		public int Compare(T? x, T? y)
 		{
 			return -mComparer.Compare(x, y);
 		}
