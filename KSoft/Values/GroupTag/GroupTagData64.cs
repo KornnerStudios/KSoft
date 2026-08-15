@@ -179,7 +179,7 @@ namespace KSoft.Values
 		public static char[] Swap(char[] tag)
 		{
 			Contract.Requires(tag != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length == kExpectedTagLength);
@@ -207,8 +207,8 @@ namespace KSoft.Values
 		public static bool Test(char[] tag1, char[] tag2)
 		{
 			Contract.Requires(tag1 != null && tag2 != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag1.Length >= kExpectedTagLength);
-			Contract.Requires<ArgumentOutOfRangeException>(tag2.Length >= kExpectedTagLength);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag1.Length, kExpectedTagLength, nameof(tag1));
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag2.Length, kExpectedTagLength, nameof(tag2));
 
 			if (tag1[0] == tag2[0] &&
 				tag1[1] == tag2[1] &&
@@ -235,7 +235,7 @@ namespace KSoft.Values
 		public static TagWord ToULong(char[] tag)
 		{
 			Contract.Requires(tag != null);
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			// high bits
 			var value = (TagWord)(
@@ -268,7 +268,7 @@ namespace KSoft.Values
 		public static TagWord ToULong(string tag)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(tag));
-			Contract.Requires<ArgumentOutOfRangeException>(tag.Length >= kExpectedTagLength);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			// high bits
 			var value = (TagWord)(

@@ -90,7 +90,8 @@ namespace KSoft.Values
 			Contract.Requires(!string.IsNullOrEmpty(name));
 			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
 #endif
-			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
+			if (name == kNullGroupName)
+				throw new ArgumentException("Name reserved for null group tags", nameof(name));
 
 			Util.MarkUnusedVariable(ref expectedLength); // #REVIEW: why did I leave the Requires using this commented out?
 
@@ -126,7 +127,8 @@ namespace KSoft.Values
 			Contract.Requires(min != null && min != GroupTagData32.Null);
 			Contract.Requires(!string.IsNullOrEmpty(name));
 #endif
-			Contract.Requires<ArgumentException>(name != kNullGroupName, "Name reserved for null group tags");
+			if (name == kNullGroupName)
+				throw new ArgumentException("Name reserved for null group tags", nameof(name));
 
 			mName = name;
 			mTagAsString = string.Format(Util.InvariantCultureInfo,
@@ -309,7 +311,8 @@ namespace KSoft.Values
 		public override bool Test(char[] other)
 		{
 			Contract.Requires(other != null);
-			Contract.Requires<ArgumentOutOfRangeException>(other.Length == Tag.Length);
+			if (other.Length != Tag.Length)
+				throw new ArgumentOutOfRangeException(nameof(other));
 
 			throw new NotImplementedException();
 		}

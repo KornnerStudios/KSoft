@@ -30,27 +30,22 @@ namespace KSoft.Values
 		#region Ctor
 		/// <summary>Create a collection based on an existing list of group tags</summary>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(params GroupTagDatum[] groupTags) : this(KGuid.Empty, groupTags)
+		public GroupTag32Collection(params GroupTagDatum[] groupTags) : this(KGuid.Empty, Util.ThrowIfNull(groupTags))
 		{
-			Contract.Requires<ArgumentNullException>(groupTags != null);
 		}
 		/// <summary>Create a collection based on an existing list of group tags and a <see cref="Guid"/></summary>
 		/// <param name="uuid">Guid for this group tag collection</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(KGuid uuid, params GroupTagDatum[] groupTags) : base(groupTags, uuid)
+		public GroupTag32Collection(KGuid uuid, params GroupTagDatum[] groupTags) : base(Util.ThrowIfNull(groupTags), uuid)
 		{
-			Contract.Requires<ArgumentNullException>(groupTags != null);
-
 			mGroupTags = new GroupTagDatum[groupTags.Length];
 			groupTags.CopyTo(mGroupTags, 0);
 		}
 		/// <summary>Create a collection using an explicit list of group tags</summary>
 		/// <param name="sort">Should we sort the list?</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(bool sort, params GroupTagDatum[] groupTags) : this(groupTags)
+		public GroupTag32Collection(bool sort, params GroupTagDatum[] groupTags) : this(Util.ThrowIfNull(groupTags))
 		{
-			Contract.Requires<ArgumentNullException>(groupTags != null);
-
 			if (sort)
 			{
 				Sort();
@@ -60,10 +55,9 @@ namespace KSoft.Values
 		/// <param name="uuid">Guid for this group tag collection</param>
 		/// <param name="sort">Should we sort the list?</param>
 		/// <param name="groupTags">Group tags to populate this collection with</param>
-		public GroupTag32Collection(KGuid uuid, bool sort, params GroupTagDatum[] groupTags) : this(uuid, groupTags)
+		public GroupTag32Collection(KGuid uuid, bool sort, params GroupTagDatum[] groupTags)
+			: this(uuid, Util.ThrowIfNull(groupTags))
 		{
-			Contract.Requires<ArgumentNullException>(groupTags != null);
-
 			if (sort)
 			{
 				Sort();
