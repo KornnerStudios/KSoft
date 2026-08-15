@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -21,7 +16,7 @@ namespace KSoft.Text
 		public TextLineInfoException(Exception innerException, ITextLineInfo lineInfo, string streamName = null)
 			: base("Text stream error", innerException)
 		{
-			Contract.Requires<ArgumentNullException>(lineInfo != null);
+			ArgumentNullException.ThrowIfNull(lineInfo);
 
 			if (string.IsNullOrEmpty(streamName))
 			{
@@ -34,7 +29,6 @@ namespace KSoft.Text
 		public TextLineInfoException(ITextLineInfo lineInfo, string streamName = null)
 			: this(null, lineInfo, streamName)
 		{
-			Contract.Requires<ArgumentNullException>(lineInfo != null);
 		}
 
 		public override string Message { get => string.Format(KSoft.Util.InvariantCultureInfo,

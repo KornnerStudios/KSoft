@@ -55,9 +55,9 @@ namespace KSoft.Text
 			mLineNumber = lineNumber;
 			mLinePosition = linePosition;
 		}
-		public TextLineInfo(ITextLineInfo otherLineInfo) : this(otherLineInfo.LineNumber, otherLineInfo.LinePosition)
+		public TextLineInfo(ITextLineInfo otherLineInfo)
+			: this(KSoft.Util.ThrowIfNull(otherLineInfo).LineNumber, otherLineInfo.LinePosition)
 		{
-			Contract.Requires<ArgumentNullException>(otherLineInfo != null);
 		}
 
 		public bool IsEmpty => LineNumber == 0 && LinePosition == 0;

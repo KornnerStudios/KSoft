@@ -22,7 +22,7 @@ namespace KSoft.IO
 
 		public TextStreamReadErrorState(IKSoftStream textStream)
 		{
-			Contract.Requires<ArgumentNullException>(textStream != null);
+			ArgumentNullException.ThrowIfNull(textStream);
 
 			mStream = textStream;
 			mReadLineInfo = null;
