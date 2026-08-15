@@ -39,7 +39,7 @@ namespace KSoft.IO
 		public void WriteCursor(<#= type.Keyword #> value)
 		{
 <# if (type.Code==TypeCode.String) { #>
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 <# } #>
 			WriteElement(Cursor, value);
 		}
@@ -67,7 +67,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 <# if (type.Code==TypeCode.String) { #>
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 <# } #>
 
 			WriteElement(WriteElementAppend(name), value);
@@ -309,7 +309,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< <#= type.Keyword #> > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -322,7 +322,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< <#= type.Keyword #> > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -342,7 +342,7 @@ namespace KSoft.IO
 		{
 			Contract.Requires(ValidateNameArg(name));
 <# if (type.Code==TypeCode.String) { #>
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 <# } #>
 			Contract.Requires(Cursor != null, kCursorNullMsg);
 

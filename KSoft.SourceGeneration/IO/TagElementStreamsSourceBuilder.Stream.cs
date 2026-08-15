@@ -357,7 +357,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			WriteReadWriteBranch(
 				writer,
@@ -396,7 +396,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine($"if (IsReading) {{ return ReadFixedArray(name, array{baseArgument}); }}");
 			writer.WriteLine($"else if (IsWriting) {{ WriteElements(name, array{baseArgument}); }}");

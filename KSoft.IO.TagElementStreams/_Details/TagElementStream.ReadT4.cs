@@ -730,14 +730,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< string > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< string > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -757,14 +757,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< char > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< char > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -784,14 +784,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< bool > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< bool > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -811,14 +811,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< float > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< float > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -838,14 +838,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< double > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< double > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -866,14 +866,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< byte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< byte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -893,14 +893,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< sbyte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< sbyte > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -920,14 +920,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< ushort > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< ushort > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -947,14 +947,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< short > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< short > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -974,14 +974,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< uint > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< uint > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -1001,14 +1001,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< int > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< int > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -1028,14 +1028,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< ulong > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< ulong > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -1055,14 +1055,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< long > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< long > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -1091,14 +1091,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(string[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, string[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -1123,14 +1123,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(char[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, char[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -1155,14 +1155,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(bool[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, bool[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -1187,14 +1187,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(float[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, float[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -1219,14 +1219,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(double[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, double[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -1252,14 +1252,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(byte[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, byte[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1284,14 +1284,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(sbyte[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, sbyte[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1316,14 +1316,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(ushort[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, ushort[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1348,14 +1348,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(short[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, short[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1380,14 +1380,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(uint[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, uint[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1412,14 +1412,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(int[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, int[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1444,14 +1444,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(ulong[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, ulong[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}
@@ -1476,14 +1476,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(long[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, long[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}

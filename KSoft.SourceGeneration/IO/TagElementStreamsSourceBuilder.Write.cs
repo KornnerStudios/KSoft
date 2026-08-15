@@ -65,7 +65,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			if (IsString(typeSpec))
 			{
-				writer.WriteLine("Contract.Requires<ArgumentNullException>(value != null);");
+				writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
 			}
 
 			writer.WriteLine("WriteElement(Cursor, value);");
@@ -115,7 +115,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
 			if (IsString(typeSpec))
 			{
-				writer.WriteLine("Contract.Requires<ArgumentNullException>(value != null);");
+				writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
 			}
 
 			writer.WriteLine();
@@ -350,7 +350,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(elementName));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("foreach (var value in coll)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))

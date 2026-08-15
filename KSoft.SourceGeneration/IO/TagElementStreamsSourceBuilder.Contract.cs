@@ -117,7 +117,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
 			if (keyword == "string")
 			{
-				writer.WriteLine("Contract.Requires<ArgumentNullException>(value != null);");
+				writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
 			}
 
 			writer.WriteLine("Contract.Requires(Cursor != null, kCursorNullMsg);");

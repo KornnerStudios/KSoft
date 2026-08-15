@@ -80,7 +80,7 @@ namespace KSoft.IO
 		/// <param name="value">Data to set the <see cref="Cursor"/> to</param>
 		public void WriteCursor(string value)
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 			WriteElement(Cursor, value);
 		}
 		/// <summary>Set <see cref="Cursor"/>'s value to <paramref name="value"/></summary>
@@ -175,7 +175,7 @@ namespace KSoft.IO
 		public void WriteElement(TName name, string value)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			WriteElement(WriteElementAppend(name), value);
 		}
@@ -1486,7 +1486,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< string > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1496,7 +1496,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< char > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1506,7 +1506,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< bool > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1516,7 +1516,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< float > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1526,7 +1526,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< double > coll)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1537,7 +1537,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< byte > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1547,7 +1547,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< sbyte > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1557,7 +1557,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< ushort > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1567,7 +1567,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< short > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1577,7 +1577,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< uint > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1587,7 +1587,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< int > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1597,7 +1597,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< ulong > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1607,7 +1607,7 @@ namespace KSoft.IO
 		public void WriteElements(TName elementName, ICollection< long > coll, NumeralBase toBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -1624,7 +1624,7 @@ namespace KSoft.IO
 		public override void WriteAttribute(TName name, string value)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 			Contract.Requires(Cursor != null, kCursorNullMsg);
 
 			throw new NotImplementedException();

@@ -2554,7 +2554,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< string > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll); }
 			else if (IsWriting) { WriteElements(name, coll); }
@@ -2562,7 +2562,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< char > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll); }
 			else if (IsWriting) { WriteElements(name, coll); }
@@ -2570,7 +2570,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< bool > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll); }
 			else if (IsWriting) { WriteElements(name, coll); }
@@ -2578,7 +2578,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< float > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll); }
 			else if (IsWriting) { WriteElements(name, coll); }
@@ -2586,7 +2586,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< double > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll); }
 			else if (IsWriting) { WriteElements(name, coll); }
@@ -2595,7 +2595,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< byte > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2603,7 +2603,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< sbyte > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2611,7 +2611,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< ushort > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2619,7 +2619,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< short > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2627,7 +2627,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< uint > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2635,7 +2635,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< int > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2643,7 +2643,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< ulong > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2651,7 +2651,7 @@ namespace KSoft.IO
 		public void StreamElements(TName name, ICollection< long > coll, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 				 if (IsReading) { ReadElements(name, coll, numBase); }
 			else if (IsWriting) { WriteElements(name, coll, numBase); }
@@ -2663,7 +2663,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, string[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array); }
 			else if (IsWriting) { WriteElements(name, array); }
@@ -2673,7 +2673,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, char[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array); }
 			else if (IsWriting) { WriteElements(name, array); }
@@ -2683,7 +2683,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, bool[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array); }
 			else if (IsWriting) { WriteElements(name, array); }
@@ -2693,7 +2693,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, float[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array); }
 			else if (IsWriting) { WriteElements(name, array); }
@@ -2703,7 +2703,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, double[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array); }
 			else if (IsWriting) { WriteElements(name, array); }
@@ -2714,7 +2714,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, byte[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2724,7 +2724,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, sbyte[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2734,7 +2734,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, ushort[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2744,7 +2744,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, short[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2754,7 +2754,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, uint[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2764,7 +2764,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, int[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2774,7 +2774,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, ulong[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }
@@ -2784,7 +2784,7 @@ namespace KSoft.IO
 		public int StreamFixedArray(TName name, long[] array, NumeralBase numBase=kDefaultRadix)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 				 if (IsReading) { return ReadFixedArray(name, array, numBase); }
 			else if (IsWriting) { WriteElements(name, array, numBase); }

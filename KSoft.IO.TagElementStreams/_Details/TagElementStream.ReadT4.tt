@@ -182,14 +182,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< <#= type.Keyword #> > coll)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll);
 		}
 		public void ReadElements(TName name, ICollection< <#= type.Keyword #> > coll)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll);
 		}
@@ -212,14 +212,14 @@ namespace KSoft.IO
 		}
 		public void ReadElements(ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.Elements, coll, fromBase);
 		}
 		public void ReadElements(TName name, ICollection< <#= type.Keyword #> > coll, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			ReadElements(this.ElementsByName(name), coll, fromBase);
 		}
@@ -250,14 +250,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(<#= type.Keyword #>[] array)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array);
 		}
 		public int ReadFixedArray(TName name, <#= type.Keyword #>[] array)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array);
 		}
@@ -285,14 +285,14 @@ namespace KSoft.IO
 		}
 		public int ReadFixedArray(<#= type.Keyword #>[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.Elements, array, fromBase);
 		}
 		public int ReadFixedArray(TName name, <#= type.Keyword #>[] array, NumeralBase fromBase = NumeralBase.Decimal)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return ReadFixedArray(this.ElementsByName(name), array, fromBase);
 		}

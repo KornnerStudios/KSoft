@@ -284,7 +284,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void ReadElements(ICollection<{keyword}> coll)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.Elements, coll);");
 		}
@@ -293,7 +293,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.ElementsByName(name), coll);");
 		}
@@ -315,7 +315,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"public void ReadElements(ICollection<{keyword}> coll, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.Elements, coll, fromBase);");
 		}
@@ -325,7 +325,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(coll != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.ElementsByName(name), coll, fromBase);");
 		}
@@ -391,7 +391,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public int ReadFixedArray({keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.Elements, array);");
 		}
@@ -400,7 +400,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array);");
 		}
@@ -420,7 +420,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public int ReadFixedArray({keyword}[] array, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.Elements, array, fromBase);");
 		}
@@ -430,7 +430,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array, fromBase);");
 		}
