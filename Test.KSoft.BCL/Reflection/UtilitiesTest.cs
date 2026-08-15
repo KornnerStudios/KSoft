@@ -27,6 +27,47 @@ namespace KSoft.Reflection.Test
 	public partial class UtilitiesTest : BaseTestClass
 	{
 		delegate int MessageBoxDelegate(IntPtr hWnd, string lpText, string lpCaption, uint uType);
+
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static ArgumentException AssertThrowsArgument(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+
+			return exception;
+		}
+
+		[TestMethod]
+		public void Reflection_GetEnumFieldsGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("enumType", () => _ = Util.GetEnumFields(null!));
+			AssertThrowsArgument("enumType", () => _ = Util.GetEnumFields(typeof(string)));
+		}
+
+		[TestMethod]
+		public void Reflection_GetDelegateForFunctionPointerGuards_ThrowExpectedExceptions()
+		{
+			const System.Runtime.InteropServices.CallingConvention kWinapi =
+				System.Runtime.InteropServices.CallingConvention.Winapi;
+			const System.Runtime.InteropServices.CallingConvention kThisCall =
+				System.Runtime.InteropServices.CallingConvention.ThisCall;
+
+			AssertThrowsArgument("T", () =>
+				_ = Util.GetDelegateForFunctionPointer<string>(new IntPtr(1), kWinapi));
+			AssertThrowsArgumentNull("nativePtr", () =>
+				_ = Util.GetDelegateForFunctionPointer<MessageBoxDelegate>(IntPtr.Zero, kWinapi));
+			var exception = AssertThrowsArgument("callConv", () =>
+				_ = Util.GetDelegateForFunctionPointer<MessageBoxDelegate>(new IntPtr(1), kThisCall));
+
+			StringAssert.StartsWith(exception.Message, "TODO: ThisCall's require a different implementation");
+		}
 #if false
 		[TestMethod]
 		public void ReflectUtil_GetDelegateForFunctionPointerTest()

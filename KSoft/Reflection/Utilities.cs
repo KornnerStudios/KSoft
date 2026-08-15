@@ -27,8 +27,9 @@ namespace KSoft.Reflection
 		[Contracts.Pure]
 		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
 		{
-			Contract.Requires<ArgumentNullException>(enumType != null);
-			Contract.Requires<ArgumentException>(enumType.IsEnum);
+			ArgumentNullException.ThrowIfNull(enumType);
+			if (!enumType.IsEnum)
+				throw new ArgumentException(null, nameof(enumType));
 			Contract.Ensures(Contract.Result<List<Reflect.FieldInfo>>() != null);
 
 			return EnumUtils.GetEnumFields(enumType);
@@ -39,10 +40,12 @@ namespace KSoft.Reflection
 		public static T GetDelegateForFunctionPointer<T>(IntPtr nativePtr, Interop.CallingConvention callConv)
 			where T : class
 		{
-			Contract.Requires<ArgumentException>(typeof(T).IsSubclassOf(typeof(Delegate)));
-			Contract.Requires<ArgumentNullException>(nativePtr != IntPtr.Zero);
-			Contract.Requires<ArgumentException>(callConv != Interop.CallingConvention.ThisCall,
-				"TODO: ThisCall's require a different implementation"); // #TODO
+			if (!typeof(T).IsSubclassOf(typeof(Delegate)))
+				throw new ArgumentException(null, nameof(T));
+			if (nativePtr == IntPtr.Zero)
+				throw new ArgumentNullException(nameof(nativePtr));
+			if (callConv == Interop.CallingConvention.ThisCall)
+				throw new ArgumentException("TODO: ThisCall's require a different implementation", nameof(callConv)); // #TODO
 
 			Contract.Ensures(Contract.Result<T>() != null);
 
