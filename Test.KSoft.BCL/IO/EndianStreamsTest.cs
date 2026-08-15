@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.IO.Test;
@@ -8,6 +9,51 @@ namespace KSoft.IO.Test;
 [TestClass]
 public class EndianStreamsTest : BaseTestClass
 {
+	static void AssertThrowsArgumentNull(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
+	[TestMethod]
+	public void Constructors_NullEndianReaderInputs_ThrowArgumentNullException()
+	{
+		AssertThrowsArgumentNull(() => _ = new EndianReader(null!), "input");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianReader(null!, Encoding.UTF8, Shell.EndianFormat.Big),
+			"input");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianReader(new MemoryStream(), null!, Shell.EndianFormat.Big),
+			"encoding");
+	}
+
+	[TestMethod]
+	public void Constructors_NullEndianWriterInputs_ThrowArgumentNullException()
+	{
+		AssertThrowsArgumentNull(() => _ = new EndianWriter(null!), "output");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianWriter(null!, Encoding.UTF8, Shell.EndianFormat.Big),
+			"output");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianWriter(new MemoryStream(), null!, Shell.EndianFormat.Big),
+			"encoding");
+	}
+
+	[TestMethod]
+	public void Constructors_NullEndianStreamInputs_ThrowArgumentNullException()
+	{
+		AssertThrowsArgumentNull(() => _ = new EndianStream(null!), "baseStream");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianStream(null!, Encoding.UTF8, Shell.EndianFormat.Big),
+			"baseStream");
+		AssertThrowsArgumentNull(
+			() => _ = new EndianStream(new MemoryStream(), null!, Shell.EndianFormat.Big),
+			"encoding");
+		AssertThrowsArgumentNull(() => _ = EndianStream.UsingReader(null!), "reader");
+		AssertThrowsArgumentNull(() => _ = EndianStream.UsingWriter(null!), "writer");
+	}
+
 	[TestMethod]
 	public void PrimitiveWritesUseDeclaredEndianByteOrderTest()
 	{

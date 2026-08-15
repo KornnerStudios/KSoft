@@ -30,11 +30,9 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		public EndianReader(Stream input, Encoding encoding,
-			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null) : base(input, encoding)
+			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null)
+			: base(Util.ThrowIfNull(input), Util.ThrowIfNull(encoding))
 		{
-			Contract.Requires<ArgumentNullException>(input != null);
-			Contract.Requires<ArgumentNullException>(encoding != null);
-
 			BaseStreamOwner = true;
 			BaseAddress = Values.PtrHandle.Null32;
 
@@ -69,7 +67,6 @@ namespace KSoft.IO
 		public EndianReader(Stream input) : this(input, new UTF8Encoding(),
 			Shell.Platform.Environment.ProcessorType.ByteOrder)
 		{
-			Contract.Requires<ArgumentNullException>(input != null);
 		}
 		#endregion
 

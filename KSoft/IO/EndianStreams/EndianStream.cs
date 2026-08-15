@@ -246,7 +246,7 @@ namespace KSoft.IO
 
 		public EndianStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite)
 		{
-			Contract.Requires<ArgumentNullException>(baseStream != null);
+			ArgumentNullException.ThrowIfNull(baseStream);
 
 			BaseStream = baseStream;
 			StreamPermissions = permissions;
@@ -262,8 +262,8 @@ namespace KSoft.IO
 			Shell.EndianFormat byteOrder,
 			object streamOwner = null, string name = null, FileAccess permissions = FileAccess.ReadWrite)
 		{
-			Contract.Requires<ArgumentNullException>(baseStream != null);
-			Contract.Requires<ArgumentNullException>(encoding != null);
+			ArgumentNullException.ThrowIfNull(baseStream);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 			BaseStream = baseStream;
 			StreamPermissions = permissions;
@@ -279,7 +279,7 @@ namespace KSoft.IO
 			Shell.EndianFormat byteOrder,
 			object streamOwner = null, string name = null, FileAccess permissions = FileAccess.ReadWrite)
 		{
-			Contract.Requires<ArgumentNullException>(baseStream != null);
+			ArgumentNullException.ThrowIfNull(baseStream);
 
 			BaseStream = baseStream;
 			StreamPermissions = permissions;
@@ -293,7 +293,7 @@ namespace KSoft.IO
 
 		public static EndianStream UsingReader(EndianReader reader)
 		{
-			Contract.Requires<ArgumentNullException>(reader != null);
+			ArgumentNullException.ThrowIfNull(reader);
 			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
 			var s = new EndianStream
@@ -308,7 +308,7 @@ namespace KSoft.IO
 		}
 		public static EndianStream UsingWriter(EndianWriter writer)
 		{
-			Contract.Requires<ArgumentNullException>(writer != null);
+			ArgumentNullException.ThrowIfNull(writer);
 			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
 			var s = new EndianStream

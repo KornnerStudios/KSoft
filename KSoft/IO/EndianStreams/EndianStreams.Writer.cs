@@ -43,11 +43,9 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		public EndianWriter(Stream output, Encoding encoding,
-			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null) : base(output, encoding)
+			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null)
+			: base(Util.ThrowIfNull(output), Util.ThrowIfNull(encoding))
 		{
-			Contract.Requires<ArgumentNullException>(output != null);
-			Contract.Requires<ArgumentNullException>(encoding != null);
-
 			BaseStreamOwner = true;
 			BaseAddress = Values.PtrHandle.Null32;
 
@@ -82,7 +80,6 @@ namespace KSoft.IO
 		public EndianWriter(Stream output) : this(output, Encoding.UTF8,
 			Shell.Platform.Environment.ProcessorType.ByteOrder)
 		{
-			Contract.Requires<ArgumentNullException>(output != null);
 		}
 		#endregion
 
