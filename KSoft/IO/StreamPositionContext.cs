@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -19,29 +14,28 @@ namespace KSoft.IO
 		#region Ctor
 		public StreamPositionContext(Stream baseStream)
 		{
-			Contract.Requires<ArgumentNullException>(baseStream != null);
-			Contract.Requires<InvalidOperationException>(baseStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(baseStream);
+			if (!baseStream.CanSeek)
+			{
+				throw new InvalidOperationException();
+			}
 
 			mPosition = baseStream.Position;
 			mStream = baseStream;
 		}
 
-		public StreamPositionContext(BinaryReader stream) : this(stream.BaseStream)
+		public StreamPositionContext(BinaryReader stream) : this(Util.ThrowIfNull(stream).BaseStream)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
 		}
-		public StreamPositionContext(BinaryWriter stream) : this(stream.BaseStream)
+		public StreamPositionContext(BinaryWriter stream) : this(Util.ThrowIfNull(stream).BaseStream)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
 		}
 
-		public StreamPositionContext(StreamReader stream) : this(stream.BaseStream)
+		public StreamPositionContext(StreamReader stream) : this(Util.ThrowIfNull(stream).BaseStream)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
 		}
-		public StreamPositionContext(StreamWriter stream) : this(stream.BaseStream)
+		public StreamPositionContext(StreamWriter stream) : this(Util.ThrowIfNull(stream).BaseStream)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
 		}
 		#endregion
 
