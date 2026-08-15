@@ -76,7 +76,9 @@ namespace KSoft.Bitwise
 			return BitIndex + BitCount;
 		} }
 
-		/// <summary>Get the total number of bits consumed by this field and all the bits before <see cref="BitIndex"/></summary>
+		/// <summary>
+		/// Get the total number of bits consumed by this field and all the bits before <see cref="BitIndex"/>.
+		/// </summary>
 		/// <remarks>Mainly a utility for exposing a total "BitCount" for a handle composed of bit-fields</remarks>
 		public readonly int FieldsBitCount { get {
 			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= kMaxBitCount);
@@ -116,24 +118,51 @@ namespace KSoft.Bitwise
 			Contract.Assert(Is32Bit || Is64Bit);
 		}
 
-		public BitFieldTraits(int bitCount)
-			: this(false, bitCount, 0)
+		static int ValidateBitCount(int bitCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitCount > 0 && bitCount <= kMaxBitCount);
+			if (bitCount <= 0 || bitCount > kMaxBitCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(bitCount));
+			}
+
+			return bitCount;
+		}
+		static int ValidateBitIndexAndRange(int bitCount, int bitIndex)
+		{
+			if (bitIndex < 0 || bitIndex >= kMaxBitCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(bitIndex));
+			}
+
+			if (bitCount > kMaxBitCount - bitIndex)
+			{
+				throw new ArgumentException("Bit field extends past the maximum bit count.", nameof(bitCount));
+			}
+
+			return bitIndex;
+		}
+		static int ValidateNextFieldBitIndex(BitFieldTraits prev, int bitCount)
+		{
+			var bitIndex = prev.NextFieldBitIndex;
+			if (bitCount > kMaxBitCount - bitIndex)
+			{
+				throw new ArgumentException("Bit field extends past the maximum bit count.", nameof(bitCount));
+			}
+
+			return bitIndex;
+		}
+
+		public BitFieldTraits(int bitCount)
+			: this(false, ValidateBitCount(bitCount), 0)
+		{
 		}
 		public BitFieldTraits(int bitCount, int bitIndex)
-			: this(false, bitCount, bitIndex)
+			: this(false, ValidateBitCount(bitCount), ValidateBitIndexAndRange(bitCount, bitIndex))
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitCount > 0 && bitCount <= kMaxBitCount);
-			// less than: b/c bitIndex be one less than the highest bit (else there's no way the field can exist!)
-			Contract.Requires<ArgumentOutOfRangeException>(bitIndex >= 0 && bitIndex < kMaxBitCount);
-			Contract.Requires<ArgumentException>((bitIndex+bitCount) <= kMaxBitCount);
 		}
 		public BitFieldTraits(int bitCount, BitFieldTraits prev)
-			: this(false, bitCount, prev.NextFieldBitIndex)
+			: this(false, ValidateBitCount(bitCount), ValidateNextFieldBitIndex(prev, bitCount))
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(bitCount > 0 && bitCount <= kMaxBitCount);
-			Contract.Requires<ArgumentException>((prev.NextFieldBitIndex+bitCount) <= kMaxBitCount);
 		}
 		#endregion
 
