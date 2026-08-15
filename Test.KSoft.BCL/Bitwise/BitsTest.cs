@@ -79,6 +79,28 @@ namespace KSoft.Bitwise.Test
 			AssertThrowsArgumentOutOfRange("srcCopyCount", () => copier.Copy(new byte[1], new byte[1], -1));
 			AssertThrowsArgumentOutOfRange("srcCopyCount", () => copier.Copy(new byte[1], new byte[2], 2));
 		}
+
+		[TestMethod]
+		public void ArrayCopy_FromBytesInvalidArgumentsThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("src", () => Bits.ArrayCopy((byte[])null!, 0, new ushort[1], 0, 0));
+			AssertThrowsArgumentOutOfRange("srcOffset", () => Bits.ArrayCopy(new byte[1], -1, new ushort[1], 0, 0));
+			AssertThrowsArgumentNull("dst", () => Bits.ArrayCopy(new byte[1], 0, (ushort[])null!, 0, 0));
+			AssertThrowsArgumentOutOfRange("dstOffset", () => Bits.ArrayCopy(new byte[1], 0, new ushort[1], -1, 0));
+			AssertThrowsArgumentOutOfRange("count", () => Bits.ArrayCopy(new byte[1], 0, new ushort[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => Bits.ArrayCopy(new byte[1], 0, new ushort[1], 0, 2));
+		}
+
+		[TestMethod]
+		public void ArrayCopy_ToBytesInvalidArgumentsThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("src", () => Bits.ArrayCopy((ushort[])null!, 0, new byte[2], 0, 0));
+			AssertThrowsArgumentOutOfRange("srcOffset", () => Bits.ArrayCopy(new ushort[1], -1, new byte[2], 0, 0));
+			AssertThrowsArgumentNull("dst", () => Bits.ArrayCopy(new ushort[1], 0, (byte[])null!, 0, 0));
+			AssertThrowsArgumentOutOfRange("dstOffset", () => Bits.ArrayCopy(new ushort[1], 0, new byte[2], -1, 0));
+			AssertThrowsArgumentOutOfRange("count", () => Bits.ArrayCopy(new ushort[1], 0, new byte[2], 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => Bits.ArrayCopy(new ushort[2], 0, new byte[2], 0, 2));
+		}
 		#endregion
 
 		#region BitCount

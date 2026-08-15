@@ -114,16 +114,16 @@ internal static partial class BitsCoreSourceBuilder
 			"int dstOffset, int count)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(src != null);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(dst != null);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(src);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(dst);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);");
 			writer.WriteLine();
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(");
+			writer.WriteLine("if (!ArrayCopyFromBytesBoundsValidate(");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-			{
-				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})));");
-			}
+				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})))");
+			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
+				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(count));");
 			writer.WriteLine();
 			writer.WriteLine($"var memcpy = new MemoryCopier<{typeSpec.Keyword}, byte>(dummy: false);");
 			writer.WriteLine("memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);");
@@ -137,16 +137,16 @@ internal static partial class BitsCoreSourceBuilder
 			"int dstOffset, int count)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(src != null);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);");
-			writer.WriteLine("Contract.Requires<ArgumentNullException>(dst != null);");
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(src);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(dst);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);");
 			writer.WriteLine();
-			writer.WriteLine("Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(");
+			writer.WriteLine("if (!ArrayCopyToBytesBoundsValidate(");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-			{
-				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})));");
-			}
+				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})))");
+			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
+				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(count));");
 			writer.WriteLine();
 			writer.WriteLine($"var memcpy = new MemoryCopier<byte, {typeSpec.Keyword}>(dummy: false);");
 			writer.WriteLine("memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);");

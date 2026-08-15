@@ -66,26 +66,26 @@ namespace KSoft
 		#region <#= bittable_type.Code #>
 		public static void ArrayCopy(byte[] src, int srcOffset, <#= bittable_type.Keyword #>[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)));
+			if (!ArrayCopyFromBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<<#= bittable_type.Keyword #>, byte>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
 		}
 		public static void ArrayCopy(<#= bittable_type.Keyword #>[] src, int srcOffset, byte[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)));
+			if (!ArrayCopyToBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(<#= bittable_type.Keyword #>)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<byte, <#= bittable_type.Keyword #>>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);

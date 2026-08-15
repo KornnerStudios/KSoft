@@ -165,26 +165,26 @@ namespace KSoft
 		#region UInt16
 		public static void ArrayCopy(byte[] src, int srcOffset, ushort[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(ushort)));
+			if (!ArrayCopyFromBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(ushort)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<ushort, byte>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
 		}
 		public static void ArrayCopy(ushort[] src, int srcOffset, byte[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(ushort)));
+			if (!ArrayCopyToBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(ushort)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<byte, ushort>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
@@ -194,26 +194,26 @@ namespace KSoft
 		#region UInt32
 		public static void ArrayCopy(byte[] src, int srcOffset, uint[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(uint)));
+			if (!ArrayCopyFromBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(uint)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<uint, byte>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
 		}
 		public static void ArrayCopy(uint[] src, int srcOffset, byte[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(uint)));
+			if (!ArrayCopyToBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(uint)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<byte, uint>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
@@ -223,26 +223,26 @@ namespace KSoft
 		#region UInt64
 		public static void ArrayCopy(byte[] src, int srcOffset, ulong[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyFromBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(ulong)));
+			if (!ArrayCopyFromBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(ulong)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<ulong, byte>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
 		}
 		public static void ArrayCopy(ulong[] src, int srcOffset, byte[] dst, int dstOffset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
-			Contract.Requires<ArgumentOutOfRangeException>(srcOffset >= 0);
-			Contract.Requires<ArgumentNullException>(dst != null);
-			Contract.Requires<ArgumentOutOfRangeException>(dstOffset >= 0);
+			ArgumentNullException.ThrowIfNull(src);
+			ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+			ArgumentNullException.ThrowIfNull(dst);
+			ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
 
-			Contract.Requires<ArgumentOutOfRangeException>(ArrayCopyToBytesBoundsValidate(
-				src, srcOffset, dst, dstOffset, count, sizeof(ulong)));
+			if (!ArrayCopyToBytesBoundsValidate(src, srcOffset, dst, dstOffset, count, sizeof(ulong)))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			var memcpy = new MemoryCopier<byte, ulong>(dummy: false);
 			memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);
