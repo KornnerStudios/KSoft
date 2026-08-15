@@ -21,8 +21,8 @@ namespace KSoft.Text
 		public static Encoding DetermineStringEncoding(byte[] buffer
 			, int index = 0)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 			Contract.Ensures(Contract.Result<Encoding>() != null);
 
@@ -110,7 +110,7 @@ namespace KSoft.Text
 		/// <returns></returns>
 		public static string ByteArrayToString(byte[] data, int startIndex, int count)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(count > 0);
@@ -129,8 +129,8 @@ namespace KSoft.Text
 		/// <example>"1337BEEF"</example>
 		public static void ByteArrayToStream(byte[] data, TextWriter stream, int startIndex, int count)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
-			Contract.Requires<ArgumentNullException>(stream != null);
+			ArgumentNullException.ThrowIfNull(data);
+			ArgumentNullException.ThrowIfNull(stream);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(count > 0);
@@ -169,7 +169,7 @@ namespace KSoft.Text
 		public static string ByteArrayToString(byte[] data
 			, int startIndex = 0)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 
@@ -185,8 +185,8 @@ namespace KSoft.Text
 		public static void ByteArrayToStream(byte[] data, TextWriter stream
 			, int startIndex = 0)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
-			Contract.Requires<ArgumentNullException>(stream != null);
+			ArgumentNullException.ThrowIfNull(data);
+			ArgumentNullException.ThrowIfNull(stream);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 
@@ -222,7 +222,7 @@ namespace KSoft.Text
 
 		public static byte[] ByteStringToArray(byte[] bytes, string data, int startIndex, int count)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			ArgumentException.ThrowIfNullOrEmpty(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(count > 0);
@@ -231,7 +231,7 @@ namespace KSoft.Text
 				(count % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
-			Contract.Requires<ArgumentNullException>(bytes != null);
+			ArgumentNullException.ThrowIfNull(bytes);
 			Contract.Requires(bytes.Length >= (count/2));
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
@@ -258,14 +258,14 @@ namespace KSoft.Text
 		public static byte[] ByteStringToArray(byte[] bytes, string data
 			, int startIndex = 0)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			ArgumentException.ThrowIfNullOrEmpty(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(
 				((data.Length-startIndex) % 2) == 0,
 				"Can't byte-ify a string that's not even!"
 			);
-			Contract.Requires<ArgumentNullException>(bytes != null);
+			ArgumentNullException.ThrowIfNull(bytes);
 			Contract.Requires(bytes.Length >= ((data.Length-startIndex)/2));
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
@@ -280,7 +280,7 @@ namespace KSoft.Text
 		/// <returns></returns>
 		public static byte[] ByteStringToArray(string data, int startIndex, int count)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			ArgumentException.ThrowIfNullOrEmpty(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(count > 0);
@@ -308,7 +308,7 @@ namespace KSoft.Text
 		public static byte[] ByteStringToArray(string data
 			, int startIndex = 0)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(data));
+			ArgumentException.ThrowIfNullOrEmpty(data);
 			Contract.Requires(startIndex >= 0);
 			Contract.Requires(startIndex < data.Length);
 			Contract.Requires(
@@ -332,8 +332,8 @@ namespace KSoft.Text
 			, string padding = ""
 			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
-			Contract.Requires<ArgumentNullException>(padding != null);
+			ArgumentNullException.ThrowIfNull(data);
+			ArgumentNullException.ThrowIfNull(padding);
 			Contract.Requires(digitsPerLine >= 2);
 			Contract.Requires((digitsPerLine % 2) == 0);
 
@@ -372,7 +372,7 @@ namespace KSoft.Text
 			, string padding = null
 			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			Contract.Requires(digitsPerLine >= 2);
 			Contract.Requires((digitsPerLine % 2) == 0);
 
@@ -507,7 +507,7 @@ namespace KSoft.Text
 		/// <remarks>Upper ('A') and lower ('a') case char digits map to the same int values</remarks>
 		public static int CharsToByte(NumeralBase radix, char[] data, int index = 0)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			Contract.Requires(index >= 0);
 			Contract.Requires(index < data.Length);
 
@@ -528,7 +528,7 @@ namespace KSoft.Text
 		/// </example>
 		public static int CharsToByte(NumeralBase radix, string data, int index = 0)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			Contract.Requires(index >= 0);
 			Contract.Requires(index < data.Length);
 

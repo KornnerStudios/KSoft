@@ -36,6 +36,27 @@ namespace KSoft.Text.Test
 			public override string ToString() => mStringBuilder.ToString();
 		}
 
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgument(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void Text_ByteArraysUtilTest()
 		{
@@ -85,6 +106,39 @@ namespace KSoft.Text.Test
 			StringOnlyTextWriter stringOnlyWriter = new StringOnlyTextWriter();
 			Util.ByteArrayToStream(StringConstants.kDataBytes, stringOnlyWriter);
 			Assert.AreEqual(StringConstants.kDataString, stringOnlyWriter.ToString());
+		}
+
+		[TestMethod]
+		public void Text_ByteUtilitiesInvalidArgumentsThrowExpectedExceptionsTest()
+		{
+			using var writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
+
+			AssertThrowsArgumentNull("buffer", () => _ = Util.DetermineStringEncoding(null!));
+			AssertThrowsArgumentOutOfRange("index", () => _ = Util.DetermineStringEncoding([0], -1));
+
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!, 0, 1));
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!));
+			AssertThrowsArgumentNull("data", () => Util.ByteArrayToStream(null!, writer, 0, 1));
+			AssertThrowsArgumentNull("stream", () => Util.ByteArrayToStream([0], null!, 0, 1));
+			AssertThrowsArgumentNull("data", () => Util.ByteArrayToStream(null!, writer));
+			AssertThrowsArgumentNull("stream", () => Util.ByteArrayToStream([0], null!));
+
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(new byte[1], null!, 0, 2));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], "", 0, 2));
+			AssertThrowsArgumentNull("bytes", () => _ = Util.ByteStringToArray(null!, "00", 0, 2));
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(new byte[1], null!));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], ""));
+			AssertThrowsArgumentNull("bytes", () => _ = Util.ByteStringToArray(null!, "00"));
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(null!, 0, 2));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray("", 0, 2));
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(null!));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(""));
+
+			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToAlignedString(null!));
+			AssertThrowsArgumentNull("padding", () => _ = Util.ByteArrayToAlignedString([0], null!));
+			AssertThrowsArgumentNull("data", () => Util.ByteArrayToAlignedOutput(null!, writer));
+			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (char[])null!));
+			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (string)null!));
 		}
 
 		[TestMethod]
