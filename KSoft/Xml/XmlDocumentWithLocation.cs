@@ -1,10 +1,5 @@
-﻿using System;
+using System;
 using System.Xml;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Xml
 {
@@ -73,10 +68,17 @@ namespace KSoft.Xml
 		}
 		public string GetFileLocationString(XmlNode node, bool verboseString = false)
 		{
-			Contract.Requires<ArgumentNullException>(node != null);
-			Contract.Requires<ArgumentException>(node.OwnerDocument == this);
-			Contract.Requires<ArgumentException>(node is XmlAttributeWithLocation || node is XmlElementWithLocation,
-				"Can only retrieve location of nodes with location data");
+			ArgumentNullException.ThrowIfNull(node);
+
+			if (node.OwnerDocument != this)
+			{
+				throw new ArgumentException("Can only retrieve locations for nodes owned by this document.", nameof(node));
+			}
+
+			if (node is not XmlAttributeWithLocation && node is not XmlElementWithLocation)
+			{
+				throw new ArgumentException("Can only retrieve location of nodes with location data", nameof(node));
+			}
 
 			var loc_info = (Text.ITextLineInfo)node;
 
