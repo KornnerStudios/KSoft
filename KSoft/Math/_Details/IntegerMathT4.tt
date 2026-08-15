@@ -4,6 +4,7 @@
 <#@ import namespace="KSoft.T4" #>
 <#@ import namespace="KSoft.T4.Bitwise" #>
 
+using System;
 using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -25,9 +26,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static <#= bittable_type.Keyword #> Align(int alignmentBit, <#= bittable_type.Keyword #> value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 <#		if (bittable_type.IsSigned) { #>
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<<#= bittable_type.Keyword #>>() >= 0);
 <#		} #>
 			<#= bittable_type.Keyword #> align_size = 1<#= bittable_type.LiteralSuffix #> << alignmentBit;
@@ -47,9 +48,9 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int PaddingRequired(int alignmentBit, <#= bittable_type.Keyword #> value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 <#		if (bittable_type.IsSigned) { #>
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<int>() >= 0);
 <#		} #>
 

@@ -142,8 +142,8 @@ internal static class IntegerMathSourceBuilder
 
 	private static void WriteCommonPreconditions(SourceWriter writer, NumberSpec typeSpec)
 	{
-		// The old T4 emitted Contract.Requires<TException>, which needs CCRewrite unless the shim is active. Generated
-		// KSoft code can use modern throw helpers directly while preserving the same exception type for invalid inputs.
+		// The old T4 emitted typed contract preconditions. Generated KSoft code can use modern throw helpers directly
+		// while preserving the same exception type for invalid inputs.
 		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);");
 		if (typeSpec.IsSigned)
 		{

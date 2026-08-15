@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Numerics;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -19,7 +20,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static uint Align(int alignmentBit, uint value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 			uint align_size = 1U << alignmentBit;
 
 			return (value + (align_size-1)) & ~(align_size-1);
@@ -32,8 +33,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int Align(int alignmentBit, int value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<int>() >= 0);
 			int align_size = 1 << alignmentBit;
 
@@ -47,7 +48,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ulong Align(int alignmentBit, ulong value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 			ulong align_size = 1UL << alignmentBit;
 
 			return (value + (align_size-1)) & ~(align_size-1);
@@ -60,8 +61,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static long Align(int alignmentBit, long value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<long>() >= 0);
 			long align_size = 1L << alignmentBit;
 
@@ -78,7 +79,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int PaddingRequired(int alignmentBit, uint value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 
 			return (int)(Align(alignmentBit, value) - value);
 		}
@@ -90,8 +91,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int PaddingRequired(int alignmentBit, int value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
 			return (int)(Align(alignmentBit, value) - value);
@@ -104,7 +105,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int PaddingRequired(int alignmentBit, ulong value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
 
 			return (int)(Align(alignmentBit, value) - value);
 		}
@@ -116,8 +117,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int PaddingRequired(int alignmentBit, long value)
 		{
-			Contract.Requires<System.ArgumentOutOfRangeException>(alignmentBit <= kMaxAlignmentBit);
-			Contract.Requires<System.ArgumentOutOfRangeException>(value >= 0);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(alignmentBit, kMaxAlignmentBit);
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
 			return (int)(Align(alignmentBit, value) - value);
