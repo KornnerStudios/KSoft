@@ -51,7 +51,7 @@ namespace KSoft.Text
 		public RadixEncoding(string digits,
 			Shell.EndianFormat bytesEndian = Shell.EndianFormat.Little, bool includeProceedingZeros = false)
 		{
-			Contract.Requires<ArgumentNullException>(digits != null);
+			ArgumentNullException.ThrowIfNull(digits);
 			int radix = digits.Length;
 
 			kDigits = digits;
@@ -78,7 +78,7 @@ namespace KSoft.Text
 		/// <remarks>If <paramref name="bytes"/> is zero length, returns an empty string</remarks>
 		public string Encode(byte[] bytes)
 		{
-			Contract.Requires<ArgumentNullException>(bytes != null);
+			ArgumentNullException.ThrowIfNull(bytes);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Don't really have to do this, our code will build this result (empty string),
@@ -219,7 +219,7 @@ namespace KSoft.Text
 		/// </remarks>
 		public byte[] Decode(string radixChars)
 		{
-			Contract.Requires<ArgumentNullException>(radixChars != null);
+			ArgumentNullException.ThrowIfNull(radixChars);
 
 			if (kEndian == Shell.EndianFormat.Big)
 			{
