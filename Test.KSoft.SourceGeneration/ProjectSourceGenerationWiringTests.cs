@@ -49,12 +49,15 @@ public sealed class ProjectSourceGenerationWiringTests
 				.Select(static x => x.Element("RollbackCompile")?.Value)
 				.ToArray();
 
-			Assert.IsNotEmpty(generatedSources, project.DisplayName);
 			CollectionAssert.AllItemsAreUnique(rollbackCompileItems, project.DisplayName);
 			foreach (XElement generatedSource in generatedSources)
 			{
 				Assert.AreEqual(kSingleSwitchCondition, (string)generatedSource.Attribute("Condition"), project.DisplayName);
-				Assert.IsFalse(string.IsNullOrWhiteSpace(generatedSource.Element("RollbackCompile")?.Value));
+				XElement rollbackCompile = generatedSource.Element("RollbackCompile");
+				if (rollbackCompile != null)
+				{
+					Assert.IsFalse(string.IsNullOrWhiteSpace(rollbackCompile.Value));
+				}
 			}
 		}
 	}

@@ -5,9 +5,9 @@
     <RootNamespace>KSoft</RootNamespace>
     <AssemblyName>KSoft</AssemblyName>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <!--Because we have tt->cs entries, we need to be explicit about Compile items-->
+    <!-- Keep an explicit source list so hand-authored partials and generated surfaces stay reviewable. -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source generation defaults on; pass false explicitly to use checked-in T4 rollback files. -->
+    <!-- Source generation is authoritative for former T4 surfaces. -->
     <KSoftUseSourceGeneration Condition=" '$(KSoftUseSourceGeneration)' == '' ">true</KSoftUseSourceGeneration>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath
@@ -18,149 +18,9 @@
     <!-- CompilerVisibleProperty exposes the MSBuild switch to the Roslyn generator as build_property.*. -->
     <CompilerVisibleProperty Include="KSoftUseSourceGeneration" />
   </ItemGroup>
-  <ItemGroup>
-    <!--
-      KSoftGeneratedSource is the single registration point for generated surfaces:
-        Include        = logical generated surface name
-        RollbackCompile= checked-in T4 .cs file removed from Compile when the generator is active
-
-      Do not link emitted .g.cs files back into the project. Visual Studio opens those physical files as
-      miscellaneous/non-semantic documents; the analyzer-generated document view has the correct Roslyn model.
-    -->
-    <KSoftGeneratedSource Include="BitsBitCount"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.BitCountT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsBitReverse"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.BitReverseT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsBitSwap"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.BitSwapT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsConstants"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.ConstantsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsCore"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\BitsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsVectors"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.VectorsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsDecode"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.DecodeT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsEncode"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.EncodeT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsNoneableEncoding"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.NoneableEncoding.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitsRotate"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\Bits.RotateT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="ByteSwap"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\ByteSwapT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="Flags"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\FlagsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="HandleBitEncoder"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\HandleBitEncoderT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitSet"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Collections\_Details\BitSetT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="IReadOnlyBitSetEnumerators"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitVectors"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Bitwise\_Details\BitVectorsT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="EnumBitEncoder"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Enum\_Details\EnumBitEncoderT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="EnumValue"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Enum\_Details\EnumValueT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="IntegerMath"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Math\_Details\IntegerMathT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="EndianStreamsNumbers"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\EndianStreams.NumbersT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <!-- EndianStreams.BaseT4.cs also owns the generated KSoft.TypeExtensions endian-stream surface. -->
-    <KSoftGeneratedSource Include="EndianStreamsBase"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\EndianStreams.BaseT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="EndianStreamsVirtualAddressTranslation"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="VersionMismatchException"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\VersionMismatchExceptionT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="SignatureMismatchException"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\SignatureMismatchExceptionT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitStreamCore"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\BitStream.CoreT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitStreamRead"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\BitStream.ReadT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitStreamSerialize"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\BitStream.SerializeT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitStreamWrite"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\BitStream.WriteT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="BitStreamCache"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>IO\_Details\BitStream.CacheT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TextNumbersToString"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Text\_Details\NumbersToStringT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TextNumbersParse"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Text\_Details\NumbersParseT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-    <KSoftGeneratedSource Include="TextCharLookupTables"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">
-      <RollbackCompile>Text\_Details\CharLookupTablesT4.cs</RollbackCompile>
-    </KSoftGeneratedSource>
-  </ItemGroup>
   <PropertyGroup>
-    <!-- Any active KSoftGeneratedSource emits .g.cs files and removes the corresponding rollback Compile item. -->
-    <KSoftGeneratedSourceItems>@(KSoftGeneratedSource)</KSoftGeneratedSourceItems>
-    <KSoftSourceGenerationEnabled Condition=" '$(KSoftGeneratedSourceItems)' != '' ">true</KSoftSourceGenerationEnabled>
+    <!-- Do not link emitted .g.cs files back into the project; Roslyn owns the semantic generated document view. -->
+    <KSoftSourceGenerationEnabled Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">true</KSoftSourceGenerationEnabled>
     <KSoftSourceGenerationEnabled
         Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
     <EmitCompilerGeneratedFiles
@@ -179,19 +39,6 @@
     <Compile Include="Bitwise\Int24.cs" />
     <Compile Include="Bitwise\NumberUnions.cs" />
     <Compile Include="Bitwise\Single24.cs" />
-    <Compile Include="Bitwise\_Details\Bits.BitCountT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.BitReverseT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.BitSwapT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.ConstantsT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.DecodeT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.EncodeT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.NoneableEncoding.cs" />
-    <Compile Include="Bitwise\_Details\Bits.RotateT4.cs" />
-    <Compile Include="Bitwise\_Details\Bits.VectorsT4.cs" />
-    <Compile Include="Bitwise\_Details\BitsT4.cs" />
-    <Compile Include="Bitwise\_Details\BitVectorsT4.cs" />
-    <Compile Include="Bitwise\_Details\ByteSwapT4.cs" />
-    <Compile Include="Bitwise\_Details\FlagsT4.cs" />
     <Compile Include="Collections\BitSet.cs" />
     <Compile Include="Collections\ClrDictionaryInspector.cs" />
     <Compile Include="Collections\EnumBitSet.cs" />
@@ -205,8 +52,6 @@
     <Compile Include="Collections\PropertyComparer.cs" />
     <Compile Include="Collections\StringSegment.cs" />
     <Compile Include="Collections\StringSegment.Enumerator.cs" />
-    <Compile Include="Collections\_Details\BitSetT4.cs" />
-    <Compile Include="Collections\_Details\IReadOnlyBitSet.EnumeratorsT4.cs" />
     <Compile Include="Debug\ArgumentNoneException.cs" />
     <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
     <Compile Include="Debug\ContractShim.cs" />
@@ -223,8 +68,6 @@
     <Compile Include="Enum\EnumFlags.cs" />
     <Compile Include="Enum\IEnumBitStreamer.cs" />
     <Compile Include="Enum\Reflection.cs" />
-    <Compile Include="Enum\_Details\EnumBitEncoderT4.cs" />
-    <Compile Include="Enum\_Details\EnumValueT4.cs" />
     <Compile Include="IO\BitStream\BitStream.cs" />
     <Compile Include="IO\BitStream\BitStream.Serialize.cs" />
     <Compile Include="IO\BitStream\IBitStreamSerializable.cs" />
@@ -251,18 +94,7 @@
     <Compile Include="IO\StreamPositionContext.cs" />
     <Compile Include="IO\TextStreamReadErrorState.cs" />
     <Compile Include="IO\VersionMismatchException.cs" />
-    <Compile Include="IO\_Details\BitStream.CacheT4.cs" />
-    <Compile Include="IO\_Details\BitStream.CoreT4.cs" />
-    <Compile Include="IO\_Details\BitStream.ReadT4.cs" />
-    <Compile Include="IO\_Details\BitStream.SerializeT4.cs" />
-    <Compile Include="IO\_Details\BitStream.WriteT4.cs" />
-    <Compile Include="IO\_Details\EndianStreams.BaseT4.cs" />
-    <Compile Include="IO\_Details\EndianStreams.NumbersT4.cs" />
-    <Compile Include="IO\_Details\EndianStreams.VirtualAddressTranslationT4.cs" />
-    <Compile Include="IO\_Details\SignatureMismatchExceptionT4.cs" />
-    <Compile Include="IO\_Details\VersionMismatchExceptionT4.cs" />
     <Compile Include="Math\IntegerMath.cs" />
-    <Compile Include="Math\_Details\IntegerMathT4.cs" />
     <Compile Include="Memory\Strings\Enums.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.cs" />
     <Compile Include="Memory\Strings\StringMemoryPool.Enumerator.cs" />
@@ -295,9 +127,6 @@
     <Compile Include="Text\TextLineInfoException.cs" />
     <Compile Include="Text\Utilities.Bytes.cs" />
     <Compile Include="Text\Utilities.cs" />
-    <Compile Include="Text\_Details\CharLookupTablesT4.cs" />
-    <Compile Include="Text\_Details\NumbersParseT4.cs" />
-    <Compile Include="Text\_Details\NumbersToStringT4.cs" />
     <Compile Include="Util\LowLevel.cs" />
     <Compile Include="Util\LowLevel.StructBitManager.cs" />
     <Compile Include="Util\Predicates.cs" />
@@ -314,7 +143,6 @@
     <Compile Include="Values\GroupTag\GroupTagData64.cs" />
     <Compile Include="Values\Guid.cs" />
     <Compile Include="Values\Handles\PtrHandle.cs" />
-    <Compile Include="Bitwise\_Details\HandleBitEncoderT4.cs" />
     <Compile Include="Xml\XmlAttributeWithLocation.cs" />
     <Compile Include="Xml\XmlCDataSectionWithLocation.cs" />
     <Compile Include="Xml\XmlDocumentWithLocation.cs" />
@@ -322,10 +150,6 @@
     <Compile Include="Xml\XmlReaderStreamOffsetCalculator.cs" />
     <Compile Include="Xml\XmlSerializerWithDeserializeCallback.cs" />
     <Compile Include="Xml\XmlTextWithLocation.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">
-    <!-- Remove checked-in rollback files after explicit Compile includes so Roslyn output owns the surface. -->
-    <Compile Remove="@(KSoftGeneratedSource->'%(RollbackCompile)')" />
   </ItemGroup>
   <ItemGroup>
     <!-- Load KSoft.SourceGeneration as an analyzer only; KSoft must not reference it at runtime. -->
