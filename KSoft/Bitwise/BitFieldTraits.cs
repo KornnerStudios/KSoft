@@ -6,6 +6,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+#nullable enable
+
 namespace KSoft.Bitwise
 {
 	/// <summary>Represents the info needed to compose a specific bit-field</summary>
@@ -169,13 +171,13 @@ namespace KSoft.Bitwise
 		#region Util ctors
 		public static BitFieldTraits For<TUInt>(IEnumBitEncoder<TUInt> enumEncoder)
 		{
-			Contract.Requires(enumEncoder != null);
+			ArgumentNullException.ThrowIfNull(enumEncoder);
 
 			return new BitFieldTraits(enumEncoder.BitCountTrait);
 		}
 		public static BitFieldTraits For<TUInt>(IEnumBitEncoder<TUInt> enumEncoder, BitFieldTraits prev)
 		{
-			Contract.Requires(enumEncoder != null);
+			ArgumentNullException.ThrowIfNull(enumEncoder);
 
 			return new BitFieldTraits(enumEncoder.BitCountTrait, prev);
 		}

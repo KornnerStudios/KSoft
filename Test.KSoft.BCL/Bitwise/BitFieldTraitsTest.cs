@@ -6,6 +6,14 @@ namespace KSoft.Bitwise.Test;
 [TestClass]
 public sealed class BitFieldTraitsTest : BaseTestClass
 {
+	enum FourValueEnum
+	{
+		Zero,
+		One,
+		Two,
+		Three,
+	};
+
 	static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
@@ -78,5 +86,36 @@ public sealed class BitFieldTraitsTest : BaseTestClass
 
 		AssertThrowsArgument("bitCount", () => new BitFieldTraits(2, BitFieldTraits.kMaxBitCount - 1));
 		AssertThrowsArgument("bitCount", () => new BitFieldTraits(1, previous));
+	}
+
+	[TestMethod]
+	public void For_ValidEnumEncoder_InitializesFromEncoderBitCount()
+	{
+		var enumEncoder = new EnumBitEncoder32<FourValueEnum>();
+		var previous = new BitFieldTraits(3);
+
+		var traits = BitFieldTraits.For(enumEncoder);
+		var nextTraits = BitFieldTraits.For(enumEncoder, previous);
+
+		Assert.AreEqual(enumEncoder.BitCountTrait, traits.BitCount);
+		Assert.AreEqual(0, traits.BitIndex);
+		Assert.AreEqual(enumEncoder.BitCountTrait, nextTraits.BitCount);
+		Assert.AreEqual(previous.NextFieldBitIndex, nextTraits.BitIndex);
+	}
+
+	[TestMethod]
+	public void For_NullEnumEncoder_ThrowsArgumentNullException()
+	{
+		var previous = new BitFieldTraits(3);
+
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
+			BitFieldTraits.For<uint>(null!));
+
+		Assert.AreEqual("enumEncoder", exception.ParamName);
+
+		exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
+			BitFieldTraits.For<uint>(null!, previous));
+
+		Assert.AreEqual("enumEncoder", exception.ParamName);
 	}
 }
