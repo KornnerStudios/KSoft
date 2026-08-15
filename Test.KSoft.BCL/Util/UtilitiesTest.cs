@@ -88,5 +88,38 @@ namespace KSoft.Test
 		{
 			AssertThrowsArgumentNull(() => _ = TypeExtensions.FromEncoding(null), "enc");
 		}
+
+		[TestMethod]
+		public void Util_UnixTimeGuards_ThrowArgumentOutOfRangeException()
+		{
+			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeFromUnixTime(-1), "time_t");
+			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeToUnixTime(Util.UnixTimeEpoch.AddTicks(-1)), "value");
+		}
+
+		[TestMethod]
+		public void Util_CreateComparerGuard_ThrowsArgumentNullException()
+		{
+			AssertThrowsArgumentNull(() => _ = Util.CreateComparer<string>(null!), "comparer");
+		}
+
+		[TestMethod]
+		public void Util_MinMaxChoiceReferenceGuards_ThrowArgumentNullException()
+		{
+			static int GetLength(string value) => value.Length;
+
+			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>(null!, "rhs", GetLength), "lhs");
+			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>("lhs", null!, GetLength), "rhs");
+			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>(null!, "rhs", GetLength), "lhs");
+			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>("lhs", null!, GetLength), "rhs");
+		}
+
+		[TestMethod]
+		public void Util_GetRelativePathGuards_ThrowArgumentNullException()
+		{
+			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(null!, "C:\\"), "fromPath");
+			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(string.Empty, "C:\\"), "fromPath");
+			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", null!), "toPath");
+			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", string.Empty), "toPath");
+		}
 	};
 }

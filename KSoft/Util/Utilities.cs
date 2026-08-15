@@ -159,7 +159,7 @@ namespace KSoft
 			[SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 			long time_t)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(time_t >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(time_t);
 
 			return UnixTimeEpoch.AddSeconds(time_t);
 		}
@@ -170,7 +170,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static long ConvertDateTimeToUnixTime(DateTime value)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(value >= UnixTimeEpoch);
+			ArgumentOutOfRangeException.ThrowIfLessThan(value, UnixTimeEpoch);
 
 			long time_t;
 
@@ -208,7 +208,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static IComparer<T> CreateComparer<T>(Func<T, T, int> comparer)
 		{
-			Contract.Requires<ArgumentNullException>(comparer != null);
+			ArgumentNullException.ThrowIfNull(comparer);
 			Contract.Ensures(Contract.Result<IComparer<T>>() != null);
 
 			return ComparerFactory<T>.Create(comparer);
@@ -248,8 +248,8 @@ namespace KSoft
 		public static T MinChoice<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : class
 		{
-			Contract.Requires<ArgumentNullException>(lhs != null);
-			Contract.Requires<ArgumentNullException>(rhs != null);
+			ArgumentNullException.ThrowIfNull(lhs);
+			ArgumentNullException.ThrowIfNull(rhs);
 			Contract.Requires(choiceProperty != null);
 
 			return choiceProperty(lhs) < choiceProperty(rhs)
@@ -283,8 +283,8 @@ namespace KSoft
 		public static T MaxChoice<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : class
 		{
-			Contract.Requires<ArgumentNullException>(lhs != null);
-			Contract.Requires<ArgumentNullException>(rhs != null);
+			ArgumentNullException.ThrowIfNull(lhs);
+			ArgumentNullException.ThrowIfNull(rhs);
 			Contract.Requires(choiceProperty != null);
 
 			return choiceProperty(lhs) > choiceProperty(rhs)
@@ -654,8 +654,10 @@ namespace KSoft
 		/// <returns>The relative path from the start directory to the end path.</returns>
 		public static string GetRelativePath(string fromPath, string toPath)
 		{
-			Contract.Requires<ArgumentNullException>(fromPath.IsNotNullOrEmpty());
-			Contract.Requires<ArgumentNullException>(toPath.IsNotNullOrEmpty());
+			if (string.IsNullOrEmpty(fromPath))
+				throw new ArgumentNullException(nameof(fromPath));
+			if (string.IsNullOrEmpty(toPath))
+				throw new ArgumentNullException(nameof(toPath));
 			Contract.Ensures(Contract.Result<string>()==toPath || fromPath.IsNotNullOrEmpty());
 
 			Uri fromUri = new(AppendDirectorySeparatorChar(fromPath));
