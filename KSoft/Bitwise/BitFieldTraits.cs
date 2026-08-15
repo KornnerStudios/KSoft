@@ -122,19 +122,15 @@ namespace KSoft.Bitwise
 
 		static int ValidateBitCount(int bitCount)
 		{
-			if (bitCount <= 0 || bitCount > kMaxBitCount)
-			{
-				throw new ArgumentOutOfRangeException(nameof(bitCount));
-			}
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, kMaxBitCount);
 
 			return bitCount;
 		}
 		static int ValidateBitIndexAndRange(int bitCount, int bitIndex)
 		{
-			if (bitIndex < 0 || bitIndex >= kMaxBitCount)
-			{
-				throw new ArgumentOutOfRangeException(nameof(bitIndex));
-			}
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, kMaxBitCount);
 
 			if (bitCount > kMaxBitCount - bitIndex)
 			{

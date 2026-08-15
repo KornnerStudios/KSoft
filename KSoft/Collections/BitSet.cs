@@ -114,41 +114,29 @@ namespace KSoft.Collections
 		#region Guard helpers
 		static void ThrowIfArraySegmentOutOfRange(int index, int length, int arrayLength)
 		{
-			if (index < 0 || index >= arrayLength)
-			{
-				throw new ArgumentOutOfRangeException(nameof(index));
-			}
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, arrayLength);
 			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			if (length > arrayLength - index)
-			{
-				throw new ArgumentOutOfRangeException(nameof(length));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(length, arrayLength - index);
 		}
 
 		void ThrowIfBitIndexOutOfRange(int bitIndex, string paramName)
 		{
-			if (bitIndex < 0 || bitIndex >= Length)
-			{
-				throw new ArgumentOutOfRangeException(paramName);
-			}
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex, paramName);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Length, paramName);
 		}
 
 		void ThrowIfBitRangeOutOfRange(int startBitIndex, int bitCount)
 		{
 			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
-			if (bitCount > Length - startBitIndex)
-			{
-				throw new ArgumentOutOfRangeException(nameof(bitCount));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Length - startBitIndex);
 		}
 
 		void ThrowIfBitSpanOutOfRange(int frombitIndex, int toBitIndex)
 		{
 			ThrowIfBitIndexOutOfRange(frombitIndex, nameof(frombitIndex));
-			if (toBitIndex < frombitIndex || toBitIndex > Length)
-			{
-				throw new ArgumentOutOfRangeException(nameof(toBitIndex));
-			}
+			ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
 		}
 		#endregion
 

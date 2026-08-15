@@ -136,18 +136,11 @@ namespace KSoft
 				ArgumentNullException.ThrowIfNull(dst);
 				ArgumentNullException.ThrowIfNull(src);
 				ArgumentOutOfRangeException.ThrowIfNegative(srcCopyCount);
-				if (dstOffset < 0 || dstOffset >= dst.Length)
-				{
-					throw new ArgumentOutOfRangeException(nameof(dstOffset));
-				}
-				if (srcOffset < 0 || srcOffset >= src.Length)
-				{
-					throw new ArgumentOutOfRangeException(nameof(srcOffset));
-				}
-				if (srcCopyCount > src.Length - srcOffset)
-				{
-					throw new ArgumentOutOfRangeException(nameof(srcCopyCount));
-				}
+				ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(dstOffset, dst.Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);
+				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(srcOffset, src.Length);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(srcCopyCount, src.Length - srcOffset);
 
 				CopyInternal(dst, dstOffset, src, srcOffset, srcCopyCount);
 			}

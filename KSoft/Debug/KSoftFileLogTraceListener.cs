@@ -564,10 +564,7 @@ namespace KSoft.Debug
 			[SecuritySafeCritical]
 			set
 			{
-				if (value <= 1000)
-				{
-					throw new ArgumentOutOfRangeException(nameof(value));
-				}
+				ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(value, 1000);
 
 				this.DemandWritePermission();
 				this.mMaxFileSize = value;

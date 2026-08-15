@@ -87,10 +87,7 @@ namespace KSoft.Bitwise
 			ArgumentNullException.ThrowIfNull(definition);
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			if (startIndex > buffer.Length)
-			{
-				throw new ArgumentOutOfRangeException(nameof(startIndex));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 			if ((long)count * definition.SizeOf > buffer.Length - startIndex)
 			{

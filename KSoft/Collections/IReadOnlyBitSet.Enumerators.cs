@@ -30,9 +30,9 @@ namespace KSoft.Collections
 				: this(Util.ThrowIfNull(bitset), false)
 			{
 				ArgumentOutOfRangeException.ThrowIfNegative(startBitIndex);
-				if (startBitIndex >= bitset.Length && bitset.Length != 0)
+				if (bitset.Length != 0)
 				{
-					throw new ArgumentOutOfRangeException(nameof(startBitIndex));
+					ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, bitset.Length);
 				}
 
 				mStateFilter = stateFilter;

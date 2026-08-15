@@ -35,10 +35,7 @@ namespace KSoft.Bitwise
 			{
 				ArgumentNullException.ThrowIfNull(buffer);
 				ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-				if (startIndex > buffer.Length)
-				{
-					throw new ArgumentOutOfRangeException(nameof(startIndex));
-				}
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
 
 				return SwapData(buffer, startIndex, out int _, out int _);
 			}
@@ -47,9 +44,9 @@ namespace KSoft.Bitwise
 				out int sizeInBytes, out int sizeInCodes)
 			{
 				ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-				if (buffer != null && startIndex > buffer.Length)
+				if (buffer != null)
 				{
-					throw new ArgumentOutOfRangeException(nameof(startIndex));
+					ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
 				}
 
 				return SwapDataImpl(buffer, startIndex, out sizeInBytes, out sizeInCodes, 0);
