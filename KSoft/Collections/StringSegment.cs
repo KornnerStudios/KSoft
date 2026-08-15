@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -29,17 +24,20 @@ namespace KSoft.Collections
 		#region Ctor
 		public StringSegment(string data)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
+			ArgumentNullException.ThrowIfNull(data);
 			mData = data;
 			mOffset = 0;
 			mCount = data.Length;
 		}
 		public StringSegment(string data, int offset, int count)
 		{
-			Contract.Requires<ArgumentNullException>(data != null);
-			Contract.Requires<ArgumentOutOfRangeException>(offset >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentException>(count < (data.Length - offset));
+			ArgumentNullException.ThrowIfNull(data);
+			ArgumentOutOfRangeException.ThrowIfNegative(offset);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (count >= data.Length - offset)
+			{
+				throw new ArgumentException(null, nameof(count));
+			}
 
 			mData = data;
 			mOffset = offset;
