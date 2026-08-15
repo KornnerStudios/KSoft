@@ -46,28 +46,28 @@ namespace KSoft.IO
 	{
 		public TEnum Read(IO.BitStream s, int bitCount)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			Contract.Requires(bitCount > 0);
 
 			throw new NotImplementedException();
 		}
 		public void Read(IO.BitStream s, out TEnum value, int bitCount)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			Contract.Requires(bitCount > 0);
 
 			throw new NotImplementedException();
 		}
 		public void Write(IO.BitStream s, TEnum value, int bitCount)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			Contract.Requires(bitCount > 0);
 
 			throw new NotImplementedException();
 		}
 		public void Stream(IO.BitStream s, ref TEnum value, int bitCount)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			Contract.Requires(bitCount > 0);
 
 			throw new NotImplementedException();

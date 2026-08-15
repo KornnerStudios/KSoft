@@ -45,19 +45,19 @@ namespace KSoft.IO
 	{
 		public TEnum Read(BinaryReader s)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			throw new NotImplementedException();
 		}
 		public void Read(BinaryReader s, out TEnum value)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			throw new NotImplementedException();
 		}
 		public void Write(BinaryWriter s, TEnum value)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			throw new NotImplementedException();
 		}
@@ -85,7 +85,7 @@ namespace KSoft.IO
 
 		public void Stream(IO.EndianStream s, ref TEnum value)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			throw new NotImplementedException();
 		}
@@ -259,6 +259,8 @@ namespace KSoft.IO
 		/// <returns>Value read from the stream</returns>
 		public static TEnum Read(BinaryReader s)
 		{
+			ArgumentNullException.ThrowIfNull(s);
+
 			kRead(s, out TEnum value);
 
 			return value;
@@ -266,17 +268,29 @@ namespace KSoft.IO
 		/// <summary>Stream a <typeparamref name="TEnum"/> value from a <see cref="BinaryReader"/></summary>
 		/// <param name="s">Reader we're streaming from</param>
 		/// <param name="value">Value read from the stream</param>
-		public static void Read(BinaryReader s, out TEnum value)	{ kRead(s, out value); }
+		public static void Read(BinaryReader s, out TEnum value)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+
+			kRead(s, out value);
+		}
 		/// <summary>Stream a <typeparamref name="TEnum"/> value to a <see cref="BinaryWriter"/></summary>
 		/// <param name="s">Writer we're streaming to</param>
 		/// <param name="value"></param>
-		public static void Write(BinaryWriter s, TEnum value)		{ kWrite(s, value); }
+		public static void Write(BinaryWriter s, TEnum value)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+
+			kWrite(s, value);
+		}
 
 		/// <summary>Serialize a <typeparamref name="TEnum"/> value using an <see cref="IO.EndianStream"/></summary>
 		/// <param name="s">Stream we're using for serialization</param>
 		/// <param name="value">Value to serialize</param>
 		public static void Stream(IO.EndianStream s, ref TEnum value)
 		{
+			ArgumentNullException.ThrowIfNull(s);
+
 				 if (s.IsReading) { Read(s.Reader, out value); }
 			else if (s.IsWriting) { Write(s.Writer, value); }
 		}

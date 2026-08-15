@@ -82,6 +82,26 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
+		public void Enum_BinaryStreamerFactoriesReturnInstancesTest()
+		{
+			Assert.IsNotNull(EnumBinaryStreamer.ForBinary<System.TypeCode>());
+			Assert.IsNotNull(EnumBinaryStreamer.ForBinary<System.TypeCode, int>());
+			Assert.IsNotNull(EnumBinaryStreamer.For<System.TypeCode>());
+			Assert.IsNotNull(EnumBinaryStreamer.For<System.TypeCode, int>());
+		}
+
+		[TestMethod]
+		public void Enum_BinaryStreamerNullStreamsThrowArgumentNullExceptionTest()
+		{
+			var value = System.TypeCode.String;
+
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, out value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Write(null, value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Stream(null, ref value));
+		}
+
+		[TestMethod]
 		public void Enum_BinaryStreamerUnderlyingTypesWriteExpectedBytesTest()
 		{
 			AssertUnderlyingBinaryRoundTrip(ByteEnum.Value, new byte[] { 0xAB });

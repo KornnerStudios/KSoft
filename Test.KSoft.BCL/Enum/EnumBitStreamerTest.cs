@@ -104,6 +104,17 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
+		public void Enum_BitStreamerNullStreamsThrowArgumentNullExceptionTest()
+		{
+			var value = System.TypeCode.String;
+
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, out value, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Write(null, value, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Stream(null, ref value, 32));
+		}
+
+		[TestMethod]
 		public void Enum_BitStreamerUnderlyingTypesRoundTripTest()
 		{
 			AssertUnderlyingBitRoundTrip(ByteEnum.Value, 8);

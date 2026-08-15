@@ -482,6 +482,8 @@ namespace KSoft.IO
 		/// <returns>Value read from the stream</returns>
 		public static TEnum Read(IO.BitStream s, int bitCount)
 		{
+			ArgumentNullException.ThrowIfNull(s);
+
 			kRead(s, out TEnum value, bitCount);
 
 			return value;
@@ -490,12 +492,22 @@ namespace KSoft.IO
 		/// <param name="s">Reader we're streaming from</param>
 		/// <param name="value">Value read from the stream</param>
 		/// <param name="bitCount"></param>
-		public static void Read(IO.BitStream s, out TEnum value, int bitCount)	{ kRead(s, out value, bitCount); }
+		public static void Read(IO.BitStream s, out TEnum value, int bitCount)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+
+			kRead(s, out value, bitCount);
+		}
 		/// <summary>Stream a <typeparamref name="TEnum"/> value to a <see cref="IO.BitStream"/></summary>
 		/// <param name="s">Writer we're streaming to</param>
 		/// <param name="value"></param>
 		/// <param name="bitCount"></param>
-		public static void Write(IO.BitStream s, TEnum value, int bitCount)		{ kWrite(s, value, bitCount); }
+		public static void Write(IO.BitStream s, TEnum value, int bitCount)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+
+			kWrite(s, value, bitCount);
+		}
 
 		/// <summary>Serialize a <typeparamref name="TEnum"/> value using an <see cref="IO.BitStream"/></summary>
 		/// <param name="s">Stream we're using for serialization</param>
@@ -503,6 +515,8 @@ namespace KSoft.IO
 		/// <param name="bitCount"></param>
 		public static void Stream(IO.BitStream s, ref TEnum value, int bitCount)
 		{
+			ArgumentNullException.ThrowIfNull(s);
+
 				 if (s.IsReading) { Read(s, out value, bitCount); }
 			else if (s.IsWriting) { Write(s, value, bitCount); }
 		}
