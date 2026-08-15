@@ -152,8 +152,11 @@ namespace KSoft.IO
 		public XmlElementStream(System.IO.Stream sourceStream,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null, string streamNameOverride = null)
 		{
-			Contract.Requires<ArgumentNullException>(sourceStream != null);
-			Contract.Requires<ArgumentException>(sourceStream.HasPermissions(permissions));
+			ArgumentNullException.ThrowIfNull(sourceStream);
+			if (!sourceStream.HasPermissions(permissions))
+			{
+				throw new ArgumentException("Stream does not have the requested permissions.", nameof(permissions));
+			}
 
 			if (streamNameOverride.IsNullOrEmpty())
 			{
@@ -192,7 +195,7 @@ namespace KSoft.IO
 		public XmlElementStream(string filename,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
-			Contract.Requires<ArgumentNullException>(filename != null);
+			ArgumentNullException.ThrowIfNull(filename);
 
 			if (!System.IO.File.Exists(filename))
 			{
@@ -233,7 +236,7 @@ namespace KSoft.IO
 		public XmlElementStream(XmlDocument document, XmlElement cursor,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
-			Contract.Requires<ArgumentNullException>(document != null);
+			ArgumentNullException.ThrowIfNull(document);
 			Contract.Requires(object.ReferenceEquals(cursor.OwnerDocument, document));
 
 			Document = document;
@@ -252,7 +255,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public static XmlElementStream CreateForWrite(string rootName, object owner = null)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(rootName));
+			ArgumentException.ThrowIfNullOrEmpty(rootName);
 
 			var root = new XmlDocument()
 			{

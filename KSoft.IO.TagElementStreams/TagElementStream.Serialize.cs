@@ -573,7 +573,7 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 			Contract.Requires(action != null);
 			Contract.Requires(ctor != null);
 
@@ -585,7 +585,7 @@ namespace KSoft.IO
 			where T : new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 			Contract.Requires(action != null);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, action);
@@ -597,7 +597,7 @@ namespace KSoft.IO
 			where T : new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 			Contract.Requires(read != null && write != null);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, read);
@@ -610,7 +610,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 			Contract.Requires(ctor != null);
 
 				 if (IsReading) ReadStreamableElements(elementName, coll, ctxt, ctor);
@@ -622,7 +622,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			StreamableElements(elementName, coll, (object)null, (nil) => new T(), shouldWritePredicate);
 		}
@@ -635,7 +635,7 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 			Contract.Requires(streamKey != null);
 			Contract.Requires(streamValue != null && valueCtor != null);
 
@@ -649,7 +649,7 @@ namespace KSoft.IO
 			where TValue : new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 			Contract.Requires(streamKey != null);
 			Contract.Requires(streamValue != null);
 
@@ -664,7 +664,7 @@ namespace KSoft.IO
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 
 				 if (IsReading) ReadStreamableElements(elementName, dic, ctxt, streamKey);
 			else if (IsWriting) WriteStreamableElements(elementName, dic, ctxt, streamKey, shouldWritePredicate);
@@ -676,7 +676,7 @@ namespace KSoft.IO
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 
 			StreamableElements(elementName, dic, (object)null, streamKey, shouldWritePredicate);
 		}
@@ -688,7 +688,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 			Contract.Requires(ctor != null);
 
 			if (IsReading) return ReadFixedArray(elementName, array, ctxt, ctor);
@@ -700,7 +700,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>, new()
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return StreamableFixedArray(elementName, array, (object)null, (nil) => new T());
 		}

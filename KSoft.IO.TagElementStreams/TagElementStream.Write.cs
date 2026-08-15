@@ -241,7 +241,7 @@ namespace KSoft.IO
 			IEnumerable<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 			Contract.Requires(action != null);
 
 			foreach (var value in coll)
@@ -260,7 +260,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(coll != null);
+			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
 			{
@@ -282,7 +282,7 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue)
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 			Contract.Requires(streamKey != null);
 			Contract.Requires(streamValue != null);
 
@@ -306,7 +306,7 @@ namespace KSoft.IO
 			where TValue : ITagElementStreamable<TName>
 		{
 			Contract.Requires(ValidateNameArg(elementName));
-			Contract.Requires<ArgumentNullException>(dic != null);
+			ArgumentNullException.ThrowIfNull(dic);
 			Contract.Requires(streamKey != null);
 
 			foreach (var kv in dic)
@@ -395,8 +395,8 @@ namespace KSoft.IO
 		/// <param name="elementName"></param>
 		public TagElementStreamWriteBookmark(TagElementStream<TDoc, TCursor, TName> stream, TName elementName)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
-			Contract.Requires<ArgumentNullException>(elementName != null);
+			ArgumentNullException.ThrowIfNull(stream);
+			ArgumentNullException.ThrowIfNull(elementName);
 
 			mStream = null;
 			mOldCursor = null;

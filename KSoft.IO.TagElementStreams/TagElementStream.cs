@@ -90,7 +90,7 @@ namespace KSoft.IO
 		public TCursor Cursor {
 			get { return mCursor; }
 			set {
-				Contract.Requires<ArgumentNullException>(value != null);
+				ArgumentNullException.ThrowIfNull(value);
 
 				mCursor = value;
 			}
@@ -147,7 +147,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public /*IDisposable*/TagElementStreamReadBookmark<TDoc, TCursor, TName> EnterCursorBookmark(TCursor newCursor)
 		{
-			Contract.Requires<ArgumentNullException>(newCursor != null);
+			ArgumentNullException.ThrowIfNull(newCursor);
 
 			return new TagElementStreamReadBookmark<TDoc, TCursor, TName>(this, newCursor);
 		}

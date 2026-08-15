@@ -46,7 +46,7 @@ namespace KSoft.IO
 		/// <param name="elementName">If null, no bookmarking is actually performed</param>
 		public TagElementStreamBookmark(TagElementStream<TDoc, TCursor, TName> stream, TName elementName)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			mStream = null;
 			mOldCursor = null;
@@ -84,7 +84,7 @@ namespace KSoft.IO
 		/// <param name="stream">The underlying stream for this bookmark</param>
 		public TagElementStreamReadBookmark(TagElementStream<TDoc, TCursor, TName> stream)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			(mStream = stream).SaveCursor(null, out mOldCursor);
 		}
@@ -93,8 +93,8 @@ namespace KSoft.IO
 		/// <param name="newCursor">The new cursor for the stream</param>
 		public TagElementStreamReadBookmark(TagElementStream<TDoc, TCursor, TName> stream, TCursor newCursor)
 		{
-			Contract.Requires<ArgumentNullException>(stream != null);
-			Contract.Requires<ArgumentNullException>(newCursor != null);
+			ArgumentNullException.ThrowIfNull(stream);
+			ArgumentNullException.ThrowIfNull(newCursor);
 
 			(mStream = stream).SaveCursor(newCursor, out mOldCursor);
 		}

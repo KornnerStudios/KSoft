@@ -81,11 +81,14 @@ namespace KSoft.IO
 
 		public static RegisteredFormat Register(TagElementStreamFormat baseFormat, string name = null)
 		{
-			Contract.Requires<ArgumentException>(baseFormat != TagElementStreamFormat.Undefined);
-			Contract.Requires<ArgumentException>(baseFormat.GetTypeFlags() == 0,
-				"Format should exclude any type flags when registering");
-			Contract.Requires<ArgumentException>((baseFormat >= TagElementStreamFormat.kCustomStart || baseFormat <= TagElementStreamFormat.kCustomEnd) || !string.IsNullOrEmpty(name),
-				"Custom formats require an explicit name");
+			ArgumentOutOfRangeException.ThrowIfEqual((int)baseFormat, (int)TagElementStreamFormat.Undefined, nameof(baseFormat));
+			ArgumentOutOfRangeException.ThrowIfNotEqual(
+				(int)baseFormat.GetTypeFlags(), (int)TagElementStreamFormat.Undefined, nameof(baseFormat));
+			if ((baseFormat < TagElementStreamFormat.kCustomStart && baseFormat > TagElementStreamFormat.kCustomEnd) &&
+				string.IsNullOrEmpty(name))
+			{
+				throw new ArgumentException("Custom formats require an explicit name", nameof(name));
+			}
 
 			if (string.IsNullOrEmpty(name))
 			{
@@ -242,8 +245,11 @@ namespace KSoft.IO
 		public static dynamic Open(System.IO.Stream sourceStream, TagElementStreamFormat format,
 			FileAccess permissions = FileAccess.ReadWrite, object owner = null)
 		{
-			Contract.Requires<ArgumentNullException>(sourceStream != null);
-			Contract.Requires<ArgumentException>(sourceStream.HasPermissions(permissions));
+			ArgumentNullException.ThrowIfNull(sourceStream);
+			if (!sourceStream.HasPermissions(permissions))
+			{
+				throw new ArgumentException("Stream does not have the requested permissions.", nameof(permissions));
+			}
 
 			var registration = GetRegistration(format, "open");
 
@@ -253,7 +259,7 @@ namespace KSoft.IO
 		public static dynamic Open(string filename,
 			FileAccess permissions = FileAccess.ReadWrite, object owner = null)
 		{
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(filename));
+			ArgumentException.ThrowIfNullOrEmpty(filename);
 
 			string extension = Path.GetExtension(filename);
 			if (string.IsNullOrEmpty(extension))
