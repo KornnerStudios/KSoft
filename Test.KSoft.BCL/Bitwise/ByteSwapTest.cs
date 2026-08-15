@@ -24,6 +24,34 @@ namespace KSoft.Bitwise.Test
 		static uint gBenchmarkUInt32;
 		static ulong gBenchmarkUInt64;
 
+		static short[] CreateInt32SwapCodes() =>
+		[
+			(short)BsCode.ArrayStart, 1,
+			(short)BsCode.Int32,
+			(short)BsCode.ArrayEnd,
+		];
+
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgument(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void ByteSwap_SwapIntegersTest()
 		{
@@ -377,6 +405,64 @@ namespace KSoft.Bitwise.Test
 				() => ByteSwap.ReplaceBytesUInt40(new byte[5], 1, 0x123456789AUL));
 			AssertThrows<ArgumentOutOfRangeException>(
 				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(uint) - 1]));
+		}
+
+		[TestMethod]
+		public void BsDefinition_InvalidArguments_ThrowExpectedExceptions()
+		{
+			var codes = CreateInt32SwapCodes();
+
+			AssertThrowsArgumentNull("name", () => new ByteSwap.BsDefinition(null!, sizeof(int), codes));
+			AssertThrowsArgumentNull("name", () => new ByteSwap.BsDefinition("", sizeof(int), codes));
+			AssertThrowsArgumentOutOfRange("sizeOf", () => new ByteSwap.BsDefinition("Int32", 0, codes));
+			AssertThrowsArgumentNull("bsCodes", () => new ByteSwap.BsDefinition("Int32", sizeof(int), null!));
+			AssertThrowsArgument("bsCodes", () => new ByteSwap.BsDefinition("Int32", sizeof(int), (short)BsCode.Int32));
+		}
+
+		[TestMethod]
+		public void SwapData_InvalidArguments_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("definition", () => ByteSwap.SwapData(null!, new byte[sizeof(int)]));
+			AssertThrowsArgumentNull("buffer", () => ByteSwap.SwapData(ByteSwap.kInt32Definition, null!));
+			AssertThrowsArgumentOutOfRange("startIndex",
+				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(int)], -1));
+			AssertThrowsArgumentOutOfRange("startIndex",
+				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(int)], sizeof(int) + 1));
+			AssertThrowsArgumentOutOfRange("count",
+				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(int)], count: 0));
+			AssertThrowsArgumentOutOfRange("count",
+				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(int)], count: 2));
+		}
+
+		[TestMethod]
+		public void Swapper_InvalidArguments_ThrowExpectedExceptions()
+		{
+			var codes = CreateInt32SwapCodes();
+
+			AssertThrowsArgumentOutOfRange("sizeOf", () => new ByteSwap.Swapper(0, codes));
+			AssertThrowsArgumentNull("codes", () => new ByteSwap.Swapper(sizeof(int), null!));
+			AssertThrowsArgumentNull("definition", () => new ByteSwap.Swapper(null!));
+
+			var swapper = new ByteSwap.Swapper(ByteSwap.kInt32Definition);
+			AssertThrowsArgumentNull("buffer", () => swapper.SwapData(null!));
+			AssertThrowsArgumentOutOfRange("startIndex", () => swapper.SwapData(new byte[sizeof(int)], -1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => swapper.SwapData(new byte[sizeof(int)], sizeof(int) + 1));
+			AssertThrowsArgumentOutOfRange("startIndex",
+				() => swapper.SwapData(null, -1, out _, out _));
+			AssertThrowsArgumentOutOfRange("startIndex",
+				() => swapper.SwapData(new byte[sizeof(int)], sizeof(int) + 1, out _, out _));
+		}
+
+		[TestMethod]
+		public void Swapper_NullBufferSizeQuery_ReturnsDefinitionSize()
+		{
+			var swapper = new ByteSwap.Swapper(ByteSwap.kInt32Definition);
+
+			var result = swapper.SwapData(null, 0, out int sizeInBytes, out int sizeInCodes);
+
+			Assert.AreEqual(TypeExtensions.kNone, result);
+			Assert.AreEqual(sizeof(int), sizeInBytes);
+			Assert.AreEqual(ByteSwap.kInt32Definition.ByteSwapCodes.Length, sizeInCodes);
 		}
 
 		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken

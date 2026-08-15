@@ -7,6 +7,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+#nullable enable
+
 namespace KSoft.Bitwise
 {
 	/// <summary>Pre-defined byte swapping codes</summary>
@@ -53,10 +55,17 @@ namespace KSoft.Bitwise
 
 			public BsDefinition(string name, int sizeOf, params short[] bsCodes)
 			{
-				Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(name));
-				Contract.Requires<ArgumentOutOfRangeException>(sizeOf > 0);
-				Contract.Requires<ArgumentNullException>(bsCodes != null);
-				Contract.Requires<ArgumentException>(bsCodes.Length >= kMinumumNumberOfDefinitionBsCodes);
+				if (string.IsNullOrEmpty(name))
+				{
+					throw new ArgumentNullException(nameof(name));
+				}
+				ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sizeOf);
+				ArgumentNullException.ThrowIfNull(bsCodes);
+				if (bsCodes.Length < kMinumumNumberOfDefinitionBsCodes)
+				{
+					throw new ArgumentException("Codes should include: ArrayStart, {Count}, {Elements}, and ArrayEnd",
+						nameof(bsCodes));
+				}
 
 				kName = name;
 				kSizeOf = sizeOf;
@@ -73,18 +82,20 @@ namespace KSoft.Bitwise
 		public static int SwapData(IByteSwappable definition, byte[] buffer,
 			int startIndex = 0, int count = 1)
 		{
-			Contract.Requires<ArgumentNullException>(definition != null);
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(count > 0);
-			Contract.Requires<ArgumentOutOfRangeException>((count*definition.SizeOf) <= (buffer.Length-startIndex),
-				"buffer doesn't have enough data for the given byte swap parameters");
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
-			if (count == 0)
+			ArgumentNullException.ThrowIfNull(definition);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			if (startIndex > buffer.Length)
 			{
-				return startIndex;
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+			if ((long)count * definition.SizeOf > buffer.Length - startIndex)
+			{
+				throw new ArgumentOutOfRangeException(nameof(count),
+					"buffer doesn't have enough data for the given byte swap parameters");
 			}
 
 			var swap = new Swapper(definition);

@@ -6,6 +6,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+#nullable enable
+
 namespace KSoft.Bitwise
 {
 	partial class ByteSwap
@@ -17,36 +19,43 @@ namespace KSoft.Bitwise
 
 			public Swapper(int sizeOf, params short[] codes)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(sizeOf > 0);
-				Contract.Requires<ArgumentNullException>(codes != null);
+				ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sizeOf);
+				ArgumentNullException.ThrowIfNull(codes);
 
 				kCodes = codes;
 			}
 			public Swapper(IByteSwappable definition)
 			{
-				Contract.Requires<ArgumentNullException>(definition != null);
+				ArgumentNullException.ThrowIfNull(definition);
 
 				kCodes = definition.ByteSwapCodes;
 			}
 
 			public int SwapData(byte[] buffer, int startIndex = 0)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(startIndex <= buffer.Length);
+				ArgumentNullException.ThrowIfNull(buffer);
+				ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+				if (startIndex > buffer.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(startIndex));
+				}
 
 				return SwapData(buffer, startIndex, out int _, out int _);
 			}
 
-			public int SwapData(byte[] buffer, int startIndex,
+			public int SwapData(byte[]? buffer, int startIndex,
 				out int sizeInBytes, out int sizeInCodes)
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-				Contract.Requires<ArgumentOutOfRangeException>(buffer == null || startIndex <= buffer.Length);
+				ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+				if (buffer != null && startIndex > buffer.Length)
+				{
+					throw new ArgumentOutOfRangeException(nameof(startIndex));
+				}
 
 				return SwapDataImpl(buffer, startIndex, out sizeInBytes, out sizeInCodes, 0);
 			}
 
-			private int SwapDataImpl(byte[] buffer, int startIndex
+			private int SwapDataImpl(byte[]? buffer, int startIndex
 				, out int outSizeInBytes, out int outSizeInCodes
 				, int codesStartIndex)
 			{
