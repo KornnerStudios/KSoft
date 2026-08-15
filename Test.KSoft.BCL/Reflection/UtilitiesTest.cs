@@ -131,6 +131,66 @@ namespace KSoft.Reflection.Test
 			AssertThrowsArgument("expr", () =>
 				_ = Util.PropertyNameFromExpr<TestPropertyNameFromExprClass, int>(_ => 1 + 1));
 		}
+
+		[TestMethod]
+		public void Reflection_DynamicDelegateTypeGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("parameters", () =>
+				_ = Util.GenerateDynamicDelegateType(typeof(void), null!));
+			AssertThrowsArgument("parameters", () =>
+				_ = Util.GenerateDynamicDelegateType(
+					typeof(void),
+					new Type[Util.kGenerateDynamicDelegateMaximumParameters + 1]));
+		}
+
+		[TestMethod]
+		public void Reflection_ObjectMethodProxyGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgument("methodName", () =>
+				_ = Util.GenerateObjectMethodProxy<
+					TestGenerateObjectMethodProxyClass,
+					TestGenerateObjectMethodProxyClassPrivateFunc,
+					TestGenerateObjectMethodProxyClassPrivateFuncSig>(
+						null!));
+			AssertThrowsArgument("TSig", () =>
+				_ = Util.GenerateObjectMethodProxy<
+					TestGenerateObjectMethodProxyClass,
+					TestGenerateObjectMethodProxyClassPrivateFunc,
+					string>(
+						"PrivateFunc"));
+			AssertThrowsArgument("TFunc", () =>
+				_ = Util.GenerateObjectMethodProxy<
+					TestGenerateObjectMethodProxyClass,
+					string,
+					TestGenerateObjectMethodProxyClassPrivateFuncSig>(
+						"PrivateFunc"));
+		}
+
+		[TestMethod]
+		public void Reflection_ConstructorFuncGuards_ThrowExpectedExceptions()
+		{
+			const Reflect.BindingFlags kNonPublicCtorBindingFlags =
+				Reflect.BindingFlags.Instance | Reflect.BindingFlags.NonPublic;
+
+			AssertThrowsArgumentNull("type", () =>
+				_ = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+					TestGenerateConstructorFuncClassPrivateCtor>(
+						null!,
+						kNonPublicCtorBindingFlags));
+			AssertThrowsArgument("type", () =>
+				_ = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+					TestGenerateConstructorFuncClassPrivateCtor>(
+						typeof(TestGenerateConstructorFuncClass),
+						kNonPublicCtorBindingFlags));
+			AssertThrowsArgument("TFunc", () =>
+				_ = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+					string>(
+						typeof(TestGenerateConstructorFuncSubClass),
+						kNonPublicCtorBindingFlags));
+			AssertThrowsArgument("TFunc", () =>
+				_ = Util.GenerateConstructorFunc<TestGenerateConstructorFuncClass,
+					string>());
+		}
 #if false
 		[TestMethod]
 		public void ReflectUtil_GetDelegateForFunctionPointerTest()
@@ -353,6 +413,13 @@ namespace KSoft.Reflection.Test
 			public TestGenerateConstructorFuncClass(object _, double _1)
 			{
 
+			}
+		};
+		internal class TestGenerateConstructorFuncSubClass : TestGenerateConstructorFuncClass
+		{
+			public TestGenerateConstructorFuncSubClass()
+				: base(null, 0.0)
+			{
 			}
 		};
 		[TestMethod]

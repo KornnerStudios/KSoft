@@ -94,8 +94,9 @@ namespace KSoft.Reflection
 		}
 		public static Type GenerateDynamicDelegateType(Type result, params Type[] parameters)
 		{
-			Contract.Requires<ArgumentNullException>(parameters != null);
-			Contract.Requires<ArgumentException>(parameters.Length <= kGenerateDynamicDelegateMaximumParameters);
+			ArgumentNullException.ThrowIfNull(parameters);
+			if (parameters.Length > kGenerateDynamicDelegateMaximumParameters)
+				throw new ArgumentException(null, nameof(parameters));
 
 			bool has_result = result != null || result != typeof(void);
 
@@ -115,9 +116,11 @@ namespace KSoft.Reflection
 			where TFunc : class
 			where TSig : class
 		{
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(methodName));
-			Contract.Requires<ArgumentException>(typeof(TSig).IsSubclassOf(typeof(Delegate)));
-			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
+			ThrowIfNullOrEmptyArgument(methodName, nameof(methodName));
+			if (!typeof(TSig).IsSubclassOf(typeof(Delegate)))
+				throw new ArgumentException(null, nameof(TSig));
+			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
+				throw new ArgumentException(null, nameof(TFunc));
 			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			var type = typeof(T);
@@ -215,9 +218,11 @@ namespace KSoft.Reflection
 			Reflect.BindingFlags bindingAttr = Reflect.BindingFlags.Public | Reflect.BindingFlags.Instance)
 			where TFunc : class
 		{
-			Contract.Requires<ArgumentNullException>(type != null);
-			Contract.Requires<ArgumentException>(type.IsSubclassOf(typeof(T)));
-			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
+			ArgumentNullException.ThrowIfNull(type);
+			if (!type.IsSubclassOf(typeof(T)))
+				throw new ArgumentException(null, nameof(type));
+			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
+				throw new ArgumentException(null, nameof(TFunc));
 			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			return GenerateConstructorFuncImpl<TFunc>(type, bindingAttr);
@@ -227,7 +232,8 @@ namespace KSoft.Reflection
 			Reflect.BindingFlags bindingAttr = Reflect.BindingFlags.Public | Reflect.BindingFlags.Instance)
 			where TFunc : class
 		{
-			Contract.Requires<ArgumentException>(typeof(TFunc).IsSubclassOf(typeof(Delegate)));
+			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
+				throw new ArgumentException(null, nameof(TFunc));
 			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			var type = typeof(T);
