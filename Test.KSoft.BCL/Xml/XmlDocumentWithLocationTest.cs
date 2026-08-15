@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,6 +19,9 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 
 		return document;
 	}
+
+	static StreamReader CreateStreamReader()
+		=> new(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("<root />")));
 
 	[TestMethod]
 	public void GetFileLocationString_NullNode_ThrowsArgumentNullException()
@@ -57,5 +61,34 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 		StringAssert.StartsWith(
 			document.GetFileLocationString(document.DocumentElement.GetAttributeNode("attr")),
 			"test.xml (1, ");
+	}
+
+	[TestMethod]
+	public void XmlReaderStreamOffsetCalculator_NullReader_ThrowsArgumentNullException()
+	{
+		using var streamReader = CreateStreamReader();
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(
+			() => XmlReaderStreamOffsetCalculator.GetPosition(null, streamReader));
+
+		Assert.AreEqual("xmlReader", exception.ParamName);
+	}
+
+	[TestMethod]
+	public void XmlReaderStreamOffsetCalculator_NullStreamReader_ThrowsArgumentNullException()
+	{
+		using XmlReader xmlReader = XmlReader.Create(new StringReader("<root />"));
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(
+			() => xmlReader.GetPosition(null));
+
+		Assert.AreEqual("underlyingStreamReader", exception.ParamName);
+	}
+
+	[TestMethod]
+	public void XmlReaderStreamOffsetCalculator_UnsupportedReaderType_ThrowsInvalidOperationException()
+	{
+		using var streamReader = CreateStreamReader();
+		using XmlReader xmlReader = new XmlNodeReader(new XmlDocument());
+
+		Assert.ThrowsExactly<InvalidOperationException>(() => xmlReader.GetPosition(streamReader));
 	}
 }
