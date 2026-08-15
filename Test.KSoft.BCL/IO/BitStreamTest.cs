@@ -8,6 +8,25 @@ namespace KSoft.IO.Test
 	[TestClass]
 	public class BitStreamTest : BaseTestClass
 	{
+		sealed class NonSeekableMemoryStream : MemoryStream
+		{
+			public override bool CanSeek => false;
+		}
+
+		static void AssertThrowsArgumentNull(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
+
 		[TestMethod]
 		public void IO_BitStreamLogicTest()
 		{
@@ -122,6 +141,49 @@ namespace KSoft.IO.Test
 					Assert.AreEqual((int)0xDEDEAD, _int);
 				}
 			}
+		}
+
+		[TestMethod]
+		public void Constructor_InvalidArgumentsThrowExpectedExceptionsTest()
+		{
+			AssertThrowsArgumentNull("baseStream", () => _ = new IO.BitStream(null!));
+			AssertThrowsArgumentOutOfRange("endPos", () => _ = new IO.BitStream(new MemoryStream(new byte[1]), endPos: 2));
+			AssertThrowsArgumentNull("streamName", () => _ = new IO.BitStream(new MemoryStream(), streamName: null!));
+		}
+
+		[TestMethod]
+		public void SeekToStart_NonSeekableStreamThrowsInvalidOperationExceptionTest()
+		{
+			using var stream = new NonSeekableMemoryStream();
+			using var bitStream = new IO.BitStream(stream);
+
+			Assert.ThrowsExactly<InvalidOperationException>(() => bitStream.SeekToStart());
+		}
+
+		[TestMethod]
+		public void ByteBufferMethods_InvalidArgumentsThrowExpectedExceptionsTest()
+		{
+			using var stream = new MemoryStream(new byte[] { 0xFF });
+			using var bitStream = new IO.BitStream(stream, FileAccess.ReadWrite);
+
+			AssertThrowsArgumentNull("buffer", () => bitStream.Read(null!, 0, 0));
+			AssertThrowsArgumentOutOfRange("index", () => bitStream.Read(new byte[1], -1, 0));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 1, 1));
+
+			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!, 0, 0));
+			AssertThrowsArgumentOutOfRange("index", () => bitStream.Write(new byte[1], -1, 0));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 1, 1));
+
+			AssertThrowsArgumentNull("buffer", () => bitStream.Stream(null!, 0, 0));
+			AssertThrowsArgumentOutOfRange("index", () => bitStream.Stream(new byte[1], -1, 0));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 1, 1));
+
+			AssertThrowsArgumentOutOfRange("byteCount", () => _ = bitStream.ReadBytes(-1));
+			AssertThrowsArgumentNull("buffer", () => _ = bitStream.Read(null!));
+			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!));
 		}
 
 		[TestMethod]

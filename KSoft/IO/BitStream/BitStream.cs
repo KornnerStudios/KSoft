@@ -109,7 +109,8 @@ namespace KSoft.IO
 
 		internal void SeekToStart()
 		{
-			Contract.Requires<InvalidOperationException>(CanSeek);
+			if (!CanSeek)
+				throw new InvalidOperationException();
 
 			FlushCache();
 			mCacheBitsStreamedCount = 0;
@@ -134,10 +135,11 @@ namespace KSoft.IO
 			long startPos = TypeExtensions.kNone, long endPos = TypeExtensions.kNone,
 			string streamName = "")
 		{
-			Contract.Requires<ArgumentNullException>(baseStream != null);
-			Contract.Requires<ArgumentOutOfRangeException>(!baseStream.CanSeek || endPos <= baseStream.Length);
+			ArgumentNullException.ThrowIfNull(baseStream);
+			if (baseStream.CanSeek)
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(endPos, baseStream.Length);
 			Contract.Requires(permissions != 0);
-			Contract.Requires<ArgumentNullException>(streamName != null);
+			ArgumentNullException.ThrowIfNull(streamName);
 
 			StreamPermissions = permissions;
 			BaseStream = baseStream;
@@ -377,10 +379,10 @@ namespace KSoft.IO
 		#region byte[]
 		public void Read(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount && count >= kWordByteCount)
@@ -404,10 +406,10 @@ namespace KSoft.IO
 		}
 		public void Write(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount)
@@ -427,10 +429,10 @@ namespace KSoft.IO
 		}
 		public BitStream Stream(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(index+count <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
 				 if (IsReading) { Read( buffer, index, count, bitCount); }
@@ -441,7 +443,7 @@ namespace KSoft.IO
 
 		public byte[] ReadBytes(int byteCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(byteCount >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(byteCount);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] buffer = new byte[byteCount];
@@ -455,7 +457,7 @@ namespace KSoft.IO
 		}
 		public byte[] Read(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
@@ -468,7 +470,7 @@ namespace KSoft.IO
 		}
 		public void Write(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 			Contract.Requires(bitCount <= Bits.kByteBitCount);
 
 			if (buffer.Length > 0)
