@@ -17,7 +17,7 @@ namespace KSoft.Debug
 		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		public static void CastValue<TResult>(object? value, out TResult result)
+		public static void CastValue<TResult>(object value, out TResult result)
 			where TResult : struct
 		{
 			ArgumentNullException.ThrowIfNull(value);
@@ -43,9 +43,11 @@ namespace KSoft.Debug
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastValue<TResult>(object? value)
+		public static TResult CastValue<TResult>(object value)
 			where TResult : struct
 		{
+			ArgumentNullException.ThrowIfNull(value);
+
 			CastValue(value, out TResult _obj);
 
 			return _obj;
@@ -63,7 +65,7 @@ namespace KSoft.Debug
 		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		public static void CastReference<TIn, TResult>(TIn? value, out TResult result)
+		public static void CastReference<TIn, TResult>(TIn value, out TResult result)
 			where TIn : class
 			where TResult : class
 		{
@@ -90,10 +92,12 @@ namespace KSoft.Debug
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastReference<TIn, TResult>(TIn? value)
+		public static TResult CastReference<TIn, TResult>(TIn value)
 			where TIn : class
 			where TResult : class
 		{
+			ArgumentNullException.ThrowIfNull(value);
+
 			CastReference(value, out TResult _obj);
 
 			return _obj;
@@ -106,7 +110,7 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastReference<TResult>(object? value)
+		public static TResult CastReference<TResult>(object value)
 			where TResult : class
 		{
 			return CastReference<object, TResult>(value);

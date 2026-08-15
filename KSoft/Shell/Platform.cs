@@ -126,6 +126,9 @@ namespace KSoft.Shell
 		/// <returns></returns>
 		int System.Collections.IComparer.Compare(object? x, object? y)
 		{
+			ArgumentNullException.ThrowIfNull(x);
+			ArgumentNullException.ThrowIfNull(y);
+
 			Debug.TypeCheck.CastValue(x, out Platform _x);
 			Debug.TypeCheck.CastValue(y, out Platform _y);
 

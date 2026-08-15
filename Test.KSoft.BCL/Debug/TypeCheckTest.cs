@@ -28,7 +28,11 @@ public sealed class TypeCheckTest : BaseTestClass
 	[TestMethod]
 	public void CastValue_NullValue_ThrowsArgumentNullException()
 	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(() => TypeCheck.CastValue<int>(null));
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() => TypeCheck.CastValue<int>(null!));
+
+		Assert.AreEqual("value", exception.ParamName);
+
+		exception = Assert.ThrowsExactly<ArgumentNullException>(() => TypeCheck.CastValue(null!, out int _));
 
 		Assert.AreEqual("value", exception.ParamName);
 	}
@@ -57,7 +61,12 @@ public sealed class TypeCheckTest : BaseTestClass
 	public void CastReference_NullValue_ThrowsArgumentNullException()
 	{
 		var exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
-			TypeCheck.CastReference<object, BaseReference>(null));
+			TypeCheck.CastReference<object, BaseReference>(null!));
+
+		Assert.AreEqual("value", exception.ParamName);
+
+		exception = Assert.ThrowsExactly<ArgumentNullException>(() =>
+			TypeCheck.CastReference<object, BaseReference>(null!, out _));
 
 		Assert.AreEqual("value", exception.ParamName);
 	}
