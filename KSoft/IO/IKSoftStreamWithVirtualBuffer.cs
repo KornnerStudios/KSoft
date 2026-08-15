@@ -34,7 +34,7 @@ namespace KSoft.IO
 				throw new NotImplementedException();
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				ArgumentOutOfRangeException.ThrowIfNegative(value);
 
 				throw new NotImplementedException();
 			}
@@ -46,7 +46,7 @@ namespace KSoft.IO
 				throw new NotImplementedException();
 			}
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				ArgumentOutOfRangeException.ThrowIfNegative(value);
 
 				throw new NotImplementedException();
 			}
