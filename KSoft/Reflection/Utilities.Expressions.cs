@@ -116,7 +116,7 @@ namespace KSoft.Reflection
 			where TFunc : class
 			where TSig : class
 		{
-			ThrowIfNullOrEmptyArgument(methodName, nameof(methodName));
+			ArgumentException.ThrowIfNullOrEmpty(methodName);
 			if (!typeof(TSig).IsSubclassOf(typeof(Delegate)))
 				throw new ArgumentException(null, nameof(TSig));
 			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))

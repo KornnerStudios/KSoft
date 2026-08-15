@@ -15,14 +15,6 @@ namespace KSoft.Reflection
 		const string kThisName = "this";
 		const string kValueName = "value";
 
-		static void ThrowIfNullOrEmptyArgument(string value, string paramName)
-		{
-			if (value == null)
-				throw new ArgumentException(null, paramName);
-
-			ArgumentException.ThrowIfNullOrEmpty(value, paramName);
-		}
-
 		#region Generate Field Accessor Utils
 		// ALT: http://forums.asp.net/post/5109977.aspx
 
@@ -44,7 +36,7 @@ namespace KSoft.Reflection
 		/// </remarks>
 		public static Func<T, TResult> GenerateMemberGetter<T, TResult>(string memberName)
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Func<T, TResult>>() != null);
 
 			var param =		Expr.Parameter(typeof(T), kThisName);
@@ -68,7 +60,7 @@ namespace KSoft.Reflection
 		/// </remarks>
 		public static Func<TResult> GenerateStaticPropertyGetter<T, TResult>(string memberName)
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Func<TResult>>() != null);
 
 			var member =	Expr.Property(null, typeof(T), memberName);	// basically 'T.memberName'
@@ -91,7 +83,7 @@ namespace KSoft.Reflection
 		/// </remarks>
 		public static Func<TResult> GenerateStaticFieldGetter<T, TResult>(string memberName)
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Func<TResult>>() != null);
 
 			var member =	Expr.Field(null, typeof(T), memberName);	// basically 'T.memberName'
@@ -118,7 +110,7 @@ namespace KSoft.Reflection
 			ArgumentNullException.ThrowIfNull(type);
 			if (type.IsGenericTypeDefinition)
 				throw new ArgumentException(null, nameof(type));
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Func<object, TResult>>() != null);
 
 			var param =		Expr.Parameter(typeof(object), kThisName);
@@ -196,7 +188,7 @@ namespace KSoft.Reflection
 		public static ValueTypeMemberSetterDelegate<T, TValue> GenerateValueTypeMemberSetter<T, TValue>(string memberName)
 			where T : struct
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<ValueTypeMemberSetterDelegate<T, TValue>>() != null);
 
 			// Get a "ref type" of the value-type we're dealing with
@@ -233,7 +225,7 @@ namespace KSoft.Reflection
 		public static ReferenceTypeMemberSetterDelegate<T, TValue> GenerateReferenceTypeMemberSetter<T, TValue>(string memberName)
 			where T : class
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<ReferenceTypeMemberSetterDelegate<T, TValue>>() != null);
 
 			var param_this =	Expr.Parameter(typeof(T), kThisName);
@@ -267,7 +259,7 @@ namespace KSoft.Reflection
 			ArgumentNullException.ThrowIfNull(type);
 			if (type.IsGenericTypeDefinition)
 				throw new ArgumentException(null, nameof(type));
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			if (type.IsValueType)
 				throw new ArgumentException("Type must be a reference type", nameof(type));
 			Contract.Ensures(Contract.Result<ReferenceTypeMemberSetterDelegate<object, TValue>>() != null);
@@ -302,7 +294,7 @@ namespace KSoft.Reflection
 		public static Action<TValue> GenerateStaticPropertySetter<T, TValue>(string memberName)
 			where T : class
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Action<TValue>>() != null);
 
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);	// the member's new value
@@ -332,7 +324,7 @@ namespace KSoft.Reflection
 		public static Action<TValue> GenerateStaticFieldSetter<T, TValue>(string memberName)
 			where T : class
 		{
-			ThrowIfNullOrEmptyArgument(memberName, nameof(memberName));
+			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			Contract.Ensures(Contract.Result<Action<TValue>>() != null);
 
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);	// the member's new value
