@@ -407,7 +407,7 @@ namespace KSoft
 		}
 		public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
 		{
-			Contract.Requires<ArgumentNullException>(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 
 			return string.Format(provider, format, args);
 		}
@@ -676,8 +676,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool TrueForAny<T>(this T[] array, Predicate<T> match)
 		{
-			Contract.Requires<ArgumentNullException>(array != null);
-			Contract.Requires<ArgumentNullException>(match != null);
+			ArgumentNullException.ThrowIfNull(array);
+			ArgumentNullException.ThrowIfNull(match);
 
 			for (int x = 0; x < array.Length; x++)
 			{
@@ -892,8 +892,8 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int FindIndex<T>(this IEnumerable<T> seq, Predicate<T> match)
 		{
-			Contract.Requires<ArgumentNullException>(seq != null);
-			Contract.Requires<ArgumentNullException>(match != null);
+			ArgumentNullException.ThrowIfNull(seq);
+			ArgumentNullException.ThrowIfNull(match);
 
 			var found = seq
 				.Select((v, i) => new KeyValuePair<T, int?>(v, i))
@@ -906,10 +906,12 @@ namespace KSoft
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			int startIndex, int count, Predicate<T> match)
 		{
-			Contract.Requires<ArgumentNullException>(list != null);
-			Contract.Requires<ArgumentOutOfRangeException>(list.Count == 0 || startIndex < list.Count);
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0 && startIndex <= list.Count-count);
-			Contract.Requires<ArgumentNullException>(match != null);
+			ArgumentNullException.ThrowIfNull(list);
+			if (!(list.Count == 0 || startIndex < list.Count))
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
+			if (!(count >= 0 && startIndex <= list.Count-count))
+				throw new ArgumentOutOfRangeException(nameof(count));
+			ArgumentNullException.ThrowIfNull(match);
 			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
 			Contract.Ensures(Contract.Result<int>() < startIndex+count);
 
@@ -928,7 +930,7 @@ namespace KSoft
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			int startIndex, Predicate<T> match)
 		{
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(list);
 			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
 			Contract.Ensures(Contract.Result<int>() < startIndex+list.Count);
 
@@ -938,7 +940,7 @@ namespace KSoft
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			Predicate<T> match)
 		{
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(list);
 			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
 			Contract.Ensures(Contract.Result<int>() < list.Count);
 
@@ -953,9 +955,10 @@ namespace KSoft
 		/// <param name="requiredCount"></param>
 		public static void EnsureCount<T>(this ICollection<T> collection, int requiredCount)
 		{
-			Contract.Requires<ArgumentNullException>(collection != null);
-			Contract.Requires<InvalidOperationException>(!collection.IsReadOnly);
-			Contract.Requires<ArgumentOutOfRangeException>(requiredCount >= 0);
+			ArgumentNullException.ThrowIfNull(collection);
+			if (collection.IsReadOnly)
+				throw new InvalidOperationException();
+			ArgumentOutOfRangeException.ThrowIfNegative(requiredCount);
 
 			if (collection.Count < requiredCount)
 			{
@@ -1167,7 +1170,8 @@ namespace KSoft
 		public static long BytesRemaining(this System.IO.Stream s)
 		{
 			Contract.Requires(s != null);
-			Contract.Requires<InvalidOperationException>(s.CanSeek);
+			if (!s.CanSeek)
+				throw new InvalidOperationException();
 
 			return s.Length - s.Position;
 		}
@@ -1175,8 +1179,9 @@ namespace KSoft
 		public static long BytesRemaining(this System.IO.Stream s, long endPosition)
 		{
 			Contract.Requires(s != null);
-			Contract.Requires<InvalidOperationException>(s.CanSeek);
-			Contract.Requires<ArgumentOutOfRangeException>(endPosition <= s.Length);
+			if (!s.CanSeek)
+				throw new InvalidOperationException();
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(endPosition, s.Length);
 
 			return endPosition - s.Position;
 		}
@@ -1184,7 +1189,8 @@ namespace KSoft
 		public static bool HasPermissions(this System.IO.Stream s, System.IO.FileAccess permissions)
 		{
 			Contract.Requires(s != null);
-			Contract.Requires<InvalidOperationException>(s.CanSeek);
+			if (!s.CanSeek)
+				throw new InvalidOperationException();
 			bool result = true;
 
 			if (permissions.CanRead())
@@ -1246,11 +1252,14 @@ namespace KSoft
 			bool restorePosition = false,
 			byte[] preallocatedBuffer = null)
 		{
-			Contract.Requires<ArgumentNullException>(inputStream != null);
-			Contract.Requires<ArgumentException>(inputStream.CanSeek);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= inputStream.Length);
+			ArgumentNullException.ThrowIfNull(inputStream);
+			if (!inputStream.CanSeek)
+				throw new ArgumentException(null, nameof(inputStream));
+			if (!offset.IsNoneOrPositive())
+				throw new ArgumentOutOfRangeException(nameof(offset));
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (!(offset.IsNone() || (offset+count) <= inputStream.Length))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			int buffer_size;
 			byte[] buffer;
@@ -1317,11 +1326,14 @@ namespace KSoft
 			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false)
 		{
-			Contract.Requires<ArgumentNullException>(inputStream != null);
-			Contract.Requires<ArgumentException>(inputStream.CanSeek);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNoneOrPositive());
-			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(offset.IsNone() || (offset+count) <= inputStream.Length);
+			ArgumentNullException.ThrowIfNull(inputStream);
+			if (!inputStream.CanSeek)
+				throw new ArgumentException(null, nameof(inputStream));
+			if (!offset.IsNoneOrPositive())
+				throw new ArgumentOutOfRangeException(nameof(offset));
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (!(offset.IsNone() || (offset+count) <= inputStream.Length))
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			algo.Initialize();
 
@@ -1457,7 +1469,7 @@ namespace KSoft
 		public static T GetCustomAttribute<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
-			Contract.Requires<ArgumentNullException>(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 
 			return provider.GetCustomAttributes<T>(inherited).FirstOrDefault();
 		}
@@ -1467,7 +1479,7 @@ namespace KSoft
 		public static IEnumerable<T> GetCustomAttributes<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
-			Contract.Requires<ArgumentNullException>(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 
 			return provider.GetCustomAttributes(typeof(T), inherited).Cast<T>();
 		}
@@ -1487,7 +1499,7 @@ namespace KSoft
 		public static IOrderedEnumerable<TSrc> OrderBy<TSrc, TKey>(this IEnumerable<TSrc> src,
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
+			ArgumentNullException.ThrowIfNull(src);
 			Contract.Requires/*<ArgumentNullException>*/(keySelector != null);
 			Contract.Requires/*<ArgumentNullException>*/(comparerFunc != null);
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);
@@ -1506,7 +1518,7 @@ namespace KSoft
 		public static IOrderedEnumerable<TSrc> OrderByDescending<TSrc, TKey>(this IEnumerable<TSrc> src,
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
-			Contract.Requires<ArgumentNullException>(src != null);
+			ArgumentNullException.ThrowIfNull(src);
 			Contract.Requires/*<ArgumentNullException>*/(keySelector != null);
 			Contract.Requires/*<ArgumentNullException>*/(comparerFunc != null);
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);

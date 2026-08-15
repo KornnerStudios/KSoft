@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Test
@@ -19,6 +22,27 @@ namespace KSoft.Test
 			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
 
 			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
+		static void AssertThrowsArgument(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
+		static void AssertThrowsInvalidOperation(Action action)
+		{
+			Assert.ThrowsExactly<InvalidOperationException>(action);
+		}
+
+		sealed class NonSeekableStream : MemoryStream
+		{
+			public NonSeekableStream(byte[] buffer) : base(buffer)
+			{
+			}
+
+			public override bool CanSeek => false;
 		}
 
 		[TestMethod]
@@ -120,6 +144,65 @@ namespace KSoft.Test
 			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(string.Empty, "C:\\"), "fromPath");
 			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", null!), "toPath");
 			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", string.Empty), "toPath");
+		}
+
+		[TestMethod]
+		public void TypeExtensions_SystemUtilityGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull(() => _ = "{0}".FormatWith(null!, 1), "provider");
+
+			AssertThrowsArgumentNull(() => _ = ((int[])null!).TrueForAny(_ => true), "array");
+			AssertThrowsArgumentNull(() => _ = new[] { 1 }.TrueForAny(null!), "match");
+
+			IEnumerable<int> sequence = null!;
+			IReadOnlyList<int> list = new[] { 1 };
+			AssertThrowsArgumentNull(() => _ = sequence.FindIndex(_ => true), "seq");
+			AssertThrowsArgumentNull(() => _ = ((IEnumerable<int>)list).FindIndex(null!), "match");
+			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(0, 0, _ => true), "list");
+			AssertThrowsArgumentOutOfRange(() => _ = list.FindIndex(1, 0, _ => true), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => _ = list.FindIndex(0, 2, _ => true), "count");
+			AssertThrowsArgumentNull(() => _ = list.FindIndex(0, 1, null!), "match");
+			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(0, _ => true), "list");
+			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(_ => true), "list");
+
+			AssertThrowsArgumentNull(() => ((ICollection<int>)null!).EnsureCount(1), "collection");
+			AssertThrowsInvalidOperation(() =>
+				((ICollection<int>)new ReadOnlyCollection<int>(new List<int>())).EnsureCount(1));
+			AssertThrowsArgumentOutOfRange(() => new List<int>().EnsureCount(-1), "requiredCount");
+
+			AssertThrowsArgumentNull(() =>
+				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttribute<ObsoleteAttribute>(), "provider");
+			AssertThrowsArgumentNull(() =>
+				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttributes<ObsoleteAttribute>(), "provider");
+			AssertThrowsArgumentNull(() => _ = ((IEnumerable<string>)null!).OrderBy(v => v, string.CompareOrdinal), "src");
+			AssertThrowsArgumentNull(() =>
+				_ = ((IEnumerable<string>)null!).OrderByDescending(v => v, string.CompareOrdinal), "src");
+		}
+
+		[TestMethod]
+		public void TypeExtensions_StreamAndHashGuards_ThrowExpectedExceptions()
+		{
+			using var nonSeekableStream = new NonSeekableStream([1, 2, 3]);
+			using var seekableStream = new MemoryStream([1, 2, 3]);
+			using var sha256 = SHA256.Create();
+			using var tiger = new Security.Cryptography.TigerHash();
+
+			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining());
+			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining(1));
+			AssertThrowsArgumentOutOfRange(() => _ = seekableStream.BytesRemaining(4), "endPosition");
+			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.HasPermissions(FileAccess.Read));
+
+			AssertThrowsArgumentNull(() => _ = sha256.ComputeHash((Stream)null!, 0, 1), "inputStream");
+			AssertThrowsArgument(() => _ = sha256.ComputeHash(nonSeekableStream, 0, 1), "inputStream");
+			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, -2, 1), "offset");
+			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, 0, -1), "count");
+			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, 1, 3), "count");
+
+			AssertThrowsArgumentNull(() => _ = tiger.ComputeHash((Stream)null!, 0, 1), "inputStream");
+			AssertThrowsArgument(() => _ = tiger.ComputeHash(nonSeekableStream, 0, 1), "inputStream");
+			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, -2, 1), "offset");
+			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 0, -1), "count");
+			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 1, 3), "count");
 		}
 	};
 }
