@@ -35,6 +35,7 @@ namespace KSoft.Security.Cryptography
 
 		protected override void EncryptBlock(byte[] input, byte[] output, int offset)
 		{
+			// #TODO: Implement XTEA256 encryption.
 			throw new NotImplementedException("XTEA256 encryption is not implemented.");
 		}
 
