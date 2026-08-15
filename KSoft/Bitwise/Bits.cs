@@ -200,38 +200,6 @@ namespace KSoft
 
 			return true;
 		}
-#if false // #TODO
-		/// <summary>
-		/// Copies a range of elements from a source array into the element memory of a destination array
-		/// </summary>
-		/// <typeparam name="TSrc">Source element type. Must be a primitive type</typeparam>
-		/// <typeparam name="TDst">Destination element type. Must be a primitive type</typeparam>
-		/// <param name="sourceArray">Memory to copy from</param>
-		/// <param name="sourceIndex">Element index to start the copy from</param>
-		/// <param name="length">Number of source elements to copy</param>
-		/// <param name="destinationArray">Memory to copy to</param>
-		/// <param name="destinationIndex">Element index to start the copy at</param>
-		/// <returns>True if the memcpy operation was successful</returns>
-		/// <remarks>Unlike <see cref="System.Buffer.BlockCopy"/> (which is more like memmove), this doesn't guard against overlap</remarks>
-		public static bool MemoryCopy<TSrc, TDst>(TSrc[] sourceArray, int sourceIndex, int length, TDst[] destinationArray, int destinationIndex)
-			where TSrc : struct
-			where TDst : struct
-		{
-			const string k_type_not_primitive_msg_postfix = " must be a primitive type";
-
-			Contract.Requires<ArgumentNullException>(sourceArray != null);
-			Contract.Requires<ArgumentOutOfRangeException>(sourceIndex >= 0);
-			Contract.Requires<ArgumentException>(typeof(TSrc).IsPrimitive, "TSrc" + k_type_not_primitive_msg_postfix);
-			Contract.Requires<ArgumentNullException>(destinationArray != null);
-			Contract.Requires<ArgumentOutOfRangeException>(destinationIndex >= 0);
-			Contract.Requires<ArgumentException>(typeof(TDst).IsPrimitive, "TDst" + k_type_not_primitive_msg_postfix);
-
-			// LowLevel's Memcpy takes destinationArray first, then sourceArray, like C's memcpy
-			return LowLevel.Util.ValueTypeBitConverter.Memcpy(	destinationArray, destinationIndex,
-																sourceArray, sourceIndex, length,
-																true); // check that array types are primitives
-		}
-#endif
 		#endregion
 
 		#region Get high/low bits

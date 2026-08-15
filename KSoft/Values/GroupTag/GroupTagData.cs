@@ -85,15 +85,10 @@ namespace KSoft.Values
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
 		protected GroupTagData(string groupTag, string name, int expectedLength)
 		{
-#if false
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
-#endif
 			if (name == kNullGroupName)
 				throw new ArgumentException("Name reserved for null group tags", nameof(name));
 
-			Util.MarkUnusedVariable(ref expectedLength); // #REVIEW: why did I leave the Requires using this commented out?
+			Util.MarkUnusedVariable(ref expectedLength);
 
 			mName = name;
 			mTagAsString = groupTag;
@@ -106,13 +101,6 @@ namespace KSoft.Values
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
 		protected GroupTagData(string groupTag, string name, KGuid uuid, int expectedLength) : this(groupTag, name, expectedLength)
 		{
-#if false
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentOutOfRangeException>(groupTag.Length == expectedLength);
-			Contract.Requires(uuid != KGuid.Empty);
-#endif
-
 			Uuid = uuid;
 		}
 		/// <summary>Specialized ctor for <see cref="GroupTagData64"/> built from two <see cref="GroupTagData32"/></summary>
