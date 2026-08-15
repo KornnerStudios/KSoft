@@ -7,6 +7,8 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 using Interop = System.Runtime.InteropServices;
 
+#nullable enable
+
 namespace KSoft.Shell
 {
 	using BitFieldTraits = Bitwise.BitFieldTraits;
@@ -96,7 +98,7 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="Object.Equals"/></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is Processor processor)
 			{
@@ -113,8 +115,6 @@ namespace KSoft.Shell
 		/// <returns>"[InstructionSet\tProcessorSize\tByteOrder]"</returns>
 		public override string ToString()
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			return string.Format(Util.InvariantCultureInfo,
 				"[{0}\t{1}\t{2}]",
 				InstructionSet.ToString(),
@@ -134,7 +134,7 @@ namespace KSoft.Shell
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		int System.Collections.IComparer.Compare(object x, object y)
+		int System.Collections.IComparer.Compare(object? x, object? y)
 		{
 			Debug.TypeCheck.CastValue(x, out Processor _x);
 			Debug.TypeCheck.CastValue(y, out Processor _y);
@@ -151,9 +151,9 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="IComparable{T}.CompareTo"/></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		int IComparable.CompareTo(object obj)
+		int IComparable.CompareTo(object? obj)
 		{
-			Debug.TypeCheck.CastValue(obj, out Processor _obj);
+			Debug.TypeCheck.CastValue(obj!, out Processor _obj);
 
 			return Processor.StaticCompare(this, _obj);
 		}
@@ -178,7 +178,8 @@ namespace KSoft.Shell
 			// #TODO figure out a a utility to do this generically for bit-encoded handles that can run
 			// in the internal Constants class.
 			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
-				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
+				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to " +
+				"reasonably work");
 
 			int lhs_data = (int)lhs.mHandle;
 			int rhs_data = (int)rhs.mHandle;

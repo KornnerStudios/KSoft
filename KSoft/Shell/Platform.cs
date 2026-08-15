@@ -7,6 +7,8 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 using Interop = System.Runtime.InteropServices;
 
+#nullable enable
+
 namespace KSoft.Shell
 {
 	using BitFieldTraits = Bitwise.BitFieldTraits;
@@ -87,7 +89,7 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="Object.Equals"/></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is Platform p)
 			{
@@ -104,8 +106,6 @@ namespace KSoft.Shell
 		/// <returns>"[<see cref="Type"/>\t<see cref="ProcessorType.ToString()"/>]"</returns>
 		public override string ToString()
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			return string.Format(Util.InvariantCultureInfo,
 				"[{0}\t{1}]",
 				Type.ToString(),
@@ -124,7 +124,7 @@ namespace KSoft.Shell
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		int System.Collections.IComparer.Compare(object x, object y)
+		int System.Collections.IComparer.Compare(object? x, object? y)
 		{
 			Debug.TypeCheck.CastValue(x, out Platform _x);
 			Debug.TypeCheck.CastValue(y, out Platform _y);
@@ -141,9 +141,9 @@ namespace KSoft.Shell
 		/// <summary>See <see cref="IComparable{T}.CompareTo"/></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		int IComparable.CompareTo(object obj)
+		int IComparable.CompareTo(object? obj)
 		{
-			Debug.TypeCheck.CastValue(obj, out Platform _obj);
+			Debug.TypeCheck.CastValue(obj!, out Platform _obj);
 
 			return Platform.StaticCompare(this, _obj);
 		}
@@ -168,7 +168,8 @@ namespace KSoft.Shell
 			// #TODO figure out a a utility to do this generically for bit-encoded handles that can run
 			// in the internal Constants class.
 			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
-				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to reasonably work");
+				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to " +
+				"reasonably work");
 
 			int lhs_data = (int)lhs.mHandle;
 			int rhs_data = (int)rhs.mHandle;
@@ -197,7 +198,9 @@ namespace KSoft.Shell
 		*/
 		static readonly Platform kUndefined = new(PlatformType.Undefined, Processor.Undefined);
 		/// <summary>Undefined platform</summary>
-		/// <remarks>Only use for comparison operations, don't query Processor properties. Results will be...undefined</remarks>
+		/// <remarks>
+		/// Only use for comparison operations, don't query Processor properties. Results will be...undefined.
+		/// </remarks>
 		public static Platform Undefined => kUndefined;
 
 		#region Windows
@@ -254,7 +257,8 @@ namespace KSoft.Shell
 
 				// #REVIEW: .NET 4 upgrade:
 				// System.Environment.Is64BitProcess and Is64BitOperatingSystem
-				var size = IntPtr.Size switch // HACK: the only way I've read on how to detect the processor size (assuming you compile with AnyCPU)
+				// HACK: the only way I've read on how to detect the processor size, assuming you compile with AnyCPU.
+				var size = IntPtr.Size switch
 				{
 					4 => ProcessorSize.x32,
 					8 => ProcessorSize.x64,
@@ -262,8 +266,13 @@ namespace KSoft.Shell
 							"Pointer Size: {0}",
 							IntPtr.Size.ToString(Util.InvariantCultureInfo))),
 				};
-				Contract.Assume(System.Environment.OSVersion != null);
-				switch (System.Environment.OSVersion.Platform)
+				var osVersion = System.Environment.OSVersion;
+				if (osVersion == null)
+				{
+					throw new Debug.UnreachableException("Environment.OSVersion unexpectedly returned null");
+				}
+
+				switch (osVersion.Platform)
 				{
 					case PlatformID.Win32NT:
 						switch (size)
@@ -298,7 +307,7 @@ namespace KSoft.Shell
 					default:
 						throw new Debug.UnreachableException(string.Format(Util.InvariantCultureInfo,
 							"PlatformID: {0}",
-							System.Environment.OSVersion.Platform.ToString()));
+							osVersion.Platform.ToString()));
 				}
 			}
 		};

@@ -9,7 +9,7 @@ namespace KSoft.Shell.Test
 		[TestMethod]
 		public void Shell_PlatformApiTest()
 		{
-			Assert.AreEqual(6, Processor.BitCount, 
+			Assert.AreEqual(6, Processor.BitCount,
 				"Expected Processor bit count size has changed. Was this intentional?");
 			Assert.AreEqual(6+4, Platform.BitCount,
 				"Expected Platform bit count size has changed. Was this intentional?");
@@ -31,6 +31,24 @@ namespace KSoft.Shell.Test
 
 			Assert.IsTrue(Platform.Win32.CompareTo(Platform.Win64) < 0,
 				"ProcessorSize's x32 member should come before x64, yet Win32 is not less-than Win64");
+		}
+
+		[TestMethod]
+		public void Processor_ToString_ReturnsStableNonNullDescription()
+		{
+			var description = Processor.PowerPcXenon.ToString();
+
+			Assert.IsNotNull(description);
+			Assert.AreEqual("[PPC\tx32\tBig]", description);
+		}
+
+		[TestMethod]
+		public void Platform_ToString_ReturnsStableNonNullDescription()
+		{
+			var description = Platform.Xbox360.ToString();
+
+			Assert.IsNotNull(description);
+			Assert.AreEqual("[Xbox\t[PPC\tx32\tBig]]", description);
 		}
 	};
 }
