@@ -126,7 +126,7 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
 		{
-			Contract.Requires<ArgumentNullException>(enumType != null);
+			ArgumentNullException.ThrowIfNull(enumType);
 			Contract.Requires(Reflection.Util.IsEnumType(enumType));
 			Contract.Requires(explicitNumberOfBits.IsNoneOrPositive());
 			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
@@ -185,7 +185,7 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForFlagsEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
 		{
-			Contract.Requires<ArgumentNullException>(enumType != null);
+			ArgumentNullException.ThrowIfNull(enumType);
 			Contract.Requires(Reflection.Util.IsEnumType(enumType));
 			Contract.Requires(explicitNumberOfBits.IsNoneOrPositive());
 			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
