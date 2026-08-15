@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Values
@@ -372,13 +367,21 @@ namespace KSoft.Values
 		#endregion
 
 		#region Math
+		static void ThrowIfDifferentSize(PtrHandle lhs, PtrHandle rhs)
+		{
+			if (lhs.Is64bit != rhs.Is64bit)
+			{
+				throw new InvalidOperationException("Pointer handle arithmetic requires matching address sizes.");
+			}
+		}
+
 		/// <summary>Perform mathematical operation (Add)</summary>
 		/// <param name="lhs">left-hand value for operation expression</param>
 		/// <param name="rhs">right-hand value for operation expression</param>
 		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
 		public static PtrHandle Add(PtrHandle lhs, PtrHandle rhs)
 		{
-			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
+			ThrowIfDifferentSize(lhs, rhs);
 
 			return new PtrHandle(lhs.Is64bit, lhs.Handle + rhs.Handle);
 		}
@@ -388,8 +391,6 @@ namespace KSoft.Values
 		/// <returns><paramref name="lhs"/> + <paramref name="rhs"/></returns>
 		public static PtrHandle operator +(PtrHandle lhs, PtrHandle rhs)
 		{
-			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
-
 			return Add(lhs, rhs);
 		}
 
@@ -416,7 +417,7 @@ namespace KSoft.Values
 		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
 		public static PtrHandle Subtract(PtrHandle lhs, PtrHandle rhs)
 		{
-			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
+			ThrowIfDifferentSize(lhs, rhs);
 
 			return new PtrHandle(lhs.Is64bit, lhs.Handle - rhs.Handle);
 		}
@@ -426,8 +427,6 @@ namespace KSoft.Values
 		/// <returns><paramref name="lhs"/> - <paramref name="rhs"/></returns>
 		public static PtrHandle operator -(PtrHandle lhs, PtrHandle rhs)
 		{
-			Contract.Requires<InvalidOperationException>(lhs.Is64bit == rhs.Is64bit);
-
 			return Subtract(lhs, rhs);
 		}
 
