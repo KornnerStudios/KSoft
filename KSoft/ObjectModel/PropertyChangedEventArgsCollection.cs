@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Exprs = System.Linq.Expressions;
+using ComponentModel = System.ComponentModel;
+
+#nullable enable
 
 namespace KSoft.ObjectModel
 {
-	public class PropertyChangedEventArgsCollection : IEnumerable<System.ComponentModel.PropertyChangedEventArgs>
+	public class PropertyChangedEventArgsCollection : IEnumerable<ComponentModel.PropertyChangedEventArgs>
 	{
-		readonly List<System.ComponentModel.PropertyChangedEventArgs> mEventArgs;
+		readonly List<ComponentModel.PropertyChangedEventArgs> mEventArgs;
 
 		public PropertyChangedEventArgsCollection()
 		{
 			mEventArgs = [];
 		}
-		PropertyChangedEventArgsCollection(IEnumerable<System.ComponentModel.PropertyChangedEventArgs> eventArgs)
+		PropertyChangedEventArgsCollection(IEnumerable<ComponentModel.PropertyChangedEventArgs> eventArgs)
 		{
 			mEventArgs = new(eventArgs);
 		}
 
 		public PropertyChangedEventArgsCollection CreateArgs<T, TProp>(
-			out System.ComponentModel.PropertyChangedEventArgs eventArgs,
+			out ComponentModel.PropertyChangedEventArgs eventArgs,
 			Exprs.Expression<Func<T, TProp>> propertyExpr)
 		{
 			eventArgs = Util.CreatePropertyChangedEventArgs(propertyExpr);
@@ -34,12 +32,13 @@ namespace KSoft.ObjectModel
 
 		public PropertyChangedEventArgsCollection Branch()
 		{
-			Contract.Ensures(Contract.Result<PropertyChangedEventArgsCollection>() != this);
+			var branch = new PropertyChangedEventArgsCollection(mEventArgs);
 
-			return new PropertyChangedEventArgsCollection(mEventArgs);
+			System.Diagnostics.Debug.Assert(!ReferenceEquals(branch, this));
+			return branch;
 		}
 
-		public void NotifyPropertiesChanged(object sender, System.ComponentModel.PropertyChangedEventHandler handler)
+		public void NotifyPropertiesChanged(object? sender, ComponentModel.PropertyChangedEventHandler? handler)
 		{
 			if (handler != null)
 			{
@@ -51,7 +50,7 @@ namespace KSoft.ObjectModel
 		}
 
 		#region IEnumerable<PropertyChangedEventArgs> Members
-		public IEnumerator<System.ComponentModel.PropertyChangedEventArgs> GetEnumerator()
+		public IEnumerator<ComponentModel.PropertyChangedEventArgs> GetEnumerator()
 		{
 			return mEventArgs.GetEnumerator();
 		}
