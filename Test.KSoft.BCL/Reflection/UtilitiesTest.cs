@@ -28,6 +28,11 @@ namespace KSoft.Reflection.Test
 	{
 		delegate int MessageBoxDelegate(IntPtr hWnd, string lpText, string lpCaption, uint uType);
 
+		class GenericTypeDefinition<T>
+		{
+			public T Value { get; set; }
+		};
+
 		static void AssertThrowsArgumentNull(string parameterName, Action action)
 		{
 			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
@@ -67,6 +72,64 @@ namespace KSoft.Reflection.Test
 				_ = Util.GetDelegateForFunctionPointer<MessageBoxDelegate>(new IntPtr(1), kThisCall));
 
 			StringAssert.StartsWith(exception.Message, "TODO: ThisCall's require a different implementation");
+		}
+
+		[TestMethod]
+		public void Reflection_MemberGetterGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateMemberGetter<PropertySetPrivateClass, string>(null!));
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateStaticPropertyGetter<MemberSetterTestClass, string>(string.Empty));
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateStaticFieldGetter<ClassContainingDefaultFileStreamBufferSizeLiteral, int>(null!));
+
+			AssertThrowsArgumentNull("type", () =>
+				_ = Util.GenerateMemberGetter<string>(null!, nameof(PropertySetPrivateClass.Value)));
+			AssertThrowsArgument("type", () =>
+				_ = Util.GenerateMemberGetter<string>(
+					typeof(GenericTypeDefinition<>),
+					nameof(GenericTypeDefinition<int>.Value)));
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateMemberGetter<string>(typeof(PropertySetPrivateClass), string.Empty));
+		}
+
+		[TestMethod]
+		public void Reflection_MemberSetterGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>(null!));
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>(string.Empty));
+			AssertThrowsArgumentNull("type", () =>
+				_ = Util.GenerateReferenceTypeMemberSetter<string>(null!, nameof(PropertySetPrivateClass.Value)));
+			AssertThrowsArgument("type", () =>
+				_ = Util.GenerateReferenceTypeMemberSetter<string>(
+					typeof(GenericTypeDefinition<>),
+					nameof(GenericTypeDefinition<int>.Value)));
+			var exception = AssertThrowsArgument("type", () =>
+				_ = Util.GenerateReferenceTypeMemberSetter<int>(
+					typeof(int),
+					nameof(GenericTypeDefinition<int>.Value)));
+
+			StringAssert.StartsWith(exception.Message, "Type must be a reference type");
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>(null!));
+			AssertThrowsArgument("memberName", () =>
+				_ = Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>(string.Empty));
+		}
+
+		[TestMethod]
+		public void Reflection_PropertyNameFromExprGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.PropertyNameFromExpr<int>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.PropertyNameFromExpr(() => 1 + 1));
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.PropertyNameFromExpr<TestPropertyNameFromExprClass, int>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.PropertyNameFromExpr<TestPropertyNameFromExprClass, int>(_ => 1 + 1));
 		}
 #if false
 		[TestMethod]
