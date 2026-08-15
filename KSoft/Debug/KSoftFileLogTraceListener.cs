@@ -14,12 +14,6 @@ using System.Text;
 using Microsoft.VisualBasic.Logging;
 using static System.Net.Mime.MediaTypeNames;
 
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 // Duplicated types from Microsoft.VisualBasic.Logging to compile for .NET Core
 namespace Microsoft.VisualBasic.Logging
 {
@@ -385,7 +379,7 @@ namespace KSoft.Debug
 			}
 			set
 			{
-				Contract.Requires<ArgumentNullException>(value != null);
+				ArgumentNullException.ThrowIfNull(value);
 
 				Path.GetFullPath(value); // VB code did this...I guess to 'inherit' its exceptions
 				if (string.Compare(value, this.mBaseFileName, StringComparison.OrdinalIgnoreCase) != 0)
@@ -481,7 +475,7 @@ namespace KSoft.Debug
 			}
 			set
 			{
-				Contract.Requires<ArgumentNullException>(value != null);
+				ArgumentNullException.ThrowIfNull(value);
 
 				this.mEncoding = value;
 				this.mPropertiesSet.Set(Property.Encoding);
@@ -570,7 +564,10 @@ namespace KSoft.Debug
 			[SecuritySafeCritical]
 			set
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(value > 1000);
+				if (value <= 1000)
+				{
+					throw new ArgumentOutOfRangeException(nameof(value));
+				}
 
 				this.DemandWritePermission();
 				this.mMaxFileSize = value;
@@ -592,7 +589,7 @@ namespace KSoft.Debug
 			[SecuritySafeCritical]
 			set
 			{
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				ArgumentOutOfRangeException.ThrowIfNegative(value);
 
 				this.DemandWritePermission();
 				this.mReserveDiskSpace = value;
