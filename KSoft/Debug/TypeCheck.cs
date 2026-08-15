@@ -1,10 +1,7 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+
+#nullable enable
 
 namespace KSoft.Debug
 {
@@ -16,12 +13,14 @@ namespace KSoft.Debug
 		/// <param name="value">Object to try and convert to <typeparamref name="TResult"/></param>
 		/// <param name="result">On return; <code>obj as <typeparamref name="TResult"/></code></param>
 		/// <exception cref="ArgumentNullException">value == null</exception>
-		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
+		/// <exception cref="ArgumentException">
+		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
+		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		public static void CastValue<TResult>(object value, out TResult result)
+		public static void CastValue<TResult>(object? value, out TResult result)
 			where TResult : struct
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			try
 			{
@@ -39,14 +38,14 @@ namespace KSoft.Debug
 		/// <param name="value">Object to try and convert to <typeparamref name="TResult"/></param>
 		/// <returns><code>obj as <typeparamref name="TResult"/></code></returns>
 		/// <exception cref="ArgumentNullException">value == null</exception>
-		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
+		/// <exception cref="ArgumentException">
+		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
+		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastValue<TResult>(object value)
+		public static TResult CastValue<TResult>(object? value)
 			where TResult : struct
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
-
 			CastValue(value, out TResult _obj);
 
 			return _obj;
@@ -60,22 +59,25 @@ namespace KSoft.Debug
 		/// <param name="value">Object to try and convert to <typeparamref name="TResult"/></param>
 		/// <param name="result">On return; <code>obj as <typeparamref name="TResult"/></code></param>
 		/// <exception cref="ArgumentNullException">value == null</exception>
-		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
+		/// <exception cref="ArgumentException">
+		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
+		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		public static void CastReference<TIn, TResult>(TIn value, out TResult result)
+		public static void CastReference<TIn, TResult>(TIn? value, out TResult result)
 			where TIn : class
 			where TResult : class
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
-			result = value as TResult;
-
-			if (result == null)
+			if (value is TResult typedValue)
 			{
-				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
-					"obj was an unexpected type. Got '{0}' where I expected '{1}'",
-					value.GetType().FullName, typeof(TResult).FullName));
+				result = typedValue;
+				return;
 			}
+
+			throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+				"obj was an unexpected type. Got '{0}' where I expected '{1}'",
+				value.GetType().FullName, typeof(TResult).FullName));
 		}
 		/// <summary>Basically a beefed up argument type checker</summary>
 		/// <typeparam name="TIn">Input type</typeparam>
@@ -83,15 +85,15 @@ namespace KSoft.Debug
 		/// <param name="value">Object to try and convert to <typeparamref name="TResult"/></param>
 		/// <returns><code>obj as <typeparamref name="TResult"/></code></returns>
 		/// <exception cref="ArgumentNullException">value == null</exception>
-		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
+		/// <exception cref="ArgumentException">
+		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
+		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastReference<TIn, TResult>(TIn value)
+		public static TResult CastReference<TIn, TResult>(TIn? value)
 			where TIn : class
 			where TResult : class
 		{
-			Contract.Requires<ArgumentNullException>(value != null);
-
 			CastReference(value, out TResult _obj);
 
 			return _obj;
@@ -104,7 +106,7 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
 		[Contracts.Pure]
-		public static TResult CastReference<TResult>(object value)
+		public static TResult CastReference<TResult>(object? value)
 			where TResult : class
 		{
 			return CastReference<object, TResult>(value);
@@ -115,28 +117,32 @@ namespace KSoft.Debug
 		/// <typeparam name="TIn">Input type</typeparam>
 		/// <typeparam name="TResult">Result type</typeparam>
 		/// <param name="value">Object to try and convert to <typeparamref name="TResult"/></param>
-		/// <param name="result">On return; null if <paramref name="value"/> is null or <code>obj as <typeparamref name="TResult"/></code></param>
-		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
+		/// <param name="result">
+		/// On return; null if <paramref name="value"/> is null or <code>obj as <typeparamref name="TResult"/></code>
+		/// </param>
+		/// <exception cref="ArgumentException">
+		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
+		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		public static void TryCastReference<TIn, TResult>(TIn value, out TResult result)
+		public static void TryCastReference<TIn, TResult>(TIn? value, out TResult? result)
 			where TIn : class
 			where TResult : class
 		{
-			if (value != null)
-			{
-				result = value as TResult;
-
-				if (result == null)
-				{
-					throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
-						"obj was an unexpected type. Got '{0}' where I expected '{1}'",
-						typeof(TIn).FullName, typeof(TResult).FullName));
-				}
-			}
-			else
+			if (value == null)
 			{
 				result = null;
+				return;
 			}
+
+			if (value is TResult typedValue)
+			{
+				result = typedValue;
+				return;
+			}
+
+			throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+				"obj was an unexpected type. Got '{0}' where I expected '{1}'",
+				typeof(TIn).FullName, typeof(TResult).FullName));
 		}
 	};
 }
