@@ -63,7 +63,7 @@ namespace KSoft.IO
 
 		protected void SetStreamName(System.IO.Stream stream)
 		{
-			Contract.Assume(stream != null);
+			System.Diagnostics.Debug.Assert(stream != null);
 
 			StreamName = null;
 

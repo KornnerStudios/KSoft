@@ -770,8 +770,8 @@ namespace KSoft.Collections
 
 			int word_index = 0;
 			int word_count = kVectorLengthInT(bitsCount) - 1;
-			Contract.Assume((word_index+word_count) <= this.LengthInWords);
-			Contract.Assume((word_index+word_count) <= other.LengthInWords);
+			System.Diagnostics.Debug.Assert((word_index+word_count) <= this.LengthInWords);
+			System.Diagnostics.Debug.Assert((word_index+word_count) <= other.LengthInWords);
 
 			for (; word_index < word_count; word_index++, bitsCount -= kWordBitCount)
 			{

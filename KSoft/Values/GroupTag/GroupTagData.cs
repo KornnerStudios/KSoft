@@ -67,7 +67,7 @@ namespace KSoft.Values
 		/// <summary>Only for Null Constructors</summary>
 		protected GroupTagData(int expectedLength)
 		{
-			Contract.Assume(expectedLength > 0);
+			System.Diagnostics.Debug.Assert(expectedLength > 0);
 
 			mName = kNullGroupName;
 
@@ -209,8 +209,8 @@ namespace KSoft.Values
 		/// <seealso cref="String.Compare(String, String, bool)"/>
 		public int Compare(GroupTagData x, GroupTagData y)
 		{
-			Contract.Assume(x != null);
-			Contract.Assume(y != null);
+			System.Diagnostics.Debug.Assert(x != null);
+			System.Diagnostics.Debug.Assert(y != null);
 
 			return string.Compare(x.mName, y.mName, StringComparison.OrdinalIgnoreCase);
 		}
@@ -221,7 +221,7 @@ namespace KSoft.Values
 		/// <seealso cref="String.Compare(String, String, bool)"/>
 		public int CompareTo(GroupTagData other)
 		{
-			Contract.Assume(other != null);
+			System.Diagnostics.Debug.Assert(other != null);
 
 			return string.Compare(this.mName, other.mName, StringComparison.OrdinalIgnoreCase);
 		}
@@ -233,8 +233,8 @@ namespace KSoft.Values
 		/// <seealso cref="String.Compare(String, String, bool)"/>
 		public int Compare(object x, object y)
 		{
-			Contract.Assume(x != null);
-			Contract.Assume(y != null);
+			System.Diagnostics.Debug.Assert(x != null);
+			System.Diagnostics.Debug.Assert(y != null);
 
 			return Compare((GroupTagData)x, (GroupTagData)y);
 		}
@@ -244,7 +244,7 @@ namespace KSoft.Values
 		/// <seealso cref="String.Compare(String, String, bool)"/>
 		public int CompareTo(object obj)
 		{
-			Contract.Assume(obj != null);
+			System.Diagnostics.Debug.Assert(obj != null);
 
 			return CompareTo((GroupTagData)obj);
 		}
@@ -261,8 +261,8 @@ namespace KSoft.Values
 		/// <returns>true if both <paramref name="x"/> and <paramref name="y"/> are equal</returns>
 		public bool Equals(GroupTagData x, GroupTagData y)
 		{
-			Contract.Assume(x != null);
-			Contract.Assume(y != null);
+			System.Diagnostics.Debug.Assert(x != null);
+			System.Diagnostics.Debug.Assert(y != null);
 
 			return x.Equals(y);
 		}
@@ -271,7 +271,7 @@ namespace KSoft.Values
 		/// <returns></returns>
 		public int GetHashCode(GroupTagData obj)
 		{
-			Contract.Assume(obj != null);
+			System.Diagnostics.Debug.Assert(obj != null);
 
 			return obj.GetHashCode();
 		}

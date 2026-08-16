@@ -268,7 +268,7 @@ namespace KSoft
 				index = IndexOfHighestBitSet(GetLowBits(value));
 			}
 
-			Contract.Assume(index >= 0);
+			System.Diagnostics.Debug.Assert(index >= 0);
 			return (byte)index;
 		}
 		#endregion

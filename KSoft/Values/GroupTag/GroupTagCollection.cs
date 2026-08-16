@@ -23,15 +23,15 @@ namespace KSoft.Values
 		{
 			public int Compare(object x, object y)
 			{
-				Contract.Assume(x != null);
-				Contract.Assume(y != null);
+				System.Diagnostics.Debug.Assert(x != null);
+				System.Diagnostics.Debug.Assert(y != null);
 
 				return Compare((GroupTagData)x, (GroupTagData)y);
 			}
 			public int Compare(GroupTagData x, GroupTagData y)
 			{
-				Contract.Assume(x != null);
-				Contract.Assume(y != null);
+				System.Diagnostics.Debug.Assert(x != null);
+				System.Diagnostics.Debug.Assert(y != null);
 
 				return string.CompareOrdinal(x.Name, y.Name);
 			}
@@ -206,7 +206,7 @@ namespace KSoft.Values
 		{
 			foreach (GroupTagData g in BaseGroupTags)
 			{
-				Contract.Assume(g != null);
+				System.Diagnostics.Debug.Assert(g != null);
 
 				g.Write(s);
 			}

@@ -105,7 +105,7 @@ namespace KSoft.IO
 					"Attribute doesn't exist: " + name));
 			}
 
-			Contract.Assume(n != null);
+			System.Diagnostics.Debug.Assert(n != null);
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
 			return n.Value;

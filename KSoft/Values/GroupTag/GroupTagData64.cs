@@ -46,7 +46,7 @@ namespace KSoft.Values
 		/// <param name="name">Name of this group tag</param>
 		public GroupTagData64(string groupTag, string name) : base(groupTag, name, kExpectedTagLength)
 		{
-			Contract.Assume(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -56,7 +56,7 @@ namespace KSoft.Values
 		/// <param name="uuid">Guid for this group tag</param>
 		public GroupTagData64(string groupTag, string name, KGuid uuid) : base(groupTag, name, uuid, kExpectedTagLength)
 		{
-			Contract.Assume(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -67,7 +67,7 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name) : base(maj, min, name)
 		{
-			Contract.Assume(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
@@ -79,7 +79,7 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : base(maj, min, name, uuid)
 		{
-			Contract.Assume(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
 
 			mID = ToULong(Tag);
 		}
