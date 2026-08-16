@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Exprs = System.Linq.Expressions;
 
 namespace KSoft.ObjectModel
@@ -21,11 +16,19 @@ namespace KSoft.ObjectModel
 		public static readonly System.Collections.Specialized.NotifyCollectionChangedEventArgs kNotifyCollectionReset =
 			new(System.Collections.Specialized.NotifyCollectionChangedAction.Reset);
 
+		static void ValidatePropertyExpression(Exprs.LambdaExpression propertyExpr)
+		{
+			ArgumentNullException.ThrowIfNull(propertyExpr);
+			if (propertyExpr.Body is not Exprs.MemberExpression && propertyExpr.Body is not Exprs.UnaryExpression)
+			{
+				throw new ArgumentException("Expression must reference a member.", nameof(propertyExpr));
+			}
+		}
+
 		public static PropertyChangedEventArgs CreatePropertyChangedEventArgs<T>(
 			Exprs.Expression<Func<T, object>> propertyExpr)
 		{
-			Contract.Requires(propertyExpr != null);
-			Contract.Requires(propertyExpr.Body is Exprs.MemberExpression || propertyExpr.Body is Exprs.UnaryExpression);
+			ValidatePropertyExpression(propertyExpr);
 
 			return new PropertyChangedEventArgs(
 				Reflection.Util.PropertyFromExpr(propertyExpr).Name);
@@ -33,8 +36,7 @@ namespace KSoft.ObjectModel
 		public static PropertyChangedEventArgs CreatePropertyChangedEventArgs<T, TProp>(
 			Exprs.Expression<Func<T, TProp>> propertyExpr)
 		{
-			Contract.Requires(propertyExpr != null);
-			Contract.Requires(propertyExpr.Body is Exprs.MemberExpression || propertyExpr.Body is Exprs.UnaryExpression);
+			ValidatePropertyExpression(propertyExpr);
 
 			return new PropertyChangedEventArgs(
 				Reflection.Util.PropertyFromExpr(propertyExpr).Name);
