@@ -86,7 +86,7 @@ namespace KSoft.IO
 		#region Pad
 		public void Pad(int byteCount)
 		{
-			Contract.Requires(byteCount > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(byteCount);
 
 			// Write 32 bit blocks, then any odd bytes
 			for (; byteCount >= 4; byteCount -= 4)	{ base.Write(uint.MinValue); }
@@ -106,8 +106,9 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryWriter.Write(byte[], int, int)"/>
 		public void Write(byte[] value, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(count >= 0 && count <= value.Length);
+			ArgumentNullException.ThrowIfNull(value);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
 
 			base.Write(value, 0, count);
 		}
@@ -118,8 +119,9 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryWriter.Write(char[], int, int)"/>
 		public void Write(char[] value, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(count >= 0 && count <= value.Length);
+			ArgumentNullException.ThrowIfNull(value);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
 
 			base.Write(value, 0, count);
 		}
@@ -130,8 +132,11 @@ namespace KSoft.IO
 		/// <param name="tag">Big-endian ordered tag id</param>
 		public void WriteTag32(char[] tag)
 		{
-			Contract.Requires(tag != null);
-			Contract.Requires(tag.Length == 4);
+			ArgumentNullException.ThrowIfNull(tag);
+			if (tag.Length != 4)
+			{
+				throw new ArgumentOutOfRangeException(nameof(tag));
+			}
 
 			// Explicitly check for Little endian since this is
 			// a character array and not a primitive integer
@@ -220,7 +225,7 @@ namespace KSoft.IO
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		public void Write(string value, Text.StringStorageEncoding encoding)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 			byte[] bytes = encoding.GetBytes(value ?? string.Empty);
 			base.Write(bytes);
@@ -285,7 +290,7 @@ namespace KSoft.IO
 		public void Write<TEnum>(TEnum value, IEnumEndianStreamer<TEnum> implementation)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(implementation != null);
+			ArgumentNullException.ThrowIfNull(implementation);
 
 			implementation.Write(this, value);
 		}

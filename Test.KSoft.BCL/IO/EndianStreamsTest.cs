@@ -9,9 +9,21 @@ namespace KSoft.IO.Test;
 [TestClass]
 public class EndianStreamsTest : BaseTestClass
 {
+	enum TestEnum : byte
+	{
+		None,
+	}
+
 	static void AssertThrowsArgumentNull(Action action, string paramName)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
+	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
 
 		Assert.AreEqual(paramName, exception.ParamName);
 	}
@@ -52,6 +64,50 @@ public class EndianStreamsTest : BaseTestClass
 			"encoding");
 		AssertThrowsArgumentNull(() => _ = EndianStream.UsingReader(null!), "reader");
 		AssertThrowsArgumentNull(() => _ = EndianStream.UsingWriter(null!), "writer");
+	}
+
+	[TestMethod]
+	public void ReaderWriterDirectGuards_ThrowExpectedExceptions()
+	{
+		using var readStream = new MemoryStream(new byte[16]);
+		using var reader = new EndianReader(readStream);
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream);
+
+		AssertThrowsArgumentOutOfRange(() => reader.Pad(0), "byteCount");
+		AssertThrowsArgumentOutOfRange(() => reader.Pad(-1), "byteCount");
+		AssertThrowsArgumentOutOfRange(() => writer.Pad(0), "byteCount");
+		AssertThrowsArgumentOutOfRange(() => writer.Pad(-1), "byteCount");
+
+		AssertThrowsArgumentNull(() => _ = reader.Read((byte[])null!, 0), "buffer");
+		AssertThrowsArgumentNull(() => _ = reader.Read((byte[])null!), "buffer");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new byte[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new byte[1], 2), "count");
+		AssertThrowsArgumentNull(() => _ = reader.Read((char[])null!, 0), "buffer");
+		AssertThrowsArgumentNull(() => _ = reader.Read((char[])null!), "buffer");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new char[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new char[1], 2), "count");
+
+		AssertThrowsArgumentNull(() => writer.Write((byte[])null!, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => writer.Write(new byte[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => writer.Write(new byte[1], 2), "count");
+		AssertThrowsArgumentNull(() => writer.Write((char[])null!, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], 2), "count");
+
+		AssertThrowsArgumentNull(() => _ = reader.ReadTag32(null!), "tag");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.ReadTag32(new char[3]), "tag");
+		AssertThrowsArgumentNull(() => _ = reader.ReadTag64(null!), "tag");
+		AssertThrowsArgumentOutOfRange(() => _ = reader.ReadTag64(new char[7]), "tag");
+		AssertThrowsArgumentNull(() => writer.WriteTag32(null!), "tag");
+		AssertThrowsArgumentOutOfRange(() => writer.WriteTag32(new char[3]), "tag");
+		AssertThrowsArgumentOutOfRange(() => writer.WriteTag32(new char[5]), "tag");
+
+		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
+		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
+		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
+		AssertThrowsArgumentNull(() => _ = reader.Read<TestEnum>(null!), "implementation");
+		AssertThrowsArgumentNull(() => writer.Write(TestEnum.None, null!), "implementation");
 	}
 
 	[TestMethod]

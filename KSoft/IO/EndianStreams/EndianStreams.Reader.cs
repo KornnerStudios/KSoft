@@ -99,7 +99,7 @@ namespace KSoft.IO
 		#region Pad
 		public void Pad(int byteCount)
 		{
-			Contract.Requires(byteCount > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(byteCount);
 
 			BaseStream.Seek(sizeof(byte) * byteCount, SeekOrigin.Current);
 		}
@@ -119,8 +119,9 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(byte[], int, int)"/>
 		public byte[] Read(byte[] buffer, int count)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(count >= 0 && count <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			base.Read(buffer, 0, count);
@@ -133,7 +134,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(byte[], int, int)"/>
 		public byte[] Read(byte[] buffer)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			base.Read(buffer, 0, buffer.Length);
@@ -148,8 +149,9 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(char[], int, int)"/>
 		public char[] Read(char[] buffer, int count)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(count >= 0 && count <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length);
 			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			base.Read(buffer, 0, count);
@@ -162,7 +164,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(char[], int, int)"/>
 		public char[] Read(char[] buffer)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			base.Read(buffer, 0, buffer.Length);
@@ -177,8 +179,8 @@ namespace KSoft.IO
 		/// <returns>Big-endian ordered tag id</returns>
 		public char[] ReadTag32(char[] tag)
 		{
-			Contract.Requires(tag != null);
-			Contract.Requires(tag.Length >= 4);
+			ArgumentNullException.ThrowIfNull(tag);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 4, nameof(tag));
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length >= 4);
 
@@ -212,8 +214,8 @@ namespace KSoft.IO
 		/// <returns>Big-endian ordered tag id</returns>
 		public char[] ReadTag64(char[] tag)
 		{
-			Contract.Requires(tag != null);
-			Contract.Requires(tag.Length >= 8);
+			ArgumentNullException.ThrowIfNull(tag);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 8, nameof(tag));
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length >= 8);
 
@@ -362,7 +364,7 @@ namespace KSoft.IO
 		/// </remarks>
 		public string ReadString(Text.StringStorageEncoding encoding, int length)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 			ValidateStringStorageForStreaming(encoding.Storage, length);
 
 			return encoding.ReadString(this, length);
@@ -375,7 +377,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		public string ReadString(Text.StringStorageEncoding encoding)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 			return ReadString(encoding, encoding.Storage.FixedLength);
 		}
@@ -508,7 +510,7 @@ namespace KSoft.IO
 		public TEnum Read<TEnum>(IEnumEndianStreamer<TEnum> implementation)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(implementation != null);
+			ArgumentNullException.ThrowIfNull(implementation);
 
 			return implementation.Read(this);
 		}
