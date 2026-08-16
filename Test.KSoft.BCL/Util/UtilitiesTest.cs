@@ -115,6 +115,45 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
+		public void TypeExtensions_VirtualBufferNullStreamGuards_ThrowArgumentNullException()
+		{
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBuffer(null!, 1), "stream");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBuffer(null!), "stream");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBufferBookmark(null!), "stream");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBufferWithBookmark(null!, 1), "stream");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(null!), "stream");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferBookmark(null!), "stream");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferAndBookmark(null!, 1), "stream");
+		}
+
+		[TestMethod]
+		public void TypeExtensions_VirtualBufferBookmarks_RestoreAndCleanUpState()
+		{
+			using var stream = new IO.EndianStream(new MemoryStream(new byte[8]));
+			AssertThrowsArgument(() => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(stream), "stream");
+
+			using (stream.EnterVirtualBuffer(3))
+			{
+				Assert.AreEqual(0, stream.VirtualBufferStart);
+				Assert.AreEqual(3, stream.VirtualBufferLength);
+				Assert.AreEqual(0, stream.BaseStream.Position);
+			}
+			Assert.AreEqual(3, stream.BaseStream.Position);
+			Assert.AreEqual(0, stream.VirtualBufferStart);
+			Assert.AreEqual(0, stream.VirtualBufferLength);
+
+			stream.VirtualBufferStart = 1;
+			stream.VirtualBufferLength = 2;
+			using (stream.EnterVirtualBufferBookmark())
+			{
+				stream.VirtualBufferStart = 4;
+				stream.VirtualBufferLength = 5;
+			}
+			Assert.AreEqual(1, stream.VirtualBufferStart);
+			Assert.AreEqual(2, stream.VirtualBufferLength);
+		}
+
+		[TestMethod]
 		public void TypeExtensions_StreamBookmarkGuards_ThrowExpectedExceptions()
 		{
 			using var stream = new IO.EndianStream(new MemoryStream());

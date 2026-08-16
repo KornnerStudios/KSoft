@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -16,8 +11,11 @@ namespace KSoft.IO
 
 		public IKSoftStreamWithVirtualBufferCleanup(IKSoftStreamWithVirtualBuffer stream)
 		{
-			Contract.Requires(stream != null);
-			Contract.Requires(stream.VirtualBufferStart > 0 && stream.VirtualBufferLength > 0);
+			ArgumentNullException.ThrowIfNull(stream);
+			if (stream.VirtualBufferStart < 0 || stream.VirtualBufferLength <= 0)
+			{
+				throw new ArgumentException("Stream does not have an active virtual buffer.", nameof(stream));
+			}
 			mStream = stream;
 			mBufferEnd = stream.VirtualBufferStart + stream.VirtualBufferLength;
 		}
@@ -49,7 +47,7 @@ namespace KSoft.IO
 
 		public IKSoftStreamWithVirtualBufferBookmark(IKSoftStreamWithVirtualBuffer stream)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 			mStream = stream;
 			mOldStart = stream.VirtualBufferStart;
 			mOldLength = stream.VirtualBufferLength;
@@ -79,7 +77,7 @@ namespace KSoft.IO
 
 		public IKSoftStreamWithVirtualBufferAndBookmark(IKSoftStreamWithVirtualBuffer stream, long bufferLength)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 			mBookmark = stream.EnterVirtualBufferBookmark();
 			mCleanup = stream.EnterVirtualBuffer(bufferLength);
 			mDisposed = false;

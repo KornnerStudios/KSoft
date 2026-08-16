@@ -156,6 +156,7 @@ namespace KSoft
 		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream,
 			long bufferLength)
 		{
+			ArgumentNullException.ThrowIfNull(stream);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferLength);
 
 			stream.VirtualBufferStart = stream.BaseStream.Position;
@@ -167,12 +168,16 @@ namespace KSoft
 		/// <returns></returns>
 		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream)
 		{
+			ArgumentNullException.ThrowIfNull(stream);
+
 			return new IO.IKSoftStreamWithVirtualBufferCleanup(stream);
 		}
 		/// <summary>Temporarily bookmark this stream's VirtualBuffer properties</summary>
 		/// <returns></returns>
 		public static IO.IKSoftStreamWithVirtualBufferBookmark EnterVirtualBufferBookmark(this IO.IKSoftStreamWithVirtualBuffer stream)
 		{
+			ArgumentNullException.ThrowIfNull(stream);
+
 			return new IO.IKSoftStreamWithVirtualBufferBookmark(stream);
 		}
 		/// <summary>
@@ -182,6 +187,7 @@ namespace KSoft
 		public static IO.IKSoftStreamWithVirtualBufferAndBookmark EnterVirtualBufferWithBookmark(this IO.IKSoftStreamWithVirtualBuffer stream,
 			long bufferLength)
 		{
+			ArgumentNullException.ThrowIfNull(stream);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferLength);
 
 			return new IO.IKSoftStreamWithVirtualBufferAndBookmark(stream, bufferLength);
