@@ -426,9 +426,7 @@ namespace KSoft.IO
 
 		static void ValidateBufferCount(Array value, int count)
 		{
-			ArgumentNullException.ThrowIfNull(value);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
+			Verify.Buffers.CountWithinLength(value, count);
 		}
 
 		public EndianStream Stream(byte[] value, int index, int count)

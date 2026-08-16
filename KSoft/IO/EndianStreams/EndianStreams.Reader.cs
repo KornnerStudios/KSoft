@@ -119,9 +119,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(byte[], int, int)"/>
 		public byte[] Read(byte[] buffer, int count)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length);
+			Verify.Buffers.CountWithinLength(buffer, count);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			base.Read(buffer, 0, count);
@@ -149,9 +147,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryReader.Read(char[], int, int)"/>
 		public char[] Read(char[] buffer, int count)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, buffer.Length);
+			Verify.Buffers.CountWithinLength(buffer, count);
 			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			base.Read(buffer, 0, count);

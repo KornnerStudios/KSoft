@@ -106,9 +106,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryWriter.Write(byte[], int, int)"/>
 		public void Write(byte[] value, int count)
 		{
-			ArgumentNullException.ThrowIfNull(value);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
+			Verify.Buffers.CountWithinLength(value, count);
 
 			base.Write(value, 0, count);
 		}
@@ -119,9 +117,7 @@ namespace KSoft.IO
 		/// <seealso cref="BinaryWriter.Write(char[], int, int)"/>
 		public void Write(char[] value, int count)
 		{
-			ArgumentNullException.ThrowIfNull(value);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
+			Verify.Buffers.CountWithinLength(value, count);
 
 			base.Write(value, 0, count);
 		}
