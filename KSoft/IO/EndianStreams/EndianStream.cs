@@ -424,11 +424,6 @@ namespace KSoft.IO
 			}
 		}
 
-		static void ValidateBufferCount(Array value, int count)
-		{
-			Verify.Buffers.CountWithinLength(value, count);
-		}
-
 		public EndianStream Stream(byte[] value, int index, int count)
 		{
 			ValidateBufferRange(value, index, count);
@@ -440,7 +435,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(byte[] value, int count)
 		{
-			ValidateBufferCount(value, count);
+			Verify.Buffers.CountWithinLength(value, count);
 
 				 if (IsReading) Reader.Read(value, count);
 			else if (IsWriting) Writer.Write(value, count);
@@ -467,7 +462,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(char[] value, int count)
 		{
-			ValidateBufferCount(value, count);
+			Verify.Buffers.CountWithinLength(value, count);
 
 				 if (IsReading) Reader.Read(value, count);
 			else if (IsWriting) Writer.Write(value, count);

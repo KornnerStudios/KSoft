@@ -273,12 +273,6 @@ namespace KSoft.IO
 		#endregion
 
 		#region String
-		// Verify that we have enough information to correctly stream a string
-		static void ValidateStringStorageForStreaming(Memory.Strings.StringStorage s, int length)
-		{
-			Verify.StringStorage.ForStreaming(s, length);
-		}
-
 		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
 		/// <param name="length">Length, in characters, of the string.</param>
@@ -293,7 +287,7 @@ namespace KSoft.IO
 		public string ReadString(Memory.Strings.StringStorage storage, int length = TypeExtensions.kNone,
 			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
-			ValidateStringStorageForStreaming(storage, length);
+			Verify.StringStorage.ForStreaming(storage, length);
 
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
 
@@ -314,7 +308,7 @@ namespace KSoft.IO
 			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);
-			ValidateStringStorageForStreaming(encoding.Storage, length);
+			Verify.StringStorage.ForStreaming(encoding.Storage, length);
 
 			return encoding.ReadString(this, length, maxLength, prefixBitLength);
 		}
