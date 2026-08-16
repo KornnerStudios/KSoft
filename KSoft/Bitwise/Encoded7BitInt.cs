@@ -24,6 +24,33 @@ namespace KSoft.Bitwise
 		/// <summary>Maximum value that can be stored in 4 encoded 7-bit integer</summary>
 		/// <remarks>(((0x80 &lt;&lt; 7) &lt;&lt; 7) &lt;&lt; 7) - 1</remarks>
 		public const int kMaxValue4Bytes = 0x0FFFFFFF;
+		const int kMaxEncodedByteCount = 4;
+
+		static void ValidateValue(int value)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(value, kMaxValue4Bytes);
+		}
+
+		static void ValidateReadRange(byte[] buffer, int startIndex, int maxCount)
+		{
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(maxCount, buffer.Length - startIndex);
+		}
+
+		static void ValidateWriteRange(byte[] buffer, int startIndex, int encodedByteCount)
+		{
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+			if (encodedByteCount > buffer.Length - startIndex)
+			{
+				throw new ArgumentException("Destination buffer is too small.", nameof(buffer));
+			}
+		}
 
 		/// <summary>Calculate how many bytes it would take to encode a value into a 7-bit integer</summary>
 		/// <param name="value">Value to encode</param>
@@ -32,6 +59,8 @@ namespace KSoft.Bitwise
 		{
 			Contract.Ensures(Contract.Result<int>() > 0);
 			Contract.Ensures(Contract.Result<int>() < 5);
+
+			ValidateValue(value);
 
 			int size = 0;
 			for (uint num = (uint)value; num >= 0x80; size++)
@@ -44,15 +73,12 @@ namespace KSoft.Bitwise
 		/// <summary>Decode a value from a byte array</summary>
 		/// <param name="buffer">The byte array containing the integer to decode</param>
 		/// <param name="startIndex">The index of the first byte to decode</param>
-		/// <param name="maxCount">The maximum amount to be decoded</param>
+		/// <param name="maxCount">Maximum bytes available from <paramref name="startIndex"/>, including payload bytes</param>
 		/// <param name="endingIndex">The ending index after the value has been decoded, or -1 if this function fails</param>
 		/// <returns>Decoded integer read from <paramref name="buffer"/> or -1 if this function fails</returns>
 		public static int Read(byte[] buffer, int startIndex, int maxCount, out int endingIndex)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(buffer.Length > 1);
-			Contract.Requires(startIndex > 0);
-			Contract.Requires(maxCount > 0);
+			ValidateReadRange(buffer, startIndex, maxCount);
 			endingIndex = TypeExtensions.kNone;
 
 			int size = 0; // size (bytes) of the encoded int
@@ -61,14 +87,8 @@ namespace KSoft.Bitwise
 			byte b;
 			do
 			{
-				// Check for a corrupted stream.  Access a max of 5 bytes.
-				// In a future version, add a DataFormatException.
-				if (shift == 5 * 7)  // 5 bytes max per Int32, shift += 7
-				{
-					return TypeExtensions.kNone;
-				}
-				// Either a corrupted stream or the buffer is incomplete
-				if (size >= maxCount)
+				// Either the prefix is corrupt or the buffer is incomplete.
+				if (size >= kMaxEncodedByteCount || size >= maxCount)
 				{
 					return TypeExtensions.kNone;
 				}
@@ -80,7 +100,7 @@ namespace KSoft.Bitwise
 
 			// either buffer is incomplete or
 			// this isn't even data with a 7-bit integer.
-			if ((size + count) > maxCount)
+			if (count > maxCount - size)
 			{
 				return TypeExtensions.kNone;
 			}
@@ -96,6 +116,9 @@ namespace KSoft.Bitwise
 		/// <returns>Index of the first byte after the encoded value in <paramref name="buffer"/></returns>
 		public static int Write(byte[] buffer, int startIndex, int value)
 		{
+			int encodedByteCount = CalculateSize(value);
+			ValidateWriteRange(buffer, startIndex, encodedByteCount);
+
 			// Write out an int 7 bits at a time.  The high bit of the byte,
 			// when on, tells reader to continue reading more bytes.
 			uint v = (uint)value;

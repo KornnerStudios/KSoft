@@ -56,6 +56,25 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
+		public void StringStorageEncoding_Int7PascalAsciiRoundTripsAtBufferStartAndOffset()
+		{
+			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			const string text = "hello";
+
+			byte[] bytes = encoding.GetBytes(text);
+
+			Assert.AreEqual(text.Length + 1, bytes.Length);
+			Assert.AreEqual((byte)text.Length, bytes[0]);
+			Assert.AreEqual(text, encoding.GetString(bytes));
+
+			var wrappedBytes = new byte[bytes.Length + 1];
+			wrappedBytes[0] = 0xEE;
+			Array.Copy(bytes, 0, wrappedBytes, 1, bytes.Length);
+			Assert.AreEqual(text, encoding.GetString(wrappedBytes, 1, bytes.Length));
+		}
+
+		[TestMethod]
 		public void Text_StringStorageEncodingWriteTest()
 		{
 			const bool k_output_ms = true;
