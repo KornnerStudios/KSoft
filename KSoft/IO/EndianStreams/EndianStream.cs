@@ -811,9 +811,9 @@ namespace KSoft.IO
 		#region Stream Fixed Array
 		public EndianStream StreamFixedArray(bool[] array, int startIndex, int length)
 		{
-			Contract.Requires(array != null);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(length >= 0);
+			ArgumentNullException.ThrowIfNull(array);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 
 				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
 			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
@@ -822,7 +822,7 @@ namespace KSoft.IO
 		}
 		public EndianStream StreamFixedArray(bool[] array)
 		{
-			Contract.Requires(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return StreamFixedArray(array, 0, array.Length);
 		}

@@ -517,9 +517,9 @@ namespace KSoft.IO
 
 		public bool[] ReadFixedArray(bool[] array, int startIndex, int length)
 		{
-			Contract.Requires(array != null);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(length >= 0);
+			ArgumentNullException.ThrowIfNull(array);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
 			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
@@ -529,7 +529,7 @@ namespace KSoft.IO
 		}
 		public bool[] ReadFixedArray(bool[] array)
 		{
-			Contract.Requires(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			return ReadFixedArray(array, 0, array.Length);

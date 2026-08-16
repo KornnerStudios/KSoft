@@ -420,6 +420,57 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void BoolFixedArrayGuards_ThrowExpectedExceptions()
+	{
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
+		using var writerEndianStream = EndianStream.UsingWriter(writer);
+		using var reader = new EndianReader(new MemoryStream(new byte[2]), Shell.EndianFormat.Big);
+		using var readerEndianStream = EndianStream.UsingReader(reader);
+
+		AssertThrowsArgumentNull(() => writer.WriteFixedArray((bool[])null!, 0, 0), "array");
+		AssertThrowsArgumentOutOfRange(() => writer.WriteFixedArray(new bool[1], -1, 0), "startIndex");
+		AssertThrowsArgumentOutOfRange(() => writer.WriteFixedArray(new bool[1], 0, -1), "length");
+		AssertThrowsArgumentNull(() => writer.WriteFixedArray((bool[])null!), "array");
+
+		AssertThrowsArgumentNull(() => reader.ReadFixedArray((bool[])null!, 0, 0), "array");
+		AssertThrowsArgumentOutOfRange(() => reader.ReadFixedArray(new bool[1], -1, 0), "startIndex");
+		AssertThrowsArgumentOutOfRange(() => reader.ReadFixedArray(new bool[1], 0, -1), "length");
+		AssertThrowsArgumentNull(() => reader.ReadFixedArray((bool[])null!), "array");
+
+		AssertThrowsArgumentNull(() => writerEndianStream.StreamFixedArray((bool[])null!, 0, 0), "array");
+		AssertThrowsArgumentOutOfRange(() => writerEndianStream.StreamFixedArray(new bool[1], -1, 0), "startIndex");
+		AssertThrowsArgumentOutOfRange(() => writerEndianStream.StreamFixedArray(new bool[1], 0, -1), "length");
+		AssertThrowsArgumentNull(() => writerEndianStream.StreamFixedArray((bool[])null!), "array");
+
+		AssertThrowsArgumentNull(() => readerEndianStream.StreamFixedArray((bool[])null!, 0, 0), "array");
+		AssertThrowsArgumentOutOfRange(() => readerEndianStream.StreamFixedArray(new bool[1], -1, 0), "startIndex");
+		AssertThrowsArgumentOutOfRange(() => readerEndianStream.StreamFixedArray(new bool[1], 0, -1), "length");
+		AssertThrowsArgumentNull(() => readerEndianStream.StreamFixedArray((bool[])null!), "array");
+	}
+
+	[TestMethod]
+	public void BoolFixedArrayOutOfRangePreservesPartialSideEffectsTest()
+	{
+		using var writerStream = new MemoryStream();
+		using (var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+		{
+			Assert.Throws<IndexOutOfRangeException>(()
+				=> writer.WriteFixedArray(new bool[] { true, false }, 1, 2));
+		}
+
+		CollectionAssert.AreEqual(new byte[] { 0 }, writerStream.ToArray());
+
+		using var readStream = new MemoryStream(new byte[] { 1, 0 });
+		using var reader = new EndianReader(readStream, Shell.EndianFormat.Big);
+		var values = new bool[2];
+
+		Assert.Throws<IndexOutOfRangeException>(() => reader.ReadFixedArray(values, 1, 2));
+		Assert.AreEqual(2L, readStream.Position);
+		Assert.IsTrue(values[1]);
+	}
+
+	[TestMethod]
 	public void BaseStateAndTypeExtensionsUseEndianStreamBehaviorTest()
 	{
 		var owner = new object();
