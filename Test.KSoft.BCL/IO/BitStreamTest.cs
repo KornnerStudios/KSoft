@@ -8,9 +8,32 @@ namespace KSoft.IO.Test
 	[TestClass]
 	public class BitStreamTest : BaseTestClass
 	{
+		enum TestEnum : byte
+		{
+			None,
+		}
+
 		sealed class NonSeekableMemoryStream : MemoryStream
 		{
 			public override bool CanSeek => false;
+		}
+
+		struct TestStructSerializable : IBitStreamSerializable
+		{
+			public void Serialize(IO.BitStream s)
+			{
+			}
+		}
+
+		sealed class TestClassSerializable : IBitStreamSerializable
+		{
+			public TestClassSerializable()
+			{
+			}
+
+			public void Serialize(IO.BitStream s)
+			{
+			}
 		}
 
 		static void AssertThrowsArgumentNull(string parameterName, Action action)
@@ -184,6 +207,100 @@ namespace KSoft.IO.Test
 			AssertThrowsArgumentOutOfRange("byteCount", () => _ = bitStream.ReadBytes(-1));
 			AssertThrowsArgumentNull("buffer", () => _ = bitStream.Read(null!));
 			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!));
+		}
+
+		[TestMethod]
+		public void SerializationHelpers_InvalidArgumentsThrowExpectedExceptionsTest()
+		{
+			using var stream = new MemoryStream();
+			using var bitStream = new IO.BitStream(stream, FileAccess.Write);
+			bitStream.StreamMode = FileAccess.Write;
+			TestEnum enumValue = TestEnum.None;
+			var structValue = new TestStructSerializable();
+			var classValue = new TestClassSerializable();
+			TestClassSerializable nullClassValue = null!;
+			var structValues = new TestStructSerializable[1];
+			var classValues = new TestClassSerializable[] { new() };
+			var listValues = new List<TestClassSerializable>();
+			var context = new object();
+
+			AssertThrowsArgumentNull(
+				"implementation",
+				() => bitStream.Stream(ref enumValue, 1, null!));
+			AssertThrowsArgumentNull(
+				"initializer",
+				() => bitStream.StreamValue(ref structValue, (Func<TestStructSerializable>)null!));
+			AssertThrowsArgumentNull(
+				"value",
+				() => bitStream.StreamObject((TestClassSerializable)null!));
+			AssertThrowsArgumentNull(
+				"value",
+				() => bitStream.StreamObject(ref nullClassValue, () => new TestClassSerializable()));
+			AssertThrowsArgumentNull(
+				"initializer",
+				() => bitStream.StreamObject(ref classValue, (Func<TestClassSerializable>)null!));
+
+			AssertThrowsArgumentNull("read", () => bitStream.StreamMethods(null!, bs => { }));
+			AssertThrowsArgumentNull("write", () => bitStream.StreamMethods(bs => { }, null!));
+			AssertThrowsArgumentNull(
+				"context",
+				() => bitStream.StreamMethods<object>(null!, (value, bs) => { }, (value, bs) => { }));
+			AssertThrowsArgumentNull(
+				"read",
+				() => bitStream.StreamMethods(context, null!, (value, bs) => { }));
+			AssertThrowsArgumentNull(
+				"write",
+				() => bitStream.StreamMethods(context, (value, bs) => { }, null!));
+
+			AssertThrowsArgumentNull(
+				"values",
+				() => bitStream.StreamValueArray((TestStructSerializable[])null!));
+			AssertThrowsArgumentNull(
+				"values",
+				() => bitStream.StreamObjectArray((TestClassSerializable[])null!, () => new TestClassSerializable()));
+			AssertThrowsArgumentNull(
+				"initializer",
+				() => bitStream.StreamObjectArray(classValues, (Func<TestClassSerializable>)null!));
+
+			AssertThrowsArgumentNull(
+				"list",
+				() => bitStream.StreamElements<TestClassSerializable, object>(
+					null!,
+					1,
+					context,
+					_ => new TestClassSerializable()));
+			AssertThrowsArgumentOutOfRange(
+				"countBitSize",
+				() => bitStream.StreamElements(listValues, Bits.kInt32BitCount + 1, context,
+					_ => new TestClassSerializable()));
+			AssertThrowsArgumentNull(
+				"ctor",
+				() => bitStream.StreamElements<TestClassSerializable, object>(
+					listValues,
+					1,
+					context,
+					null!));
+			AssertThrowsArgumentNull(
+				"list",
+				() => bitStream.StreamElements<TestClassSerializable>(null!, 1));
+			AssertThrowsArgumentOutOfRange(
+				"countBitSize",
+				() => bitStream.StreamElements<TestClassSerializable>(listValues, Bits.kInt32BitCount + 1));
+
+			Assert.AreEqual(0L, stream.Length);
+		}
+
+		[TestMethod]
+		public void StreamObjectRead_AllowsNullReferenceWithInitializerTest()
+		{
+			using var stream = new MemoryStream(new byte[] { 0 });
+			using var bitStream = new IO.BitStream(stream, FileAccess.Read);
+			bitStream.StreamMode = FileAccess.Read;
+			TestClassSerializable value = null!;
+
+			bitStream.StreamObject(ref value, () => new TestClassSerializable());
+
+			Assert.IsNotNull(value);
 		}
 
 		[TestMethod]
