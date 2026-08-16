@@ -154,6 +154,8 @@ public class EndianStreamsTest : BaseTestClass
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
 		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
+		Assert.ThrowsExactly<InvalidDataException>(() =>
+			reader.ReadString(Memory.Strings.StringStorage.AsciiString, TypeExtensions.kNone));
 		AssertThrowsArgumentNull(() => _ = reader.Read<TestEnum>(null!), "implementation");
 		AssertThrowsArgumentNull(() => writer.Write(TestEnum.None, null!), "implementation");
 	}
