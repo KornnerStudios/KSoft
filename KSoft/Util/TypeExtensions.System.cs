@@ -1414,8 +1414,9 @@ namespace KSoft
 		public static void SafeNotify(this PropertyChangedEventHandler handler,
 			object sender, PropertyChangedEventArgs[] argsList, int startIndex = 0)
 		{
-			Contract.Requires(argsList != null);
-			Contract.Requires(startIndex >= 0 && startIndex < argsList.Length);
+			ArgumentNullException.ThrowIfNull(argsList);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, argsList.Length);
 
 			if (handler != null)
 			{
@@ -1460,7 +1461,7 @@ namespace KSoft
 			TEventArgs eventArgs, Func<TEventArgs, TReturnType> retrieveDataFunction)
 			where TEventArgs : EventArgs
 		{
-			Contract.Requires(retrieveDataFunction != null);
+			ArgumentNullException.ThrowIfNull(retrieveDataFunction);
 
 			if (eventToTrigger != null)
 			{

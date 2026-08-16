@@ -334,5 +334,30 @@ namespace KSoft.Test
 			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 0, -1), "count");
 			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 1, 3), "count");
 		}
+
+		[TestMethod]
+		public void TypeExtensions_EventHandlerGuards_ThrowExpectedExceptions()
+		{
+			var argsList = new[]
+			{
+				new System.ComponentModel.PropertyChangedEventArgs("One"),
+				new System.ComponentModel.PropertyChangedEventArgs("Two"),
+			};
+			int notifications = 0;
+			System.ComponentModel.PropertyChangedEventHandler handler = (_, _) => notifications++;
+
+			AssertThrowsArgumentNull(() =>
+				handler.SafeNotify(this, (System.ComponentModel.PropertyChangedEventArgs[])null!), "argsList");
+			AssertThrowsArgumentOutOfRange(() => handler.SafeNotify(this, argsList, -1), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => handler.SafeNotify(this, argsList, argsList.Length + 1), "startIndex");
+			handler.SafeNotify(this, argsList, 1);
+			Assert.AreEqual(1, notifications);
+			handler.SafeNotify(this, Array.Empty<System.ComponentModel.PropertyChangedEventArgs>());
+			Assert.AreEqual(1, notifications);
+
+			EventHandler<EventArgs> eventToTrigger = null!;
+			AssertThrowsArgumentNull(() =>
+				_ = eventToTrigger.SafeTrigger<EventArgs, int>(this, EventArgs.Empty, null!), "retrieveDataFunction");
+		}
 	};
 }
