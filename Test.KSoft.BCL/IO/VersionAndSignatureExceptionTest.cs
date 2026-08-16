@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -6,6 +7,19 @@ namespace KSoft.IO.Test;
 [TestClass]
 public class VersionAndSignatureExceptionTest : BaseTestClass
 {
+	static void AssertThrowsArgumentNull(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+	static void AssertThrowsArgument(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
 	[TestMethod]
 	public void VersionMismatchAssertFormatsUnsignedStreamValuesTest()
 	{
@@ -44,6 +58,37 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 
 		Assert.Contains("@00000000", exception.Message);
 		Assert.Contains("Expected '01234567', got 'DEADBEEF'", exception.Message);
+	}
+
+	[TestMethod]
+	public void SignatureMismatchInvalidArgumentsThrowExpectedExceptionsTest()
+	{
+		AssertThrowsArgumentNull(
+			() => _ = new SignatureMismatchException((string)null!, "AB", "CD"),
+			"dataDescription");
+		AssertThrowsArgument(
+			() => _ = new SignatureMismatchException(string.Empty, "AB", "CD"),
+			"dataDescription");
+		AssertThrowsArgumentNull(
+			() => _ = new SignatureMismatchException((Stream)null!, "AB", "CD"),
+			"s");
+
+		using var reader = CreateReader(0xDE, 0xAD, 0xBE, 0xEF);
+		AssertThrowsArgumentNull(
+			() => SignatureMismatchException.Assert(
+				(EndianReader)null!,
+				"AB",
+				Memory.Strings.StringStorage.AsciiString),
+			"s");
+		AssertThrowsArgumentNull(
+			() => SignatureMismatchException.Assert(reader, null!, Memory.Strings.StringStorage.AsciiString),
+			"expected");
+		AssertThrowsArgument(
+			() => SignatureMismatchException.Assert(reader, string.Empty, Memory.Strings.StringStorage.AsciiString),
+			"expected");
+		AssertThrowsArgumentNull(
+			() => SignatureMismatchException.Assert(reader, "AB", (Text.StringStorageEncoding)null!),
+			"encoding");
 	}
 
 	[TestMethod]

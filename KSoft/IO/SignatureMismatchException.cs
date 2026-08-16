@@ -1,9 +1,5 @@
-﻿using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+using System.IO;
 
 namespace KSoft.IO
 {
@@ -14,30 +10,41 @@ namespace KSoft.IO
 		const string kFormat = "Invalid signature! @{0} Expected '{1}', got '{2}'";
 		const string kDescFormat = "Invalid '{0}' signature! Expected '{1}', got '{2}'";
 
-		public SignatureMismatchException(string dataDescription, string expected, string found)
-			: base(string.Format(Util.InvariantCultureInfo, kDescFormat, dataDescription, expected, found))
+		static string FormatDescriptionMessage(string dataDescription, string expected, string found)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+
+			return string.Format(Util.InvariantCultureInfo, kDescFormat, dataDescription, expected, found);
+		}
+
+		static long GetSignaturePosition(Stream s, string expected)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+
+			return s.Position - expected.Length;
+		}
+
+		public SignatureMismatchException(string dataDescription, string expected, string found)
+			: base(FormatDescriptionMessage(dataDescription, expected, found))
+		{
 		}
 
 		SignatureMismatchException(long pos, string expected, string found) :
 			base(string.Format(Util.InvariantCultureInfo, kFormat, pos.ToString("X8", Util.InvariantCultureInfo), expected, found))
 		{
 		}
-
 		#region Stream ctors
 		public SignatureMismatchException(Stream s, string expected, string found) :
-			this(s.Position - expected.Length, expected, found)
+			this(GetSignaturePosition(s, expected), expected, found)
 		{
-			Contract.Requires(s != null);
 		}
 		#endregion
 
 		#region EndianReader utils
 		public static void Assert(IO.EndianReader s, string expected, Memory.Strings.StringStorage storage)
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(!string.IsNullOrEmpty(expected));
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentException.ThrowIfNullOrEmpty(expected);
 
 			string signature = s.ReadString(storage, expected.Length);
 			if (signature != expected)
@@ -47,9 +54,9 @@ namespace KSoft.IO
 		}
 		public static void Assert(IO.EndianReader s, string expected, Text.StringStorageEncoding encoding)
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(!string.IsNullOrEmpty(expected));
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentException.ThrowIfNullOrEmpty(expected);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 			string signature = s.ReadString(encoding, expected.Length);
 			if (signature != expected)
