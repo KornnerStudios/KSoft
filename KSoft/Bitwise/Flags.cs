@@ -1,9 +1,5 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Bitwise
 {
@@ -31,7 +27,7 @@ namespace KSoft.Bitwise
 		/// <param name="values">Array of bit values</param>
 		public void Reset(params uint[] values)
 		{
-			Contract.Requires(values != null);
+			ArgumentNullException.ThrowIfNull(values);
 
 			foreach (uint f in values)
 			{
@@ -45,7 +41,7 @@ namespace KSoft.Bitwise
 		/// <param name="value"></param>
 		public static implicit operator uint(Flags32 value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			return value.ToUInt32();
 		}
@@ -57,7 +53,7 @@ namespace KSoft.Bitwise
 		/// <param name="values"></param>
 		public Flags32(params uint[] values)
 		{
-			Contract.Requires(values != null);
+			ArgumentNullException.ThrowIfNull(values);
 
 			Reset(values);
 		}

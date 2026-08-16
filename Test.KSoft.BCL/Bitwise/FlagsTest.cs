@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -108,6 +109,21 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(0b0111UL, u64);
 			Assert.IsFalse(Flags.Modify(false, ref u64, 0b0011));
 			Assert.AreEqual(0b0100UL, u64);
+		}
+
+		[TestMethod]
+		public void Flags32_NullArgumentsThrowExpectedExceptions()
+		{
+			var flags = new Flags32(1U);
+
+			var resetException = Assert.ThrowsExactly<ArgumentNullException>(() => flags.Reset(null!));
+			Assert.AreEqual("values", resetException.ParamName);
+
+			var ctorException = Assert.ThrowsExactly<ArgumentNullException>(() => _ = new Flags32(null!));
+			Assert.AreEqual("values", ctorException.ParamName);
+
+			var castException = Assert.ThrowsExactly<ArgumentNullException>(() => _ = (uint)(Flags32)null!);
+			Assert.AreEqual("value", castException.ParamName);
 		}
 	}
 }
