@@ -267,10 +267,20 @@ namespace KSoft.Test
 			using var sha256 = SHA256.Create();
 			using var tiger = new Security.Cryptography.TigerHash();
 
+			System.Diagnostics.TraceSource traceSource = null!;
+			AssertThrowsArgumentNull(() =>
+				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, new object[] { 1 }), "source");
+			AssertThrowsArgumentNull(() =>
+				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, (object)1), "source");
+			AssertThrowsArgumentNull(() => _ = ((Stream)null!).BytesRemaining(), "s");
+			AssertThrowsArgumentNull(() => _ = ((Stream)null!).BytesRemaining(0), "s");
 			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining());
 			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining(1));
 			AssertThrowsArgumentOutOfRange(() => _ = seekableStream.BytesRemaining(4), "endPosition");
+			AssertThrowsArgumentNull(() => _ = ((Stream)null!).HasPermissions(FileAccess.Read), "s");
 			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.HasPermissions(FileAccess.Read));
+			AssertThrowsArgumentNull(() => _ = ((BinaryReader)null!).PeekByte(), "r");
+			AssertThrowsArgumentOutOfRange(() => _ = (-1L).ToFilePositionHexString(), "filePos");
 
 			AssertThrowsArgumentNull(() => _ = sha256.ComputeHash((Stream)null!, 0, 1), "inputStream");
 			AssertThrowsArgument(() => _ = sha256.ComputeHash(nonSeekableStream, 0, 1), "inputStream");

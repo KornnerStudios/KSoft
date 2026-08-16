@@ -1150,14 +1150,14 @@ namespace KSoft
 		#region Diagnostics
 		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, params object[] data)
 		{
-			Contract.Requires(source != null);
+			ArgumentNullException.ThrowIfNull(source);
 
 			source.TraceData(eventType, TypeExtensions.kNone, data);
 		}
 
 		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, object data)
 		{
-			Contract.Requires(source != null);
+			ArgumentNullException.ThrowIfNull(source);
 
 			source.TraceData(eventType, TypeExtensions.kNone, data);
 		}
@@ -1178,7 +1178,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static long BytesRemaining(this System.IO.Stream s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			if (!s.CanSeek)
 				throw new InvalidOperationException();
 
@@ -1187,7 +1187,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static long BytesRemaining(this System.IO.Stream s, long endPosition)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			if (!s.CanSeek)
 				throw new InvalidOperationException();
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(endPosition, s.Length);
@@ -1197,7 +1197,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool HasPermissions(this System.IO.Stream s, System.IO.FileAccess permissions)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			if (!s.CanSeek)
 				throw new InvalidOperationException();
 			bool result = true;
@@ -1217,7 +1217,7 @@ namespace KSoft
 
 		public static int PeekByte(this System.IO.BinaryReader r)
 		{
-			Contract.Requires(r != null);
+			ArgumentNullException.ThrowIfNull(r);
 
 			if (!r.BaseStream.CanSeek)
 			{
@@ -1238,7 +1238,7 @@ namespace KSoft
 		/// <returns></returns>
 		public static string ToFilePositionHexString(this long filePos)
 		{
-			Contract.Requires(filePos >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(filePos);
 
 			string result;
 
