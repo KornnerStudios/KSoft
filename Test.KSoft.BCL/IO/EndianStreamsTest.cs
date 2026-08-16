@@ -161,6 +161,47 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void ReaderDirectArrayAndTagHelpers_ReturnExpectedBuffers()
+	{
+		using (var reader = new EndianReader(new MemoryStream(new byte[] { 1, 2, 3, 4 }), Shell.EndianFormat.Big))
+		{
+			var byteBuffer = new byte[3];
+			Assert.AreSame(byteBuffer, reader.Read(byteBuffer, 2));
+			CollectionAssert.AreEqual(new byte[] { 1, 2, 0 }, byteBuffer);
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(Encoding.UTF8.GetBytes("abcd")), Shell.EndianFormat.Big))
+		{
+			var charBuffer = new char[3];
+			Assert.AreSame(charBuffer, reader.Read(charBuffer, 2));
+			CollectionAssert.AreEqual(new[] { 'a', 'b', '\0' }, charBuffer);
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(Encoding.ASCII.GetBytes("ABCD1234")), Shell.EndianFormat.Big))
+		{
+			var tag32 = new char[5];
+			Assert.AreSame(tag32, reader.ReadTag32(tag32));
+			CollectionAssert.AreEqual(new[] { 'A', 'B', 'C', 'D', '\0' }, tag32);
+
+			Assert.AreEqual("1234", new string(reader.ReadTag32()));
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(Encoding.ASCII.GetBytes("ABCDEFGH")), Shell.EndianFormat.Big))
+		{
+			var tag64 = reader.ReadTag64();
+			Assert.AreEqual(8, tag64.Length);
+			Assert.AreEqual("ABCDEFGH", new string(tag64));
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(new byte[] { 1, 0 }), Shell.EndianFormat.Big))
+		{
+			var values = new bool[2];
+			Assert.AreSame(values, reader.ReadFixedArray(values));
+			CollectionAssert.AreEqual(new[] { true, false }, values);
+		}
+	}
+
+	[TestMethod]
 	public void EndianStreamFacadeDirectGuards_ThrowExpectedExceptions()
 	{
 		using var writeStream = new MemoryStream();

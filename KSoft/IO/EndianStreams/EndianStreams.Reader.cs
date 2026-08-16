@@ -1,11 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // #TODO fix CA warnings
 #pragma warning disable IDE0011 // Use braces
@@ -120,7 +115,6 @@ namespace KSoft.IO
 		public byte[] Read(byte[] buffer, int count)
 		{
 			Verify.Buffers.CountWithinLength(buffer, count);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			base.Read(buffer, 0, count);
 
@@ -133,7 +127,6 @@ namespace KSoft.IO
 		public byte[] Read(byte[] buffer)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			base.Read(buffer, 0, buffer.Length);
 
@@ -148,7 +141,6 @@ namespace KSoft.IO
 		public char[] Read(char[] buffer, int count)
 		{
 			Verify.Buffers.CountWithinLength(buffer, count);
-			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			base.Read(buffer, 0, count);
 
@@ -161,7 +153,6 @@ namespace KSoft.IO
 		public char[] Read(char[] buffer)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			base.Read(buffer, 0, buffer.Length);
 
@@ -177,8 +168,6 @@ namespace KSoft.IO
 		{
 			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 4, nameof(tag));
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length >= 4);
 
 			tag[0] = (char)base.ReadByte();
 			tag[1] = (char)base.ReadByte();
@@ -199,9 +188,6 @@ namespace KSoft.IO
 		/// <returns>Big-endian ordered tag id</returns>
 		public char[] ReadTag32()
 		{
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length == 4);
-
 			return ReadTag32(new char[4]);
 		}
 
@@ -212,8 +198,6 @@ namespace KSoft.IO
 		{
 			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 8, nameof(tag));
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length >= 8);
 
 			tag[0] = (char)base.ReadByte();
 			tag[1] = (char)base.ReadByte();
@@ -238,9 +222,6 @@ namespace KSoft.IO
 		/// <returns>Big-endian ordered tag id</returns>
 		public char[] ReadTag64()
 		{
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length == 8);
-
 			return ReadTag64(new char[8]);
 		}
 
@@ -505,7 +486,6 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(array);
 			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
 				array[x] = ReadBoolean();
@@ -515,7 +495,6 @@ namespace KSoft.IO
 		public bool[] ReadFixedArray(bool[] array)
 		{
 			ArgumentNullException.ThrowIfNull(array);
-			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			return ReadFixedArray(array, 0, array.Length);
 		}
