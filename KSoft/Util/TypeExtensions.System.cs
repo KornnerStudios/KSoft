@@ -1509,8 +1509,8 @@ namespace KSoft
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
 			ArgumentNullException.ThrowIfNull(src);
-			Contract.Requires/*<ArgumentNullException>*/(keySelector != null);
-			Contract.Requires/*<ArgumentNullException>*/(comparerFunc != null);
+			ArgumentNullException.ThrowIfNull(keySelector);
+			ArgumentNullException.ThrowIfNull(comparerFunc);
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);
 
 			var comparer = Util.CreateComparer(comparerFunc);
@@ -1528,8 +1528,8 @@ namespace KSoft
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
 			ArgumentNullException.ThrowIfNull(src);
-			Contract.Requires/*<ArgumentNullException>*/(keySelector != null);
-			Contract.Requires/*<ArgumentNullException>*/(comparerFunc != null);
+			ArgumentNullException.ThrowIfNull(keySelector);
+			ArgumentNullException.ThrowIfNull(comparerFunc);
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);
 
 			var comparer = Util.CreateComparer(comparerFunc);

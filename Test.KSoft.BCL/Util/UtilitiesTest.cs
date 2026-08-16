@@ -256,7 +256,16 @@ namespace KSoft.Test
 			AssertThrowsArgument(() => typeof(Environment).ForceStaticCtorToRunViaProperty(string.Empty), "staticPropertyName");
 			AssertThrowsArgumentNull(() => _ = ((IEnumerable<string>)null!).OrderBy(v => v, string.CompareOrdinal), "src");
 			AssertThrowsArgumentNull(() =>
+				_ = TypeExtensions.OrderBy<string, string>(["value"], null!, string.CompareOrdinal), "keySelector");
+			AssertThrowsArgumentNull(() =>
+				_ = TypeExtensions.OrderBy<string, string>(["value"], v => v, null!), "comparerFunc");
+			AssertThrowsArgumentNull(() =>
 				_ = ((IEnumerable<string>)null!).OrderByDescending(v => v, string.CompareOrdinal), "src");
+			AssertThrowsArgumentNull(() =>
+				_ = TypeExtensions.OrderByDescending<string, string>(["value"], null!, string.CompareOrdinal),
+				"keySelector");
+			AssertThrowsArgumentNull(() =>
+				_ = TypeExtensions.OrderByDescending<string, string>(["value"], v => v, null!), "comparerFunc");
 		}
 
 		[TestMethod]
