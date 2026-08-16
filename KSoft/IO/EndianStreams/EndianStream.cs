@@ -674,7 +674,7 @@ namespace KSoft.IO
 		public EndianStream StreamValue<T>(ref T value, Func<T> initializer)
 			where T : struct, IO.IEndianStreamable
 		{
-			Contract.Requires(initializer != null);
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			if (IsReading)
 			{
@@ -702,7 +702,7 @@ namespace KSoft.IO
 		public EndianStream StreamObject<T>(T value)
 			where T : class, IO.IEndianStreamable
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 				 if (IsReading) value.Read(Reader);
 			else if (IsWriting) value.Write(Writer);
@@ -712,8 +712,11 @@ namespace KSoft.IO
 		public EndianStream StreamObject<T>(ref T value, Func<T> initializer)
 			where T : class, IO.IEndianStreamable
 		{
-			Contract.Requires(IsReading || value != null);
-			Contract.Requires(initializer != null);
+			if (!IsReading)
+			{
+				ArgumentNullException.ThrowIfNull(value);
+			}
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			if (IsReading)
 			{
@@ -728,7 +731,7 @@ namespace KSoft.IO
 		public EndianStream Stream<T>(T value)
 			where T : class, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			value.Serialize(this);
 
@@ -737,8 +740,11 @@ namespace KSoft.IO
 		public EndianStream Stream<T>(ref T value, Func<T> initializer)
 			where T : class, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(IsReading || value != null);
-			Contract.Requires(initializer != null);
+			if (!IsReading)
+			{
+				ArgumentNullException.ThrowIfNull(value);
+			}
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			if (IsReading)
 				value = initializer();
@@ -754,8 +760,8 @@ namespace KSoft.IO
 
 		public EndianStream StreamValueMethods<T>(ref T value, ReadValueDelegate<T> read, Action<EndianWriter, T> write)
 		{
-			Contract.Requires(read != null);
-			Contract.Requires(write != null);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) read (Reader, out value);
 			else if (IsWriting) write(Writer, value);
@@ -767,9 +773,9 @@ namespace KSoft.IO
 		public EndianStream StreamObjectMethods<T>(T theObj, Action<EndianReader, T> read, Action<EndianWriter, T> write)
 			where T : class
 		{
-			Contract.Requires(theObj != null);
-			Contract.Requires(read != null);
-			Contract.Requires(write != null);
+			ArgumentNullException.ThrowIfNull(theObj);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) read (Reader, theObj);
 			else if (IsWriting) write(Writer, theObj);
@@ -780,8 +786,8 @@ namespace KSoft.IO
 		#region Stream Methods
 		public EndianStream StreamMethods(Action<EndianReader> read, Action<EndianWriter> write)
 		{
-			Contract.Requires(read != null);
-			Contract.Requires(write != null);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) read(Reader);
 			else if (IsWriting) write(Writer);
@@ -791,9 +797,9 @@ namespace KSoft.IO
 		public EndianStream StreamMethods<T>(T context, Action<T, EndianReader> read, Action<T, EndianWriter> write)
 			where T : class
 		{
-			Contract.Requires(context != null);
-			Contract.Requires(read != null);
-			Contract.Requires(write != null);
+			ArgumentNullException.ThrowIfNull(context);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) read(context, Reader);
 			else if (IsWriting) write(context, Writer);

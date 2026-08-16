@@ -14,6 +14,35 @@ public class EndianStreamsTest : BaseTestClass
 		None,
 	}
 
+	struct TestStructStreamable : IEndianStreamable
+	{
+		public void Read(EndianReader s)
+		{
+		}
+
+		public void Write(EndianWriter s)
+		{
+		}
+	}
+
+	sealed class TestClassStreamable : IEndianStreamable
+	{
+		public void Read(EndianReader s)
+		{
+		}
+
+		public void Write(EndianWriter s)
+		{
+		}
+	}
+
+	sealed class TestClassSerializable : IEndianStreamSerializable
+	{
+		public void Serialize(EndianStream s)
+		{
+		}
+	}
+
 	static void AssertThrowsArgumentNull(Action action, string paramName)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
@@ -166,6 +195,77 @@ public class EndianStreamsTest : BaseTestClass
 		AssertThrowsArgumentNull(
 			() => endianStream.StreamSignature("test", (Text.StringStorageEncoding)null!),
 			"encoding");
+	}
+
+	[TestMethod]
+	public void EndianStreamObjectAndDelegateGuards_ThrowExpectedExceptions()
+	{
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream) { BaseStreamOwner = false };
+		using var endianStream = EndianStream.UsingWriter(writer);
+		var structValue = new TestStructStreamable();
+		TestClassStreamable classValue = new();
+		TestClassStreamable nullClassValue = null!;
+		TestClassSerializable serializableValue = new();
+		TestClassSerializable nullSerializableValue = null!;
+		int intValue = 0;
+		var context = new object();
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamValue(ref structValue, (Func<TestStructStreamable>)null!),
+			"initializer");
+		AssertThrowsArgumentNull(() => endianStream.StreamObject((TestClassStreamable)null!), "value");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamObject(ref nullClassValue, () => new TestClassStreamable()),
+			"value");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamObject(ref classValue, (Func<TestClassStreamable>)null!),
+			"initializer");
+		AssertThrowsArgumentNull(() => endianStream.Stream((TestClassSerializable)null!), "value");
+		AssertThrowsArgumentNull(
+			() => endianStream.Stream(ref nullSerializableValue, () => new TestClassSerializable()),
+			"value");
+		AssertThrowsArgumentNull(
+			() => endianStream.Stream(ref serializableValue, (Func<TestClassSerializable>)null!),
+			"initializer");
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamValueMethods(ref intValue, null!, (w, value) => { }),
+			"read");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamValueMethods(ref intValue, (EndianReader r, out int value) => value = 0, null!),
+			"write");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamObjectMethods<object>(null!, (r, value) => { }, (w, value) => { }),
+			"theObj");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamObjectMethods(context, null!, (w, value) => { }),
+			"read");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamObjectMethods(context, (r, value) => { }, null!),
+			"write");
+		AssertThrowsArgumentNull(() => endianStream.StreamMethods(null!, w => { }), "read");
+		AssertThrowsArgumentNull(() => endianStream.StreamMethods(r => { }, null!), "write");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamMethods<object>(null!, (value, r) => { }, (value, w) => { }),
+			"context");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamMethods(context, null!, (value, w) => { }),
+			"read");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamMethods(context, (value, r) => { }, null!),
+			"write");
+
+		using var reader = new EndianReader(new MemoryStream());
+		using var readingEndianStream = EndianStream.UsingReader(reader);
+		TestClassStreamable readClassValue = null!;
+		TestClassSerializable readSerializableValue = null!;
+
+		readingEndianStream.StreamObject(ref readClassValue, () => new TestClassStreamable());
+		readingEndianStream.Stream(ref readSerializableValue, () => new TestClassSerializable());
+
+		Assert.IsNotNull(readClassValue);
+		Assert.IsNotNull(readSerializableValue);
 	}
 
 	[TestMethod]
