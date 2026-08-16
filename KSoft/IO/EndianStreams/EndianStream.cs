@@ -350,7 +350,7 @@ namespace KSoft.IO
 		#region Pad
 		public EndianStream Pad(int byteCount)
 		{
-			Contract.Requires(byteCount > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(byteCount);
 
 				 if (IsReading) Reader.Pad(byteCount);
 			else if (IsWriting) Writer.Pad(byteCount);
@@ -410,12 +410,30 @@ namespace KSoft.IO
 		}
 
 		#region Stream (buffers)
+		static void ValidateBufferRange(Array value, int index, int count)
+		{
+			ArgumentNullException.ThrowIfNull(value);
+			if ((uint)index >= (uint)value.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			if (count > value.Length - index)
+			{
+				throw new ArgumentOutOfRangeException(nameof(count));
+			}
+		}
+
+		static void ValidateBufferCount(Array value, int count)
+		{
+			ArgumentNullException.ThrowIfNull(value);
+			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length);
+		}
+
 		public EndianStream Stream(byte[] value, int index, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(index >= 0 && index < value.Length);
-			Contract.Requires(count >= 0 && count <= value.Length);
-			Contract.Requires((index+count) <= value.Length);
+			ValidateBufferRange(value, index, count);
 
 				 if (IsReading) Reader.Read(value, index, count);
 			else if (IsWriting) Writer.Write(value, index, count);
@@ -424,8 +442,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(byte[] value, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(count >= 0 && count <= value.Length);
+			ValidateBufferCount(value, count);
 
 				 if (IsReading) Reader.Read(value, count);
 			else if (IsWriting) Writer.Write(value, count);
@@ -434,7 +451,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(byte[] value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 				 if (IsReading) Reader.Read(value, value.Length);
 			else if (IsWriting) Writer.Write(value, value.Length);
@@ -443,10 +460,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(char[] value, int index, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(index >= 0 && index < value.Length);
-			Contract.Requires(count >= 0 && count <= value.Length);
-			Contract.Requires((index+count) <= value.Length);
+			ValidateBufferRange(value, index, count);
 
 				 if (IsReading) Reader.Read(value, index, count);
 			else if (IsWriting) Writer.Write(value, index, count);
@@ -455,8 +469,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(char[] value, int count)
 		{
-			Contract.Requires(value != null);
-			Contract.Requires(count >= 0 && count <= value.Length);
+			ValidateBufferCount(value, count);
 
 				 if (IsReading) Reader.Read(value, count);
 			else if (IsWriting) Writer.Write(value, count);
@@ -465,7 +478,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(char[] value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 				 if (IsReading) Reader.Read(value, value.Length);
 			else if (IsWriting) Writer.Write(value, value.Length);
@@ -561,7 +574,7 @@ namespace KSoft.IO
 
 		public EndianStream Stream(ref string value, Text.StringStorageEncoding encoding)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) value = Reader.ReadString(encoding);
 			else if (IsWriting) Writer.Write(value, encoding);
@@ -570,7 +583,7 @@ namespace KSoft.IO
 		}
 		public EndianStream Stream(ref string value, Text.StringStorageEncoding encoding, int length)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) value = Reader.ReadString(encoding, length);
 			else if (IsWriting) Writer.Write(value, encoding);
@@ -638,7 +651,7 @@ namespace KSoft.IO
 		public EndianStream Stream<TEnum>(ref TEnum value, IEnumEndianStreamer<TEnum> implementation)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(implementation != null);
+			ArgumentNullException.ThrowIfNull(implementation);
 
 			implementation.Stream(this, ref value);
 
@@ -972,7 +985,7 @@ namespace KSoft.IO
 		}
 		public EndianStream StreamSignature(string signature, Memory.Strings.StringStorage storage)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(signature));
+			ArgumentException.ThrowIfNullOrEmpty(signature);
 
 				 if (IsReading) SignatureMismatchException.Assert(Reader, signature, storage);
 			else if (IsWriting) Writer.Write(signature, storage);
@@ -981,8 +994,8 @@ namespace KSoft.IO
 		}
 		public EndianStream StreamSignature(string signature, Text.StringStorageEncoding encoding)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(signature));
-			Contract.Requires(encoding != null);
+			ArgumentException.ThrowIfNullOrEmpty(signature);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) SignatureMismatchException.Assert(Reader, signature, encoding);
 			else if (IsWriting) Writer.Write(signature, encoding);

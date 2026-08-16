@@ -21,6 +21,13 @@ public class EndianStreamsTest : BaseTestClass
 		Assert.AreEqual(paramName, exception.ParamName);
 	}
 
+	static void AssertThrowsArgument(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
 	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
@@ -108,6 +115,57 @@ public class EndianStreamsTest : BaseTestClass
 		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
 		AssertThrowsArgumentNull(() => _ = reader.Read<TestEnum>(null!), "implementation");
 		AssertThrowsArgumentNull(() => writer.Write(TestEnum.None, null!), "implementation");
+	}
+
+	[TestMethod]
+	public void EndianStreamFacadeDirectGuards_ThrowExpectedExceptions()
+	{
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream) { BaseStreamOwner = false };
+		using var endianStream = EndianStream.UsingWriter(writer);
+		string text = string.Empty;
+		TestEnum enumValue = TestEnum.None;
+
+		AssertThrowsArgumentOutOfRange(() => endianStream.Pad(0), "byteCount");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Pad(-1), "byteCount");
+
+		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!, 0, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], -1, 0), "index");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 1, 0), "index");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 0, -1), "count");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[2], 1, 2), "count");
+		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 2), "count");
+		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!), "value");
+
+		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!, 0, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], -1, 0), "index");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 1, 0), "index");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 0, -1), "count");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[2], 1, 2), "count");
+		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!, 0), "value");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], -1), "count");
+		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 2), "count");
+		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!), "value");
+
+		AssertThrowsArgumentNull(() => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!), "encoding");
+		AssertThrowsArgumentNull(() => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!, 0), "encoding");
+		AssertThrowsArgumentNull(() => endianStream.Stream(ref enumValue, (IEnumEndianStreamer<TestEnum>)null!),
+			"implementation");
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamSignature(null!, Memory.Strings.StringStorage.CStringAscii),
+			"signature");
+		AssertThrowsArgument(
+			() => endianStream.StreamSignature(string.Empty, Memory.Strings.StringStorage.CStringAscii),
+			"signature");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamSignature(null!, (Text.StringStorageEncoding)null!),
+			"signature");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamSignature("test", (Text.StringStorageEncoding)null!),
+			"encoding");
 	}
 
 	[TestMethod]
