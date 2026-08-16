@@ -55,9 +55,7 @@ namespace KSoft.LowLevel.Util
 		/// <param name="startIndex">Index of the first byte of the object</param>
 		public void FromBuffer(byte[] buffer, int startIndex = 0)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(startIndex < buffer.Length);
-			Contract.Requires((startIndex+kSizeOf) < buffer.Length);
+			ValidateBufferRange(buffer, startIndex);
 
 			Marshal.Copy(buffer, startIndex, mHandle, kSizeOf);
 		}
@@ -68,9 +66,7 @@ namespace KSoft.LowLevel.Util
 		[Contracts.Pure]
 		public void ToBuffer(byte[] buffer, int startIndex = 0)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(startIndex < buffer.Length);
-			Contract.Requires((startIndex+kSizeOf) < buffer.Length);
+			ValidateBufferRange(buffer, startIndex);
 
 			Marshal.Copy(mHandle, buffer, startIndex, kSizeOf);
 		}
@@ -100,6 +96,16 @@ namespace KSoft.LowLevel.Util
 		public T ToValue()
 		{
 			return Unmanaged.IntPtrToStructure<T>(mHandle);
+		}
+
+		static void ValidateBufferRange(byte[] buffer, int startIndex)
+		{
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			if (startIndex > buffer.Length - kSizeOf)
+			{
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
+			}
 		}
 	};
 }

@@ -159,6 +159,35 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
+		public void LowLevel_StructBitManagerBufferRange_HandlesExactFitAndOffset()
+		{
+			byte[] exactBuffer = BitConverter.GetBytes(0x01020304);
+			using var manager = new LowLevel.Util.StructBitManager<int>();
+			manager.FromBuffer(exactBuffer);
+
+			Assert.AreEqual(0x01020304, manager.ToValue());
+
+			byte[] offsetBuffer = new byte[sizeof(int) + 4];
+			manager.ToBuffer(offsetBuffer, 2);
+			CollectionAssert.AreEqual(exactBuffer, offsetBuffer[2..(2 + sizeof(int))]);
+		}
+
+		[TestMethod]
+		public void LowLevel_StructBitManagerInvalidBufferRange_ThrowsExpectedExceptions()
+		{
+			using var manager = new LowLevel.Util.StructBitManager<int>();
+
+			AssertThrowsArgumentNull(() => manager.FromBuffer(null!), "buffer");
+			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int)], -1), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int)], 1), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int) - 1]), "startIndex");
+			AssertThrowsArgumentNull(() => manager.ToBuffer(null!), "buffer");
+			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int)], -1), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int)], 1), "startIndex");
+			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int) - 1]), "startIndex");
+		}
+
+		[TestMethod]
 		public void Util_MinMaxChoiceReferenceGuards_ThrowArgumentNullException()
 		{
 			static int GetLength(string value) => value.Length;
