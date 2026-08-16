@@ -67,33 +67,12 @@ namespace KSoft.Values
 			}
 		}
 
-		static void ValidateTagLength(char[] tag, int expectedLength, string parameterName)
-		{
-			if (tag == null)
-			{
-				throw new ArgumentNullException(parameterName);
-			}
-			if (tag.Length != expectedLength)
-			{
-				throw new ArgumentOutOfRangeException(parameterName, "Tag lengths mismatch");
-			}
-		}
-
-		static void ValidateTagStringLength(string tagString, int expectedLength, string parameterName)
-		{
-			ArgumentException.ThrowIfNullOrEmpty(tagString, parameterName);
-			if (tagString.Length != expectedLength)
-			{
-				throw new ArgumentOutOfRangeException(parameterName, "Tag lengths mismatch");
-			}
-		}
-
 		#region Indexers
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
 		[Contracts.Pure]
 		public string this[char[] tag] { get {
-			ValidateTagLength(tag, NullGroupTag.Tag.Length, nameof(tag));
+			Verify.GroupTags.ExactLength(tag, NullGroupTag.Tag.Length, nameof(tag));
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			foreach (GroupTagData t in BaseGroupTags)
@@ -115,7 +94,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndexByTag(char[] groupTag)
 		{
-			ValidateTagLength(groupTag, NullGroupTag.Tag.Length, nameof(groupTag));
+			Verify.GroupTags.ExactLength(groupTag, NullGroupTag.Tag.Length, nameof(groupTag));
 
 			return BaseGroupTags.FindIndex(gt => gt.Test(groupTag));
 		}
@@ -125,7 +104,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndexByTag(string tagString)
 		{
-			ValidateTagStringLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
+			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
 
 			return BaseGroupTags.FindIndex(gt => gt.TagString == tagString);
 		}
@@ -174,7 +153,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public GroupTagData FindGroupByTag(string tagString)
 		{
-			ValidateTagStringLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
+			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
 
 			int index = FindGroupIndexByTag(tagString);
 			if (index.IsNone())
