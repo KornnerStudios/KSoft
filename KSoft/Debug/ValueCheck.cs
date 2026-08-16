@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Debug
 {
@@ -13,7 +9,7 @@ namespace KSoft.Debug
 		public static void AreEqual<T>(string description, T expected, T actual,
 			string expectedDisplayValue = null, string actualDisplayValue = null)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(description));
+			ArgumentException.ThrowIfNullOrEmpty(description);
 
 			if (!EqualityComparer<T>.Default.Equals(expected, actual))
 			{
@@ -34,7 +30,7 @@ namespace KSoft.Debug
 
 		public static void IsLessThanEqualTo(string description, int expectedMax, int actualMax)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(description));
+			ArgumentException.ThrowIfNullOrEmpty(description);
 
 			if (actualMax > expectedMax)
 			{
@@ -46,7 +42,7 @@ namespace KSoft.Debug
 
 		public static void IsGreaterThanEqualTo(string description, int expectedMin, int actualMin)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(description));
+			ArgumentException.ThrowIfNullOrEmpty(description);
 
 			if (actualMin < expectedMin)
 			{
@@ -58,9 +54,9 @@ namespace KSoft.Debug
 
 		public static void IsDistinct<T>(string description, string valueName, IEnumerable<T> seq)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(description));
-			Contract.Requires(!string.IsNullOrEmpty(valueName));
-			Contract.Requires(seq != null);
+			ArgumentException.ThrowIfNullOrEmpty(description);
+			ArgumentException.ThrowIfNullOrEmpty(valueName);
+			ArgumentNullException.ThrowIfNull(seq);
 
 			if (seq.ContainsDuplicates())
 			{
