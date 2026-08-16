@@ -1727,13 +1727,21 @@ namespace KSoft
 			on_coll_changed(list, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1));
 		}
 
+		static List<T> GetObservableItemsList<T>(ObservableCollection<T> list)
+		{
+			ArgumentNullException.ThrowIfNull(list);
+			if (!list.ItemsIsGenericList())
+			{
+				throw new InvalidOperationException();
+			}
+
+			return (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+		}
+
 		public static void AddRange<T>(this ObservableCollection<T> list, IEnumerable<T> collection)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(collection != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
+			ArgumentNullException.ThrowIfNull(collection);
 
 			items.AddRange(collection);
 			list.TriggerAllItemsChanged();
@@ -1741,20 +1749,14 @@ namespace KSoft
 
 		public static int BinarySearch<T>(this ObservableCollection<T> list, T value, IComparer<T> comparer)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
 
 			return items.BinarySearch(value, comparer);
 		}
 
 		public static void Sort<T>(this ObservableCollection<T> list)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
 
 			items.Sort();
 			list.TriggerAllItemsChanged();
@@ -1762,10 +1764,7 @@ namespace KSoft
 
 		public static void Sort<T>(this ObservableCollection<T> list, IComparer<T> comparer)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
 
 			items.Sort(comparer);
 			list.TriggerAllItemsChanged();
@@ -1773,10 +1772,7 @@ namespace KSoft
 
 		public static void Sort<T>(this ObservableCollection<T> list, Comparison<T> comparison)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
 
 			items.Sort(comparison);
 			list.TriggerAllItemsChanged();
@@ -1784,10 +1780,7 @@ namespace KSoft
 
 		public static void Reverse<T>(this ObservableCollection<T> list)
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(list.ItemsIsGenericList());
-
-			var items = (List<T>)ObservableCollectionHacks<T>.GetItems(list);
+			var items = GetObservableItemsList(list);
 
 			items.Reverse();
 			list.TriggerAllItemsChanged();

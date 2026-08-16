@@ -359,5 +359,32 @@ namespace KSoft.Test
 			AssertThrowsArgumentNull(() =>
 				_ = eventToTrigger.SafeTrigger<EventArgs, int>(this, EventArgs.Empty, null!), "retrieveDataFunction");
 		}
+
+		[TestMethod]
+		public void TypeExtensions_ObservableCollectionGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull(() => TypeExtensions.AddRange<int>(null!, [1]), "list");
+			AssertThrowsArgumentNull(() => new ObservableCollection<int>().AddRange(null!), "collection");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.BinarySearch<int>(null!, 1, null), "list");
+			AssertThrowsArgumentNull(() => TypeExtensions.Sort<int>(null!), "list");
+			AssertThrowsArgumentNull(() =>
+				TypeExtensions.Sort<int>(null!, Comparer<int>.Default), "list");
+			AssertThrowsArgumentNull(() =>
+				TypeExtensions.Sort<int>(null!, (x, y) => x.CompareTo(y)), "list");
+			AssertThrowsArgumentNull(() => TypeExtensions.Reverse<int>(null!), "list");
+
+			var collection = new ObservableCollection<int> { 3, 1 };
+			collection.AddRange([2]);
+			CollectionAssert.AreEqual(new List<int> { 3, 1, 2 }, new List<int>(collection));
+
+			collection.Sort();
+			CollectionAssert.AreEqual(new List<int> { 1, 2, 3 }, new List<int>(collection));
+			Assert.AreEqual(1, collection.BinarySearch(2, Comparer<int>.Default));
+
+			collection.Sort((x, y) => y.CompareTo(x));
+			CollectionAssert.AreEqual(new List<int> { 3, 2, 1 }, new List<int>(collection));
+			collection.Reverse();
+			CollectionAssert.AreEqual(new List<int> { 1, 2, 3 }, new List<int>(collection));
+		}
 	};
 }
