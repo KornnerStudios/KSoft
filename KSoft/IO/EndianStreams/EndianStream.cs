@@ -834,7 +834,7 @@ namespace KSoft.IO
 		public EndianStream StreamArray<T>(T[] values)
 			where T : struct, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(values != null);
+			ArgumentNullException.ThrowIfNull(values);
 
 			for (int x = 0; x < values.Length; x++)
 				Stream(ref values[x]);
@@ -845,7 +845,10 @@ namespace KSoft.IO
 		public EndianStream StreamArrayInt32<T>(ref T[] values)
 			where T : struct, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(IsReading || values != null);
+			if (!IsReading)
+			{
+				ArgumentNullException.ThrowIfNull(values);
+			}
 
 			bool reading = IsReading;
 
@@ -862,8 +865,11 @@ namespace KSoft.IO
 		public EndianStream StreamArrayInt32<T>(ref T[] values, StreamArrayValueDelegate<T> streamFunc)
 			where T : struct
 		{
-			Contract.Requires(IsReading || values != null);
-			Contract.Requires(streamFunc != null);
+			if (!IsReading)
+			{
+				ArgumentNullException.ThrowIfNull(values);
+			}
+			ArgumentNullException.ThrowIfNull(streamFunc);
 
 			bool reading = IsReading;
 
@@ -883,8 +889,8 @@ namespace KSoft.IO
 		public EndianStream StreamArray<T>(T[] values, Func<T> initializer)
 			where T : class, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(values != null);
-			Contract.Requires(initializer != null);
+			ArgumentNullException.ThrowIfNull(values);
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			for (int x = 0; x < values.Length; x++)
 				Stream(ref values[x], initializer);
@@ -895,8 +901,11 @@ namespace KSoft.IO
 		public EndianStream StreamArrayInt32<T>(ref T[] values, Func<T> initializer)
 			where T : class, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(IsReading || values != null);
-			Contract.Requires(initializer != null);
+			if (!IsReading)
+			{
+				ArgumentNullException.ThrowIfNull(values);
+			}
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			bool reading = IsReading;
 
@@ -918,9 +927,9 @@ namespace KSoft.IO
 
 		public EndianStream StreamArrayMethods<T>(ref T[] array, ReadArrayDelegate<T> read, WriteArrayDelegate<T> write)
 		{
-			Contract.Requires(array != null);
-			Contract.Requires(read != null);
-			Contract.Requires(write != null);
+			ArgumentNullException.ThrowIfNull(array);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) read (Reader, ref array);
 			else if (IsWriting) write(Writer, array);
@@ -933,8 +942,8 @@ namespace KSoft.IO
 		public EndianStream StreamListElementsWithClear<T>(IList<T> values, int readCount, Func<T> initializer)
 			where T : class, IO.IEndianStreamSerializable
 		{
-			Contract.Requires(values != null);
-			Contract.Requires(initializer != null);
+			ArgumentNullException.ThrowIfNull(values);
+			ArgumentNullException.ThrowIfNull(initializer);
 			Contract.Ensures(values.Count == readCount);
 
 			bool reading = IsReading;

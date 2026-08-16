@@ -25,6 +25,13 @@ public class EndianStreamsTest : BaseTestClass
 		}
 	}
 
+	struct TestStructSerializable : IEndianStreamSerializable
+	{
+		public void Serialize(EndianStream s)
+		{
+		}
+	}
+
 	sealed class TestClassStreamable : IEndianStreamable
 	{
 		public void Read(EndianReader s)
@@ -62,6 +69,11 @@ public class EndianStreamsTest : BaseTestClass
 		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
 
 		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
+	static EndianStream UnusedStreamArrayValue(ref TestStructSerializable value)
+	{
+		throw new InvalidOperationException("The zero-count test path should not invoke the stream delegate.");
 	}
 
 	[TestMethod]
@@ -266,6 +278,122 @@ public class EndianStreamsTest : BaseTestClass
 
 		Assert.IsNotNull(readClassValue);
 		Assert.IsNotNull(readSerializableValue);
+	}
+
+	[TestMethod]
+	public void EndianStreamArrayAndListGuards_ThrowExpectedExceptions()
+	{
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream) { BaseStreamOwner = false };
+		using var endianStream = EndianStream.UsingWriter(writer);
+		TestStructSerializable[] structValues = new TestStructSerializable[1];
+		TestStructSerializable[] nullStructValues = null!;
+		TestClassSerializable[] classValues = [new TestClassSerializable()];
+		TestClassSerializable[] nullClassValues = null!;
+		var listValues = new List<TestClassSerializable>();
+		EndianStream.StreamArrayValueDelegate<TestStructSerializable> nullStreamFunc = null!;
+		EndianStream.ReadArrayDelegate<TestStructSerializable> readArray = (EndianReader r,
+			ref TestStructSerializable[] value) => { };
+		EndianStream.WriteArrayDelegate<TestStructSerializable> writeArray = (EndianWriter w,
+			TestStructSerializable[] value) => { };
+
+		AssertThrowsArgumentNull(() => endianStream.StreamArray((TestStructSerializable[])null!), "values");
+		AssertThrowsArgumentNull(() => endianStream.StreamArrayInt32(ref nullStructValues), "values");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayInt32(ref nullStructValues, UnusedStreamArrayValue),
+			"values");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayInt32(ref structValues, nullStreamFunc),
+			"streamFunc");
+		Assert.AreEqual(0L, writeStream.Length);
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArray((TestClassSerializable[])null!, () => new TestClassSerializable()),
+			"values");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArray(classValues, (Func<TestClassSerializable>)null!),
+			"initializer");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayInt32(ref nullClassValues, () => new TestClassSerializable()),
+			"values");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayInt32(ref classValues, (Func<TestClassSerializable>)null!),
+			"initializer");
+		Assert.AreEqual(0L, writeStream.Length);
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayMethods(
+				ref nullStructValues,
+				readArray,
+				writeArray),
+			"array");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayMethods(
+				ref structValues,
+				(EndianStream.ReadArrayDelegate<TestStructSerializable>)null!,
+				writeArray),
+			"read");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamArrayMethods(
+				ref structValues,
+				readArray,
+				(EndianStream.WriteArrayDelegate<TestStructSerializable>)null!),
+			"write");
+
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamListElementsWithClear<TestClassSerializable>(
+				null!,
+				0,
+				() => new TestClassSerializable()),
+			"values");
+		AssertThrowsArgumentNull(
+			() => endianStream.StreamListElementsWithClear(
+				listValues,
+				0,
+				(Func<TestClassSerializable>)null!),
+			"initializer");
+	}
+
+	[TestMethod]
+	public void EndianStreamArrayInt32ReadAllowsNullArraysWithValidInitializersTest()
+	{
+		static byte[] CreateZeroCountBytes()
+		{
+			return new byte[] { 0, 0, 0, 0 };
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(CreateZeroCountBytes()), Shell.EndianFormat.Big))
+		using (var endianStream = EndianStream.UsingReader(reader))
+		{
+			TestStructSerializable[] values = null!;
+
+			endianStream.StreamArrayInt32(ref values);
+
+			Assert.IsNotNull(values);
+			Assert.AreEqual(0, values.Length);
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(CreateZeroCountBytes()), Shell.EndianFormat.Big))
+		using (var endianStream = EndianStream.UsingReader(reader))
+		{
+			TestStructSerializable[] values = null!;
+
+			endianStream.StreamArrayInt32(ref values, UnusedStreamArrayValue);
+
+			Assert.IsNotNull(values);
+			Assert.AreEqual(0, values.Length);
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(CreateZeroCountBytes()), Shell.EndianFormat.Big))
+		using (var endianStream = EndianStream.UsingReader(reader))
+		{
+			TestClassSerializable[] values = null!;
+
+			endianStream.StreamArrayInt32(ref values, () => new TestClassSerializable());
+
+			Assert.IsNotNull(values);
+			Assert.AreEqual(0, values.Length);
+		}
 	}
 
 	[TestMethod]
