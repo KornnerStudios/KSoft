@@ -108,6 +108,23 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
+		public void TypeExtensions_StreamBookmarkGuards_ThrowExpectedExceptions()
+		{
+			using var stream = new IO.EndianStream(new MemoryStream());
+
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.NullOr<string, int>("value", null!), "func");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterStreamModeBookmark(null!, FileAccess.Read), "stream");
+			AssertThrowsInvalidOperation(() => _ = TypeExtensions.EnterStreamModeBookmark(stream, FileAccess.Read));
+
+			stream.StreamMode = FileAccess.Read;
+			AssertThrowsArgument(() => _ = TypeExtensions.EnterStreamModeBookmark(stream, 0), "newMode");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamOwnerBookmark(null!, null), "stream");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamUserDataBookmark(null!, null), "stream");
+			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamModeBookmark(null!, FileAccess.Read), "stream");
+			AssertThrowsArgument(() => _ = new IO.IKSoftStreamModeBookmark(stream, 0), "newMode");
+		}
+
+		[TestMethod]
 		public void TypeExtensions_FromEncodingNull_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull(() => _ = TypeExtensions.FromEncoding(null), "enc");

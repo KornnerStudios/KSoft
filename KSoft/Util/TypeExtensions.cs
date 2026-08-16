@@ -68,7 +68,7 @@ namespace KSoft
 		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default)
 			where T : class
 		{
-			Contract.Requires/*<ArgumentNullException>*/(func != null);
+			ArgumentNullException.ThrowIfNull(func);
 
 			return theObj != null ? func(theObj) : elseValue;
 		}
@@ -136,8 +136,15 @@ namespace KSoft
 		public static IO.IKSoftStreamModeBookmark EnterStreamModeBookmark(IO.IKSoftStreamModeable stream,
 			System.IO.FileAccess newMode)
 		{
-			Contract.Requires(stream.StreamMode != 0, "Current mode is unset!");
-			Contract.Requires(newMode != 0, "New mode is unset!");
+			ArgumentNullException.ThrowIfNull(stream);
+			if (stream.StreamMode == 0)
+			{
+				throw new InvalidOperationException("Current mode is unset!");
+			}
+			if (newMode == 0)
+			{
+				throw new ArgumentException("New mode is unset!", nameof(newMode));
+			}
 
 			return new IO.IKSoftStreamModeBookmark(stream, newMode);
 		}

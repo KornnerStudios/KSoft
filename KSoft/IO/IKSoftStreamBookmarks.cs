@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -19,7 +14,7 @@ namespace KSoft.IO
 		/// <param name="newOwner"></param>
 		public IKSoftStreamOwnerBookmark(IKSoftStream stream, object newOwner)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			mOldOwner = (mStream = stream).Owner;
 			mStream.Owner = newOwner;
@@ -47,7 +42,7 @@ namespace KSoft.IO
 		/// <param name="newUserData"></param>
 		public IKSoftStreamUserDataBookmark(IKSoftStream stream, object newUserData)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			mOldUserData = (mStream = stream).UserData;
 			mStream.UserData = newUserData;
@@ -75,8 +70,11 @@ namespace KSoft.IO
 		/// <param name="newMode"></param>
 		public IKSoftStreamModeBookmark(IKSoftStreamModeable stream, FileAccess newMode)
 		{
-			Contract.Requires(stream != null);
-			Contract.Requires(newMode != 0, "New mode is unset!");
+			ArgumentNullException.ThrowIfNull(stream);
+			if (newMode == 0)
+			{
+				throw new ArgumentException("New mode is unset!", nameof(newMode));
+			}
 
 			mOldMode = (mStream = stream).StreamMode;
 			mStream.StreamMode = newMode;
