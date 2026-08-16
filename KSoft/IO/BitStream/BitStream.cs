@@ -138,7 +138,10 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(baseStream);
 			if (baseStream.CanSeek)
 				ArgumentOutOfRangeException.ThrowIfGreaterThan(endPos, baseStream.Length);
-			Contract.Requires(permissions != 0);
+			if (permissions == 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(permissions));
+			}
 			ArgumentNullException.ThrowIfNull(streamName);
 
 			StreamPermissions = permissions;
@@ -238,7 +241,7 @@ namespace KSoft.IO
 		#region DateTime
 		public DateTime ReadDateTime(int bitCount = Bits.kInt64BitCount)
 		{
-			Contract.Requires(bitCount <= Bits.kInt64BitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
 
 			Read(out long time64, bitCount);
 
@@ -246,13 +249,13 @@ namespace KSoft.IO
 		}
 		public void Read(out DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			Contract.Requires(bitCount <= Bits.kInt64BitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
 
 			value = ReadDateTime(bitCount);
 		}
 		public void Write(DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			Contract.Requires(bitCount <= Bits.kInt64BitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
 
 			long time64 = Util.ConvertDateTimeToUnixTime(value);
 
@@ -260,7 +263,7 @@ namespace KSoft.IO
 		}
 		public BitStream Stream(ref DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			Contract.Requires(bitCount <= Bits.kInt64BitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
 
 				 if (IsReading) { value = ReadDateTime(bitCount); }
 			else if (IsWriting) { Write(value, bitCount); }
@@ -316,7 +319,7 @@ namespace KSoft.IO
 		public string ReadString(Text.StringStorageEncoding encoding, int length = TypeExtensions.kNone,
 			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 			ValidateStringStorageForStreaming(encoding.Storage, length);
 
 			return encoding.ReadString(this, length, maxLength, prefixBitLength);
@@ -340,7 +343,7 @@ namespace KSoft.IO
 		public void Write(string value, Text.StringStorageEncoding encoding,
 			int maxLength = TypeExtensions.kNone/*, int prefixBitLength = TypeExtensions.kNone*/)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 			encoding.WriteString(this, value ?? string.Empty, maxLength,
 				prefixBitLength: TypeExtensions.kNone);
@@ -367,7 +370,7 @@ namespace KSoft.IO
 		public BitStream Stream(ref string value, Text.StringStorageEncoding encoding,
 			int maxLength = TypeExtensions.kNone)
 		{
-			Contract.Requires(encoding != null);
+			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) { value = ReadString(encoding, maxLength: maxLength); }
 			else if (IsWriting) { Write(value, encoding, maxLength: maxLength); }
@@ -383,7 +386,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			Contract.Requires(bitCount <= Bits.kByteBitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount && count >= kWordByteCount)
 			{
@@ -410,7 +413,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			Contract.Requires(bitCount <= Bits.kByteBitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount)
 			{
@@ -433,7 +436,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			Contract.Requires(bitCount <= Bits.kByteBitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
 
 				 if (IsReading) { Read( buffer, index, count, bitCount); }
 			else if (IsWriting) { Write(buffer, index, count, bitCount); }
@@ -458,7 +461,7 @@ namespace KSoft.IO
 		public byte[] Read(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			Contract.Requires(bitCount <= Bits.kByteBitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (buffer.Length > 0)
@@ -471,7 +474,7 @@ namespace KSoft.IO
 		public void Write(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			Contract.Requires(bitCount <= Bits.kByteBitCount);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
 
 			if (buffer.Length > 0)
 			{

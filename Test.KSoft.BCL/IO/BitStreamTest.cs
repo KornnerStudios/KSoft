@@ -171,6 +171,9 @@ namespace KSoft.IO.Test
 		{
 			AssertThrowsArgumentNull("baseStream", () => _ = new IO.BitStream(null!));
 			AssertThrowsArgumentOutOfRange("endPos", () => _ = new IO.BitStream(new MemoryStream(new byte[1]), endPos: 2));
+			AssertThrowsArgumentOutOfRange(
+				"permissions",
+				() => _ = new IO.BitStream(new MemoryStream(), permissions: 0));
 			AssertThrowsArgumentNull("streamName", () => _ = new IO.BitStream(new MemoryStream(), streamName: null!));
 		}
 
@@ -193,20 +196,58 @@ namespace KSoft.IO.Test
 			AssertThrowsArgumentOutOfRange("index", () => bitStream.Read(new byte[1], -1, 0));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 0, -1));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 1, 1));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Read(new byte[1], 0, 1, Bits.kByteBitCount + 1));
 
 			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!, 0, 0));
 			AssertThrowsArgumentOutOfRange("index", () => bitStream.Write(new byte[1], -1, 0));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 0, -1));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 1, 1));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Write(new byte[1], 0, 1, Bits.kByteBitCount + 1));
 
 			AssertThrowsArgumentNull("buffer", () => bitStream.Stream(null!, 0, 0));
 			AssertThrowsArgumentOutOfRange("index", () => bitStream.Stream(new byte[1], -1, 0));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 0, -1));
 			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 1, 1));
+			AssertThrowsArgumentOutOfRange("bitCount",
+				() => bitStream.Stream(new byte[1], 0, 1, Bits.kByteBitCount + 1));
 
 			AssertThrowsArgumentOutOfRange("byteCount", () => _ = bitStream.ReadBytes(-1));
 			AssertThrowsArgumentNull("buffer", () => _ = bitStream.Read(null!));
+			AssertThrowsArgumentOutOfRange("bitCount", () => _ = bitStream.Read(new byte[1], Bits.kByteBitCount + 1));
 			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!));
+			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Write(new byte[1], Bits.kByteBitCount + 1));
+		}
+
+		[TestMethod]
+		public void DateTimeAndStringMethods_InvalidArgumentsThrowExpectedExceptionsTest()
+		{
+			using var stream = new MemoryStream(new byte[sizeof(long)]);
+			using var bitStream = new IO.BitStream(stream, FileAccess.ReadWrite);
+			var dateTime = DateTime.UnixEpoch;
+			string text = string.Empty;
+
+			AssertThrowsArgumentOutOfRange(
+				"bitCount",
+				() => _ = bitStream.ReadDateTime(Bits.kInt64BitCount + 1));
+			AssertThrowsArgumentOutOfRange(
+				"bitCount",
+				() => bitStream.Read(out dateTime, Bits.kInt64BitCount + 1));
+			AssertThrowsArgumentOutOfRange(
+				"bitCount",
+				() => bitStream.Write(dateTime, Bits.kInt64BitCount + 1));
+			AssertThrowsArgumentOutOfRange(
+				"bitCount",
+				() => bitStream.Stream(ref dateTime, Bits.kInt64BitCount + 1));
+
+			AssertThrowsArgumentNull(
+				"encoding",
+				() => _ = bitStream.ReadString((Text.StringStorageEncoding)null!));
+			AssertThrowsArgumentNull(
+				"encoding",
+				() => bitStream.Write(text, (Text.StringStorageEncoding)null!));
+			AssertThrowsArgumentNull(
+				"encoding",
+				() => bitStream.Stream(ref text, (Text.StringStorageEncoding)null!));
 		}
 
 		[TestMethod]
