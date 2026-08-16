@@ -650,8 +650,10 @@ namespace KSoft
 		public static bool EqualsArray<T>(this T[] lhs, T[] rhs, int lhsOffset = 0)
 			where T : IEquatable<T>
 		{
-			Contract.Requires(lhs != null && rhs != null);
-			Contract.Requires(lhsOffset < lhs.Length);
+			ArgumentNullException.ThrowIfNull(lhs);
+			ArgumentNullException.ThrowIfNull(rhs);
+			ArgumentOutOfRangeException.ThrowIfNegative(lhsOffset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(lhsOffset, lhs.Length);
 
 			if (lhs == rhs)
 			{
@@ -662,9 +664,9 @@ namespace KSoft
 				return false;
 			}
 
-			for (int x = lhsOffset; x < (lhs.Length-lhsOffset); x++)
+			for (int x = lhsOffset, y = 0; x < lhs.Length; x++, y++)
 			{
-				if (!rhs[x].Equals(lhs[x]))
+				if (!rhs[y].Equals(lhs[x]))
 				{
 					return false;
 				}
@@ -994,8 +996,10 @@ namespace KSoft
 		public static bool EqualsList<T>(this IList<T> lhs, IList<T> rhs, int lhsOffset = 0)
 			where T : IEquatable<T>
 		{
-			Contract.Requires(lhs != null && rhs != null);
-			Contract.Requires(lhsOffset < lhs.Count);
+			ArgumentNullException.ThrowIfNull(lhs);
+			ArgumentNullException.ThrowIfNull(rhs);
+			ArgumentOutOfRangeException.ThrowIfNegative(lhsOffset);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(lhsOffset, lhs.Count);
 
 			if (lhs == rhs)
 			{
@@ -1006,9 +1010,9 @@ namespace KSoft
 				return false;
 			}
 
-			for (int x = lhsOffset; x < (lhs.Count - lhsOffset); x++)
+			for (int x = lhsOffset, y = 0; x < lhs.Count; x++, y++)
 			{
-				if (!rhs[x].Equals(lhs[x]))
+				if (!rhs[y].Equals(lhs[x]))
 				{
 					return false;
 				}

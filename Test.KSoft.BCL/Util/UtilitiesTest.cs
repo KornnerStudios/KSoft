@@ -232,6 +232,20 @@ namespace KSoft.Test
 			AssertThrowsArgumentNull(() => _ = ((EquatableDefault[])null!).EqualsDefault(), "array");
 			AssertThrowsArgumentNull(() => _ = new List<int>().ConvertAllArray<int, int>(null!), "converter");
 			Assert.IsNull(TypeExtensions.ConvertAllArray<int, int>(null!, value => value));
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsArray<int>(null!, [1]), "lhs");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsArray<int>([1], null!), "rhs");
+			AssertThrowsArgumentOutOfRange(() => _ = new[] { 1 }.EqualsArray([1], -1), "lhsOffset");
+			AssertThrowsArgumentOutOfRange(() => _ = new[] { 1 }.EqualsArray([1], 1), "lhsOffset");
+			Assert.IsTrue(new[] { 0, 1, 2 }.EqualsArray([1, 2], 1));
+			Assert.IsFalse(new[] { 0, 1, 2 }.EqualsArray([9, 2], 1));
+			Assert.IsFalse(new[] { 0, 1, 2 }.EqualsArray([1], 1));
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsList<int>(null!, [1]), "lhs");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsList<int>([1], null!), "rhs");
+			AssertThrowsArgumentOutOfRange(() => _ = new List<int> { 1 }.EqualsList([1], -1), "lhsOffset");
+			AssertThrowsArgumentOutOfRange(() => _ = new List<int> { 1 }.EqualsList([1], 1), "lhsOffset");
+			Assert.IsTrue(new List<int> { 0, 1, 2 }.EqualsList([1, 2], 1));
+			Assert.IsFalse(new List<int> { 0, 1, 2 }.EqualsList([9, 2], 1));
+			Assert.IsFalse(new List<int> { 0, 1, 2 }.EqualsList([1], 1));
 
 			AssertThrowsArgumentNull(() => _ = ((int[])null!).TrueForAny(_ => true), "array");
 			AssertThrowsArgumentNull(() => _ = new[] { 1 }.TrueForAny(null!), "match");
