@@ -111,7 +111,7 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name)
 		{
-			ValidateGroupTagPair(maj, min, name);
+			Verify.GroupTags.CompositePair(maj, min, name);
 			if (name == kNullGroupName)
 			{
 				throw new ArgumentException("Name reserved for null group tags", nameof(name));
@@ -131,21 +131,6 @@ namespace KSoft.Values
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : this(maj, min, name)
 		{
 			Uuid = uuid;
-		}
-
-		static void ValidateGroupTagPair(GroupTagData32 maj, GroupTagData32 min, string name)
-		{
-			ArgumentNullException.ThrowIfNull(maj);
-			ArgumentNullException.ThrowIfNull(min);
-			ArgumentException.ThrowIfNullOrEmpty(name);
-			if (maj == GroupTagData32.Null)
-			{
-				throw new ArgumentException("Major group tag must not be the null group tag.", nameof(maj));
-			}
-			if (min == GroupTagData32.Null)
-			{
-				throw new ArgumentException("Minor group tag must not be the null group tag.", nameof(min));
-			}
 		}
 		#endregion
 

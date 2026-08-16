@@ -1,4 +1,5 @@
 ﻿using System;
+using KSoft.Values;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Test;
@@ -68,5 +69,33 @@ public class VerifyGroupTagsTest : BaseTestClass
 			Verify.GroupTags.NameAndExactLength(groupTag, "Name", 4));
 
 		Verify.GroupTags.NameAndExactLength("test", "Name", 4);
+	}
+
+	[TestMethod]
+	public void CompositePair_ThrowsExpectedExceptions()
+	{
+		GroupTagData32 maj = null!;
+		GroupTagData32 min = null!;
+		string name = null!;
+		var validMajor = new GroupTagData32("majo", "Major");
+		var validMinor = new GroupTagData32("mino", "Minor");
+
+		AssertThrowsArgumentNull(nameof(maj), () =>
+			Verify.GroupTags.CompositePair(maj, validMinor, "Name"));
+		AssertThrowsArgumentNull(nameof(min), () =>
+			Verify.GroupTags.CompositePair(validMajor, min, "Name"));
+		AssertThrowsArgumentNull(nameof(name), () =>
+			Verify.GroupTags.CompositePair(validMajor, validMinor, name));
+		name = string.Empty;
+		AssertThrowsArgument(nameof(name), () =>
+			Verify.GroupTags.CompositePair(validMajor, validMinor, name));
+		maj = GroupTagData32.Null;
+		AssertThrowsArgument(nameof(maj), () =>
+			Verify.GroupTags.CompositePair(maj, validMinor, "Name"));
+		min = GroupTagData32.Null;
+		AssertThrowsArgument(nameof(min), () =>
+			Verify.GroupTags.CompositePair(validMajor, min, "Name"));
+
+		Verify.GroupTags.CompositePair(validMajor, validMinor, "Name");
 	}
 }

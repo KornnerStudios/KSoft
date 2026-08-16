@@ -74,4 +74,35 @@ public static class GroupTags
 			throw new ArgumentOutOfRangeException(groupTagParamName);
 		}
 	}
+
+	/// <summary>Verifies a major/minor group-tag pair and display name for composite tag construction.</summary>
+	/// <param name="major">The major group tag to validate.</param>
+	/// <param name="minor">The minor group tag to validate.</param>
+	/// <param name="name">The composite group-tag display name to validate.</param>
+	/// <param name="majorParamName">The parameter name to report when <paramref name="major"/> fails.</param>
+	/// <param name="minorParamName">The parameter name to report when <paramref name="minor"/> fails.</param>
+	/// <param name="nameParamName">The parameter name to report when <paramref name="name"/> fails.</param>
+	/// <exception cref="ArgumentNullException">
+	/// <paramref name="major"/>, <paramref name="minor"/>, or <paramref name="name"/> is null.
+	/// </exception>
+	/// <exception cref="ArgumentException">
+	/// <paramref name="name"/> is empty, or <paramref name="major"/> or <paramref name="minor"/> is the null group tag.
+	/// </exception>
+	public static void CompositePair(Values.GroupTagData32? major, Values.GroupTagData32? minor, string? name,
+		[CallerArgumentExpression(nameof(major))] string? majorParamName = null,
+		[CallerArgumentExpression(nameof(minor))] string? minorParamName = null,
+		[CallerArgumentExpression(nameof(name))] string? nameParamName = null)
+	{
+		ArgumentNullException.ThrowIfNull(major, majorParamName);
+		ArgumentNullException.ThrowIfNull(minor, minorParamName);
+		ArgumentException.ThrowIfNullOrEmpty(name, nameParamName);
+		if (major == Values.GroupTagData32.Null)
+		{
+			throw new ArgumentException("Major group tag must not be the null group tag.", majorParamName);
+		}
+		if (minor == Values.GroupTagData32.Null)
+		{
+			throw new ArgumentException("Minor group tag must not be the null group tag.", minorParamName);
+		}
+	}
 }
