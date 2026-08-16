@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using TagWord = System.UInt64;
 
@@ -165,9 +160,6 @@ namespace KSoft.Values
 			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length == kExpectedTagLength);
-
 #pragma warning disable IDE0300 // Simplify collection initialization
 			char[] swap = new char[8];
 #pragma warning restore IDE0300 // Simplify collection initialization
@@ -290,9 +282,6 @@ namespace KSoft.Values
 			{
 				throw new ArgumentOutOfRangeException(nameof(tag));
 			}
-
-			Contract.Ensures(Contract.Result<char[]>() != null);
-			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);
 
 			if (tag == null)
 			{

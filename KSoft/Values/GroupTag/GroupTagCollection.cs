@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Values
 {
@@ -73,7 +68,6 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public string this[char[] tag] { get {
 			Verify.GroupTags.ExactLength(tag, NullGroupTag.Tag.Length, nameof(tag));
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			foreach (GroupTagData t in BaseGroupTags)
 			{
@@ -229,14 +223,10 @@ namespace KSoft.Values
 		protected GroupTagCollectionContract() : base(null) => throw new NotImplementedException();
 
 		protected override GroupTagData[] BaseGroupTags { get {
-			Contract.Ensures(Contract.Result<GroupTagData[]>() != null);
-
 			throw new NotImplementedException();
 		} }
 
 		public override GroupTagData NullGroupTag { get {
-			Contract.Ensures(Contract.Result<GroupTagData>() != null);
-
 			throw new NotImplementedException();
 		} }
 	};

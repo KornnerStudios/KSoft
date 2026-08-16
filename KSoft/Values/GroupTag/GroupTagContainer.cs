@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Values
 {
@@ -82,7 +77,6 @@ namespace KSoft.Values
 		public static GroupTagCollection GetCollection(Type container)
 		{
 			ArgumentNullException.ThrowIfNull(container);
-			Contract.Ensures(Contract.Result<GroupTagCollection>() != null);
 
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
@@ -103,7 +97,6 @@ namespace KSoft.Values
 		public static IEnumerable<KeyValuePair<string, GroupTagCollection>> GetAllCollections(Type container)
 		{
 			ArgumentNullException.ThrowIfNull(container);
-			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, GroupTagCollection>>>() != null);
 
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
 
