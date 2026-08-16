@@ -85,10 +85,11 @@ namespace KSoft.Values
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
 		protected GroupTagData(string groupTag, string name, int expectedLength)
 		{
+			ValidateTagNameAndLength(groupTag, name, expectedLength);
 			if (name == kNullGroupName)
+			{
 				throw new ArgumentException("Name reserved for null group tags", nameof(name));
-
-			Util.MarkUnusedVariable(ref expectedLength);
+			}
 
 			mName = name;
 			mTagAsString = groupTag;
@@ -110,13 +111,11 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name)
 		{
-#if false
-			Contract.Requires(maj != null && maj != GroupTagData32.Null);
-			Contract.Requires(min != null && min != GroupTagData32.Null);
-			Contract.Requires(!string.IsNullOrEmpty(name));
-#endif
+			ValidateGroupTagPair(maj, min, name);
 			if (name == kNullGroupName)
+			{
 				throw new ArgumentException("Name reserved for null group tags", nameof(name));
+			}
 
 			mName = name;
 			mTagAsString = string.Format(Util.InvariantCultureInfo,
@@ -131,14 +130,33 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : this(maj, min, name)
 		{
-#if false
-			Contract.Requires(maj != null && maj != GroupTagData32.Null);
-			Contract.Requires(min != null && min != GroupTagData32.Null);
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(uuid != KGuid.Empty);
-#endif
-
 			Uuid = uuid;
+		}
+
+		static void ValidateTagNameAndLength(string groupTag, string name, int expectedLength)
+		{
+			ArgumentException.ThrowIfNullOrEmpty(groupTag);
+			ArgumentException.ThrowIfNullOrEmpty(name);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(expectedLength);
+			if (groupTag.Length != expectedLength)
+			{
+				throw new ArgumentOutOfRangeException(nameof(groupTag));
+			}
+		}
+
+		static void ValidateGroupTagPair(GroupTagData32 maj, GroupTagData32 min, string name)
+		{
+			ArgumentNullException.ThrowIfNull(maj);
+			ArgumentNullException.ThrowIfNull(min);
+			ArgumentException.ThrowIfNullOrEmpty(name);
+			if (maj == GroupTagData32.Null)
+			{
+				throw new ArgumentException("Major group tag must not be the null group tag.", nameof(maj));
+			}
+			if (min == GroupTagData32.Null)
+			{
+				throw new ArgumentException("Minor group tag must not be the null group tag.", nameof(min));
+			}
 		}
 		#endregion
 

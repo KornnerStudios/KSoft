@@ -46,10 +46,6 @@ namespace KSoft.Values
 		/// <param name="name">Name of this group tag</param>
 		public GroupTagData32(string groupTag, string name) : base(groupTag, name, kExpectedTagLength)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == kExpectedTagLength);
-
 			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToUInt(Tag);
@@ -60,10 +56,6 @@ namespace KSoft.Values
 		/// <param name="uuid">Guid for this group tag</param>
 		public GroupTagData32(string groupTag, string name, KGuid uuid) : base(groupTag, name, uuid, kExpectedTagLength)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == kExpectedTagLength);
-
 			Contract.Assume(Tag.Length == kExpectedTagLength);
 
 			mID = ToUInt(Tag);

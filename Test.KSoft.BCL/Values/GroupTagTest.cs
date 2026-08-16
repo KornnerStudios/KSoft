@@ -39,6 +39,34 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void GroupTagData_Constructors_ThrowExpectedExceptions()
+	{
+		var major = new GroupTagData32("majo", "Major");
+		var minor = new GroupTagData32("mino", "Minor");
+
+		AssertThrowsArgumentNull("groupTag", () => _ = new GroupTagData32(null!, "Name"));
+		AssertThrowsArgument("groupTag", () => _ = new GroupTagData32(string.Empty, "Name"));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData32("abc", "Name"));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData32("abcde", "Name"));
+		AssertThrowsArgumentNull("name", () => _ = new GroupTagData32("test", null!));
+		AssertThrowsArgument("name", () => _ = new GroupTagData32("test", string.Empty));
+
+		AssertThrowsArgumentNull("groupTag", () => _ = new GroupTagData64(null!, "Name"));
+		AssertThrowsArgument("groupTag", () => _ = new GroupTagData64(string.Empty, "Name"));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData64("tag7chr", "Name"));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData64("tag9chars", "Name"));
+		AssertThrowsArgumentNull("name", () => _ = new GroupTagData64("testtag8", null!));
+		AssertThrowsArgument("name", () => _ = new GroupTagData64("testtag8", string.Empty));
+
+		AssertThrowsArgumentNull("maj", () => _ = new GroupTagData64(null!, minor, "Name"));
+		AssertThrowsArgumentNull("min", () => _ = new GroupTagData64(major, null!, "Name"));
+		AssertThrowsArgument("maj", () => _ = new GroupTagData64(GroupTagData32.Null, minor, "Name"));
+		AssertThrowsArgument("min", () => _ = new GroupTagData64(major, GroupTagData32.Null, "Name"));
+		AssertThrowsArgumentNull("name", () => _ = new GroupTagData64(major, minor, null!));
+		AssertThrowsArgument("name", () => _ = new GroupTagData64(major, minor, string.Empty));
+	}
+
+	[TestMethod]
 	public void GroupTagData_OperatorAndCompareGuards_ThrowArgumentNullException()
 	{
 		var groupTag = new GroupTagData32("test", "Test");
