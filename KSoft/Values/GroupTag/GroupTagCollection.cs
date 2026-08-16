@@ -49,13 +49,43 @@ namespace KSoft.Values
 		/// <remarks>If the Uuid is not zero, but there are no GroupTags, this will return false</remarks>
 		public bool IsEmpty { get => BaseGroupTags.Length == 0 && Uuid == KGuid.Empty; }
 
-		protected GroupTagCollection(GroupTagData[] groups)
+		protected GroupTagCollection(GroupTagData[] groupTags)
 		{
-			Contract.Requires(Array.TrueForAll(groups, Predicates.IsNotNull));
+			ValidateGroupTags(groupTags);
 		}
-		protected GroupTagCollection(GroupTagData[] groups, KGuid uuid) : this(groups)
+		protected GroupTagCollection(GroupTagData[] groupTags, KGuid uuid) : this(groupTags)
 		{
 			Uuid = uuid;
+		}
+
+		static void ValidateGroupTags(GroupTagData[] groupTags)
+		{
+			ArgumentNullException.ThrowIfNull(groupTags);
+			if (!Array.TrueForAll(groupTags, Predicates.IsNotNull))
+			{
+				throw new ArgumentException("Group tag collections must not contain null elements.", nameof(groupTags));
+			}
+		}
+
+		static void ValidateTagLength(char[] tag, int expectedLength, string parameterName)
+		{
+			if (tag == null)
+			{
+				throw new ArgumentNullException(parameterName);
+			}
+			if (tag.Length != expectedLength)
+			{
+				throw new ArgumentOutOfRangeException(parameterName, "Tag lengths mismatch");
+			}
+		}
+
+		static void ValidateTagStringLength(string tagString, int expectedLength, string parameterName)
+		{
+			ArgumentException.ThrowIfNullOrEmpty(tagString, parameterName);
+			if (tagString.Length != expectedLength)
+			{
+				throw new ArgumentOutOfRangeException(parameterName, "Tag lengths mismatch");
+			}
 		}
 
 		#region Indexers
@@ -63,9 +93,7 @@ namespace KSoft.Values
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
 		[Contracts.Pure]
 		public string this[char[] tag] { get {
-			Contract.Requires(tag != null);
-			Contract.Requires(tag.Length == NullGroupTag.Tag.Length,
-				"Tag lengths mismatch");
+			ValidateTagLength(tag, NullGroupTag.Tag.Length, nameof(tag));
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			foreach (GroupTagData t in BaseGroupTags)
@@ -87,9 +115,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndexByTag(char[] groupTag)
 		{
-			Contract.Requires(groupTag != null);
-			Contract.Requires(groupTag.Length == NullGroupTag.Tag.Length,
-				"Tag lengths mismatch");
+			ValidateTagLength(groupTag, NullGroupTag.Tag.Length, nameof(groupTag));
 
 			return BaseGroupTags.FindIndex(gt => gt.Test(groupTag));
 		}
@@ -99,9 +125,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndexByTag(string tagString)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(tagString));
-			Contract.Requires(tagString.Length == NullGroupTag.Tag.Length,
-				"Tag lengths mismatch");
+			ValidateTagStringLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
 
 			return BaseGroupTags.FindIndex(gt => gt.TagString == tagString);
 		}
@@ -112,7 +136,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndex(string groupName)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupName));
+			ArgumentException.ThrowIfNullOrEmpty(groupName);
 
 			return BaseGroupTags.FindIndex(gt => gt.Name == groupName);
 		}
@@ -123,7 +147,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public int FindGroupIndex(GroupTagData group)
 		{
-			Contract.Requires(group != null);
+			ArgumentNullException.ThrowIfNull(group);
 
 			return BaseGroupTags.FindIndex(gt => object.ReferenceEquals(gt, group));
 		}
@@ -134,7 +158,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public GroupTagData FindGroup(char[] groupTag)
 		{
-			Contract.Requires(groupTag != null);
+			ArgumentNullException.ThrowIfNull(groupTag);
 
 			int index = FindGroupIndexByTag(groupTag);
 			if (index.IsNone())
@@ -150,9 +174,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public GroupTagData FindGroupByTag(string tagString)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(tagString));
-			Contract.Requires(tagString.Length == NullGroupTag.Tag.Length,
-				"Tag lengths mismatch");
+			ValidateTagStringLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
 
 			int index = FindGroupIndexByTag(tagString);
 			if (index.IsNone())
@@ -169,7 +191,7 @@ namespace KSoft.Values
 		[Contracts.Pure]
 		public GroupTagData FindGroup(string groupName)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupName));
+			ArgumentException.ThrowIfNullOrEmpty(groupName);
 
 			int index = FindGroupIndex(groupName);
 			if (index.IsNone())

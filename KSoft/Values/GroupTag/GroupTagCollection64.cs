@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using TagWord = System.UInt64;
 
@@ -130,15 +125,12 @@ namespace KSoft.Values
 		/// <param name="container">A type which contains static <see cref="GroupTag64Collection"/> properties</param>
 		public GroupTagContainer64Attribute(Type container) : base(container)
 		{
-			Contract.Requires(container != null);
 		}
 		/// <summary>Initialize the attribute with a type containing a <see cref="GroupTag64Collection"/></summary>
 		/// <param name="container">A type which contains static <see cref="GroupTag64Collection"/> properties</param>
 		/// <param name="collectionName">Explicit name for the "main" group collection property</param>
 		protected GroupTagContainer64Attribute(Type container, string collectionName) : base(container, collectionName)
 		{
-			Contract.Requires(container != null);
-			Contract.Requires(!string.IsNullOrEmpty(collectionName));
 		}
 
 		/// <summary>The "main" group of the class which this attribute was applied to</summary>

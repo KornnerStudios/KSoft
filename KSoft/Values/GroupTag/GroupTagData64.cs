@@ -350,9 +350,12 @@ namespace KSoft.Values
 		/// <param name="uuid"><see cref="Guid"/> for this group tag</param>
 		public GroupTagData64Attribute(string groupTag, string name, string uuid)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupTag));
-			Contract.Requires(!string.IsNullOrEmpty(name));
-			Contract.Requires(groupTag.Length == GroupTagData64.kExpectedTagLength);
+			ArgumentException.ThrowIfNullOrEmpty(groupTag);
+			ArgumentException.ThrowIfNullOrEmpty(name);
+			if (groupTag.Length != GroupTagData64.kExpectedTagLength)
+			{
+				throw new ArgumentOutOfRangeException(nameof(groupTag));
+			}
 
 			GroupTag = new GroupTagData64(groupTag, name, new KGuid(uuid));
 		}

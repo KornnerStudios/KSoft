@@ -26,19 +26,16 @@ namespace KSoft.Values
 		readonly Type mHost;
 		protected GroupTagContainerAttribute(Type container)
 		{
-			Contract.Requires(container != null);
-
+			ArgumentNullException.ThrowIfNull(container);
 			mHost = container;
 
 			FindStaticGroupsProperty();
 			FindAllStaticGroupFields();
 		}
-
 		protected GroupTagContainerAttribute(Type container, string collectionName)
 		{
-			Contract.Requires(container != null);
-			Contract.Requires(!string.IsNullOrEmpty(collectionName));
-
+			ArgumentNullException.ThrowIfNull(container);
+			ArgumentException.ThrowIfNullOrEmpty(collectionName);
 			mHost = container;
 
 			FindStaticGroupsProperty(collectionName);
@@ -84,7 +81,7 @@ namespace KSoft.Values
 		/// <returns></returns>
 		public static GroupTagCollection GetCollection(Type container)
 		{
-			Contract.Requires(container != null);
+			ArgumentNullException.ThrowIfNull(container);
 			Contract.Ensures(Contract.Result<GroupTagCollection>() != null);
 
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);
@@ -105,7 +102,7 @@ namespace KSoft.Values
 		/// <remarks>The "main" group is still included in the resulting enumeration</remarks>
 		public static IEnumerable<KeyValuePair<string, GroupTagCollection>> GetAllCollections(Type container)
 		{
-			Contract.Requires(container != null);
+			ArgumentNullException.ThrowIfNull(container);
 			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, GroupTagCollection>>>() != null);
 
 			var attr = container.GetCustomAttributes(typeof(GroupTagContainerAttribute), false);

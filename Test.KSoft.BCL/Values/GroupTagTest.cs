@@ -6,6 +6,33 @@ namespace KSoft.Values.Test;
 [TestClass]
 public sealed class GroupTagTest : BaseTestClass
 {
+	const string TestUuid = "00000000-0000-0000-0000-000000000000";
+
+	sealed class TestGroupTagContainerHost32
+	{
+		public static GroupTag32Collection Groups { get; } =
+			new(new GroupTagData32("test", "Test"));
+		public static GroupTag32Collection OtherGroups { get; } =
+			new(new GroupTagData32("othr", "Other"));
+	}
+
+	[GroupTagContainer32(typeof(TestGroupTagContainerHost32))]
+	sealed class TestGroupTagContainerTarget32
+	{
+	}
+
+	sealed class MissingGroupsHost
+	{
+	}
+
+	sealed class ExposedGroupTagContainer32Attribute : GroupTagContainer32Attribute
+	{
+		public ExposedGroupTagContainer32Attribute(Type container, string collectionName)
+			: base(container, collectionName)
+		{
+		}
+	}
+
 	static void AssertThrowsArgument(string parameterName, Action action)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentException>(action);
@@ -134,5 +161,80 @@ public sealed class GroupTagTest : BaseTestClass
 		AssertThrowsArgumentNull("groupTags", () => _ = new GroupTag64Collection(KGuid.Empty, null!));
 		AssertThrowsArgumentNull("groupTags", () => _ = new GroupTag64Collection(sort: false, null!));
 		AssertThrowsArgumentNull("groupTags", () => _ = new GroupTag64Collection(KGuid.Empty, sort: false, null!));
+	}
+
+	[TestMethod]
+	public void GroupTagCollections_NullElements_ThrowArgumentException()
+	{
+		AssertThrowsArgument("groupTags", () => _ = new GroupTag32Collection(new GroupTagData32("test", "Test"), null!));
+		AssertThrowsArgument("groupTags", () => _ = new GroupTag64Collection(new GroupTagData64("testtag8", "Test"), null!));
+	}
+
+	[TestMethod]
+	public void GroupTagCollection_SearchGuards_ThrowExpectedExceptions()
+	{
+		var groupTag = new GroupTagData32("test", "Test");
+		var collection = new GroupTag32Collection(groupTag);
+
+		AssertThrowsArgumentNull("tag", () => _ = collection[(char[])null!]);
+		AssertThrowsArgumentOutOfRange("tag", () => _ = collection["abc".ToCharArray()]);
+		AssertThrowsArgumentNull("groupTag", () => _ = collection.FindGroupIndexByTag((char[])null!));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = collection.FindGroupIndexByTag("abc".ToCharArray()));
+		AssertThrowsArgumentNull("tagString", () => _ = collection.FindGroupIndexByTag((string)null!));
+		AssertThrowsArgument("tagString", () => _ = collection.FindGroupIndexByTag(string.Empty));
+		AssertThrowsArgumentOutOfRange("tagString", () => _ = collection.FindGroupIndexByTag("abc"));
+		AssertThrowsArgumentNull("groupName", () => _ = collection.FindGroupIndex((string)null!));
+		AssertThrowsArgument("groupName", () => _ = collection.FindGroupIndex(string.Empty));
+		AssertThrowsArgumentNull("group", () => _ = collection.FindGroupIndex((GroupTagData)null!));
+		AssertThrowsArgumentNull("groupTag", () => _ = collection.FindGroup((char[])null!));
+		AssertThrowsArgumentNull("tagString", () => _ = collection.FindGroupByTag((string)null!));
+		AssertThrowsArgumentNull("groupName", () => _ = collection.FindGroup((string)null!));
+
+		Assert.AreEqual("Test", collection["test".ToCharArray()]);
+		Assert.AreSame(groupTag, collection.FindGroupByTag("test"));
+		Assert.IsNull(collection.FindGroup("Missing"));
+	}
+
+	[TestMethod]
+	public void GroupTagDataAttributes_InvalidArguments_ThrowBeforeUuidParsing()
+	{
+		AssertThrowsArgumentNull("groupTag", () => _ = new GroupTagData32Attribute(null!, "Name", null!));
+		AssertThrowsArgument("groupTag", () => _ = new GroupTagData32Attribute(string.Empty, "Name", TestUuid));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData32Attribute("abc", "Name", TestUuid));
+		AssertThrowsArgumentNull("name", () => _ = new GroupTagData32Attribute("test", null!, TestUuid));
+		AssertThrowsArgument("name", () => _ = new GroupTagData32Attribute("test", string.Empty, TestUuid));
+
+		AssertThrowsArgumentNull("groupTag", () => _ = new GroupTagData64Attribute(null!, "Name", null!));
+		AssertThrowsArgument("groupTag", () => _ = new GroupTagData64Attribute(string.Empty, "Name", TestUuid));
+		AssertThrowsArgumentOutOfRange("groupTag", () => _ = new GroupTagData64Attribute("tag7chr", "Name", TestUuid));
+		AssertThrowsArgumentNull("name", () => _ = new GroupTagData64Attribute("testtag8", null!, TestUuid));
+		AssertThrowsArgument("name", () => _ = new GroupTagData64Attribute("testtag8", string.Empty, TestUuid));
+	}
+
+	[TestMethod]
+	public void GroupTagContainerAttributes_GuardsAndLookup_PreserveContainerBehavior()
+	{
+		AssertThrowsArgumentNull("container", () => _ = new GroupTagContainer32Attribute(null!));
+		AssertThrowsArgumentNull("container", () => _ = new ExposedGroupTagContainer32Attribute(null!, "Groups"));
+		AssertThrowsArgumentNull("collectionName", () =>
+			_ = new ExposedGroupTagContainer32Attribute(typeof(TestGroupTagContainerHost32), null!));
+		AssertThrowsArgument("collectionName", () =>
+			_ = new ExposedGroupTagContainer32Attribute(typeof(TestGroupTagContainerHost32), string.Empty));
+		AssertThrowsArgument("collectionName", () =>
+			_ = new ExposedGroupTagContainer32Attribute(typeof(MissingGroupsHost), "Groups"));
+		AssertThrowsArgumentNull("container", () => _ = GroupTagContainerAttribute.GetCollection(null!));
+		AssertThrowsArgumentNull("container", () => _ = GroupTagContainerAttribute.GetAllCollections(null!));
+
+		var collection = GroupTagContainerAttribute.GetCollection(typeof(TestGroupTagContainerTarget32));
+		Assert.AreSame(TestGroupTagContainerHost32.Groups, collection);
+
+		int collectionCount = 0;
+		foreach (var pair in GroupTagContainerAttribute.GetAllCollections(typeof(TestGroupTagContainerTarget32)))
+		{
+			Assert.IsNotNull(pair.Key);
+			Assert.IsNotNull(pair.Value);
+			collectionCount++;
+		}
+		Assert.AreEqual(2, collectionCount);
 	}
 }
