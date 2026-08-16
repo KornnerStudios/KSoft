@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -299,8 +294,6 @@ namespace KSoft.Text
 		/// </returns>
 		public static StringStorageEncoding TryAndGetStaticEncoding(StringStorage storageDesc)
 		{
-			Contract.Ensures(Contract.Result<StringStorageEncoding>() != null);
-
 			StringStorageEncoding sse = Array.Find(kStorageEncodingList,
 				x => x.mStorage.Equals(storageDesc));
 

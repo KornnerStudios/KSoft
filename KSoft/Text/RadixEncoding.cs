@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -79,7 +74,6 @@ namespace KSoft.Text
 		public string Encode(byte[] bytes)
 		{
 			ArgumentNullException.ThrowIfNull(bytes);
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Don't really have to do this, our code will build this result (empty string),
 			// but why not catch the condition before doing work?

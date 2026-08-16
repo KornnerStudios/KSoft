@@ -1,10 +1,5 @@
 ﻿using System;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -22,13 +17,9 @@ namespace KSoft.Text
 		public bool HasLineInfo => throw new NotImplementedException();
 
 		public int LineNumber { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
 			throw new NotImplementedException();
 		} }
 		public int LinePosition { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
 			throw new NotImplementedException();
 		} }
 	};
