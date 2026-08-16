@@ -118,27 +118,53 @@ namespace KSoft.Text.Test
 
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!, 0, 1));
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteArrayToString([0], -1, 1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteArrayToString([0], 1, 1));
+			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteArrayToString([0], 0, 0));
+			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteArrayToString([0], 0, 2));
 			AssertThrowsArgumentNull("data", () => Util.ByteArrayToStream(null!, writer, 0, 1));
 			AssertThrowsArgumentNull("stream", () => Util.ByteArrayToStream([0], null!, 0, 1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => Util.ByteArrayToStream([0], writer, -1, 1));
+			AssertThrowsArgumentOutOfRange("count", () => Util.ByteArrayToStream([0], writer, 0, 0));
 			AssertThrowsArgumentNull("data", () => Util.ByteArrayToStream(null!, writer));
 			AssertThrowsArgumentNull("stream", () => Util.ByteArrayToStream([0], null!));
 
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(new byte[1], null!, 0, 2));
 			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], "", 0, 2));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteStringToArray(new byte[1], "00", -1, 2));
+			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteStringToArray(new byte[1], "00", 0, 0));
+			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteStringToArray(new byte[1], "00", 0, 4));
+			AssertThrowsArgument("count", () => _ = Util.ByteStringToArray(new byte[1], "000", 0, 3));
 			AssertThrowsArgumentNull("bytes", () => _ = Util.ByteStringToArray(null!, "00", 0, 2));
+			AssertThrowsArgument("bytes", () => _ = Util.ByteStringToArray(new byte[0], "00", 0, 2));
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(new byte[1], null!));
 			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], ""));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteStringToArray(new byte[1], "00", 2));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], "000"));
 			AssertThrowsArgumentNull("bytes", () => _ = Util.ByteStringToArray(null!, "00"));
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(null!, 0, 2));
 			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray("", 0, 2));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteStringToArray("00", -1, 2));
+			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteStringToArray("00", 0, 0));
+			AssertThrowsArgument("count", () => _ = Util.ByteStringToArray("000", 0, 3));
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(null!));
 			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(""));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteStringToArray("00", 2));
+			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray("000"));
 
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToAlignedString(null!));
 			AssertThrowsArgumentNull("padding", () => _ = Util.ByteArrayToAlignedString([0], null!));
+			AssertThrowsArgumentOutOfRange("digitsPerLine", () => _ = Util.ByteArrayToAlignedString([0], digitsPerLine: 1));
+			AssertThrowsArgument("digitsPerLine", () => _ = Util.ByteArrayToAlignedString([0], digitsPerLine: 3));
 			AssertThrowsArgumentNull("data", () => Util.ByteArrayToAlignedOutput(null!, writer));
+			AssertThrowsArgumentOutOfRange("digitsPerLine", () => Util.ByteArrayToAlignedOutput([0], writer, digitsPerLine: 1));
+			AssertThrowsArgument("digitsPerLine", () => Util.ByteArrayToAlignedOutput([0], writer, digitsPerLine: 3));
 			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (char[])null!));
+			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, ['0', '0'], -1));
+			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, ['0', '0'], 2));
 			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (string)null!));
+			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, "00", -1));
+			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, "00", 2));
 		}
 
 		[TestMethod]

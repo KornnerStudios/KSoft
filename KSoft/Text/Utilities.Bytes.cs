@@ -100,6 +100,48 @@ namespace KSoft.Text
 
 			return spanWriteMethod != null && spanWriteMethod.DeclaringType != typeof(TextWriter);
 		}
+		private static void ValidateStartIndex(int length, int startIndex, string paramName = "startIndex")
+		{
+			if (startIndex < 0)
+			{
+				throw new ArgumentOutOfRangeException(paramName, startIndex, "Start index must not be negative.");
+			}
+			if (startIndex >= length)
+			{
+				throw new ArgumentOutOfRangeException(paramName, startIndex, "Start index must be inside the source.");
+			}
+		}
+		private static void ValidateRange(int length, int startIndex, int count)
+		{
+			ValidateStartIndex(length, startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+			if (count > length - startIndex)
+			{
+				throw new ArgumentOutOfRangeException(nameof(count), count, "Count must fit within source length.");
+			}
+		}
+		private static void ValidateEvenCharacterCount(int count, string paramName)
+		{
+			if ((count % 2) != 0)
+			{
+				throw new ArgumentException("Can't byte-ify a string that's not even!", paramName);
+			}
+		}
+		private static void ValidateDestinationLength(byte[] bytes, int requiredLength)
+		{
+			if (bytes.Length < requiredLength)
+			{
+				throw new ArgumentException("Destination buffer is too small.", nameof(bytes));
+			}
+		}
+		private static void ValidateDigitsPerLine(int digitsPerLine)
+		{
+			ArgumentOutOfRangeException.ThrowIfLessThan(digitsPerLine, 2);
+			if ((digitsPerLine % 2) != 0)
+			{
+				throw new ArgumentException("Digits per line must be even.", nameof(digitsPerLine));
+			}
+		}
 
 		#region ByteArrayToString (byte[] to string)
 		/// <summary>Converts an array of bytes to a hex string</summary>
@@ -111,10 +153,7 @@ namespace KSoft.Text
 		public static string ByteArrayToString(byte[] data, int startIndex, int count)
 		{
 			ArgumentNullException.ThrowIfNull(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(count > 0);
-			Contract.Requires((startIndex+count) <= data.Length);
+			ValidateRange(data.Length, startIndex, count);
 
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -131,10 +170,7 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(data);
 			ArgumentNullException.ThrowIfNull(stream);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(count > 0);
-			Contract.Requires((startIndex+count) <= data.Length);
+			ValidateRange(data.Length, startIndex, count);
 
 			// #VITA_SHIM: TextWriter output uses BCL hex conversion in bounded stack chunks to avoid a hidden full string.
 			ReadOnlySpan<byte> source = data.AsSpan(startIndex, count);
@@ -170,8 +206,7 @@ namespace KSoft.Text
 			, int startIndex = 0)
 		{
 			ArgumentNullException.ThrowIfNull(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
+			ValidateStartIndex(data.Length, startIndex);
 
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -187,8 +222,7 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(data);
 			ArgumentNullException.ThrowIfNull(stream);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
+			ValidateStartIndex(data.Length, startIndex);
 
 			ByteArrayToStream(data, stream, startIndex, data.Length-startIndex);
 		}
@@ -223,16 +257,10 @@ namespace KSoft.Text
 		public static byte[] ByteStringToArray(byte[] bytes, string data, int startIndex, int count)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(count > 0);
-			Contract.Requires((startIndex+count) <= data.Length);
-			Contract.Requires(
-				(count % 2) == 0,
-				"Can't byte-ify a string that's not even!"
-			);
+			ValidateRange(data.Length, startIndex, count);
+			ValidateEvenCharacterCount(count, nameof(count));
 			ArgumentNullException.ThrowIfNull(bytes);
-			Contract.Requires(bytes.Length >= (count/2));
+			ValidateDestinationLength(bytes, count / 2);
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
@@ -259,18 +287,15 @@ namespace KSoft.Text
 			, int startIndex = 0)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(
-				((data.Length-startIndex) % 2) == 0,
-				"Can't byte-ify a string that's not even!"
-			);
+			ValidateStartIndex(data.Length, startIndex);
+			int count = data.Length - startIndex;
+			ValidateEvenCharacterCount(count, nameof(data));
 			ArgumentNullException.ThrowIfNull(bytes);
-			Contract.Requires(bytes.Length >= ((data.Length-startIndex)/2));
+			ValidateDestinationLength(bytes, count / 2);
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
-			return ByteStringToArray(bytes, data, startIndex, data.Length-startIndex);
+			return ByteStringToArray(bytes, data, startIndex, count);
 		}
 
 		/// <summary>Converts a string containing hex values into a byte array</summary>
@@ -281,14 +306,8 @@ namespace KSoft.Text
 		public static byte[] ByteStringToArray(string data, int startIndex, int count)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(count > 0);
-			Contract.Requires((startIndex+count) <= data.Length);
-			Contract.Requires(
-				(count % 2) == 0,
-				"Can't byte-ify a string that's not even!"
-			);
+			ValidateRange(data.Length, startIndex, count);
+			ValidateEvenCharacterCount(count, nameof(count));
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
@@ -309,12 +328,8 @@ namespace KSoft.Text
 			, int startIndex = 0)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(data);
-			Contract.Requires(startIndex >= 0);
-			Contract.Requires(startIndex < data.Length);
-			Contract.Requires(
-				((data.Length-startIndex) % 2) == 0,
-				"Can't byte-ify a string that's not even!"
-			);
+			ValidateStartIndex(data.Length, startIndex);
+			ValidateEvenCharacterCount(data.Length - startIndex, nameof(data));
 
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
@@ -334,8 +349,7 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(data);
 			ArgumentNullException.ThrowIfNull(padding);
-			Contract.Requires(digitsPerLine >= 2);
-			Contract.Requires((digitsPerLine % 2) == 0);
+			ValidateDigitsPerLine(digitsPerLine);
 
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -373,8 +387,7 @@ namespace KSoft.Text
 			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
 			ArgumentNullException.ThrowIfNull(data);
-			Contract.Requires(digitsPerLine >= 2);
-			Contract.Requires((digitsPerLine % 2) == 0);
+			ValidateDigitsPerLine(digitsPerLine);
 
 			int blocks = data.Length / digitsPerLine;
 			int leftovers = data.Length % digitsPerLine;
@@ -508,8 +521,7 @@ namespace KSoft.Text
 		public static int CharsToByte(NumeralBase radix, char[] data, int index = 0)
 		{
 			ArgumentNullException.ThrowIfNull(data);
-			Contract.Requires(index >= 0);
-			Contract.Requires(index < data.Length);
+			ValidateStartIndex(data.Length, index, nameof(index));
 
 			Contract.Ensures(Contract.Result<int>() >= byte.MinValue);
 			Contract.Ensures(Contract.Result<int>() <= byte.MaxValue);
@@ -529,8 +541,7 @@ namespace KSoft.Text
 		public static int CharsToByte(NumeralBase radix, string data, int index = 0)
 		{
 			ArgumentNullException.ThrowIfNull(data);
-			Contract.Requires(index >= 0);
-			Contract.Requires(index < data.Length);
+			ValidateStartIndex(data.Length, index, nameof(index));
 
 			Contract.Ensures(Contract.Result<int>() >= byte.MinValue);
 			Contract.Ensures(Contract.Result<int>() <= byte.MaxValue);
