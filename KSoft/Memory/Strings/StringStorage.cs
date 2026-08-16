@@ -63,6 +63,20 @@ namespace KSoft.Memory.Strings
 		readonly void ObjectInvariant()	{ Contract.Invariant(mFixedLength >= 0); }
 
 		#region Ctor
+		static void ValidateFixedLengthStorage(StringStorageWidthType widthType, StringStorageType type, short fixedLength)
+		{
+			if (type.UsesLengthPrefix())
+			{
+				throw new ArgumentException("Use ctor with StringStorageLengthPrefix instead", nameof(type));
+			}
+
+			ArgumentOutOfRangeException.ThrowIfNegative(fixedLength);
+			if (fixedLength != 0 && widthType.IsVariableWidth())
+			{
+				throw new ArgumentException("Can't use a variable width encoding with fixed buffers!", nameof(fixedLength));
+			}
+		}
+
 		/// <summary>Construct a new string storage definition</summary>
 		/// <param name="widthType">Width size of a single character of this string definition</param>
 		/// <param name="type">Storage method for this string definition</param>
@@ -71,10 +85,7 @@ namespace KSoft.Memory.Strings
 		public StringStorage(StringStorageWidthType widthType, StringStorageType type,
 			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, short fixedLength = 0)
 		{
-			Contract.Requires(!type.UsesLengthPrefix(), "Use ctor with StringStorageLengthPrefix instead");
-			Contract.Requires(fixedLength >= 0);
-			Contract.Requires(fixedLength == 0 || !widthType.IsVariableWidth(),
-				"Can't use a variable width encoding with fixed buffers!");
+			ValidateFixedLengthStorage(widthType, type, fixedLength);
 
 			mWidthType = widthType;
 			mType = type;
@@ -91,10 +102,6 @@ namespace KSoft.Memory.Strings
 		public StringStorage(StringStorageWidthType widthType, StringStorageType type, short fixedLength) :
 			this(widthType, type, Shell.EndianFormat.Little, fixedLength)
 		{
-			Contract.Requires(!type.UsesLengthPrefix(), "Use ctor with StringStorageLengthPrefix instead");
-			Contract.Requires(fixedLength >= 0);
-			Contract.Requires(fixedLength == 0 || !widthType.IsVariableWidth(),
-				"Can't use a variable width encoding with fixed buffers!");
 		}
 		/// <summary>Construct a new Pascal string storage definition</summary>
 		/// <param name="widthType">Width size of a single character of this string definition</param>

@@ -15,6 +15,36 @@ namespace KSoft.Text.Test
 
 			Assert.AreEqual(paramName, exception.ParamName);
 		}
+		static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+		static void AssertThrowsArgument(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
+		[TestMethod]
+		public void StringStorage_InvalidFixedLengthArguments_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgument(
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.Pascal),
+				"type");
+			AssertThrowsArgumentOutOfRange(
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, -1),
+				"fixedLength");
+			AssertThrowsArgument(
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageType.CString, 1),
+				"fixedLength");
+			AssertThrowsArgumentOutOfRange(
+				() => _ = new MS.StringStorageMarkupAttribute(MS.StringStorageWidthType.Ascii,
+					MS.StringStorageType.CString, -1),
+				"fixedLength");
+		}
 
 		[TestMethod]
 		public void StringStorageEncoding_NullReadStreams_ThrowArgumentNullException()

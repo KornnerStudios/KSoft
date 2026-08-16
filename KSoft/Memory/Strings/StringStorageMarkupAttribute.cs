@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Memory.Strings
 {
@@ -21,8 +16,6 @@ namespace KSoft.Memory.Strings
 		public StringStorageMarkupAttribute(StringStorageWidthType widthType, StringStorageType type,
 			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, short fixedLength = 0)
 		{
-			Contract.Requires(fixedLength >= 0);
-
 			Storage = new StringStorage(widthType, type, byteOrder, fixedLength);
 		}
 		/// <summary>Define a string storage markup (in <see cref="Shell.EndianFormat.Little"/> byte order)</summary>
@@ -32,7 +25,6 @@ namespace KSoft.Memory.Strings
 		public StringStorageMarkupAttribute(StringStorageWidthType widthType, StringStorageType type, short fixedLength) :
 			this(widthType, type, Shell.EndianFormat.Little, fixedLength)
 		{
-			Contract.Requires(fixedLength >= 0);
 		}
 		#endregion
 	};
