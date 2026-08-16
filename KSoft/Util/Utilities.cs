@@ -250,7 +250,7 @@ namespace KSoft
 		{
 			ArgumentNullException.ThrowIfNull(lhs);
 			ArgumentNullException.ThrowIfNull(rhs);
-			Contract.Requires(choiceProperty != null);
+			ArgumentNullException.ThrowIfNull(choiceProperty);
 
 			return choiceProperty(lhs) < choiceProperty(rhs)
 				? lhs
@@ -266,7 +266,7 @@ namespace KSoft
 		public static T MinChoiceValue<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : struct
 		{
-			Contract.Requires(choiceProperty != null);
+			ArgumentNullException.ThrowIfNull(choiceProperty);
 
 			return choiceProperty(lhs) < choiceProperty(rhs)
 				? lhs
@@ -285,7 +285,7 @@ namespace KSoft
 		{
 			ArgumentNullException.ThrowIfNull(lhs);
 			ArgumentNullException.ThrowIfNull(rhs);
-			Contract.Requires(choiceProperty != null);
+			ArgumentNullException.ThrowIfNull(choiceProperty);
 
 			return choiceProperty(lhs) > choiceProperty(rhs)
 				? lhs
@@ -301,7 +301,7 @@ namespace KSoft
 		public static T MaxChoiceValue<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : struct
 		{
-			Contract.Requires(choiceProperty != null);
+			ArgumentNullException.ThrowIfNull(choiceProperty);
 
 			return choiceProperty(lhs) > choiceProperty(rhs)
 				? lhs

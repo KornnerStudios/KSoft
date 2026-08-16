@@ -150,8 +150,12 @@ namespace KSoft.Test
 
 			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>(null!, "rhs", GetLength), "lhs");
 			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>("lhs", null!, GetLength), "rhs");
+			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>("lhs", "rhs", null!), "choiceProperty");
 			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>(null!, "rhs", GetLength), "lhs");
 			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>("lhs", null!, GetLength), "rhs");
+			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>("lhs", "rhs", null!), "choiceProperty");
+			AssertThrowsArgumentNull(() => _ = Util.MinChoiceValue(1, 2, null!), "choiceProperty");
+			AssertThrowsArgumentNull(() => _ = Util.MaxChoiceValue(1, 2, null!), "choiceProperty");
 		}
 
 		[TestMethod]
