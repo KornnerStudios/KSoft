@@ -28,6 +28,12 @@ namespace KSoft.Bitwise.Test
 
 			Assert.AreEqual(parameterName, exception.ParamName);
 		}
+		static void AssertThrowsArgument(string parameterName, Action action)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
 
 		#region MemoryCopier
 		[TestMethod]
@@ -429,6 +435,23 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(16, i32);
 
 			// #TODO_UNITTEST: GetBitmaskFlag
+		}
+		#endregion
+
+		#region BitDecode/BitEncode
+		[TestMethod]
+		public void BitDecodeEncodeUInt16_InvalidTraitsThrowExpectedExceptions()
+		{
+			var emptyTraits = default(BitFieldTraits);
+			var indexPastUInt16 = new BitFieldTraits(1, Bits.kInt16BitCount);
+			var rangePastUInt16 = new BitFieldTraits(2, Bits.kInt16BitCount-1);
+
+			AssertThrowsArgument("traits", () => Bits.BitDecode((ushort)0, emptyTraits));
+			AssertThrowsArgument("traits", () => Bits.BitEncode((ushort)0, (ushort)0, emptyTraits));
+			AssertThrowsArgumentOutOfRange("traits", () => Bits.BitDecode((ushort)0, indexPastUInt16));
+			AssertThrowsArgumentOutOfRange("traits", () => Bits.BitEncode((ushort)0, (ushort)0, indexPastUInt16));
+			AssertThrowsArgumentOutOfRange("traits", () => Bits.BitDecode((ushort)0, rangePastUInt16));
+			AssertThrowsArgumentOutOfRange("traits", () => Bits.BitEncode((ushort)0, (ushort)0, rangePastUInt16));
 		}
 		#endregion
 

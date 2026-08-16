@@ -340,6 +340,18 @@ namespace KSoft
 		#endregion
 
 		#region BitDecode 16
+		static void ValidateUInt16BitFieldTraits(Bitwise.BitFieldTraits traits)
+		{
+			if (traits.IsEmpty)
+			{
+				throw new ArgumentException("Traits must not be empty.", nameof(traits));
+			}
+			if (traits.BitIndex >= kInt16BitCount || traits.BitIndex+traits.BitCount > kInt16BitCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(traits));
+			}
+		}
+
 		/// <summary>Bit decode an enumeration or flags from an unsigned integer</summary>
 		/// <param name="bits">Unsigned integer to decode from</param>
 		/// <param name="traits"></param>
@@ -347,9 +359,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ushort BitDecode(ushort bits, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex < kInt16BitCount);
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex+traits.BitCount <= kInt16BitCount);
+			ValidateUInt16BitFieldTraits(traits);
 
 			return (ushort)((bits >> traits.BitIndex) & traits.Bitmask16);
 		}
@@ -367,9 +377,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static ushort BitEncode(ushort value, ushort bits, Bitwise.BitFieldTraits traits)
 		{
-			Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex < kInt16BitCount);
-			Contract.Requires/*<ArgumentOutOfRangeException>*/(traits.BitIndex+traits.BitCount <= kInt16BitCount);
+			ValidateUInt16BitFieldTraits(traits);
 
 			var bitmask = (uint)traits.Bitmask16;
 			// Use the bit mask's invert so we can get all of the non-value bits
