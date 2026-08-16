@@ -32,6 +32,18 @@ namespace KSoft.Reflection.Test
 		{
 			public T Value { get; set; }
 		};
+		class MemberAccessTarget
+		{
+			public int Field;
+
+			public int Value { get; set; }
+			public static int StaticField;
+			public static int StaticValue { get; set; }
+		};
+		struct MemberAccessValue
+		{
+			public int Value { get; set; }
+		};
 
 		static void AssertThrowsArgumentNull(string parameterName, Action action)
 		{
@@ -121,6 +133,50 @@ namespace KSoft.Reflection.Test
 				_ = Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>(null!));
 			AssertThrowsArgument("memberName", () =>
 				_ = Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>(string.Empty));
+		}
+
+		[TestMethod]
+		public void Reflection_MemberAccessorFactories_ReturnUsableDelegates()
+		{
+			var target = new MemberAccessTarget { Field = 3, Value = 5 };
+			MemberAccessTarget.StaticField = 7;
+			MemberAccessTarget.StaticValue = 11;
+
+			var memberGetter = Util.GenerateMemberGetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.Value));
+			var objectGetter = Util.GenerateMemberGetter<int>(typeof(MemberAccessTarget), nameof(MemberAccessTarget.Field));
+			var staticPropertyGetter =
+				Util.GenerateStaticPropertyGetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.StaticValue));
+			var staticFieldGetter =
+				Util.GenerateStaticFieldGetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.StaticField));
+
+			Assert.AreEqual(5, memberGetter(target));
+			Assert.AreEqual(3, objectGetter(target));
+			Assert.AreEqual(11, staticPropertyGetter());
+			Assert.AreEqual(7, staticFieldGetter());
+
+			var referenceSetter =
+				Util.GenerateReferenceTypeMemberSetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.Value));
+			var objectSetter =
+				Util.GenerateReferenceTypeMemberSetter<int>(typeof(MemberAccessTarget), nameof(MemberAccessTarget.Field));
+			var staticPropertySetter =
+				Util.GenerateStaticPropertySetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.StaticValue));
+			var staticFieldSetter =
+				Util.GenerateStaticFieldSetter<MemberAccessTarget, int>(nameof(MemberAccessTarget.StaticField));
+			var valueSetter = Util.GenerateValueTypeMemberSetter<MemberAccessValue, int>(nameof(MemberAccessValue.Value));
+
+			referenceSetter(target, 13);
+			objectSetter(target, 17);
+			staticPropertySetter(19);
+			staticFieldSetter(23);
+
+			var value = new MemberAccessValue();
+			valueSetter(ref value, 29);
+
+			Assert.AreEqual(13, target.Value);
+			Assert.AreEqual(17, target.Field);
+			Assert.AreEqual(19, MemberAccessTarget.StaticValue);
+			Assert.AreEqual(23, MemberAccessTarget.StaticField);
+			Assert.AreEqual(29, value.Value);
 		}
 
 		[TestMethod]

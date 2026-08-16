@@ -37,7 +37,6 @@ namespace KSoft.Reflection
 		public static Func<T, TResult> GenerateMemberGetter<T, TResult>(string memberName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Func<T, TResult>>() != null);
 
 			var param =		Expr.Parameter(typeof(T), kThisName);
 			var member =	Expr.PropertyOrField(param, memberName);	// basically 'this.memberName'
@@ -61,7 +60,6 @@ namespace KSoft.Reflection
 		public static Func<TResult> GenerateStaticPropertyGetter<T, TResult>(string memberName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Func<TResult>>() != null);
 
 			var member =	Expr.Property(null, typeof(T), memberName);	// basically 'T.memberName'
 			var lambda =	Expr.Lambda<Func<TResult>>(member);
@@ -84,7 +82,6 @@ namespace KSoft.Reflection
 		public static Func<TResult> GenerateStaticFieldGetter<T, TResult>(string memberName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Func<TResult>>() != null);
 
 			var member =	Expr.Field(null, typeof(T), memberName);	// basically 'T.memberName'
 			var lambda =	Expr.Lambda<Func<TResult>>(member);
@@ -111,7 +108,6 @@ namespace KSoft.Reflection
 			if (type.IsGenericTypeDefinition)
 				throw new ArgumentException(null, nameof(type));
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Func<object, TResult>>() != null);
 
 			var param =		Expr.Parameter(typeof(object), kThisName);
 			var cast_param =Expr.Convert(param, type);						// '((type)this)'
@@ -189,7 +185,6 @@ namespace KSoft.Reflection
 			where T : struct
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<ValueTypeMemberSetterDelegate<T, TValue>>() != null);
 
 			// Get a "ref type" of the value-type we're dealing with
 			// Eg: Guid => "System.Guid&"
@@ -226,7 +221,6 @@ namespace KSoft.Reflection
 			where T : class
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<ReferenceTypeMemberSetterDelegate<T, TValue>>() != null);
 
 			var param_this =	Expr.Parameter(typeof(T), kThisName);
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);		// the member's new value
@@ -262,7 +256,6 @@ namespace KSoft.Reflection
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
 			if (type.IsValueType)
 				throw new ArgumentException("Type must be a reference type", nameof(type));
-			Contract.Ensures(Contract.Result<ReferenceTypeMemberSetterDelegate<object, TValue>>() != null);
 
 			var param_this =	Expr.Parameter(typeof(object), kThisName);
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);		// the member's new value
@@ -295,7 +288,6 @@ namespace KSoft.Reflection
 			where T : class
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Action<TValue>>() != null);
 
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);	// the member's new value
 			var member =		Expr.Property(null, typeof(T), memberName);	// i.e., 'T.memberName'
@@ -325,7 +317,6 @@ namespace KSoft.Reflection
 			where T : class
 		{
 			ArgumentException.ThrowIfNullOrEmpty(memberName);
-			Contract.Ensures(Contract.Result<Action<TValue>>() != null);
 
 			var param_value =	Expr.Parameter(typeof(TValue), kValueName);	// the member's new value
 			var member =		Expr.Field(null, typeof(T), memberName);	// i.e., 'T.memberName'
