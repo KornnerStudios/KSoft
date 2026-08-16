@@ -283,12 +283,7 @@ namespace KSoft.Values
 		/// <param name="uuid"><see cref="Guid"/> for this group tag</param>
 		public GroupTagData32Attribute(string groupTag, string name, string uuid)
 		{
-			ArgumentException.ThrowIfNullOrEmpty(groupTag);
-			ArgumentException.ThrowIfNullOrEmpty(name);
-			if (groupTag.Length != GroupTagData32.kExpectedTagLength)
-			{
-				throw new ArgumentOutOfRangeException(nameof(groupTag));
-			}
+			Verify.GroupTags.NameAndExactLength(groupTag, name, GroupTagData32.kExpectedTagLength);
 
 			GroupTag = new GroupTagData32(groupTag, name, new KGuid(uuid));
 		}
