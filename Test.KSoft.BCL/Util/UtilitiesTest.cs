@@ -45,6 +45,13 @@ namespace KSoft.Test
 			public override bool CanSeek => false;
 		}
 
+		sealed class EquatableDefault : IEquatable<EquatableDefault>
+		{
+			public int Value { get; set; }
+
+			public bool Equals(EquatableDefault other) => other != null && Value == other.Value;
+		}
+
 		[TestMethod]
 		public void Util_UnixTimeTest()
 		{
@@ -219,6 +226,12 @@ namespace KSoft.Test
 			AssertThrowsArgumentOutOfRange(() => _ = "value".ToAsciiCharBuffer(-1), "maxBufferSize");
 			Assert.AreEqual(0, "value".ToWideCharBuffer(0).Length);
 			Assert.AreEqual(0, "value".ToAsciiCharBuffer(0).Length);
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.TransformToString(null!), "list");
+			AssertThrowsArgumentNull(() => _ = ((int[])null!).GetGenericEnumerator(), "array");
+			AssertThrowsArgumentNull(() => _ = ((int[])null!).EqualsZero(), "array");
+			AssertThrowsArgumentNull(() => _ = ((EquatableDefault[])null!).EqualsDefault(), "array");
+			AssertThrowsArgumentNull(() => _ = new List<int>().ConvertAllArray<int, int>(null!), "converter");
+			Assert.IsNull(TypeExtensions.ConvertAllArray<int, int>(null!, value => value));
 
 			AssertThrowsArgumentNull(() => _ = ((int[])null!).TrueForAny(_ => true), "array");
 			AssertThrowsArgumentNull(() => _ = new[] { 1 }.TrueForAny(null!), "match");

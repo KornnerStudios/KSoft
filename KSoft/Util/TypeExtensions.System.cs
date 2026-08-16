@@ -558,7 +558,7 @@ namespace KSoft
 		public static string TransformToString(this IEnumerable<string> list
 			, string valueSeperator = ",")
 		{
-			Contract.Requires(list != null);
+			ArgumentNullException.ThrowIfNull(list);
 
 			var sb = new System.Text.StringBuilder();
 			foreach (var str in list)
@@ -580,7 +580,7 @@ namespace KSoft
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerator<T> GetGenericEnumerator<T>(this T[] array)
 		{
-			Contract.Requires(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			return (IEnumerator<T>)array.GetEnumerator();
 		}
@@ -614,7 +614,7 @@ namespace KSoft
 		public static bool EqualsZero<T>(this T[] array)
 			where T : struct, IEquatable<T>
 		{
-			Contract.Requires(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			var zero = new T();
 
@@ -632,7 +632,7 @@ namespace KSoft
 		public static bool EqualsDefault<T>(this T[] array)
 			where T : class, IEquatable<T>, new()
 		{
-			Contract.Requires(array != null);
+			ArgumentNullException.ThrowIfNull(array);
 
 			var zero = new T();
 
@@ -881,7 +881,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public static TOutput[] ConvertAllArray<TInput, TOutput>(this IList<TInput> list, Converter<TInput, TOutput> converter)
 		{
-			Contract.Requires(converter != null);
+			ArgumentNullException.ThrowIfNull(converter);
 
 			if (list == null)
 			{
