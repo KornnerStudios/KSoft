@@ -43,4 +43,30 @@ public class VerifyGroupTagsTest : BaseTestClass
 		Verify.GroupTags.ExactLength("test".ToCharArray(), 4, nameof(tag));
 		Verify.GroupTags.ExactLength("test", 4, nameof(tagString));
 	}
+
+	[TestMethod]
+	public void NameAndExactLength_ThrowsExpectedExceptions()
+	{
+		string groupTag = null!;
+		string name = null!;
+		int expectedLength = 0;
+
+		AssertThrowsArgumentNull(nameof(groupTag), () =>
+			Verify.GroupTags.NameAndExactLength(groupTag, "Name", 4));
+		groupTag = string.Empty;
+		AssertThrowsArgument(nameof(groupTag), () =>
+			Verify.GroupTags.NameAndExactLength(groupTag, "Name", 4));
+		AssertThrowsArgumentNull(nameof(name), () =>
+			Verify.GroupTags.NameAndExactLength("test", name, 4));
+		name = string.Empty;
+		AssertThrowsArgument(nameof(name), () =>
+			Verify.GroupTags.NameAndExactLength("test", name, 4));
+		AssertThrowsArgumentOutOfRange(nameof(expectedLength), () =>
+			Verify.GroupTags.NameAndExactLength("test", "Name", expectedLength));
+		groupTag = "abc";
+		AssertThrowsArgumentOutOfRange(nameof(groupTag), () =>
+			Verify.GroupTags.NameAndExactLength(groupTag, "Name", 4));
+
+		Verify.GroupTags.NameAndExactLength("test", "Name", 4);
+	}
 }

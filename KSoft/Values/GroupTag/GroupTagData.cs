@@ -85,7 +85,7 @@ namespace KSoft.Values
 		/// <param name="expectedLength">Expected length of the <paramref name="groupTag"/></param>
 		protected GroupTagData(string groupTag, string name, int expectedLength)
 		{
-			ValidateTagNameAndLength(groupTag, name, expectedLength);
+			Verify.GroupTags.NameAndExactLength(groupTag, name, expectedLength);
 			if (name == kNullGroupName)
 			{
 				throw new ArgumentException("Name reserved for null group tags", nameof(name));
@@ -131,17 +131,6 @@ namespace KSoft.Values
 		protected GroupTagData(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : this(maj, min, name)
 		{
 			Uuid = uuid;
-		}
-
-		static void ValidateTagNameAndLength(string groupTag, string name, int expectedLength)
-		{
-			ArgumentException.ThrowIfNullOrEmpty(groupTag);
-			ArgumentException.ThrowIfNullOrEmpty(name);
-			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(expectedLength);
-			if (groupTag.Length != expectedLength)
-			{
-				throw new ArgumentOutOfRangeException(nameof(groupTag));
-			}
 		}
 
 		static void ValidateGroupTagPair(GroupTagData32 maj, GroupTagData32 min, string name)
