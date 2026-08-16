@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Memory.Strings
 {
@@ -227,7 +222,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void ReadHeader(IO.EndianReader s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 			// #TODO: test to see if the config is a built-in, else we could overwrite an existing config
 //			Configuration.Read(s);
 			int count = s.ReadInt32();
@@ -246,7 +241,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void WriteHeader(IO.EndianWriter s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 //			Configuration.Write(s);
 			s.Write(Count);
@@ -262,7 +257,7 @@ namespace KSoft.Memory.Strings
 		/// </remarks>
 		public void ReadStringCharacterLengths(IO.EndianReader s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			ioStringLengths = new int[Count];
 			for (int x = 0; x < ioStringLengths.Length; x++)
@@ -274,7 +269,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void WriteStringCharacterLengths(IO.EndianWriter s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			foreach (string str in mPool)
 			{
@@ -285,7 +280,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void WriteStringByteLengths(IO.EndianWriter s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			foreach (string str in mPool)
 			{
@@ -297,7 +292,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void ReadReferences(IO.EndianReader s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			for (int x = 0; x < mReferences.Count; x++)
 			{
@@ -308,7 +303,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void WriteReferences(IO.EndianWriter s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			foreach (Values.PtrHandle r in mReferences)
 			{
@@ -320,7 +315,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void ReadStrings(IO.EndianReader s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			if (ioStringLengths == null)
 			{
@@ -343,7 +338,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="s"></param>
 		public void WriteStrings(IO.EndianWriter s)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			foreach (string str in mPool)
 			{
