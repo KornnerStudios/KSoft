@@ -2,11 +2,6 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -23,8 +18,6 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
-
-			Contract.Ensures(Contract.Result<Encoding>() != null);
 
 			Encoding enc = null;
 			int length = buffer.Length - index;
@@ -155,8 +148,6 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(data);
 			ValidateRange(data.Length, startIndex, count);
 
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			// #VITA_SHIM: Preserve KSoft's uppercase hex string API while routing exact-format output through the BCL.
 			return Convert.ToHexString(data, startIndex, count);
 		}
@@ -207,8 +198,6 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(data);
 			ValidateStartIndex(data.Length, startIndex);
-
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ByteArrayToString(data, startIndex, data.Length-startIndex);
 		}
@@ -262,8 +251,6 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(bytes);
 			ValidateDestinationLength(bytes, count / 2);
 
-			Contract.Ensures(Contract.Result<byte[]>() != null);
-
 			Array.Clear(bytes, 0, bytes.Length);
 
 			// #VITA_SHIM: Strict hex input can use the BCL converter; legacy non-hex digit behavior falls back below.
@@ -293,8 +280,6 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(bytes);
 			ValidateDestinationLength(bytes, count / 2);
 
-			Contract.Ensures(Contract.Result<byte[]>() != null);
-
 			return ByteStringToArray(bytes, data, startIndex, count);
 		}
 
@@ -308,8 +293,6 @@ namespace KSoft.Text
 			ArgumentException.ThrowIfNullOrEmpty(data);
 			ValidateRange(data.Length, startIndex, count);
 			ValidateEvenCharacterCount(count, nameof(count));
-
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			// #VITA_SHIM: Strict hex input can allocate directly through the BCL without changing the public result shape.
 			if (IsBclHexString(data, startIndex, count))
@@ -331,8 +314,6 @@ namespace KSoft.Text
 			ValidateStartIndex(data.Length, startIndex);
 			ValidateEvenCharacterCount(data.Length - startIndex, nameof(data));
 
-			Contract.Ensures(Contract.Result<byte[]>() != null);
-
 			return ByteStringToArray(data, startIndex, data.Length-startIndex);
 		}
 		#endregion
@@ -350,8 +331,6 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(data);
 			ArgumentNullException.ThrowIfNull(padding);
 			ValidateDigitsPerLine(digitsPerLine);
-
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			string new_line = Environment.NewLine;
 
@@ -497,9 +476,6 @@ namespace KSoft.Text
 		/// </example>
 		public static int CharsToByte(NumeralBase radix, char c2, char c1)
 		{
-			Contract.Ensures(Contract.Result<int>() >= byte.MinValue);
-			Contract.Ensures(Contract.Result<int>() <= byte.MaxValue);
-
 			int value = 0;
 
 			if (CharIsAnyDigit(c2) && CharIsAnyDigit(c1))
@@ -523,9 +499,6 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(data);
 			ValidateStartIndex(data.Length, index, nameof(index));
 
-			Contract.Ensures(Contract.Result<int>() >= byte.MinValue);
-			Contract.Ensures(Contract.Result<int>() <= byte.MaxValue);
-
 			return CharsToByte(radix, data[index], data[index+1]);
 		}
 		/// <summary>Convert a byte digit character pair to the byte they represent</summary>
@@ -542,9 +515,6 @@ namespace KSoft.Text
 		{
 			ArgumentNullException.ThrowIfNull(data);
 			ValidateStartIndex(data.Length, index, nameof(index));
-
-			Contract.Ensures(Contract.Result<int>() >= byte.MinValue);
-			Contract.Ensures(Contract.Result<int>() <= byte.MaxValue);
 
 			return CharsToByte(radix, data[index], data[index+1]);
 		}
