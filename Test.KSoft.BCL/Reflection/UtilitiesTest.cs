@@ -137,6 +137,27 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
+		public void Reflection_MemberFromExprGuards_ThrowExpectedExceptions()
+		{
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.MemberFromExpr<TestPropertyNameFromExprClass, int>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.MemberFromExpr<TestPropertyNameFromExprClass, int>(_ => 1 + 1));
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.PropertyFromExpr<int>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.PropertyFromExpr(() => 1 + 1));
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.PropertyFromExpr<TestPropertyNameFromExprClass>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.PropertyFromExpr<TestPropertyNameFromExprClass>(_ => new object()));
+			AssertThrowsArgumentNull("expr", () =>
+				_ = Util.PropertyFromExpr<TestPropertyNameFromExprClass, int>(null!));
+			AssertThrowsArgument("expr", () =>
+				_ = Util.PropertyFromExpr<TestPropertyNameFromExprClass, int>(_ => 1 + 1));
+		}
+
+		[TestMethod]
 		public void Reflection_DynamicDelegateTypeGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("parameters", () =>

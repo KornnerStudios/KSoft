@@ -368,20 +368,23 @@ namespace KSoft.Reflection
 			throw new NotSupportedException(expr.ToString());
 		}
 
-		public static string PropertyNameFromExpr<TProp>(Exprs.Expression<Func<TProp>> expr)
+		static void ValidateMemberAccessExpression(Exprs.LambdaExpression expr)
 		{
 			ArgumentNullException.ThrowIfNull(expr);
 			if (expr.Body is not Exprs.MemberExpression && expr.Body is not Exprs.UnaryExpression)
 				throw new ArgumentException(null, nameof(expr));
+		}
+
+		public static string PropertyNameFromExpr<TProp>(Exprs.Expression<Func<TProp>> expr)
+		{
+			ValidateMemberAccessExpression(expr);
 
 			return PropertyNameFromLambdaExpr(expr);
 		}
 
 		public static string PropertyNameFromExpr<T, TProp>(Exprs.Expression<Func<T, TProp>> expr)
 		{
-			ArgumentNullException.ThrowIfNull(expr);
-			if (expr.Body is not Exprs.MemberExpression && expr.Body is not Exprs.UnaryExpression)
-				throw new ArgumentException(null, nameof(expr));
+			ValidateMemberAccessExpression(expr);
 
 			return PropertyNameFromLambdaExpr(expr);
 		}
@@ -416,16 +419,14 @@ namespace KSoft.Reflection
 		}
 		public static Reflect.MemberInfo MemberFromExpr<T, TProp>(Exprs.Expression<Func<T, TProp>> expr)
 		{
-			Contract.Requires(expr != null);
-			Contract.Requires(expr.Body is Exprs.MemberExpression || expr.Body is Exprs.UnaryExpression);
+			ValidateMemberAccessExpression(expr);
 
 			return MemberFromLambdaExpr(expr);
 		}
 
 		public static Reflect.PropertyInfo PropertyFromExpr<TProp>(Exprs.Expression<Func<TProp>> expr)
 		{
-			Contract.Requires(expr != null);
-			Contract.Requires(expr.Body is Exprs.MemberExpression || expr.Body is Exprs.UnaryExpression);
+			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
 			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
@@ -434,8 +435,7 @@ namespace KSoft.Reflection
 		}
 		public static Reflect.PropertyInfo PropertyFromExpr<T>(Exprs.Expression<Func<T, object>> expr)
 		{
-			Contract.Requires(expr != null);
-			Contract.Requires(expr.Body is Exprs.MemberExpression || expr.Body is Exprs.UnaryExpression);
+			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
 			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
@@ -444,8 +444,7 @@ namespace KSoft.Reflection
 		}
 		public static Reflect.PropertyInfo PropertyFromExpr<T, TProp>(Exprs.Expression<Func<T, TProp>> expr)
 		{
-			Contract.Requires(expr != null);
-			Contract.Requires(expr.Body is Exprs.MemberExpression || expr.Body is Exprs.UnaryExpression);
+			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
 			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
