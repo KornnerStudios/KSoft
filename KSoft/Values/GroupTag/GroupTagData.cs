@@ -170,7 +170,7 @@ namespace KSoft.Values
 		/// <returns></returns>
 		public static explicit operator string(GroupTagData value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			return value.mName;
 		}
@@ -180,7 +180,7 @@ namespace KSoft.Values
 		/// <returns></returns>
 		public static explicit operator char[](GroupTagData value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			return value.mTag;
 		}
@@ -202,7 +202,7 @@ namespace KSoft.Values
 		/// <returns>this ID - <paramref name="other"/>'s ID</returns>
 		public int CompareId(GroupTagData other)
 		{
-			Contract.Requires(other != null);
+			ArgumentNullException.ThrowIfNull(other);
 
 			return this.GetHashCode() - other.GetHashCode();
 		}

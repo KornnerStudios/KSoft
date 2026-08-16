@@ -96,7 +96,7 @@ namespace KSoft.Values
 		/// <returns></returns>
 		public static explicit operator TagWord(GroupTagData32 value)
 		{
-			Contract.Requires(value != null);
+			ArgumentNullException.ThrowIfNull(value);
 
 			return value.mID;
 		}

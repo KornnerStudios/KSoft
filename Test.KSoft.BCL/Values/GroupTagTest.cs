@@ -39,6 +39,18 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void GroupTagData_OperatorAndCompareGuards_ThrowArgumentNullException()
+	{
+		var groupTag = new GroupTagData32("test", "Test");
+
+		AssertThrowsArgumentNull("value", () => _ = (string)(GroupTagData)null!);
+		AssertThrowsArgumentNull("value", () => _ = (char[])(GroupTagData)null!);
+		AssertThrowsArgumentNull("other", () => _ = groupTag.CompareId(null!));
+		AssertThrowsArgumentNull("value", () => _ = (uint)(GroupTagData32)null!);
+		AssertThrowsArgumentNull("value", () => _ = (ulong)(GroupTagData64)null!);
+	}
+
+	[TestMethod]
 	public void GroupTagData32_ShortTags_ThrowArgumentOutOfRangeException()
 	{
 		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.Swap(new char[3]));
