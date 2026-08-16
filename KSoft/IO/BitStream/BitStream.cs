@@ -241,7 +241,7 @@ namespace KSoft.IO
 		#region DateTime
 		public DateTime ReadDateTime(int bitCount = Bits.kInt64BitCount)
 		{
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kInt64BitCount);
 
 			Read(out long time64, bitCount);
 
@@ -249,13 +249,13 @@ namespace KSoft.IO
 		}
 		public void Read(out DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kInt64BitCount);
 
 			value = ReadDateTime(bitCount);
 		}
 		public void Write(DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kInt64BitCount);
 
 			long time64 = Util.ConvertDateTimeToUnixTime(value);
 
@@ -263,7 +263,7 @@ namespace KSoft.IO
 		}
 		public BitStream Stream(ref DateTime value, int bitCount = Bits.kInt64BitCount)
 		{
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kInt64BitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kInt64BitCount);
 
 				 if (IsReading) { value = ReadDateTime(bitCount); }
 			else if (IsWriting) { Write(value, bitCount); }
@@ -386,7 +386,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount && count >= kWordByteCount)
 			{
@@ -413,7 +413,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 #if false // #TODO redo optimization
 			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount)
 			{
@@ -436,7 +436,7 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 
 				 if (IsReading) { Read( buffer, index, count, bitCount); }
 			else if (IsWriting) { Write(buffer, index, count, bitCount); }
@@ -461,7 +461,7 @@ namespace KSoft.IO
 		public byte[] Read(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (buffer.Length > 0)
@@ -474,7 +474,7 @@ namespace KSoft.IO
 		public void Write(byte[] buffer, int bitCount = Bits.kByteBitCount)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, Bits.kByteBitCount);
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 
 			if (buffer.Length > 0)
 			{

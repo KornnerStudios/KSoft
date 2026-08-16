@@ -133,6 +133,7 @@
     <Compile Include="Util\TypeExtensions.cs" />
     <Compile Include="Util\TypeExtensions.System.cs" />
     <Compile Include="Util\Utilities.cs" />
+    <Compile Include="Verify\Bits.cs" />
     <Compile Include="Verify\Buffers.cs" />
     <Compile Include="Values\EqualityTraits.cs" />
     <Compile Include="Values\GroupTag\GroupTagCollection32.cs" />

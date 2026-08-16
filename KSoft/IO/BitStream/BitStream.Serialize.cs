@@ -136,7 +136,7 @@ namespace KSoft.IO
 			where T : IO.IBitStreamSerializable
 		{
 			ArgumentNullException.ThrowIfNull(list);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(countBitSize, Bits.kInt32BitCount);
+			Verify.Bits.AtMost(countBitSize, Bits.kInt32BitCount);
 			ArgumentNullException.ThrowIfNull(ctor);
 
 			int count = list.Count;
@@ -166,7 +166,7 @@ namespace KSoft.IO
 			where T : IO.IBitStreamSerializable, new()
 		{
 			ArgumentNullException.ThrowIfNull(list);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(countBitSize, Bits.kInt32BitCount);
+			Verify.Bits.AtMost(countBitSize, Bits.kInt32BitCount);
 
 			return StreamElements(list, countBitSize, (object)null, (nil) => new T());
 		}
