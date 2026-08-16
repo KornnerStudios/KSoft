@@ -9,12 +9,6 @@ using System.Reflection;
 using Contracts = System.Diagnostics.Contracts;
 using System.Diagnostics.CodeAnalysis;
 
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft
 {
 	partial class TypeExtensions
@@ -444,8 +438,6 @@ namespace KSoft
 		[Contracts.Pure]
 		public static int GetDeterministicHashCode(this string str)
 		{
-			Contract.Ensures(!string.IsNullOrEmpty(str) || Contract.Result<int>() == 0);
-
 			if (string.IsNullOrEmpty(str))
 			{
 				return 0;
@@ -471,7 +463,6 @@ namespace KSoft
 		public static char[] ToWideCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
-			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			var buffer = new char[maxBufferSize];
 
@@ -492,7 +483,6 @@ namespace KSoft
 		public static byte[] ToAsciiCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			var buffer = new byte[maxBufferSize];
 
@@ -521,8 +511,6 @@ namespace KSoft
 		/// <remarks>Handles the case where no args are provided, for whatever reason, so there's no hidden object[] allocation</remarks>
 		public static string AddFormat(this ICollection<string> collection, string value)
 		{
-			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
-
 			if (collection != null && !collection.IsReadOnly)
 			{
 				collection.Add(value);
@@ -533,8 +521,6 @@ namespace KSoft
 
 		public static string AddFormat(this ICollection<string> collection, string format, params object[] args)
 		{
-			Contract.Ensures((collection != null && collection.IsReadOnly) || Contract.Result<string>() == null);
-
 			if (collection != null && !collection.IsReadOnly)
 			{
 				string value = string.Format(format, args);
@@ -589,8 +575,6 @@ namespace KSoft
 		public static string ArrayToConcatString(this Array array
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (array == null || array.Length == 0)
 			{
 				return string.Empty;
@@ -923,8 +907,6 @@ namespace KSoft
 			if (!(count >= 0 && startIndex <= list.Count-count))
 				throw new ArgumentOutOfRangeException(nameof(count));
 			ArgumentNullException.ThrowIfNull(match);
-			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
-			Contract.Ensures(Contract.Result<int>() < startIndex+count);
 
 			int end_index = startIndex + count;
 			for (int x = startIndex; x < end_index; x++)
@@ -942,8 +924,6 @@ namespace KSoft
 			int startIndex, Predicate<T> match)
 		{
 			ArgumentNullException.ThrowIfNull(list);
-			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
-			Contract.Ensures(Contract.Result<int>() < startIndex+list.Count);
 
 			return FindIndex(list, startIndex, list.Count-startIndex, match);
 		}
@@ -952,8 +932,6 @@ namespace KSoft
 			Predicate<T> match)
 		{
 			ArgumentNullException.ThrowIfNull(list);
-			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
-			Contract.Ensures(Contract.Result<int>() < list.Count);
 
 			return FindIndex(list, 0, list.Count, match);
 		}
@@ -1025,8 +1003,6 @@ namespace KSoft
 		public static string ToConcatString<T>(this IEnumerable<T> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (e == null)
 			{
 				return string.Empty;
@@ -1049,8 +1025,6 @@ namespace KSoft
 		public static string ToConcatBinaryString(this IEnumerable<bool> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (e == null)
 			{
 				return string.Empty;
@@ -1073,8 +1047,6 @@ namespace KSoft
 		public static string ToConcatLowerString(this IEnumerable<bool> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (e == null)
 			{
 				return string.Empty;
@@ -1098,8 +1070,6 @@ namespace KSoft
 			, string valueSeperator = kDefaultArrayValueSeperator
 			, string format = null)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (e == null)
 			{
 				return string.Empty;
@@ -1123,8 +1093,6 @@ namespace KSoft
 			, string valueSeperator = kDefaultArrayValueSeperator
 			, string format = null)
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			if (e == null)
 			{
 				return string.Empty;
@@ -1514,7 +1482,6 @@ namespace KSoft
 			ArgumentNullException.ThrowIfNull(src);
 			ArgumentNullException.ThrowIfNull(keySelector);
 			ArgumentNullException.ThrowIfNull(comparerFunc);
-			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);
 
 			var comparer = Util.CreateComparer(comparerFunc);
 			return src.OrderBy(keySelector, comparer);
@@ -1533,7 +1500,6 @@ namespace KSoft
 			ArgumentNullException.ThrowIfNull(src);
 			ArgumentNullException.ThrowIfNull(keySelector);
 			ArgumentNullException.ThrowIfNull(comparerFunc);
-			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSrc>>() != null);
 
 			var comparer = Util.CreateComparer(comparerFunc);
 			return src.OrderByDescending(keySelector, comparer);

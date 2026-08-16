@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -336,6 +337,43 @@ namespace KSoft.Test
 				"keySelector");
 			AssertThrowsArgumentNull(() =>
 				_ = TypeExtensions.OrderByDescending<string, string>(["value"], v => v, null!), "comparerFunc");
+		}
+
+		[TestMethod]
+		public void TypeExtensions_SystemPostconditionBehavior_ReturnsExpectedValues()
+		{
+			string nullString = null!;
+			Assert.AreEqual(0, nullString.GetDeterministicHashCode());
+			Assert.AreEqual(0, string.Empty.GetDeterministicHashCode());
+
+			CollectionAssert.AreEqual(new[] { 'a', 'b', '\0' }, "abc".ToWideCharBuffer(3));
+			CollectionAssert.AreEqual(new byte[] { (byte)'a', (byte)'b', 0 }, "abc".ToAsciiCharBuffer(3));
+
+			var values = new List<string>();
+			Assert.AreEqual("value", values.AddFormat("value"));
+			Assert.AreEqual("formatted 7", values.AddFormat("formatted {0}", 7));
+			CollectionAssert.AreEqual(new[] { "value", "formatted 7" }, values);
+			Assert.IsNull(((ICollection<string>)new ReadOnlyCollection<string>(values)).AddFormat("ignored"));
+
+			Assert.AreEqual(string.Empty, TypeExtensions.ArrayToConcatString(null));
+			Assert.AreEqual("1|2", new[] { 1, 2 }.ArrayToConcatString("|"));
+
+			IReadOnlyList<int> list = new[] { 10, 20, 30 };
+			Assert.AreEqual(2, list.FindIndex(1, 2, value => value == 30));
+			Assert.AreEqual(TypeExtensions.kNone, list.FindIndex(value => value == 99));
+
+			Assert.AreEqual(string.Empty, TypeExtensions.ToConcatString<int>(null));
+			Assert.AreEqual("1|2", new[] { 1, 2 }.ToConcatString("|"));
+			Assert.AreEqual("1|0", new[] { true, false }.ToConcatBinaryString("|"));
+			Assert.AreEqual("true|false", new[] { true, false }.ToConcatLowerString("|"));
+			Assert.AreEqual("1.5|2.5", new[] { 1.5f, 2.5f }.ToConcatStringInvariant("|"));
+			Assert.AreEqual("1.5|2.5", new[] { 1.5, 2.5 }.ToConcatStringInvariant("|"));
+
+			var intComparer = Comparer<int>.Default;
+			CollectionAssert.AreEqual(new[] { "a", "bb" },
+				TypeExtensions.OrderBy(["bb", "a"], value => value.Length, intComparer.Compare).ToArray());
+			CollectionAssert.AreEqual(new[] { "bb", "a" },
+				TypeExtensions.OrderByDescending(["bb", "a"], value => value.Length, intComparer.Compare).ToArray());
 		}
 
 		[TestMethod]
