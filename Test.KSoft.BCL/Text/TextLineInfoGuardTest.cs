@@ -12,6 +12,26 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 
 		Assert.AreEqual(paramName, exception.ParamName);
 	}
+	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+
+	[TestMethod]
+	public void TextLineInfo_NonPositiveLineNumber_ThrowsArgumentOutOfRangeException()
+	{
+		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(0, 1), "lineNumber");
+		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(-1, 1), "lineNumber");
+	}
+
+	[TestMethod]
+	public void TextLineInfo_NonPositiveLinePosition_ThrowsArgumentOutOfRangeException()
+	{
+		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, 0), "linePosition");
+		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, -1), "linePosition");
+	}
 
 	[TestMethod]
 	public void TextLineInfo_NullCopySource_ThrowsArgumentNullException()

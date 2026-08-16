@@ -18,6 +18,13 @@ namespace KSoft.Text.Test
 
 			Assert.AreEqual(parameterName, exception.ParamName);
 		}
+		static void AssertArgumentException<TException>(string parameterName, Action action)
+			where TException : ArgumentException
+		{
+			var exception = Assert.ThrowsExactly<TException>(action);
+
+			Assert.AreEqual(parameterName, exception.ParamName);
+		}
 
 		#region StringListDesc related
 		void VerifyTryParseInt32List(System.Collections.Generic.IEnumerable<int?> results)
@@ -30,6 +37,19 @@ namespace KSoft.Text.Test
 				var expected = kInt32List[index++];
 				Assert.AreEqual(expected, result);
 			}
+		}
+
+		[TestMethod]
+		public void Text_NumbersStringListDescInvalidArgumentsThrowExpectedExceptions()
+		{
+			AssertArgumentException<ArgumentNullException>("digits",
+				() => _ = new Numbers.StringListDesc(',', digits: null!));
+			AssertArgumentException<ArgumentException>("digits",
+				() => _ = new Numbers.StringListDesc(',', digits: string.Empty));
+			AssertArgumentException<ArgumentException>("digits",
+				() => _ = new Numbers.StringListDesc(',', radix: NumbersRadix.Hex, digits: "0123456789ABCDE"));
+			AssertArgumentOutOfRange("radix",
+				() => _ = new Numbers.StringListDesc(',', radix: (NumbersRadix)1, digits: "01"));
 		}
 
 		[TestMethod]

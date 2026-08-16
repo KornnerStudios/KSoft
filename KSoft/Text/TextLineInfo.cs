@@ -49,8 +49,8 @@ namespace KSoft.Text
 
 		public TextLineInfo(int lineNumber, int linePosition)
 		{
-			Contract.Requires(lineNumber > 0);
-			Contract.Requires(linePosition > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lineNumber);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(linePosition);
 
 			mLineNumber = lineNumber;
 			mLinePosition = linePosition;

@@ -9,6 +9,22 @@ namespace KSoft.Text.Test
 	[TestClass]
 	public class StringStorageEncodingTest : BaseTestClass
 	{
+		static void AssertThrowsArgumentNull(Action action, string paramName)
+		{
+			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
+
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+
+		[TestMethod]
+		public void StringStorageEncoding_NullReadStreams_ThrowArgumentNullException()
+		{
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(MS.StringStorage.CStringAscii);
+
+			AssertThrowsArgumentNull(() => _ = encoding.ReadString((IO.EndianReader)null!, 0), "s");
+			AssertThrowsArgumentNull(() => _ = encoding.ReadString((IO.BitStream)null!, 0), "s");
+		}
+
 		[TestMethod]
 		public void Text_StringStorageEncodingWriteTest()
 		{

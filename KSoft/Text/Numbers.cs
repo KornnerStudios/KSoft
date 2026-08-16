@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+using SysDebug = System.Diagnostics.Debug;
 
 namespace KSoft
 {
@@ -35,7 +29,6 @@ namespace KSoft
 		public const string kBase64Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-		[Contracts.Pure]
 		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string s, int startIndex
 			, Text.IHandleTextParseError handler = null)
 		{
@@ -81,12 +74,10 @@ namespace KSoft
 			return true;
 		}
 
-		[Contracts.Pure]
 		public static bool IsValidLookupTable(NumeralBase radix, string digits)
 		{
 			return radix >= NumeralBase.Binary && (int)radix <= digits.Length;
 		}
-		[Contracts.Pure]
 		public static bool IsValidLookupTable(NumbersRadix radix, string digits)
 		{
 			return radix >= NumbersRadix.Binary && (int)radix <= digits.Length;
@@ -110,8 +101,15 @@ namespace KSoft
 			public StringListDesc(char separator, char terminator = kDefaultTerminator,
 				NumbersRadix radix = NumbersRadix.Decimal, string digits = kBase64Digits)
 			{
-				Contract.Requires(!string.IsNullOrEmpty(digits));
-				Contract.Requires(IsValidLookupTable(radix, digits));
+				ArgumentException.ThrowIfNullOrEmpty(digits);
+				if (radix < NumbersRadix.Binary)
+				{
+					throw new ArgumentOutOfRangeException(nameof(radix), radix, "Radix must be at least binary.");
+				}
+				if ((int)radix > digits.Length)
+				{
+					throw new ArgumentException("Digits must contain at least radix characters.", nameof(digits));
+				}
 
 				Digits = digits;
 				Radix = radix;
@@ -121,10 +119,9 @@ namespace KSoft
 				Terminator = terminator;
 			}
 
-			[Contracts.Pure]
 			internal readonly int PredictedCount(string values)
 			{
-				Contract.Assume(values != null);
+				SysDebug.Assert(values != null);
 
 				int count = 1;
 

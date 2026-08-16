@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Text
 {
@@ -592,7 +587,7 @@ namespace KSoft.Text
 		/// <returns></returns>
 		internal string ReadString(IO.EndianReader s, int length)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			if (length < 0) // Not <= because FixedLength might just be zero itself, resulting in a redundant expression
 			{
@@ -623,7 +618,7 @@ namespace KSoft.Text
 		/// <returns></returns>
 		internal string ReadString(IO.BitStream s, int length, int maxLength = -1, int prefixBitLength = -1)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			if (length < 0) // Not <= because FixedLength might just be zero itself, resulting in a redundant expression
 			{
