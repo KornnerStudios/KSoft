@@ -784,9 +784,12 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool ImplementsInterface(this Type subject, Type interfaceType)
 		{
-			Contract.Requires(subject != null);
-			Contract.Requires(interfaceType != null);
-			Contract.Requires(interfaceType.IsInterface);
+			ArgumentNullException.ThrowIfNull(subject);
+			ArgumentNullException.ThrowIfNull(interfaceType);
+			if (!interfaceType.IsInterface)
+			{
+				throw new ArgumentException(null, nameof(interfaceType));
+			}
 
 			return interfaceType.IsAssignableFrom(subject);
 		}
@@ -799,10 +802,16 @@ namespace KSoft
 		[Contracts.Pure]
 		public static bool IsCuriouslyRecurringTemplatePattern(this Type subject, Type genericType)
 		{
-			Contract.Requires(subject != null);
-			Contract.Requires(genericType != null);
-			Contract.Requires(genericType.IsGenericType && genericType.IsGenericTypeDefinition);
-			Contract.Requires(genericType.GetGenericArguments().Length == 1);
+			ArgumentNullException.ThrowIfNull(subject);
+			ArgumentNullException.ThrowIfNull(genericType);
+			if (!genericType.IsGenericType || !genericType.IsGenericTypeDefinition)
+			{
+				throw new ArgumentException(null, nameof(genericType));
+			}
+			if (genericType.GetGenericArguments().Length != 1)
+			{
+				throw new ArgumentException(null, nameof(genericType));
+			}
 
 			var concrete_type = genericType.MakeGenericType(subject);
 
@@ -814,8 +823,8 @@ namespace KSoft
 		/// <param name="staticPropertyName">Name of the static property to get</param>
 		public static void ForceStaticCtorToRunViaProperty(this Type subject, string staticPropertyName)
 		{
-			Contract.Requires(subject != null);
-			Contract.Requires(!string.IsNullOrEmpty(staticPropertyName));
+			ArgumentNullException.ThrowIfNull(subject);
+			ArgumentException.ThrowIfNullOrEmpty(staticPropertyName);
 
 			const BindingFlags k_static_property_binding_flags
 				= BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.DeclaredOnly;

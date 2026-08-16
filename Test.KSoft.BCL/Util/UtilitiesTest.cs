@@ -239,6 +239,21 @@ namespace KSoft.Test
 				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttribute<ObsoleteAttribute>(), "provider");
 			AssertThrowsArgumentNull(() =>
 				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttributes<ObsoleteAttribute>(), "provider");
+			AssertThrowsArgumentNull(() => _ = ((Type)null!).ImplementsInterface(typeof(IDisposable)), "subject");
+			AssertThrowsArgumentNull(() => _ = typeof(MemoryStream).ImplementsInterface(null!), "interfaceType");
+			AssertThrowsArgument(() => _ = typeof(MemoryStream).ImplementsInterface(typeof(MemoryStream)), "interfaceType");
+			AssertThrowsArgumentNull(() =>
+				_ = ((Type)null!).IsCuriouslyRecurringTemplatePattern(typeof(IComparable<>)), "subject");
+			AssertThrowsArgumentNull(() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(null!), "genericType");
+			AssertThrowsArgument(() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(string)), "genericType");
+			AssertThrowsArgument(() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(Dictionary<,>)), "genericType");
+			AssertThrowsArgumentNull(() =>
+				((Type)null!).ForceStaticCtorToRunViaProperty(nameof(Environment.TickCount)), "subject");
+			AssertThrowsArgumentNull(() => typeof(Environment).ForceStaticCtorToRunViaProperty(null!), "staticPropertyName");
+			AssertThrowsArgument(() => typeof(Environment).ForceStaticCtorToRunViaProperty(string.Empty), "staticPropertyName");
 			AssertThrowsArgumentNull(() => _ = ((IEnumerable<string>)null!).OrderBy(v => v, string.CompareOrdinal), "src");
 			AssertThrowsArgumentNull(() =>
 				_ = ((IEnumerable<string>)null!).OrderByDescending(v => v, string.CompareOrdinal), "src");
