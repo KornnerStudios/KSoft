@@ -470,18 +470,18 @@ namespace KSoft
 
 		public static char[] ToWideCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
 		{
-			Contract.Requires(maxBufferSize >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
 			Contract.Ensures(Contract.Result<char[]>() != null);
 
 			var buffer = new char[maxBufferSize];
 
 			int x;
-			for (x = 0; s != null && x < s.Length; x++)
+			for (x = 0; s != null && x < s.Length && x < maxBufferSize; x++)
 			{
 				buffer[x] = s[x];
 			}
 
-			if (s != null && x == maxBufferSize && nullTerminate)
+			if (maxBufferSize > 0 && s != null && x == maxBufferSize && nullTerminate)
 			{
 				buffer[x - 1] = '\0';
 			}
@@ -491,13 +491,13 @@ namespace KSoft
 
 		public static byte[] ToAsciiCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
 		{
-			Contract.Requires(maxBufferSize >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			var buffer = new byte[maxBufferSize];
 
 			int x;
-			for (x = 0; s != null && x < s.Length; x++)
+			for (x = 0; s != null && x < s.Length && x < maxBufferSize; x++)
 			{
 				char c = s[x];
 				if (c < 0 || c > sbyte.MaxValue)
@@ -510,7 +510,7 @@ namespace KSoft
 				buffer[x] = (byte)c;
 			}
 
-			if (s != null && x == maxBufferSize && nullTerminate)
+			if (maxBufferSize > 0 && s != null && x == maxBufferSize && nullTerminate)
 			{
 				buffer[x - 1] = 0;
 			}

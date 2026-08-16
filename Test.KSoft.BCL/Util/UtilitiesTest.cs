@@ -215,6 +215,10 @@ namespace KSoft.Test
 		public void TypeExtensions_SystemUtilityGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull(() => _ = "{0}".FormatWith(null!, 1), "provider");
+			AssertThrowsArgumentOutOfRange(() => _ = "value".ToWideCharBuffer(-1), "maxBufferSize");
+			AssertThrowsArgumentOutOfRange(() => _ = "value".ToAsciiCharBuffer(-1), "maxBufferSize");
+			Assert.AreEqual(0, "value".ToWideCharBuffer(0).Length);
+			Assert.AreEqual(0, "value".ToAsciiCharBuffer(0).Length);
 
 			AssertThrowsArgumentNull(() => _ = ((int[])null!).TrueForAny(_ => true), "array");
 			AssertThrowsArgumentNull(() => _ = new[] { 1 }.TrueForAny(null!), "match");
