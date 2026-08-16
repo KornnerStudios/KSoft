@@ -144,6 +144,21 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
+		public void LowLevel_UnmanagedGuards_ThrowArgumentNullException()
+		{
+			AssertThrowsArgumentNull(() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(IntPtr.Zero, typeof(int)), "nativePtr");
+			AssertThrowsArgumentNull(() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(new IntPtr(1), null!), "t");
+			AssertThrowsArgumentNull(() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero), "nativePtr");
+			AssertThrowsArgumentNull(() =>
+				LowLevel.Util.Unmanaged.StructureToPtr(1, IntPtr.Zero), "nativePtr");
+			AssertThrowsArgumentNull(() => _ = LowLevel.Util.Unmanaged.New(null!), "t");
+			AssertThrowsArgumentNull(() => LowLevel.Util.Unmanaged.Delete(IntPtr.Zero), "nativePtr");
+		}
+
+		[TestMethod]
 		public void Util_MinMaxChoiceReferenceGuards_ThrowArgumentNullException()
 		{
 			static int GetLength(string value) => value.Length;

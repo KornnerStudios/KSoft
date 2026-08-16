@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.LowLevel.Util
 {
@@ -16,8 +11,8 @@ namespace KSoft.LowLevel.Util
 		/// <returns>Managed object</returns>
 		public static object IntPtrToStructure(IntPtr nativePtr, Type t)
 		{
-			Contract.Requires(nativePtr != IntPtr.Zero);
-			Contract.Requires(t != null);
+			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
+			ArgumentNullException.ThrowIfNull(t);
 
 			return Marshal.PtrToStructure(nativePtr, t);
 		}
@@ -27,7 +22,7 @@ namespace KSoft.LowLevel.Util
 		/// <returns>Managed object</returns>
 		public static T IntPtrToStructure<T>(IntPtr nativePtr)
 		{
-			Contract.Requires(nativePtr != IntPtr.Zero);
+			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 
 			return Marshal.PtrToStructure<T>(nativePtr);
 		}
@@ -42,7 +37,7 @@ namespace KSoft.LowLevel.Util
 		/// </remarks>
 		public static void StructureToPtr<T>(T theObj, IntPtr nativePtr)
 		{
-			Contract.Requires(nativePtr != IntPtr.Zero);
+			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 
 			Marshal.StructureToPtr(theObj, nativePtr, false);
 		}
@@ -52,7 +47,7 @@ namespace KSoft.LowLevel.Util
 		/// <returns>Handle to allocated memory</returns>
 		public static IntPtr New(Type t)
 		{
-			Contract.Requires(t != null);
+			ArgumentNullException.ThrowIfNull(t);
 
 			return Marshal.AllocHGlobal(Marshal.SizeOf(t));
 		}
@@ -68,7 +63,7 @@ namespace KSoft.LowLevel.Util
 		/// <param name="nativePtr">Memory allocated by <c>New</c></param>
 		public static void Delete(IntPtr nativePtr)
 		{
-			Contract.Requires(nativePtr != IntPtr.Zero);
+			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 
 			Marshal.FreeHGlobal(nativePtr);
 		}
@@ -84,6 +79,14 @@ namespace KSoft.LowLevel.Util
 #else
 				Marshal.SizeOf<T>();
 #endif
+		}
+
+		static void ThrowIfZeroPointer(IntPtr nativePtr, string paramName)
+		{
+			if (nativePtr == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(paramName);
+			}
 		}
 	};
 }
