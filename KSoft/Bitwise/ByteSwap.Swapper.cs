@@ -33,9 +33,7 @@ namespace KSoft.Bitwise
 
 			public int SwapData(byte[] buffer, int startIndex = 0)
 			{
-				ArgumentNullException.ThrowIfNull(buffer);
-				ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-				ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+				Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
 
 				return SwapData(buffer, startIndex, out int _, out int _);
 			}

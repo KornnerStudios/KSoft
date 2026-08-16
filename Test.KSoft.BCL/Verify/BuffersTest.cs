@@ -36,4 +36,48 @@ public class BuffersTest : BaseTestClass
 
 		Verify.Buffers.CountWithinLength(valid, valid.Length);
 	}
+
+	[TestMethod]
+	public void StartIndexWithinLength_ThrowsExpectedExceptions()
+	{
+		byte[] buffer = null!;
+		byte[] valid = new byte[1];
+		int startIndex = -1;
+		int tooLargeStartIndex = 2;
+
+		AssertThrowsArgumentNull(() => Verify.Buffers.StartIndexWithinLength(buffer, 0), nameof(buffer));
+		AssertThrowsArgumentOutOfRange(() => Verify.Buffers.StartIndexWithinLength(valid, startIndex), nameof(startIndex));
+		AssertThrowsArgumentOutOfRange(
+			() => Verify.Buffers.StartIndexWithinLength(valid, tooLargeStartIndex),
+			nameof(tooLargeStartIndex));
+
+		Verify.Buffers.StartIndexWithinLength(valid, valid.Length);
+	}
+
+	[TestMethod]
+	public void OffsetAndLengthWithinLength_ThrowsExpectedExceptions()
+	{
+		byte[] buffer = null!;
+		byte[] valid = new byte[1];
+		int offset = -1;
+		int length = -1;
+		int tooLargeOffset = 2;
+		int tooLargeLength = 2;
+
+		AssertThrowsArgumentNull(() => Verify.Buffers.OffsetAndLengthWithinLength(buffer, 0, 0), nameof(buffer));
+		AssertThrowsArgumentOutOfRange(
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, offset, 0),
+			nameof(offset));
+		AssertThrowsArgumentOutOfRange(
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, length),
+			nameof(length));
+		AssertThrowsArgumentOutOfRange(
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, tooLargeOffset, 0),
+			nameof(tooLargeOffset));
+		AssertThrowsArgumentOutOfRange(
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, tooLargeLength),
+			nameof(tooLargeLength));
+
+		Verify.Buffers.OffsetAndLengthWithinLength(valid, valid.Length, 0);
+	}
 }

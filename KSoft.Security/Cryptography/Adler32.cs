@@ -13,14 +13,7 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Compute(byte[] buffer, int offset, int length, uint adler32 = 1)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(offset);
-			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
-			if (length > buffer.Length - offset)
-			{
-				throw new ArgumentOutOfRangeException(nameof(length));
-			}
+			Verify.Buffers.OffsetAndLengthWithinLength(buffer, offset, length);
 
 			var computer = new BitComputer(adler32);
 			computer.Compute(buffer, offset, length);

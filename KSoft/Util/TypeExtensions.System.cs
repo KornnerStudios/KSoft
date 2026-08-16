@@ -1414,9 +1414,7 @@ namespace KSoft
 		public static void SafeNotify(this PropertyChangedEventHandler handler,
 			object sender, PropertyChangedEventArgs[] argsList, int startIndex = 0)
 		{
-			ArgumentNullException.ThrowIfNull(argsList);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, argsList.Length);
+			Verify.Buffers.StartIndexWithinLength(argsList, startIndex);
 
 			if (handler != null)
 			{

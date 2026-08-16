@@ -85,9 +85,7 @@ namespace KSoft.Bitwise
 			Contract.Ensures(Contract.Result<int>() >= 0);
 
 			ArgumentNullException.ThrowIfNull(definition);
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 			if ((long)count * definition.SizeOf > buffer.Length - startIndex)
 			{

@@ -41,14 +41,7 @@ namespace KSoft.Security.Cryptography
 
 			public void Compute(byte[] buffer, int offset, int length)
 			{
-				ArgumentNullException.ThrowIfNull(buffer);
-				ArgumentOutOfRangeException.ThrowIfNegative(offset);
-				ArgumentOutOfRangeException.ThrowIfNegative(length);
-				ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length);
-				if (length > buffer.Length - offset)
-				{
-					throw new ArgumentOutOfRangeException(nameof(length));
-				}
+				Verify.Buffers.OffsetAndLengthWithinLength(buffer, offset, length);
 
 				for (int x = 0; x < length; x++)
 				{

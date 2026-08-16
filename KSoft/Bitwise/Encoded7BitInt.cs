@@ -34,18 +34,14 @@ namespace KSoft.Bitwise
 
 		static void ValidateReadRange(byte[] buffer, int startIndex, int maxCount)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(maxCount, buffer.Length - startIndex);
 		}
 
 		static void ValidateWriteRange(byte[] buffer, int startIndex, int encodedByteCount)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length);
+			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
 			if (encodedByteCount > buffer.Length - startIndex)
 			{
 				throw new ArgumentException("Destination buffer is too small.", nameof(buffer));
