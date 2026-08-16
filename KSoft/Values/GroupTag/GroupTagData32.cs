@@ -143,7 +143,7 @@ namespace KSoft.Values
 		/// <returns>dword byte swapped four character code</returns>
 		public static char[] Swap(char[] tag)
 		{
-			Contract.Requires(tag != null);
+			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			Contract.Ensures(Contract.Result<char[]>() != null);
@@ -166,7 +166,8 @@ namespace KSoft.Values
 		/// <returns>True if both are equal</returns>
 		public static bool Test(char[] tag1, char[] tag2)
 		{
-			Contract.Requires(tag1 != null && tag2 != null);
+			ArgumentNullException.ThrowIfNull(tag1);
+			ArgumentNullException.ThrowIfNull(tag2);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag1.Length, kExpectedTagLength, nameof(tag1));
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag2.Length, kExpectedTagLength, nameof(tag2));
 
@@ -188,7 +189,7 @@ namespace KSoft.Values
 		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
 		public static TagWord ToUInt(char[] tag)
 		{
-			Contract.Requires(tag != null);
+			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			var value = (TagWord)(
@@ -212,7 +213,7 @@ namespace KSoft.Values
 		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
 		public static TagWord ToUInt(string tag)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(tag));
+			ArgumentException.ThrowIfNullOrEmpty(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			var value = (TagWord)(
@@ -237,7 +238,10 @@ namespace KSoft.Values
 		/// <returns>big-endian ordered four-cc if <paramref name="isBigEndian"/> is true, little-endian if false</returns>
 		public static char[] FromUInt(TagWord groupTag, char[] tag = null, bool isBigEndian = true)
 		{
-			Contract.Requires(tag == null || tag.Length >= 4);
+			if (tag != null && tag.Length < kExpectedTagLength)
+			{
+				throw new ArgumentOutOfRangeException(nameof(tag));
+			}
 
 			Contract.Ensures(Contract.Result<char[]>() != null);
 			Contract.Ensures(Contract.Result<char[]>().Length >= kExpectedTagLength);

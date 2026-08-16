@@ -46,6 +46,18 @@ public sealed class GroupTagTest : BaseTestClass
 		AssertThrowsArgumentOutOfRange("tag2", () => _ = GroupTagData32.Test(new char[4], new char[3]));
 		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.ToUInt(new char[3]));
 		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.ToUInt("abc"));
+		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.FromUInt(0, new char[3]));
+	}
+
+	[TestMethod]
+	public void GroupTagData32_NullTags_ThrowArgumentNullException()
+	{
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.Swap(null!));
+		AssertThrowsArgumentNull("tag1", () => _ = GroupTagData32.Test(null!, new char[4]));
+		AssertThrowsArgumentNull("tag2", () => _ = GroupTagData32.Test(new char[4], null!));
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.ToUInt((char[])null!));
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.ToUInt((string)null!));
+		AssertThrowsArgument("tag", () => _ = GroupTagData32.ToUInt(string.Empty));
 	}
 
 	[TestMethod]
@@ -56,6 +68,18 @@ public sealed class GroupTagTest : BaseTestClass
 		AssertThrowsArgumentOutOfRange("tag2", () => _ = GroupTagData64.Test(new char[8], new char[7]));
 		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.ToULong(new char[7]));
 		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.ToULong("tag7chr"));
+		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.FromULong(0, new char[7]));
+	}
+
+	[TestMethod]
+	public void GroupTagData64_NullTags_ThrowArgumentNullException()
+	{
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.Swap(null!));
+		AssertThrowsArgumentNull("tag1", () => _ = GroupTagData64.Test(null!, new char[8]));
+		AssertThrowsArgumentNull("tag2", () => _ = GroupTagData64.Test(new char[8], null!));
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((char[])null!));
+		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((string)null!));
+		AssertThrowsArgument("tag", () => _ = GroupTagData64.ToULong(string.Empty));
 	}
 
 	[TestMethod]
