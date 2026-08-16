@@ -11,6 +11,15 @@ namespace KSoft
 {
 	partial class EnumBitEncoder32<TEnum>
 	{
+		static void ValidateBitIndex(int bitIndex)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
+			if (bitIndex >= Bits.kInt64BitCount || (bitIndex+kBitCount) >= Bits.kInt64BitCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(bitIndex));
+			}
+		}
+
 		// Only added this really to ease the coding of HandleBitEncoder
 		/// <summary>Bit encode an enumeration value into an unsigned integer</summary>
 		/// <param name="value">Enumeration value to encode</param>
@@ -23,9 +32,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public void BitEncode(TEnum value, ref ulong bits, ref int bitIndex)
 		{
-			Contract.Requires(bitIndex >= 0);
-			Contract.Requires(bitIndex < Bits.kInt64BitCount);
-			Contract.Requires((bitIndex+kBitCount) < Bits.kInt64BitCount);
+			ValidateBitIndex(bitIndex);
 
 			ulong v = Reflection.EnumValue<TEnum>.ToUInt32(value);
 			if (kHasNone)
@@ -52,9 +59,7 @@ namespace KSoft
 		[Contracts.Pure]
 		public TEnum BitDecode(ulong bits, ref int bitIndex)
 		{
-			Contract.Requires(bitIndex >= 0);
-			Contract.Requires(bitIndex < Bits.kInt64BitCount);
-			Contract.Requires((bitIndex+kBitCount) < Bits.kInt64BitCount);
+			ValidateBitIndex(bitIndex);
 
 			ulong v = Bits.BitDecode(bits, bitIndex, kBitmask);
 			if (kHasNone)

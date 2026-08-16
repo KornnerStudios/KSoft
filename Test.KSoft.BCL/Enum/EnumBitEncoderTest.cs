@@ -217,6 +217,47 @@ namespace KSoft.Test
 			Test32Helper<FlagsTest, FlagsTestInformal>(FlagsTest.Member3 | FlagsTest.Member4);
 			TestNone32Helper(EnumTestWithNone.Member3, EnumTestWithNone.None);
 		}
+
+		[TestMethod]
+		public void Enum_BitEncoder32InvalidBitIndexThrowsExpectedExceptions()
+		{
+			var encoder = new EnumBitEncoder32<EnumTest>();
+			int overflowIndex = Bits.kInt64BitCount - EnumBitEncoder32<EnumTest>.kBitCount;
+
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				ulong bits = 0;
+				int bitIndex = -1;
+				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
+			});
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				ulong bits = 0;
+				int bitIndex = Bits.kInt64BitCount;
+				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
+			});
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				ulong bits = 0;
+				int bitIndex = overflowIndex;
+				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
+			});
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				int bitIndex = -1;
+				_ = encoder.BitDecode(0UL, ref bitIndex);
+			});
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				int bitIndex = Bits.kInt64BitCount;
+				_ = encoder.BitDecode(0UL, ref bitIndex);
+			});
+			AssertArgumentOutOfRange("bitIndex", () =>
+			{
+				int bitIndex = overflowIndex;
+				_ = encoder.BitDecode(0UL, ref bitIndex);
+			});
+		}
 		#endregion
 
 		#region 64-bit tests
