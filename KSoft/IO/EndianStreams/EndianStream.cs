@@ -160,8 +160,18 @@ namespace KSoft.IO
 		#endregion
 
 		#region IKSoftStreamWithVirtualBuffer Members
-		public long VirtualBufferStart { get; set; }
-		public long VirtualBufferLength { get; set; }
+		long mVirtualBufferStart;
+		public long VirtualBufferStart { get => mVirtualBufferStart; set {
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
+
+			mVirtualBufferStart = value;
+		} }
+		long mVirtualBufferLength;
+		public long VirtualBufferLength { get => mVirtualBufferLength; set {
+			ArgumentOutOfRangeException.ThrowIfNegative(value);
+
+			mVirtualBufferLength = value;
+		} }
 		#endregion
 
 		#region IKSoftEndianStream

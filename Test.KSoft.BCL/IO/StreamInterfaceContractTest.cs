@@ -7,11 +7,6 @@ namespace KSoft.IO.Test
 	[TestClass]
 	public sealed class StreamInterfaceContractTest : BaseTestClass
 	{
-		sealed class VirtualBufferContract : KSoft.IO.IKSoftStreamWithVirtualBufferContract
-		{
-			public override Stream BaseStream => Stream.Null;
-		}
-
 		sealed class ModeableContract : KSoft.IO.IKSoftStreamModeableContract
 		{
 			readonly FileAccess mStreamPermissions;
@@ -32,12 +27,12 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void IO_VirtualBufferContractSettersRejectNegativeValuesTest()
+		public void IO_VirtualBufferSettersRejectNegativeValuesTest()
 		{
-			var contract = new VirtualBufferContract();
+			using var stream = new EndianStream(new MemoryStream());
 
-			AssertThrowsArgumentOutOfRange(() => contract.VirtualBufferStart = -1, "value");
-			AssertThrowsArgumentOutOfRange(() => contract.VirtualBufferLength = -1, "value");
+			AssertThrowsArgumentOutOfRange(() => stream.VirtualBufferStart = -1, "value");
+			AssertThrowsArgumentOutOfRange(() => stream.VirtualBufferLength = -1, "value");
 		}
 
 		[TestMethod]
