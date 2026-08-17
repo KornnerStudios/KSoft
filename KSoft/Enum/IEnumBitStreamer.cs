@@ -1,10 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -12,7 +6,6 @@ namespace KSoft.IO
 	/// Interface for using an <see cref="EnumBinaryStreamer{TEnum,TStreamType}"/>'s functionality via an instance object
 	/// </summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
-	[Contracts.ContractClass(typeof(IEnumBitStreamerContract<>))]
 	public interface IEnumBitStreamer<TEnum>
 		where TEnum : struct, Enum
 	{
@@ -38,39 +31,5 @@ namespace KSoft.IO
 		/// <param name="value">Value read from the stream</param>
 		/// <param name="bitCount">Number of bits to stream</param>
 		void Stream(IO.BitStream s, ref TEnum value, int bitCount);
-	};
-
-	[Contracts.ContractClassFor(typeof(IEnumBitStreamer<>))]
-	abstract class IEnumBitStreamerContract<TEnum> : IEnumBitStreamer<TEnum>
-		where TEnum : struct, Enum
-	{
-		public TEnum Read(IO.BitStream s, int bitCount)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-			Contract.Requires(bitCount > 0);
-
-			throw new NotImplementedException();
-		}
-		public void Read(IO.BitStream s, out TEnum value, int bitCount)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-			Contract.Requires(bitCount > 0);
-
-			throw new NotImplementedException();
-		}
-		public void Write(IO.BitStream s, TEnum value, int bitCount)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-			Contract.Requires(bitCount > 0);
-
-			throw new NotImplementedException();
-		}
-		public void Stream(IO.BitStream s, ref TEnum value, int bitCount)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-			Contract.Requires(bitCount > 0);
-
-			throw new NotImplementedException();
-		}
 	};
 }

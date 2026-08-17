@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -21,7 +20,6 @@ namespace KSoft.IO
 	/// Interface for using an <see cref="EnumBinaryStreamer{TEnum,TStreamType}"/>'s functionality via an instance object
 	/// </summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
-	[Contracts.ContractClass(typeof(IEnumBinaryStreamerContract<>))]
 	public interface IEnumBinaryStreamer<TEnum>
 		where TEnum : struct, Enum
 	{
@@ -39,29 +37,6 @@ namespace KSoft.IO
 		/// <param name="value"></param>
 		void Write(BinaryWriter s, TEnum value);
 	};
-	[Contracts.ContractClassFor(typeof(IEnumBinaryStreamer<>))]
-	abstract class IEnumBinaryStreamerContract<TEnum> : IEnumBinaryStreamer<TEnum>
-		where TEnum : struct, Enum
-	{
-		public TEnum Read(BinaryReader s)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-
-			throw new NotImplementedException();
-		}
-		public void Read(BinaryReader s, out TEnum value)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-
-			throw new NotImplementedException();
-		}
-		public void Write(BinaryWriter s, TEnum value)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-
-			throw new NotImplementedException();
-		}
-	};
 	#endregion
 
 	#region IEnumEndianStreamer
@@ -69,26 +44,10 @@ namespace KSoft.IO
 	/// Interface for using an <see cref="EnumBinaryStreamer{TEnum,TStreamType}"/>'s functionality via an instance object
 	/// </summary>
 	/// <typeparam name="TEnum">Enum type to stream</typeparam>
-	[Contracts.ContractClass(typeof(IEnumEndianStreamerContract<>))]
 	public interface IEnumEndianStreamer<TEnum> : IEnumBinaryStreamer<TEnum>
 		where TEnum : struct, Enum
 	{
 		void Stream(IO.EndianStream s, ref TEnum value);
-	};
-	[Contracts.ContractClassFor(typeof(IEnumEndianStreamer<>))]
-	abstract class IEnumEndianStreamerContract<TEnum> : IEnumEndianStreamer<TEnum>
-		where TEnum : struct, Enum
-	{
-		public abstract TEnum Read(BinaryReader s);
-		public abstract void Read(BinaryReader s, out TEnum value);
-		public abstract void Write(BinaryWriter s, TEnum value);
-
-		public void Stream(IO.EndianStream s, ref TEnum value)
-		{
-			ArgumentNullException.ThrowIfNull(s);
-
-			throw new NotImplementedException();
-		}
 	};
 	#endregion
 

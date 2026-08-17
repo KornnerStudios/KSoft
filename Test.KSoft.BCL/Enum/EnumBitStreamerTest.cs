@@ -107,11 +107,36 @@ namespace KSoft.IO.Test
 		public void Enum_BitStreamerNullStreamsThrowArgumentNullExceptionTest()
 		{
 			var value = System.TypeCode.String;
+			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
 
 			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, 32));
 			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, out value, 32));
 			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Write(null, value, 32));
 			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Stream(null, ref value, 32));
+
+			Assert.ThrowsExactly<ArgumentNullException>(() => streamer.Read(null, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => streamer.Read(null, out value, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => streamer.Write(null, value, 32));
+			Assert.ThrowsExactly<ArgumentNullException>(() => streamer.Stream(null, ref value, 32));
+		}
+
+		[TestMethod]
+		public void Enum_BitStreamerBitCountGuardsThrowArgumentOutOfRangeExceptionTest()
+		{
+			var value = System.TypeCode.String;
+			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
+
+			using var stream = new IO.BitStream(new System.IO.MemoryStream());
+
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => TypeCodeStreamer32.Read(stream, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => TypeCodeStreamer32.Read(stream, out value, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => TypeCodeStreamer32.Write(stream, value, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => TypeCodeStreamer32.Stream(stream, ref value, 0));
+
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => streamer.Read(stream, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => streamer.Read(stream, out value, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => streamer.Write(stream, value, 0));
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => streamer.Stream(stream, ref value, 0));
 		}
 
 		[TestMethod]

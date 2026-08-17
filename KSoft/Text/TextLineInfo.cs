@@ -1,27 +1,13 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Text
 {
-	[Contracts.ContractClass(typeof(ITextLineInfoContract))]
 	public interface ITextLineInfo
 	{
 		bool HasLineInfo { get; }
 
 		int LineNumber { get; }
 		int LinePosition { get; }
-	};
-	[Contracts.ContractClassFor(typeof(ITextLineInfo))]
-	abstract class ITextLineInfoContract : ITextLineInfo
-	{
-		public bool HasLineInfo => throw new NotImplementedException();
-
-		public int LineNumber { get {
-			throw new NotImplementedException();
-		} }
-		public int LinePosition { get {
-			throw new NotImplementedException();
-		} }
 	};
 
 	public readonly struct TextLineInfo

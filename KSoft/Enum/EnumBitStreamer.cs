@@ -483,6 +483,7 @@ namespace KSoft.IO
 		public static TEnum Read(IO.BitStream s, int bitCount)
 		{
 			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
 			kRead(s, out TEnum value, bitCount);
 
@@ -495,6 +496,7 @@ namespace KSoft.IO
 		public static void Read(IO.BitStream s, out TEnum value, int bitCount)
 		{
 			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
 			kRead(s, out value, bitCount);
 		}
@@ -505,6 +507,7 @@ namespace KSoft.IO
 		public static void Write(IO.BitStream s, TEnum value, int bitCount)
 		{
 			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
 			kWrite(s, value, bitCount);
 		}
@@ -516,6 +519,7 @@ namespace KSoft.IO
 		public static void Stream(IO.BitStream s, ref TEnum value, int bitCount)
 		{
 			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitCount);
 
 				 if (s.IsReading) { Read(s, out value, bitCount); }
 			else if (s.IsWriting) { Write(s, value, bitCount); }

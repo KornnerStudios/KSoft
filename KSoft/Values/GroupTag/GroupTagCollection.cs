@@ -6,7 +6,6 @@ using Contracts = System.Diagnostics.Contracts;
 namespace KSoft.Values
 {
 	/// <summary>Base interface for Group Tag collections</summary>
-	[Contracts.ContractClass(typeof(GroupTagCollectionContract))]
 	public abstract class GroupTagCollection
 		: IReadOnlyList<GroupTagData>
 		, IO.IEndianStreamable
@@ -216,18 +215,5 @@ namespace KSoft.Values
 		public IEnumerator<GroupTagData> GetEnumerator() => (IEnumerator<GroupTagData>)BaseGroupTags.GetEnumerator();
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => BaseGroupTags.GetEnumerator();
 		#endregion
-	};
-	[Contracts.ContractClassFor(typeof(GroupTagCollection))]
-	abstract class GroupTagCollectionContract : GroupTagCollection
-	{
-		protected GroupTagCollectionContract() : base(null) => throw new NotImplementedException();
-
-		protected override GroupTagData[] BaseGroupTags { get {
-			throw new NotImplementedException();
-		} }
-
-		public override GroupTagData NullGroupTag { get {
-			throw new NotImplementedException();
-		} }
 	};
 }
