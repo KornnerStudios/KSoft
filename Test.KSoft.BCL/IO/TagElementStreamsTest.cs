@@ -19,6 +19,19 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		Beta = 2,
 	}
 
+	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
+	{
+		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
+
+		Assert.AreEqual(paramName, exception.ParamName);
+	}
+	static void AssertThrowsInvalidStreamMode(Action action)
+	{
+		var exception = Assert.ThrowsExactly<InvalidOperationException>(action);
+
+		Assert.AreEqual("Stream doesn't support the requested access mode", exception.Message);
+	}
+
 	[TestMethod]
 	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShapeTest()
 	{
@@ -164,6 +177,37 @@ public sealed class TagElementStreamsTest : BaseTestClass
 			TagElementStreamFactory.Open(new MemoryStream(), TagElementStreamFormat.Undefined, FileAccess.Read));
 	}
 
+	[TestMethod]
+	public void XmlElementStream_StreamModeInitialization_SeparatesPermissionsFromModeTest()
+	{
+		using var readWriteStream = CreateReadWriteStream("<root />");
+		using var readStream = CreateReadStream("<root />");
+		using var writeStream = XmlElementStream.CreateForWrite("root");
+
+		Assert.AreEqual(FileAccess.ReadWrite, readWriteStream.StreamPermissions);
+		Assert.AreEqual((FileAccess)0, readWriteStream.StreamMode);
+		Assert.AreEqual(FileAccess.Read, readStream.StreamPermissions);
+		Assert.AreEqual(FileAccess.Read, readStream.StreamMode);
+		Assert.AreEqual(FileAccess.Write, writeStream.StreamPermissions);
+		Assert.AreEqual(FileAccess.Write, writeStream.StreamMode);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_StreamModeSetterRejectsInvalidModesTest()
+	{
+		using var readWriteStream = CreateReadWriteStream("<root />");
+		using var readStream = CreateReadStream("<root />");
+		using var writeStream = XmlElementStream.CreateForWrite("root");
+
+		readWriteStream.StreamMode = FileAccess.Read;
+		readWriteStream.StreamMode = FileAccess.Write;
+		readWriteStream.StreamMode = 0;
+		AssertThrowsArgumentOutOfRange(() => readWriteStream.StreamMode = FileAccess.ReadWrite, "value");
+		AssertThrowsArgumentOutOfRange(() => readWriteStream.StreamMode = (FileAccess)4, "value");
+		AssertThrowsInvalidStreamMode(() => readStream.StreamMode = FileAccess.Write);
+		AssertThrowsInvalidStreamMode(() => writeStream.StreamMode = FileAccess.Read);
+	}
+
 	static XmlElementStream CreateReadStream(string xml)
 	{
 		var document = new Xml.XmlDocumentWithLocation
@@ -173,5 +217,15 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		document.LoadXml(xml);
 
 		return new XmlElementStream(document, document.DocumentElement, FileAccess.Read);
+	}
+	static XmlElementStream CreateReadWriteStream(string xml)
+	{
+		var document = new Xml.XmlDocumentWithLocation
+		{
+			XmlResolver = null,
+		};
+		document.LoadXml(xml);
+
+		return new XmlElementStream(document, document.DocumentElement);
 	}
 }

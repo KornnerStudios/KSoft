@@ -1,18 +1,11 @@
 ﻿using System;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
 	// For the lack of a better name...
 
 	/// <summary>Exposes data streaming state information and control</summary>
-	[Contracts.ContractClass(typeof(IKSoftStreamModeableContract))]
 	public interface IKSoftStreamModeable
 	{
 		/// <summary>Supported access permissions for the stream</summary>
@@ -23,25 +16,26 @@ namespace KSoft.IO
 		FileAccess StreamMode { get; set; }
 	};
 
-	[Contracts.ContractClassFor(typeof(IKSoftStreamModeable))]
-	abstract class IKSoftStreamModeableContract : IKSoftStreamModeable
+	internal static class StreamModeUtil
 	{
-		public abstract FileAccess StreamPermissions { get; }
+		const string kUnsupportedAccessModeMessage = "Stream doesn't support the requested access mode";
 
-		public FileAccess StreamMode {
-			get {
-				Contract.Ensures(Contract.Result<FileAccess>() < FileAccess.ReadWrite,
-					"StreamMode was unset before use!");
+		public static void ValidateMode(FileAccess value, FileAccess permissions)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative((int)value, nameof(value));
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((int)value, (int)FileAccess.ReadWrite, nameof(value));
+			if ((permissions & value) != value)
+				throw new InvalidOperationException(kUnsupportedAccessModeMessage);
+		}
 
-				throw new NotImplementedException();
-			}
-			set {
-				ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((int)value, (int)FileAccess.ReadWrite, nameof(value));
-				if ((StreamPermissions & value) != value)
-					throw new InvalidOperationException("Stream doesn't support the requested access mode");
+		public static FileAccess ToInitialMode(FileAccess permissions)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative((int)permissions, nameof(permissions));
+			ArgumentOutOfRangeException.ThrowIfGreaterThan((int)permissions, (int)FileAccess.ReadWrite, nameof(permissions));
 
-				throw new NotImplementedException();
-			}
+			return permissions == FileAccess.ReadWrite
+				? 0
+				: permissions;
 		}
 	};
 }

@@ -183,7 +183,8 @@ namespace KSoft.IO
 				throw new System.IO.InvalidDataException("Failed to load " + StreamName, ex);
 			}
 
-			StreamMode = StreamPermissions = permissions;
+			StreamPermissions = permissions;
+			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
 			this.Owner = owner;
 		}
@@ -220,7 +221,8 @@ namespace KSoft.IO
 				throw new System.IO.InvalidDataException("Failed to load " + StreamName, ex);
 			}
 
-			StreamMode = StreamPermissions = permissions;
+			StreamPermissions = permissions;
+			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
 			this.Owner = owner;
 		}
@@ -244,7 +246,8 @@ namespace KSoft.IO
 
 			this.StreamName = string.Format(Util.InvariantCultureInfo, "XmlDocument:{0}", document.Name);
 
-			StreamMode = StreamPermissions = permissions;
+			StreamPermissions = permissions;
+			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
 			this.Owner = owner;
 		}
@@ -269,7 +272,8 @@ namespace KSoft.IO
 				Owner = owner,
 			};
 
-			@this.StreamMode = @this.StreamPermissions = System.IO.FileAccess.Write;
+			@this.StreamPermissions = System.IO.FileAccess.Write;
+			@this.StreamMode = System.IO.FileAccess.Write;
 
 			@this.InitializeAtRootElement();
 

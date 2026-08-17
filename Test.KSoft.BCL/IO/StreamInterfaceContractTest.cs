@@ -7,23 +7,17 @@ namespace KSoft.IO.Test
 	[TestClass]
 	public sealed class StreamInterfaceContractTest : BaseTestClass
 	{
-		sealed class ModeableContract : KSoft.IO.IKSoftStreamModeableContract
-		{
-			readonly FileAccess mStreamPermissions;
-
-			public ModeableContract(FileAccess streamPermissions)
-			{
-				mStreamPermissions = streamPermissions;
-			}
-
-			public override FileAccess StreamPermissions => mStreamPermissions;
-		}
-
 		static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
 		{
 			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
 
 			Assert.AreEqual(paramName, exception.ParamName);
+		}
+		static void AssertThrowsInvalidStreamMode(Action action)
+		{
+			var exception = Assert.ThrowsExactly<InvalidOperationException>(action);
+
+			Assert.AreEqual("Stream doesn't support the requested access mode", exception.Message);
 		}
 
 		[TestMethod]
@@ -36,21 +30,25 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void IO_StreamModeableContractSetterRejectsReadWriteModeTest()
+		public void IO_StreamModeableSettersRejectReadWriteModeTest()
 		{
-			var contract = new ModeableContract(FileAccess.ReadWrite);
+			using var endianStream = new EndianStream(new MemoryStream());
+			using var bitStream = new BitStream(new MemoryStream());
 
-			AssertThrowsArgumentOutOfRange(() => contract.StreamMode = FileAccess.ReadWrite, "value");
-			AssertThrowsArgumentOutOfRange(() => contract.StreamMode = (FileAccess)4, "value");
+			AssertThrowsArgumentOutOfRange(() => endianStream.StreamMode = FileAccess.ReadWrite, "value");
+			AssertThrowsArgumentOutOfRange(() => endianStream.StreamMode = (FileAccess)4, "value");
+			AssertThrowsArgumentOutOfRange(() => bitStream.StreamMode = FileAccess.ReadWrite, "value");
+			AssertThrowsArgumentOutOfRange(() => bitStream.StreamMode = (FileAccess)4, "value");
 		}
 
 		[TestMethod]
-		public void IO_StreamModeableContractSetterRejectsUnsupportedPermissionsTest()
+		public void IO_StreamModeableSettersRejectUnsupportedPermissionsTest()
 		{
-			var contract = new ModeableContract(FileAccess.Read);
-			var exception = Assert.ThrowsExactly<InvalidOperationException>(() => contract.StreamMode = FileAccess.Write);
+			using var endianStream = new EndianStream(new MemoryStream(), FileAccess.Read);
+			using var bitStream = new BitStream(new MemoryStream(), FileAccess.Read);
 
-			Assert.AreEqual("Stream doesn't support the requested access mode", exception.Message);
+			AssertThrowsInvalidStreamMode(() => endianStream.StreamMode = FileAccess.Write);
+			AssertThrowsInvalidStreamMode(() => bitStream.StreamMode = FileAccess.Write);
 		}
 	};
 }

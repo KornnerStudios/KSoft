@@ -60,6 +60,8 @@ namespace KSoft.IO
 		/// <summary>Current data streaming state</summary>
 		/// <remarks>Read or Write, not both</remarks>
 		public FileAccess StreamMode { get { return mStreamMode; } set {
+			StreamModeUtil.ValidateMode(value, StreamPermissions);
+
 			if (value != mStreamMode)
 			{
 				// if we're switching to Read, flush then warm the cache

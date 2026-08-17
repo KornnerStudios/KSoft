@@ -39,9 +39,14 @@ namespace KSoft.IO
 		#endregion
 
 		#region IKSoftStreamModeable
-		public System.IO.FileAccess StreamMode { get; set; }
-		public bool IsReading { get { return StreamMode == System.IO.FileAccess.Read; } }
-		public bool IsWriting { get { return StreamMode == System.IO.FileAccess.Write; } }
+		System.IO.FileAccess mStreamMode;
+		public System.IO.FileAccess StreamMode { get => mStreamMode; set {
+			StreamModeUtil.ValidateMode(value, StreamPermissions);
+
+			mStreamMode = value;
+		} }
+		public bool IsReading { get { return mStreamMode == System.IO.FileAccess.Read; } }
+		public bool IsWriting { get { return mStreamMode == System.IO.FileAccess.Write; } }
 
 		/// <summary>Supported access permissions for this stream</summary>
 		public System.IO.FileAccess StreamPermissions { get; protected set; }

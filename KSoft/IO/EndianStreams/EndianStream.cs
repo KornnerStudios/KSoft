@@ -154,7 +154,12 @@ namespace KSoft.IO
 
 		#region IKSoftStreamModeable
 		public FileAccess StreamPermissions { get; private set; }
-		public FileAccess StreamMode { get; set; }
+		FileAccess mStreamMode;
+		public FileAccess StreamMode { get => mStreamMode; set {
+			StreamModeUtil.ValidateMode(value, StreamPermissions);
+
+			mStreamMode = value;
+		} }
 		public bool IsReading { get { return StreamMode == FileAccess.Read; } }
 		public bool IsWriting { get { return StreamMode == FileAccess.Write; } }
 		#endregion
