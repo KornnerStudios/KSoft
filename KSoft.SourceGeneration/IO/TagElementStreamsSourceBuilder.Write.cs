@@ -292,9 +292,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
 			if (includeCursorContract)
 			{
-				writer.WriteLine(
-					"Contract.Requires(Cursor != null, " +
-					"TagElementStreamContract<TDoc, TCursor, TName>.kCursorNullMsg);");
+				writer.WriteLine("Contract.Requires(Cursor != null, kCursorNullMsg);");
 			}
 
 			if (!onTrue && keyword == "string")

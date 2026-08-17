@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 
 namespace KSoft.IO
 {
@@ -70,6 +71,9 @@ namespace KSoft.IO
 		#region WriteAttribute
 		protected override void CursorWriteAttribute(string name, string value)
 		{
+			if (Cursor == null)
+				throw new InvalidOperationException(kCursorNullMsg);
+
 			ValidateWritePermission();
 
 			Cursor.SetAttribute(name, value);

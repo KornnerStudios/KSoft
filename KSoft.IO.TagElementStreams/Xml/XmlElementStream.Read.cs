@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -57,6 +58,8 @@ namespace KSoft.IO
 		#region ReadElement
 		public override void ReadElementBegin(string name, out XmlElement oldCursor)
 		{
+			ArgumentException.ThrowIfNullOrEmpty(name);
+
 			ValidateReadPermission();
 
 			XmlElement n = Cursor[name];

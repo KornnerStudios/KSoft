@@ -20,7 +20,6 @@ namespace KSoft.IO
 	/// <typeparam name="TDoc">Backing document type (eg, XmlDocument) for this element stream</typeparam>
 	/// <typeparam name="TCursor">Type used to represent Elements</typeparam>
 	/// <typeparam name="TName">Type used to represent name values (eg, string)</typeparam>
-	[Contracts.ContractClass(typeof(TagElementStreamContract<,,>))]
 	public abstract partial class TagElementStream<TDoc, TCursor, TName>
 		: IKSoftStream
 		, IKSoftStreamModeable
@@ -90,6 +89,8 @@ namespace KSoft.IO
 		#endregion
 
 		#region Cursor
+		internal const string kCursorNullMsg = "Element cursor must not be null when writing an attribute.";
+
 		TCursor mCursor;
 		/// <summary>Element data we are streaming data to and from</summary>
 		public TCursor Cursor {
@@ -281,34 +282,6 @@ namespace KSoft.IO
 		public virtual bool ValidateNameArg(TName nodeName, TagElementNodeType nodeType)
 		{
 			return nodeType.RequiresName() == ValidateNameArg(nodeName);
-		}
-	};
-
-	[Contracts.ContractClassFor(typeof(TagElementStream<,,>))]
-	abstract partial class TagElementStreamContract<TDoc, TCursor, TName> : TagElementStream<TDoc, TCursor, TName>
-		where TDoc : class
-		where TCursor : class
-	{
-		public override IEnumerable<TCursor> Elements { get {
-			Contract.Requires(Cursor != null);
-			Contract.Ensures(Contract.Result<IEnumerable<TCursor>>() != null);
-
-			throw new NotImplementedException();
-		} }
-
-		public override IEnumerable<TCursor> ElementsByName(TName localName)
-		{
-			Contract.Requires(ValidateNameArg(localName));
-			Contract.Ensures(Contract.Result<IEnumerable<TCursor>>() != null);
-
-			throw new NotImplementedException();
-		}
-
-		protected override int PredictElementCount(TCursor cursor)
-		{
-			Contract.Requires(cursor != null);
-
-			throw new NotImplementedException();
 		}
 	};
 }

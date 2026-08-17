@@ -105,6 +105,8 @@ namespace KSoft.IO
 
 		public override IEnumerable<XmlElement> ElementsByName(string localName)
 		{
+			ArgumentException.ThrowIfNullOrEmpty(localName);
+
 			if (ElementsExist)
 			{
 				foreach (XmlNode n in Cursor.ChildNodes)
@@ -135,7 +137,12 @@ namespace KSoft.IO
 		}
 
 		/// <see cref="XmlElement.ChildNodes.Count"/>
-		protected override int PredictElementCount(XmlElement cursor) => cursor.ChildNodes.Count;
+		protected override int PredictElementCount(XmlElement cursor)
+		{
+			ArgumentNullException.ThrowIfNull(cursor);
+
+			return cursor.ChildNodes.Count;
+		}
 		#endregion
 
 		#region Constructor

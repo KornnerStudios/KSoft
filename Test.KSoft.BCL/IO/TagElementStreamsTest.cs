@@ -25,6 +25,18 @@ public sealed class TagElementStreamsTest : BaseTestClass
 
 		Assert.AreEqual(paramName, exception.ParamName);
 	}
+	static void AssertThrowsArgument(Action action, string paramName)
+	{
+		try
+		{
+			action();
+			Assert.Fail("Expected an ArgumentException.");
+		}
+		catch (ArgumentException exception)
+		{
+			Assert.AreEqual(paramName, exception.ParamName);
+		}
+	}
 	static void AssertThrowsInvalidStreamMode(Action action)
 	{
 		var exception = Assert.ThrowsExactly<InvalidOperationException>(action);
@@ -206,6 +218,28 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		AssertThrowsArgumentOutOfRange(() => readWriteStream.StreamMode = (FileAccess)4, "value");
 		AssertThrowsInvalidStreamMode(() => readStream.StreamMode = FileAccess.Write);
 		AssertThrowsInvalidStreamMode(() => writeStream.StreamMode = FileAccess.Read);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_InvalidElementNames_ThrowExpectedExceptionsTest()
+	{
+		using var stream = CreateReadStream("<root><child /></root>");
+
+		AssertThrowsArgument(() => stream.ReadElementBegin(null!, out _), "name");
+		AssertThrowsArgument(() => stream.ReadElementBegin(string.Empty, out _), "name");
+		AssertThrowsArgument(() => stream.ElementsByName(null!).GetEnumerator().MoveNext(), "localName");
+		AssertThrowsArgument(() => stream.ElementsByName(string.Empty).GetEnumerator().MoveNext(), "localName");
+	}
+
+	[TestMethod]
+	public void XmlElementStream_WriteAttributeWithoutCursor_ThrowsInvalidOperationTest()
+	{
+		var stream = XmlElementStream.CreateForWrite("root");
+		stream.Dispose();
+
+		var exception = Assert.ThrowsExactly<InvalidOperationException>(() => stream.WriteAttribute("name", "value"));
+
+		Assert.AreEqual("Element cursor must not be null when writing an attribute.", exception.Message);
 	}
 
 	static XmlElementStream CreateReadStream(string xml)

@@ -34,8 +34,6 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine();
 		WriteTagElementStream(writer);
 		writer.WriteLine();
-		WriteTagElementStreamContract(writer);
-		writer.WriteLine();
 		WriteTagElementTextStream(writer);
 
 		return writer.ToString();

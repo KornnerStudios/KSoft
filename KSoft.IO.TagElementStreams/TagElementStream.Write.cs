@@ -119,7 +119,7 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || predicate(value);
@@ -142,7 +142,7 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || !predicate(value);
@@ -158,7 +158,7 @@ namespace KSoft.IO
 		public bool WriteElementOptOnTrue(TName name, Values.KGuid value, Predicate<Values.KGuid> predicate)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc, TCursor, TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || predicate(value);
@@ -183,7 +183,7 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || predicate(value);
@@ -206,7 +206,7 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc,TCursor,TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || !predicate(value);
@@ -222,7 +222,7 @@ namespace KSoft.IO
 		public bool WriteAttributeOptOnTrue(TName name, Values.KGuid value, Predicate<Values.KGuid> predicate)
 		{
 			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, TagElementStreamContract<TDoc, TCursor, TName>.kCursorNullMsg);
+			Contract.Requires(Cursor != null, kCursorNullMsg);
 			Contract.Requires(predicate != null);
 
 			bool result = IgnoreWritePredicates || predicate(value);
@@ -355,29 +355,6 @@ namespace KSoft.IO
 		}
 		#endregion
 	};
-	partial class TagElementStreamContract<TDoc, TCursor, TName>
-	{
-		internal const string kCursorNullMsg = "Element cursor must not be null when writing an attribute.";
-
-		#region WriteAttribute
-		public override void WriteAttributeEnum<TEnum>(TName name, TEnum value, bool isFlags)
-		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-
-			throw new NotImplementedException();
-		}
-
-		public override void WriteAttribute(TName name, Values.KGuid value)
-		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-
-			throw new NotImplementedException();
-		}
-		#endregion
-	};
-
 	/// <summary>
 	/// Helper type for exposing the <see cref="XmlElementStream.WriteElementBegin(string)">WriteElementBegin</see> and
 	/// <see cref="XmlElementStream.WriteElementEnd()">WriteElementEnd</see> in a way which works with the C# "using" statements
