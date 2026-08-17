@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
 	using StateFilterEnumeratorWrapper = EnumeratorWrapper<int, IReadOnlyBitSetEnumerators.StateFilterEnumerator>;
 
-	[Contracts.ContractClass(typeof(IReadOnlyBitSetContract))]
 	public interface IReadOnlyBitSet
 		: ICloneable
 		, IReadOnlyCollection<bool>
@@ -101,154 +94,6 @@ namespace KSoft.Collections
 //		/// <param name="other">The BitSet to compare to the current set</param>
 //		/// <returns>true if the current set is equal to other; otherwise, false</returns>
 //		bool SetEquals(IReadOnlyBitSet other);
-		#endregion
-	};
-	[Contracts.ContractClassFor(typeof(IReadOnlyBitSet))]
-	abstract class IReadOnlyBitSetContract : IReadOnlyBitSet
-	{
-		void ThrowIfBitIndexOutOfRange(int bitIndex, string paramName)
-		{
-			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex, paramName);
-			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Length, paramName);
-		}
-
-		public int Length { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
-			throw new NotImplementedException();
-		} }
-
-		public int Cardinality { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
-			throw new NotImplementedException();
-		} }
-		public int CardinalityZeros { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
-			throw new NotImplementedException();
-		} }
-
-		public bool IsAllClear { get { throw new NotImplementedException(); } }
-
-		public int Version { get { throw new NotImplementedException(); } }
-
-		#region Access
-		public bool this[int bitIndex] { get {
-			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
-
-			throw new NotImplementedException();
-		} }
-		public bool this[int frombitIndex, int toBitIndex] { get {
-			ThrowIfBitIndexOutOfRange(frombitIndex, nameof(frombitIndex));
-			ArgumentOutOfRangeException.ThrowIfLessThan(toBitIndex, frombitIndex);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(toBitIndex, Length);
-
-			throw new NotImplementedException();
-		} }
-
-		public bool Get(int bitIndex)
-		{
-			ThrowIfBitIndexOutOfRange(bitIndex, nameof(bitIndex));
-
-			throw new NotImplementedException();
-		}
-
-		public int NextBitIndex(int startBitIndex, bool stateFilter)
-		{
-			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
-
-			throw new NotImplementedException();
-		}
-		public int NextClearBitIndex(int startBitIndex)
-		{
-			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
-
-			throw new NotImplementedException();
-		}
-		public int NextSetBitIndex(int startBitIndex)
-		{
-			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
-
-			throw new NotImplementedException();
-		}
-
-		public StateFilterEnumeratorWrapper ClearBitIndices { get { throw new NotImplementedException(); } }
-		public StateFilterEnumeratorWrapper SetBitIndices { get { throw new NotImplementedException(); } }
-
-		public bool TestBits(int startBitIndex, int bitCount)
-		{
-			ThrowIfBitIndexOutOfRange(startBitIndex, nameof(startBitIndex));
-			if ((startBitIndex+bitCount) > Length)
-				throw new ArgumentOutOfRangeException(nameof(bitCount));
-
-			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region ISet-like interfaces
-		public bool IsSubsetOf(IReadOnlyBitSet other)
-		{
-			ArgumentNullException.ThrowIfNull(other);
-
-			throw new NotImplementedException();
-		}
-		public bool IsSupersetOf(IReadOnlyBitSet other)
-		{
-			ArgumentNullException.ThrowIfNull(other);
-
-			throw new NotImplementedException();
-		}
-		public bool Overlaps(IReadOnlyBitSet other)
-		{
-			ArgumentNullException.ThrowIfNull(other);
-
-			throw new NotImplementedException();
-		}
-		public bool OverlapsSansZeros(IReadOnlyBitSet other)
-		{
-			ArgumentNullException.ThrowIfNull(other);
-
-			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region IReadOnlyCollection<bool> Members
-		int IReadOnlyCollection<bool>.Count
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		IEnumerator<bool> IEnumerable<bool>.GetEnumerator()
-		{
-			throw new NotImplementedException();
-		}
-
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region ICloneable Members
-		object ICloneable.Clone()
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region IComparable<IReadOnlyBitSet> Members
-		int IComparable<IReadOnlyBitSet>.CompareTo(IReadOnlyBitSet other)
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region IEquatable<IReadOnlyBitSet> Members
-		bool IEquatable<IReadOnlyBitSet>.Equals(IReadOnlyBitSet other)
-		{
-			throw new NotImplementedException();
-		}
 		#endregion
 	};
 }
