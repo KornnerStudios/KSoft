@@ -20,15 +20,6 @@ namespace KSoft.Values
 		#endregion
 		public static readonly IEqualityComparer<GroupTagData> kEqualityComparer = Null;
 
-#if false // ObjectInvariant moot, as all non-user properties are readonly
-		[Contracts.ContractInvariantMethod]
-		void ObjectInvariant()
-		{
-			Contract.Invariant(mTag.Length == kExpectedTagLength);
-		}
-#endif
-
-
 		#region ID
 		readonly TagWord mID;
 		/// <summary>The eight character code translated into a unsigned integer</summary>
@@ -121,7 +112,12 @@ namespace KSoft.Values
 		/// Takes another eight character code and performs a check on it against this object's tag to see if they are completely equal</summary>
 		/// <param name="other"></param>
 		/// <returns>True if equal to this</returns>
-		public override bool Test(char[] other) => GroupTagData64.Test(Tag, other);
+		public override bool Test(char[] other)
+		{
+			ValidateTestArgument(other);
+
+			return GroupTagData64.Test(Tag, other);
+		}
 		/// <summary>Is this <see cref="GroupTagData64"/> equal to the "null" equivalent value?</summary>
 		public override bool IsNull	=> object.ReferenceEquals(this, Null);
 

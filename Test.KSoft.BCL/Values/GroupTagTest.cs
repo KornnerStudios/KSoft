@@ -150,6 +150,33 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void GroupTagData_TestGuards_ThrowExpectedExceptions()
+	{
+		var groupTag32 = new GroupTagData32("test", "Test");
+		var groupTag64 = new GroupTagData64("testtag8", "Test");
+
+		AssertThrowsArgumentNull("other", () => _ = groupTag32.Test(null!));
+		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag32.Test(new char[3]));
+		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag32.Test(new char[5]));
+		Assert.IsTrue(groupTag32.Test("test".ToCharArray()));
+
+		AssertThrowsArgumentNull("other", () => _ = groupTag64.Test(null!));
+		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag64.Test(new char[7]));
+		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag64.Test(new char[9]));
+		Assert.IsTrue(groupTag64.Test("testtag8".ToCharArray()));
+	}
+
+	[TestMethod]
+	public void GroupTagData_EqualsNull_ReturnsFalse()
+	{
+		var groupTag32 = new GroupTagData32("test", "Test");
+		var groupTag64 = new GroupTagData64("testtag8", "Test");
+
+		Assert.IsFalse(groupTag32.Equals((GroupTagData)null!));
+		Assert.IsFalse(groupTag64.Equals((GroupTagData)null!));
+	}
+
+	[TestMethod]
 	public void GroupTagCollections_NullGroupTags_ThrowArgumentNullException()
 	{
 		AssertThrowsArgumentNull("groupTags", () => _ = new GroupTag32Collection((GroupTagData32[])null!));

@@ -1,12 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.WPF
 {
@@ -42,25 +37,50 @@ namespace KSoft.WPF
 
 		public int NumberOfBits { get { return mBitInfo != null ? mBitInfo.Length : 0; } }
 
+		private void ValidateBitIndex(int bitIndex)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);
+			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, NumberOfBits, nameof(bitIndex));
+		}
+
 		public string GetDisplayName(int bitIndex)
 		{
+			ValidateBitIndex(bitIndex);
+
 			var info = mBitInfo[bitIndex];
 
-			return info != null ? info.DisplayName : bitIndex.ToString(KSoft.Util.InvariantCultureInfo);
+			return info?.DisplayName ?? bitIndex.ToString(KSoft.Util.InvariantCultureInfo);
 		}
 
 		public string GetDescription(int bitIndex)
 		{
+			ValidateBitIndex(bitIndex);
+
 			var info = mBitInfo[bitIndex];
 
-			return info != null ? info.Description : string.Empty;
+			return info?.Description ?? string.Empty;
 		}
 
 		public bool IsVisible(int bitIndex)
 		{
+			ValidateBitIndex(bitIndex);
+
 			var info = mBitInfo[bitIndex];
 
 			return info != null && info.Visible;
+		}
+
+		private static void ValidateEnumFactoryArguments(Type enumType, int explicitNumberOfBits)
+		{
+			ArgumentNullException.ThrowIfNull(enumType);
+			if (!Reflection.Util.IsEnumType(enumType))
+			{
+				throw new ArgumentException("Type must be an enum.", nameof(enumType));
+			}
+			if (!explicitNumberOfBits.IsNoneOrPositive())
+			{
+				throw new ArgumentOutOfRangeException(nameof(explicitNumberOfBits));
+			}
 		}
 
 		private void SetInfoFromFactoryData(List<BitUserInterfaceData> bitInfos)
@@ -126,10 +146,7 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
 		{
-			ArgumentNullException.ThrowIfNull(enumType);
-			Contract.Requires(Reflection.Util.IsEnumType(enumType));
-			Contract.Requires(explicitNumberOfBits.IsNoneOrPositive());
-			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
+			ValidateEnumFactoryArguments(enumType, explicitNumberOfBits);
 
 			var bit_field_infos = Reflection.Util.GetEnumFields(enumType);
 			var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
@@ -185,10 +202,7 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForFlagsEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
 		{
-			ArgumentNullException.ThrowIfNull(enumType);
-			Contract.Requires(Reflection.Util.IsEnumType(enumType));
-			Contract.Requires(explicitNumberOfBits.IsNoneOrPositive());
-			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
+			ValidateEnumFactoryArguments(enumType, explicitNumberOfBits);
 
 			var bit_field_infos = Reflection.Util.GetEnumFields(enumType);
 			var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
@@ -245,8 +259,6 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForExplicitData(IEnumerable<BitUserInterfaceData> bitInfos)
 		{
-			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
-
 			var info = new BitVectorUserInterfaceData();
 			if (bitInfos != null)
 			{
@@ -261,8 +273,6 @@ namespace KSoft.WPF
 
 		public static BitVectorUserInterfaceData ForStrings(IEnumerable<string> bitStrings)
 		{
-			Contract.Ensures(Contract.Result<BitVectorUserInterfaceData>() != null);
-
 			var info = new BitVectorUserInterfaceData();
 			if (bitStrings != null)
 			{

@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Values
 {
 	/// <summary>Base interface for Group Tag identifier definitions</summary>
-	[Contracts.ContractClass(typeof(GroupTagDataContract))]
 //	[System.ComponentModel.TypeConverter(typeof(GroupTagDataConverter))]
 	public abstract class GroupTagData
 		: IO.IEndianStreamable
@@ -52,16 +45,6 @@ namespace KSoft.Values
 
 		/// <summary>Guid for this group tag</summary>
 		public KGuid Uuid	{ get; private set; } = KGuid.Empty;
-
-#if false // ObjectInvariant moot, as all non-user properties are readonly
-		[Contracts.ContractInvariantMethod]
-		void ObjectInvariant()
-		{
-			Contract.Invariant(!string.IsNullOrEmpty(mName));
-			Contract.Invariant(mTag != null);
-			Contract.Invariant(!string.IsNullOrEmpty(mTagAsString));
-		}
-#endif
 
 		#region Ctor
 		/// <summary>Only for Null Constructors</summary>
@@ -185,6 +168,13 @@ namespace KSoft.Values
 		/// <param name="other"></param>
 		/// <returns>True if equal to this</returns>
 		public abstract bool Test(char[] other);
+		/// <summary>Validate input for concrete <see cref="Test"/> implementations.</summary>
+		/// <param name="other">Character code to compare against this group tag.</param>
+		protected void ValidateTestArgument(char[] other)
+		{
+			ArgumentNullException.ThrowIfNull(other);
+			ArgumentOutOfRangeException.ThrowIfNotEqual(other.Length, Tag.Length, nameof(other));
+		}
 		/// <summary>Is this Group Tag equal to the "null" equivalent value?</summary>
 		public abstract bool IsNull { get; }
 
@@ -282,27 +272,6 @@ namespace KSoft.Values
 
 		public abstract void Write(IO.EndianWriter s);
 		#endregion
-	};
-	[Contracts.ContractClassFor(typeof(GroupTagData))]
-	abstract class GroupTagDataContract : GroupTagData
-	{
-		GroupTagDataContract() : base(4) {}
-
-		public override bool Test(char[] other)
-		{
-			Contract.Requires(other != null);
-			if (other.Length != Tag.Length)
-				throw new ArgumentOutOfRangeException(nameof(other));
-
-			throw new NotImplementedException();
-		}
-
-		public override bool Equals(GroupTagData other)
-		{
-			Contract.Requires(other != null);
-
-			throw new NotImplementedException();
-		}
 	};
 
 	/// <summary>Base attribute for declaring a <see cref="GroupTagData"/> on a <b>class</b> or <b>struct</b></summary>
