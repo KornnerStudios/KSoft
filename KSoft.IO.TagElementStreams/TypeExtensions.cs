@@ -1,9 +1,4 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 
 namespace KSoft
 {
@@ -12,29 +7,24 @@ namespace KSoft
 		/// <summary>Does the requested type require an associated name in the element stream?</summary>
 		/// <param name="nodeType"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool RequiresName(this IO.TagElementNodeType nodeType)
 		{
 			return nodeType != IO.TagElementNodeType.Text; // aka, Cursor
 		}
 
 		#region TagElementStreamFormat
-		[Contracts.Pure]
 		public static IO.TagElementStreamFormat GetBaseFormat(this IO.TagElementStreamFormat format)
 		{
 			return format & ~IO.TagElementStreamFormat.kTypeFlags;
 		}
-		[Contracts.Pure]
 		public static IO.TagElementStreamFormat GetTypeFlags(this IO.TagElementStreamFormat format)
 		{
 			return format & IO.TagElementStreamFormat.kTypeFlags;
 		}
-		[Contracts.Pure]
 		public static bool IsText(this IO.TagElementStreamFormat format)
 		{
 			return (format & IO.TagElementStreamFormat.Binary) == 0;
 		}
-		[Contracts.Pure]
 		public static bool IsBinary(this IO.TagElementStreamFormat format)
 		{
 			return (format & IO.TagElementStreamFormat.Binary) != 0;
@@ -50,10 +40,19 @@ namespace KSoft
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(streamElement != null);
-			Contract.Requires(highestBitIndex.IsNoneOrPositive());
-			Contract.Requires(highestBitIndex < @this.Length);
+			ArgumentNullException.ThrowIfNull(@this);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(streamElement);
+			if (!highestBitIndex.IsNoneOrPositive())
+			{
+				throw new ArgumentOutOfRangeException(nameof(highestBitIndex), highestBitIndex,
+					"Highest bit index must be None or positive.");
+			}
+			if (highestBitIndex >= @this.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(highestBitIndex), highestBitIndex,
+					"Highest bit index must be less than the bit set length.");
+			}
 
 			IO.TagElementStreamDefaultSerializer.Serialize(@this, s, elementName,
 				ctxt, streamElement,

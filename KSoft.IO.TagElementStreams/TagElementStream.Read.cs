@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
 	internal enum TagElementStreamParseEnumResult
@@ -163,7 +157,7 @@ namespace KSoft.IO
 		public void ReadElementEnum<TEnum>(TName name, ref TEnum enumValue)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			ReadElementEnum(GetElement(name), ref enumValue);
 		}
@@ -174,14 +168,14 @@ namespace KSoft.IO
 		public void ReadElementEnum<TEnum>(TName name, ref int enumValue)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			ReadElementEnum<TEnum>(GetElement(name), ref enumValue);
 		}
 
 		public void ReadElement(TName name, ref Values.KGuid value)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			ReadElement(GetElement(name), ref value);
 		}
@@ -263,8 +257,8 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(action);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			ReadElements(this.Elements, coll, ctxt, action, ctor);
 		}
@@ -273,17 +267,17 @@ namespace KSoft.IO
 			where T : new()
 		{
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
+			ArgumentNullException.ThrowIfNull(action);
 
 			ReadElements(this.Elements, coll, ctxt, action, _ctxt => new T());
 		}
 		public void ReadElements<T, TContext>(TName name,
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(action);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			ReadElements(this.ElementsByName(name), coll, ctxt, action, ctor);
 		}
@@ -291,9 +285,9 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 			where T : new()
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
+			ArgumentNullException.ThrowIfNull(action);
 
 			ReadElements(this.ElementsByName(name), coll, ctxt, action, _ctxt => new T());
 		}
@@ -318,7 +312,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			ReadStreamableElements(this.Elements, coll, ctxt, ctor);
 		}
@@ -326,9 +320,9 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			ReadStreamableElements(this.ElementsByName(name), coll, ctxt, ctor);
 		}
@@ -360,8 +354,9 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
 		{
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null && valueCtor != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
+			ArgumentNullException.ThrowIfNull(valueCtor);
 
 			ReadElements(this.Elements, dic, ctxt, streamKey, streamValue, valueCtor);
 		}
@@ -372,8 +367,8 @@ namespace KSoft.IO
 			where TValue : new()
 		{
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
 
 			ReadElements(this.Elements, dic, ctxt, streamKey, streamValue, _ctxt => new TValue());
 		}
@@ -382,10 +377,11 @@ namespace KSoft.IO
 			StreamAction<TKey, TContext> streamKey,
 			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null && valueCtor != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
+			ArgumentNullException.ThrowIfNull(valueCtor);
 
 			ReadElements(this.ElementsByName(name), dic, ctxt, streamKey, streamValue, valueCtor);
 		}
@@ -395,10 +391,10 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue)
 			where TValue : new()
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
 
 			ReadElements(this.ElementsByName(name), dic, ctxt, streamKey, streamValue, _ctxt => new TValue());
 		}
@@ -462,7 +458,7 @@ namespace KSoft.IO
 			where T : ITagElementStreamable<TName>
 		{
 			ArgumentNullException.ThrowIfNull(array);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			return ReadFixedArray(this.Elements, array, ctxt, ctor);
 		}
@@ -470,9 +466,9 @@ namespace KSoft.IO
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(array);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			return ReadFixedArray(this.ElementsByName(name), array, ctxt, ctor);
 		}

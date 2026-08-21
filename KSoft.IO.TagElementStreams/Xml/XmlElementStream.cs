@@ -2,13 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
 	public sealed partial class XmlElementStream : TagElementTextStream<XmlDocument, XmlElement>
@@ -16,7 +9,6 @@ namespace KSoft.IO
 		/// <summary>XmlNodes which we support explicit streaming on</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool StreamSourceIsValid(XmlNodeType type)
 		{
 			return type switch
@@ -246,7 +238,11 @@ namespace KSoft.IO
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
 		{
 			ArgumentNullException.ThrowIfNull(document);
-			Contract.Requires(object.ReferenceEquals(cursor.OwnerDocument, document));
+			ArgumentNullException.ThrowIfNull(cursor);
+			if (!object.ReferenceEquals(cursor.OwnerDocument, document))
+			{
+				throw new ArgumentException("Cursor must belong to the provided document.", nameof(cursor));
+			}
 
 			Document = document;
 			Cursor = cursor;

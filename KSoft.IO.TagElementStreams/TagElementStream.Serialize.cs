@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Exprs = System.Linq.Expressions;
 
 // #TODO fix CA warnings
@@ -50,7 +45,8 @@ namespace KSoft.IO
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver)
 		{
-			Contract.Requires(idResolver != null && stringResolver != null);
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
 			string str = reading
@@ -81,14 +77,17 @@ namespace KSoft.IO
 		#region Stream Element
 		public void StreamElementBegin(TName name, out TCursor oldCursor)
 		{
-			Contract.Requires(StreamMode != 0, "StreamMode not set! This is an error while trying to actually stream");
+			ThrowIfStreamModeUnset();
 
 			oldCursor = null;
 
 				 if (IsReading) ReadElementBegin(name, out oldCursor);
 			else if (IsWriting) WriteElementBegin(name, out oldCursor);
 
-			Contract.Assert(oldCursor != null);
+			if (oldCursor == null)
+			{
+				throw new InvalidOperationException("Element streaming did not save the previous cursor.");
+			}
 		}
 		public void StreamElementEnd(ref TCursor oldCursor)
 		{
@@ -106,7 +105,7 @@ namespace KSoft.IO
 		public void StreamElementEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 				 if (IsReading) ReadElementEnum(name, ref value);
 			else if (IsWriting) WriteElementEnum(name, value, isFlags);
@@ -115,7 +114,7 @@ namespace KSoft.IO
 			bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -130,7 +129,7 @@ namespace KSoft.IO
 
 		public void StreamElement(TName name, ref Values.KGuid value)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 				 if (IsReading) ReadElement(name, ref value);
 			else if (IsWriting) WriteElement(name, value);
@@ -149,8 +148,9 @@ namespace KSoft.IO
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && stringResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
 			string str = reading
@@ -165,7 +165,7 @@ namespace KSoft.IO
 
 		public void StreamElement(TName name, ref DateTime timestamp)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (IsReading)
 			{
@@ -193,7 +193,7 @@ namespace KSoft.IO
 		public bool StreamElementEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<TEnum>;
@@ -207,7 +207,7 @@ namespace KSoft.IO
 			Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<TEnum>;
@@ -228,7 +228,7 @@ namespace KSoft.IO
 
 		public bool StreamElementOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<Values.KGuid>;
@@ -255,8 +255,9 @@ namespace KSoft.IO
 			Func<TContext, TIdentifer, string> stringResolver,
 			Predicate<string> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && stringResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
 			string str = reading
@@ -273,7 +274,7 @@ namespace KSoft.IO
 
 		public bool StreamElementOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<DateTime>;
@@ -309,7 +310,7 @@ namespace KSoft.IO
 		public void StreamAttributeEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 				 if (IsReading) ReadAttributeEnum(name, ref value);
 			else if (IsWriting) WriteAttributeEnum(name, value, isFlags);
@@ -318,7 +319,7 @@ namespace KSoft.IO
 			bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (IsReading)
@@ -333,7 +334,7 @@ namespace KSoft.IO
 
 		public void StreamAttribute(TName name, ref Values.KGuid value)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 				 if (IsReading) ReadAttribute(name, ref value);
 			else if (IsWriting) WriteAttribute(name, value);
@@ -341,7 +342,7 @@ namespace KSoft.IO
 
 		public void StreamAttribute(TName name, ref DateTime timestamp)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (IsReading)
 			{
@@ -369,7 +370,7 @@ namespace KSoft.IO
 		public bool StreamAttributeEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<TEnum>;
@@ -383,7 +384,7 @@ namespace KSoft.IO
 			Predicate<TEnum> predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<TEnum>;
@@ -404,7 +405,7 @@ namespace KSoft.IO
 
 		public bool StreamAttributeOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<Values.KGuid>;
@@ -417,7 +418,7 @@ namespace KSoft.IO
 
 		public bool StreamAttributeOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			if (predicate == null)
 				predicate = Predicates.True<DateTime>;
@@ -458,8 +459,9 @@ namespace KSoft.IO
 			Func<TContext, int, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, int> integerResolver)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && integerResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(integerResolver);
 
 			bool reading = IsReading;
 			var integer = reading
@@ -485,8 +487,9 @@ namespace KSoft.IO
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && stringResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
 			string str = reading
@@ -519,8 +522,9 @@ namespace KSoft.IO
 			Func<TContext, TIdentifer, int> integerResolver,
 			Predicate<int> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && integerResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(integerResolver);
 
 			bool reading = IsReading;
 			var integer = reading
@@ -551,8 +555,9 @@ namespace KSoft.IO
 			Func<TContext, TIdentifer, string> stringResolver,
 			Predicate<string> predicate = null)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(idResolver != null && stringResolver != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ArgumentNullException.ThrowIfNull(idResolver);
+			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
 			string str = reading
@@ -572,10 +577,10 @@ namespace KSoft.IO
 		public void StreamElements<T, TContext>(TName elementName,
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action, Func<TContext, T> ctor)
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(action);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, action, ctor);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, action);
@@ -584,9 +589,9 @@ namespace KSoft.IO
 			ICollection<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 			where T : new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
+			ArgumentNullException.ThrowIfNull(action);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, action);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, action);
@@ -596,9 +601,10 @@ namespace KSoft.IO
 			StreamAction<T, TContext> read, StreamAction<T, TContext> write)
 			where T : new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(read != null && write != null);
+			ArgumentNullException.ThrowIfNull(read);
+			ArgumentNullException.ThrowIfNull(write);
 
 				 if (IsReading) ReadElements(elementName, coll, ctxt, read);
 			else if (IsWriting) WriteElements(elementName, coll, ctxt, write);
@@ -609,9 +615,9 @@ namespace KSoft.IO
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 				 if (IsReading) ReadStreamableElements(elementName, coll, ctxt, ctor);
 			else if (IsWriting) WriteStreamableElements(elementName, coll, shouldWritePredicate);
@@ -621,7 +627,7 @@ namespace KSoft.IO
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>, new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
 
 			StreamableElements(elementName, coll, (object)null, (nil) => new T(), shouldWritePredicate);
@@ -634,10 +640,11 @@ namespace KSoft.IO
 			StreamAction<TKey, TContext> streamKey,
 			StreamAction<TValue, TContext> streamValue, Func<TContext, TValue> valueCtor)
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null && valueCtor != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
+			ArgumentNullException.ThrowIfNull(valueCtor);
 
 				 if (IsReading) ReadElements(elementName, dic, ctxt, streamKey, streamValue, valueCtor);
 			else if (IsWriting) WriteElements(elementName, dic, ctxt, streamKey, streamValue);
@@ -648,10 +655,10 @@ namespace KSoft.IO
 			StreamAction<TValue, TContext> streamValue)
 			where TValue : new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
 
 				 if (IsReading) ReadElements(elementName, dic, ctxt, streamKey, streamValue);
 			else if (IsWriting) WriteElements(elementName, dic, ctxt, streamKey, streamValue);
@@ -663,7 +670,7 @@ namespace KSoft.IO
 			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
 
 				 if (IsReading) ReadStreamableElements(elementName, dic, ctxt, streamKey);
@@ -675,7 +682,7 @@ namespace KSoft.IO
 			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
 
 			StreamableElements(elementName, dic, (object)null, streamKey, shouldWritePredicate);
@@ -687,9 +694,9 @@ namespace KSoft.IO
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(array);
-			Contract.Requires(ctor != null);
+			ArgumentNullException.ThrowIfNull(ctor);
 
 			if (IsReading) return ReadFixedArray(elementName, array, ctxt, ctor);
 			else if (IsWriting) WriteStreamableElements(elementName, array);
@@ -699,7 +706,7 @@ namespace KSoft.IO
 		public int StreamableFixedArray<T>(TName elementName, T[] array)
 			where T : ITagElementStreamable<TName>, new()
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(array);
 
 			return StreamableFixedArray(elementName, array, (object)null, (nil) => new T());
@@ -715,7 +722,7 @@ namespace KSoft.IO
 		public void StreamValue<T>(ref T value, Func<T> initializer)
 			where T : struct, ITagElementStreamable<TName>
 		{
-			Contract.Requires(initializer != null);
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			if (IsReading)
 				value = initializer();
@@ -728,15 +735,18 @@ namespace KSoft.IO
 		public void StreamObject<T>(T theObj)
 			where T : class, ITagElementStreamable<TName>
 		{
-			Contract.Requires(theObj != null);
+			ArgumentNullException.ThrowIfNull(theObj);
 
 			theObj.Serialize(this);
 		}
 		public void StreamObject<T>(T theObj, Func<T> initializer)
 			where T : class, ITagElementStreamable<TName>
 		{
-			Contract.Requires(IsReading || theObj != null);
-			Contract.Requires(initializer != null);
+			if (IsWriting)
+			{
+				ArgumentNullException.ThrowIfNull(theObj);
+			}
+			ArgumentNullException.ThrowIfNull(initializer);
 
 			if (IsReading)
 				theObj = initializer();
@@ -748,7 +758,7 @@ namespace KSoft.IO
 		#region Stream Version (int)
 		public void StreamVersionViaCursor(int expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
 
 			var data = expectedVersion;
 			StreamCursor(ref data);
@@ -757,8 +767,8 @@ namespace KSoft.IO
 		}
 		public void StreamVersionViaElement(TName elementName, int expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(elementName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 
 			var data = expectedVersion;
 			StreamElement(elementName, ref data);
@@ -767,8 +777,8 @@ namespace KSoft.IO
 		}
 		public void StreamVersionViaAttribute(TName attributeName, int expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(attributeName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(attributeName, nameof(attributeName));
 
 			var data = expectedVersion;
 			StreamAttribute(attributeName, ref data);
@@ -780,7 +790,7 @@ namespace KSoft.IO
 		#region Stream Version (uint)
 		public void StreamVersionViaCursor(uint expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
 
 			var data = expectedVersion;
 			StreamCursor(ref data);
@@ -789,8 +799,8 @@ namespace KSoft.IO
 		}
 		public void StreamVersionViaElement(TName elementName, uint expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(elementName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 
 			var data = expectedVersion;
 			StreamElement(elementName, ref data);
@@ -799,8 +809,8 @@ namespace KSoft.IO
 		}
 		public void StreamVersionViaAttribute(TName attributeName, uint expectedVersion, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(attributeName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(attributeName, nameof(attributeName));
 
 			var data = expectedVersion;
 			StreamAttribute(attributeName, ref data);
@@ -812,7 +822,7 @@ namespace KSoft.IO
 		#region Stream Signature (string)
 		public void StreamSignatureViaCursor(string expectedSignature, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
 
 			var data = expectedSignature;
 			StreamCursor(ref data);
@@ -821,8 +831,8 @@ namespace KSoft.IO
 		}
 		public void StreamSignatureViaElement(TName elementName, string expectedSignature, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(elementName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 
 			var data = expectedSignature;
 			StreamElement(elementName, ref data);
@@ -831,8 +841,8 @@ namespace KSoft.IO
 		}
 		public void StreamSignatureViaAttribute(TName attributeName, string expectedSignature, string dataDescription)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(dataDescription));
-			Contract.Requires(ValidateNameArg(attributeName));
+			ArgumentException.ThrowIfNullOrEmpty(dataDescription);
+			ThrowIfInvalidNameArg(attributeName, nameof(attributeName));
 
 			var data = expectedSignature;
 			StreamAttribute(attributeName, ref data);
@@ -845,7 +855,7 @@ namespace KSoft.IO
 		public void StreamString(TName name, ref string value, bool toLower,
 			TagElementNodeType type = TagElementNodeType.Attribute, bool intern = false)
 		{
-			Contract.Requires(type.RequiresName() == (name != null));
+			ThrowIfInvalidNodeNameArg(name, type, nameof(name));
 
 				 if (type == TagElementNodeType.Element)	StreamElement(name, ref value);
 			else if (type == TagElementNodeType.Attribute)	StreamAttribute(name, ref value);
@@ -861,7 +871,7 @@ namespace KSoft.IO
 		public bool StreamStringOpt(TName name, ref string value, bool toLower,
 			TagElementNodeType type = TagElementNodeType.Attribute, bool intern = false)
 		{
-			Contract.Requires(type.RequiresName() == (name != null));
+			ThrowIfInvalidNodeNameArg(name, type, nameof(name));
 
 			bool result = true;
 				 if (type == TagElementNodeType.Element)	result = StreamElementOpt(name, ref value, Predicates.IsNotNullOrEmpty);

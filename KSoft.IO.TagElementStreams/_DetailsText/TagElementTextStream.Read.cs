@@ -1,10 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
 	partial class TagElementTextStreamUtils
@@ -139,9 +133,12 @@ namespace KSoft.IO
 		protected object ReadErrorNode { set {
 			// and in fact, this property can't be used to set mReadErrorNode to null with this assert.
 			// TextStream implementations should only ever need to set the node and forget
-			Contract.Assert(value is Text.ITextLineInfo);
+			if (value is not Text.ITextLineInfo lineInfo)
+			{
+				throw new ArgumentException("Read error node must provide text line info.", nameof(value));
+			}
 
-			mReadErrorState.LastReadLineInfo = (Text.ITextLineInfo)value;
+			mReadErrorState.LastReadLineInfo = lineInfo;
 		} }
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/></summary>
 		/// <param name="detailsException">The details (inner) exception of what went wrong</param>

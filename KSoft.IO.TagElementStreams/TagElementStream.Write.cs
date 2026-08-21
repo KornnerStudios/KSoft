@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
 	partial class TagElementStream<TDoc, TCursor, TName>
@@ -52,16 +46,13 @@ namespace KSoft.IO
 		/// <param name="oldCursor">On return, contains the previous <see cref="Cursor"/> value</param>
 		public void WriteElementBegin(TName name, out TCursor oldCursor)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			WriteElementNest(name, out oldCursor);
 		}
 		/// <summary>Restore the cursor to what it was before the corresponding call to a <see cref="WriteElementBegin(string, XmlElement&amp;)"/></summary>
 		public void WriteElementEnd(ref TCursor oldCursor)
 		{
-			#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY
-			Contract.Ensures(Contract.ValueAtReturn(out oldCursor) == null);
-			#endif
 
 			RestoreCursor(ref oldCursor);
 		}
@@ -71,7 +62,7 @@ namespace KSoft.IO
 		/// <remarks>Does not change <see cref="Cursor"/></remarks>
 		public void WriteElement(TName name)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			WriteElementAppend(name);
 		}
@@ -84,14 +75,14 @@ namespace KSoft.IO
 		public void WriteElementEnum<TEnum>(TName name, TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			WriteElementEnum(WriteElementAppend(name), value, isFlags);
 		}
 
 		public void WriteElement(TName name, Values.KGuid value)
 		{
-			Contract.Requires(ValidateNameArg(name));
+			ThrowIfInvalidNameArg(name, nameof(name));
 
 			WriteElement(WriteElementAppend(name), value);
 		}
@@ -118,9 +109,9 @@ namespace KSoft.IO
 		public bool WriteElementEnumOptOnTrue<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || predicate(value);
 
@@ -141,9 +132,9 @@ namespace KSoft.IO
 		public bool WriteElementEnumOptOnFalse<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || !predicate(value);
 
@@ -157,9 +148,9 @@ namespace KSoft.IO
 
 		public bool WriteElementOptOnTrue(TName name, Values.KGuid value, Predicate<Values.KGuid> predicate)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || predicate(value);
 
@@ -182,9 +173,9 @@ namespace KSoft.IO
 		public bool WriteAttributeEnumOptOnTrue<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || predicate(value);
 
@@ -205,9 +196,9 @@ namespace KSoft.IO
 		public bool WriteAttributeEnumOptOnFalse<TEnum>(TName name, TEnum value, Predicate<TEnum> predicate, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || !predicate(value);
 
@@ -221,9 +212,9 @@ namespace KSoft.IO
 
 		public bool WriteAttributeOptOnTrue(TName name, Values.KGuid value, Predicate<Values.KGuid> predicate)
 		{
-			Contract.Requires(ValidateNameArg(name));
-			Contract.Requires(Cursor != null, kCursorNullMsg);
-			Contract.Requires(predicate != null);
+			ThrowIfInvalidNameArg(name, nameof(name));
+			ThrowIfCursorNull();
+			ArgumentNullException.ThrowIfNull(predicate);
 
 			bool result = IgnoreWritePredicates || predicate(value);
 
@@ -240,9 +231,9 @@ namespace KSoft.IO
 		public void WriteElements<T, TContext>(TName elementName,
 			IEnumerable<T> coll, TContext ctxt, StreamAction<T, TContext> action)
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
-			Contract.Requires(action != null);
+			ArgumentNullException.ThrowIfNull(action);
 
 			foreach (var value in coll)
 			{
@@ -259,7 +250,7 @@ namespace KSoft.IO
 			Predicate<T> shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
 
 			foreach (var value in coll)
@@ -281,10 +272,10 @@ namespace KSoft.IO
 			StreamAction<TKey, TContext> streamKey,
 			StreamAction<TValue, TContext> streamValue)
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
-			Contract.Requires(streamValue != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
+			ArgumentNullException.ThrowIfNull(streamValue);
 
 			foreach (var kv in dic)
 			{
@@ -305,9 +296,9 @@ namespace KSoft.IO
 			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>
 		{
-			Contract.Requires(ValidateNameArg(elementName));
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
-			Contract.Requires(streamKey != null);
+			ArgumentNullException.ThrowIfNull(streamKey);
 
 			foreach (var kv in dic)
 			{
@@ -329,7 +320,11 @@ namespace KSoft.IO
 		/// <remarks>Will throw a contract error if implementation's <see cref="SupportsComments"/> returns true but doesn't override this method</remarks>
 		protected virtual void WriteCommentImpl(string comment)
 		{
-			Contract.Assert(!SupportsComments, "Stream supports comments, but implementation class doesn't provide an API for it. Remove support or add the API");
+			if (SupportsComments)
+			{
+				throw new InvalidOperationException(
+					"Stream supports comments, but implementation class doesn't provide an API for it.");
+			}
 		}
 
 		/// <summary>
@@ -345,7 +340,7 @@ namespace KSoft.IO
 		}
 		public virtual void WriteComment<TContext>(TContext ctxt, Func<TContext, string> commentMaker)
 		{
-			Contract.Requires(commentMaker != null);
+			ArgumentNullException.ThrowIfNull(commentMaker);
 
 			if (IsWriting && SupportsComments && CommentsEnabled)
 			{

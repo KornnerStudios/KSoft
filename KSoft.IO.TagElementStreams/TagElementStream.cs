@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -52,11 +46,53 @@ namespace KSoft.IO
 
 		protected void ValidateReadPermission()
 		{
-			Contract.Assert(StreamPermissions.CanRead(), "Stream permissions do not support reading");
+			if (!StreamPermissions.CanRead())
+			{
+				throw new InvalidOperationException("Stream permissions do not support reading.");
+			}
 		}
 		protected void ValidateWritePermission()
 		{
-			Contract.Assert(StreamPermissions.CanWrite(), "Stream permissions do not support writing");
+			if (!StreamPermissions.CanWrite())
+			{
+				throw new InvalidOperationException("Stream permissions do not support writing.");
+			}
+		}
+
+		void ThrowIfStreamModeUnset()
+		{
+			if (StreamMode == 0)
+			{
+				throw new InvalidOperationException("StreamMode is not set.");
+			}
+		}
+
+		void ThrowIfInvalidNameArg(TName name, string paramName)
+		{
+			if (!ValidateNameArg(name))
+			{
+				throw new ArgumentException("Name is invalid for this tag element stream.", paramName);
+			}
+		}
+
+		void ThrowIfInvalidNodeNameArg(TName name, TagElementNodeType nodeType, string paramName)
+		{
+			if (nodeType.RequiresName() != (name != null))
+			{
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+					"Node type {0} requires name presence {1}; name is {2}.",
+					nodeType,
+					nodeType.RequiresName(),
+					name != null), paramName);
+			}
+		}
+
+		void ThrowIfCursorNull()
+		{
+			if (Cursor == null)
+			{
+				throw new InvalidOperationException(kCursorNullMsg);
+			}
 		}
 		#endregion
 
@@ -139,10 +175,10 @@ namespace KSoft.IO
 		/// <param name="oldCursor">Previously saved cursor. Set to null before the method returns</param>
 		public void RestoreCursor(ref TCursor oldCursor)
 		{
-			#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY
-			Contract.Ensures(Contract.ValueAtReturn(out oldCursor) == null);
-			#endif
-			Contract.Assert(oldCursor != null, "Can't restore a cursor that wasn't saved!");
+			if (oldCursor == null)
+			{
+				throw new InvalidOperationException("Can't restore a cursor that wasn't saved.");
+			}
 
 			Cursor = oldCursor;
 			oldCursor = null;
@@ -211,7 +247,10 @@ namespace KSoft.IO
 		{
 			get { return mCommentsEnabled; }
 			set {
-				Contract.Requires(SupportsComments, "Stream must support comments in order to toggle their usage");
+				if (!SupportsComments)
+				{
+					throw new InvalidOperationException("Stream must support comments in order to toggle their usage.");
+				}
 
 				mCommentsEnabled = value;
 			}
@@ -276,9 +315,7 @@ namespace KSoft.IO
 			}
 		}
 
-		[Contracts.Pure]
 		public abstract bool ValidateNameArg(TName name);
-		[Contracts.Pure]
 		public virtual bool ValidateNameArg(TName nodeName, TagElementNodeType nodeType)
 		{
 			return nodeType.RequiresName() == ValidateNameArg(nodeName);

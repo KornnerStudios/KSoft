@@ -1,11 +1,7 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-namespace KSoft.IO
+﻿namespace KSoft.IO
 {
+	using System;
+
 	using BitSet = Collections.BitSet;
 
 	partial class TagElementStreamDefaultSerializer
@@ -23,10 +19,19 @@ namespace KSoft.IO
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(streamElement != null);
-			Contract.Requires(highestBitIndex.IsNoneOrPositive());
-			Contract.Requires(highestBitIndex < @this.Length);
+			ArgumentNullException.ThrowIfNull(@this);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(streamElement);
+			if (!highestBitIndex.IsNoneOrPositive())
+			{
+				throw new ArgumentOutOfRangeException(nameof(highestBitIndex), highestBitIndex,
+					"Highest bit index must be None or positive.");
+			}
+			if (highestBitIndex >= @this.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(highestBitIndex), highestBitIndex,
+					"Highest bit index must be less than the bit set length.");
+			}
 
 			if (highestBitIndex.IsNone())
 			{

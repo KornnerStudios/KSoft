@@ -2,12 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
 	public static class TagElementStreamFactory
@@ -40,7 +34,7 @@ namespace KSoft.IO
 
 			public RegisteredFormat RegisterExtension(GetExtensionDelegate handler)
 			{
-				Contract.Requires(handler != null);
+				ArgumentNullException.ThrowIfNull(handler);
 
 				GetExtension = handler;
 
@@ -68,7 +62,7 @@ namespace KSoft.IO
 			}
 			public RegisteredFormat RegisterOpen(OpenFromStreamDelegate handler)
 			{
-				Contract.Requires(handler != null);
+				ArgumentNullException.ThrowIfNull(handler);
 
 				Open = handler;
 
@@ -103,7 +97,7 @@ namespace KSoft.IO
 
 		static RegisteredFormat GetRegistration(TagElementStreamFormat format, string operation)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(operation));
+			ArgumentException.ThrowIfNullOrEmpty(operation);
 
 			var base_format = format.GetBaseFormat();
 
@@ -116,12 +110,24 @@ namespace KSoft.IO
 
 			return registration;
 		}
+
+		static void ThrowIfUnexpectedBaseFormat(TagElementStreamFormat format, TagElementStreamFormat expectedFormat)
+		{
+			var base_format = format.GetBaseFormat();
+			if (base_format != expectedFormat)
+			{
+				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
+					"Format base is {0}, expected {1}.",
+					base_format,
+					expectedFormat), nameof(format));
+			}
+		}
 		#endregion
 
 		#region Xml
 		static string XmlGetExtension(TagElementStreamFormat format)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Xml);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Xml);
 
 			if (format.IsText())
 			{
@@ -137,7 +143,7 @@ namespace KSoft.IO
 		static dynamic XmlOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
 			FileAccess permissions, object owner)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Xml);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Xml);
 
 			if (format.IsText())
 			{
@@ -158,7 +164,7 @@ namespace KSoft.IO
 		#region Json
 		static string JsonGetExtension(TagElementStreamFormat format)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Json);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Json);
 
 			if (format.IsText())
 			{
@@ -174,7 +180,7 @@ namespace KSoft.IO
 		static dynamic JsonOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
 			FileAccess permissions, object owner)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Json);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Json);
 
 			if (format.IsText())
 			{
@@ -192,7 +198,7 @@ namespace KSoft.IO
 		#region Yaml
 		static string YamlGetExtension(TagElementStreamFormat format)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Yaml);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Yaml);
 
 			if (format.IsText())
 			{
@@ -208,7 +214,7 @@ namespace KSoft.IO
 		static dynamic YamlOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
 			FileAccess permissions, object owner)
 		{
-			Contract.Requires(format.GetBaseFormat() == TagElementStreamFormat.Yaml);
+			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Yaml);
 
 			if (format.IsText())
 			{

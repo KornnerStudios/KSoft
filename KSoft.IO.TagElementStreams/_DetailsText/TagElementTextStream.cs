@@ -1,5 +1,4 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-
+﻿
 namespace KSoft.IO
 {
 	/// <remarks><typeparamref name="TCursor"/> needs to implement <see cref="Text.ITextLineInfo">LineInfo</see></remarks>
@@ -42,8 +41,6 @@ namespace KSoft.IO
 			set { mDoubleFormatSpecifier = value; }
 		}
 		#endregion
-
-		[Contracts.Pure]
 		public override bool ValidateNameArg(string name) { return !string.IsNullOrEmpty(name); }
 
 		protected TagElementTextStream()

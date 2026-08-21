@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.IO
 {
+	using System;
+
 	partial class TagElementStreamDefaultSerializer
 	{
 		public static void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
@@ -77,7 +73,7 @@ namespace KSoft.IO
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(!string.IsNullOrEmpty(groupsElementName));
+			ArgumentException.ThrowIfNullOrEmpty(groupsElementName);
 
 			bool reading = s.IsReading;
 
