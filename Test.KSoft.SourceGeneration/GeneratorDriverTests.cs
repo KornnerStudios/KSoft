@@ -56,6 +56,28 @@ public sealed class GeneratorDriverTests
 	}
 
 	[TestMethod]
+	public void TagElementStreamsOptionalStringPropertiesPreserveNullForPredicatesTest()
+	{
+		CSharpCompilation compilation = CreateCompilation(GeneratorTargetAssemblyFacts.KSoftIOTagElementStreamsAssemblyName);
+		var driver = CreateDriver();
+
+		driver.RunGeneratorsAndUpdateCompilation(
+			compilation,
+			out Compilation outputCompilation,
+			out var diagnostics,
+			TestContext.CancellationToken);
+
+		Assert.IsEmpty(diagnostics);
+		string source = outputCompilation.SyntaxTrees
+			.Single(static x => x.FilePath.EndsWith("KSoft.IO.TagElementStreams.g.cs", StringComparison.Ordinal))
+			.GetText()
+			.ToString();
+
+		StringAssert.Contains(source, "string? value = propertyValue as string;");
+		StringAssert.Contains(source, "ArgumentNullException.ThrowIfNull(value);");
+	}
+
+	[TestMethod]
 	public void GeneratorReportsUnsupportedTargetAssemblyWithDriverTest()
 	{
 		CSharpCompilation compilation = CreateCompilation("Unexpected.Assembly");

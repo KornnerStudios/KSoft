@@ -19,6 +19,11 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		Beta = 2,
 	}
 
+	sealed class NullableStringProperty
+	{
+		public string Value { get; set; }
+	}
+
 	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
 	{
 		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
@@ -169,6 +174,32 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		Assert.IsNull(emptyString);
 		Assert.IsTrue(stream.ReadAttributeOpt("present", ref present));
 		Assert.AreEqual(123, present);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_GeneratedRequiredStringReadsEmptyElementsTest()
+	{
+		using var readStream = CreateReadStream("<root><description /></root>");
+		string description = "initial";
+		readStream.ReadElement("description", ref description);
+
+		Assert.AreEqual(string.Empty, description);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_GeneratedOptionalStringPropertyAllowsNullPredicateInputTest()
+	{
+		using var stream = XmlElementStream.CreateForWrite("root");
+		var value = new NullableStringProperty();
+
+		bool written = stream.StreamElementOpt(
+			"description",
+			value,
+			static x => x.Value,
+			static text => !string.IsNullOrEmpty(text));
+
+		Assert.IsFalse(written);
+		Assert.AreEqual("<root />", stream.Document.OuterXml);
 	}
 
 	[TestMethod]

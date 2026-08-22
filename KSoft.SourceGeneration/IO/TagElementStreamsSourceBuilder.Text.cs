@@ -36,8 +36,7 @@ internal static partial class TagElementStreamsSourceBuilder
 				{
 					if (IsString(typeSpec))
 					{
-						writer.WriteLine(
-							"value = GetInnerText(n) ?? throw new InvalidOperationException(\"Element inner text must not be null.\");");
+						writer.WriteLine("value = GetInnerText(n) ?? string.Empty;");
 					}
 					else
 					{

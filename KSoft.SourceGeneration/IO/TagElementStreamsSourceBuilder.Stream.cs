@@ -318,10 +318,22 @@ internal static partial class TagElementStreamsSourceBuilder
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
 				writer.WriteLine("var propertyValue = property.GetValue(theObj, null);");
-				writer.WriteLine($"if (propertyValue is not {keyword} value)");
-				using (writer.EnterBlock(SourceWriterBlockType.Braces))
+				if (isOptional && keyword == "string")
 				{
-					writer.WriteLine("throw new InvalidOperationException(\"Property value cannot be null.\");");
+					writer.WriteLine("if (propertyValue is not null && propertyValue is not string)");
+					using (writer.EnterBlock(SourceWriterBlockType.Braces))
+					{
+						writer.WriteLine("throw new InvalidOperationException(\"Property value has an unexpected type.\");");
+					}
+					writer.WriteLine("string? value = propertyValue as string;");
+				}
+				else
+				{
+					writer.WriteLine($"if (propertyValue is not {keyword} value)");
+					using (writer.EnterBlock(SourceWriterBlockType.Braces))
+					{
+						writer.WriteLine("throw new InvalidOperationException(\"Property value cannot be null.\");");
+					}
 				}
 				writer.WriteLine();
 				string predicateArgument = isOptional
