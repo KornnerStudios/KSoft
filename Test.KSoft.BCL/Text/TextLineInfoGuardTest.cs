@@ -40,6 +40,27 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void TextLineInfo_EqualityAndComparison_PreserveNullContractBehavior()
+	{
+		var lineInfo = new TextLineInfo(4, 5);
+		var sameLineInfo = new TextLineInfo(4, 5);
+		var laterColumn = new TextLineInfo(4, 6);
+		var laterLine = new TextLineInfo(5, 1);
+		ITextLineInfo nullLineInfo = null;
+
+		Assert.IsTrue(lineInfo.Equals(sameLineInfo));
+		Assert.IsFalse(lineInfo.Equals(laterColumn));
+		Assert.IsTrue(lineInfo.Equals((object)sameLineInfo));
+		Assert.IsFalse(lineInfo.Equals((object)laterColumn));
+		Assert.IsFalse(lineInfo.Equals((object)null));
+		Assert.AreEqual(0, lineInfo.CompareTo(sameLineInfo));
+		Assert.AreEqual(-1, lineInfo.CompareTo(laterColumn));
+		Assert.AreEqual(-1, lineInfo.CompareTo(laterLine));
+		Assert.ThrowsExactly<NullReferenceException>(() => lineInfo.Equals(nullLineInfo));
+		Assert.ThrowsExactly<NullReferenceException>(() => lineInfo.CompareTo(nullLineInfo));
+	}
+
+	[TestMethod]
 	public void TextLineInfoException_NullLineInfo_ThrowsArgumentNullException()
 	{
 		AssertThrowsArgumentNull(() => _ = new TextLineInfoException((ITextLineInfo)null!), "lineInfo");

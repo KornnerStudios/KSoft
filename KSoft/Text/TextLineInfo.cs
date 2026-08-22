@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Text
 {
@@ -39,9 +41,9 @@ namespace KSoft.Text
 
 		public bool IsEmpty => LineNumber == 0 && LinePosition == 0;
 
-		public int CompareTo(ITextLineInfo other)
+		public int CompareTo(ITextLineInfo? other)
 		{
-			if (LineNumber == other.LineNumber)
+			if (LineNumber == other!.LineNumber)
 			{
 				return LinePosition - other.LinePosition;
 			}
@@ -51,11 +53,11 @@ namespace KSoft.Text
 			}
 		}
 
-		public bool Equals(ITextLineInfo other) =>
-			LineNumber == other.LineNumber &&
+		public bool Equals(ITextLineInfo? other) =>
+			LineNumber == other!.LineNumber &&
 			LinePosition == other.LinePosition;
 
-		public override bool Equals(object obj) =>
+		public override bool Equals(object? obj) =>
 			obj is ITextLineInfo other && Equals(other);
 
 		public override int GetHashCode() =>
