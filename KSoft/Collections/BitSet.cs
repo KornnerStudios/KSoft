@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using KSoft.Bitwise;
@@ -104,7 +106,7 @@ namespace KSoft.Collections
 		#endregion
 
 		#region Instance data
-		TWord[] mArray;
+		TWord[] mArray = null!;
 		int mLength;
 		int mVersion;
 		#endregion
@@ -894,11 +896,11 @@ namespace KSoft.Collections
 		#endregion
 
 		#region ICollection<bool> Members
-		[NonSerialized] object mSyncRoot;
+		[NonSerialized] object mSyncRoot = null!;
 		public object SyncRoot { get {
 			if (mSyncRoot == null)
 			{
-				System.Threading.Interlocked.CompareExchange(ref mSyncRoot, new object(), null);
+				System.Threading.Interlocked.CompareExchange(ref mSyncRoot, new object(), null!);
 			}
 
 			return mSyncRoot;
@@ -967,9 +969,9 @@ namespace KSoft.Collections
 			=> HashCode.Combine(Length, Cardinality);
 
 		#region IComparable<IReadOnlyBitSet> Members
-		public int CompareTo(IReadOnlyBitSet other)
+		public int CompareTo(IReadOnlyBitSet? other)
 		{
-			if (Length == other.Length)
+			if (Length == other!.Length)
 			{
 				return Cardinality - other.Cardinality;
 			}
@@ -978,10 +980,10 @@ namespace KSoft.Collections
 		}
 		#endregion
 		#region IEquatable<IReadOnlyBitSet> Members
-		public bool Equals(IReadOnlyBitSet other)
+		public bool Equals(IReadOnlyBitSet? other)
 		{
 			// #TODO: this also needs to check BitwiseEquals
-			return Length == other.Length && Cardinality == other.Cardinality;
+			return Length == other!.Length && Cardinality == other.Cardinality;
 		}
 		#endregion
 
@@ -1122,7 +1124,7 @@ namespace KSoft.Collections
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool TryParseFlags<TEnum>(string line
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator
-			, ICollection<string> errorsOutput = null)
+			, ICollection<string>? errorsOutput = null)
 			where TEnum : struct, Enum
 		{
 			// LINQ stmt allows there to be whitespace around the commas
@@ -1134,8 +1136,8 @@ namespace KSoft.Collections
 		/// <summary>Interprets the provided strings as Enum members and sets their corresponding bits</summary>
 		/// <returns>True if all strings were parsed successfully, false if there were some strings that failed to parse</returns>
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
-		public bool TryParseFlags<TEnum>(IEnumerable<string> collection
-			, ICollection<string> errorsOutput = null)
+		public bool TryParseFlags<TEnum>(IEnumerable<string>? collection
+			, ICollection<string>? errorsOutput = null)
 			where TEnum : struct, Enum
 		{
 			if (collection == null)
@@ -1161,7 +1163,7 @@ namespace KSoft.Collections
 		}
 
 		private bool? TryParseFlag<TEnum>(string flagStr
-			, ICollection<string> errorsOutput = null)
+			, ICollection<string>? errorsOutput = null)
 			where TEnum : struct, Enum
 		{
 			const bool ignore_case = true;

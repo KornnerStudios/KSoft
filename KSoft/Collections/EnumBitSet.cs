@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace KSoft.Collections
@@ -230,7 +232,7 @@ namespace KSoft.Collections
 
 		public void CopyTo(bool[] array, int arrayIndex) => mBits.CopyTo(array, arrayIndex);
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is EnumBitSet<TEnum> o)
 			{
@@ -242,10 +244,10 @@ namespace KSoft.Collections
 
 		public override int GetHashCode()				=> mBits.GetHashCode();
 		#region IComparable<EnumBitSet<TEnum>> Members
-		public int CompareTo(EnumBitSet<TEnum> other)	=> mBits.CompareTo(other.mBits);
+		public int CompareTo(EnumBitSet<TEnum>? other)	=> mBits.CompareTo(other!.mBits);
 		#endregion
 		#region IEquatable<EnumBitSet<TEnum>> Members
-		public bool Equals(EnumBitSet<TEnum> other)		=> mBits.Equals(other.mBits);
+		public bool Equals(EnumBitSet<TEnum>? other)		=> mBits.Equals(other!.mBits);
 		#endregion
 
 		public struct EnumeratorBitState
