@@ -49,7 +49,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string str = reading
+			string? str = reading
 				? null
 				: stringResolver(ctxt, id);
 
@@ -79,7 +79,7 @@ namespace KSoft.IO
 		{
 			ThrowIfStreamModeUnset();
 
-			oldCursor = null;
+			oldCursor = null!;
 
 				 if (IsReading) ReadElementBegin(name, out oldCursor);
 			else if (IsWriting) WriteElementBegin(name, out oldCursor);
@@ -124,7 +124,7 @@ namespace KSoft.IO
 				property.SetValue(theObj, value, null);
 			}
 			else if (IsWriting)
-				WriteElementEnum(name, (TEnum)property.GetValue(theObj, null), isFlags);
+				WriteElementEnum(name, (TEnum)property.GetValue(theObj, null)!, isFlags);
 		}
 
 		public void StreamElement(TName name, ref Values.KGuid value)
@@ -153,7 +153,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string str = reading
+			string? str = reading
 				? null
 				: stringResolver(ctxt, id);
 
@@ -190,7 +190,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsElement"/> based Enum?</param>
 		/// <seealso cref="ReadElementOpt{TEnum}(TName, ref TEnum)"/>
 		/// <seealso cref="WriteElementOptOnTrue{TEnum}(TName, Enum, Predicate{TEnum}, bool)"/>
-		public bool StreamElementEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
+		public bool StreamElementEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
@@ -204,7 +204,7 @@ namespace KSoft.IO
 			return executed;
 		}
 		public bool StreamElementEnumOpt<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
-			Predicate<TEnum> predicate = null, bool isFlags = false)
+			Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
@@ -221,12 +221,12 @@ namespace KSoft.IO
 				property.SetValue(theObj, value, null);
 			}
 			else if (IsWriting)
-				executed = WriteElementEnumOptOnTrue(name, (TEnum)property.GetValue(theObj, null), predicate, isFlags);
+				executed = WriteElementEnumOptOnTrue(name, (TEnum)property.GetValue(theObj, null)!, predicate, isFlags);
 
 			return executed;
 		}
 
-		public bool StreamElementOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid> predicate = null)
+		public bool StreamElementOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 
@@ -253,14 +253,14 @@ namespace KSoft.IO
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver,
-			Predicate<string> predicate = null)
+			Predicate<string>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(idResolver);
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string str = reading
+			string? str = reading
 				? null
 				: stringResolver(ctxt, id);
 
@@ -272,7 +272,7 @@ namespace KSoft.IO
 			return executed;
 		}
 
-		public bool StreamElementOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
+		public bool StreamElementOpt(TName name, ref DateTime timestamp, Predicate<DateTime>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 
@@ -329,7 +329,7 @@ namespace KSoft.IO
 				property.SetValue(theObj, value, null);
 			}
 			else if (IsWriting)
-				WriteAttributeEnum(name, (TEnum)property.GetValue(theObj, null), isFlags);
+				WriteAttributeEnum(name, (TEnum)property.GetValue(theObj, null)!, isFlags);
 		}
 
 		public void StreamAttribute(TName name, ref Values.KGuid value)
@@ -367,7 +367,7 @@ namespace KSoft.IO
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <seealso cref="ReadAttributeOpt{TEnum}(string, ref TEnum)"/>
 		/// <seealso cref="WriteAttributeOptOnTrue{TEnum}(string, Enum, Predicate{TEnum}, bool)"/>
-		public bool StreamAttributeEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum> predicate = null, bool isFlags = false)
+		public bool StreamAttributeEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
@@ -381,7 +381,7 @@ namespace KSoft.IO
 			return executed;
 		}
 		public bool StreamAttributeEnumOpt<T, TEnum>(TName name, T theObj, Exprs.Expression<Func<T, TEnum>> propExpr,
-			Predicate<TEnum> predicate = null, bool isFlags = false)
+			Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
@@ -398,12 +398,12 @@ namespace KSoft.IO
 				property.SetValue(theObj, value, null);
 			}
 			else if (IsWriting)
-				executed = WriteAttributeEnumOptOnTrue(name, (TEnum)property.GetValue(theObj, null) , predicate, isFlags);
+				executed = WriteAttributeEnumOptOnTrue(name, (TEnum)property.GetValue(theObj, null)! , predicate, isFlags);
 
 			return executed;
 		}
 
-		public bool StreamAttributeOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid> predicate = null)
+		public bool StreamAttributeOpt(TName name, ref Values.KGuid value, Predicate<Values.KGuid>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 
@@ -416,7 +416,7 @@ namespace KSoft.IO
 			return executed;
 		}
 
-		public bool StreamAttributeOpt(TName name, ref DateTime timestamp, Predicate<DateTime> predicate = null)
+		public bool StreamAttributeOpt(TName name, ref DateTime timestamp, Predicate<DateTime>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 
@@ -492,7 +492,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string str = reading
+			string? str = reading
 				? null
 				: stringResolver(ctxt, id);
 
@@ -520,7 +520,7 @@ namespace KSoft.IO
 			TContext ctxt,
 			Func<TContext, int, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, int> integerResolver,
-			Predicate<int> predicate = null)
+			Predicate<int>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(idResolver);
@@ -553,14 +553,14 @@ namespace KSoft.IO
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver,
-			Predicate<string> predicate = null)
+			Predicate<string>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(idResolver);
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string str = reading
+			string? str = reading
 				? null
 				: stringResolver(ctxt, id);
 
@@ -612,7 +612,7 @@ namespace KSoft.IO
 
 		public void StreamableElements<T, TContext>(TName elementName,
 			ICollection<T> coll, TContext ctxt, Func<TContext, T> ctor,
-			Predicate<T> shouldWritePredicate = null)
+			Predicate<T>? shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
@@ -624,13 +624,13 @@ namespace KSoft.IO
 		}
 		public void StreamableElements<T>(TName elementName,
 			ICollection<T> coll,
-			Predicate<T> shouldWritePredicate = null)
+			Predicate<T>? shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>, new()
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(coll);
 
-			StreamableElements(elementName, coll, (object)null, (nil) => new T(), shouldWritePredicate);
+			StreamableElements(elementName, coll, (object)null!, (nil) => new T(), shouldWritePredicate);
 		}
 		#endregion
 
@@ -667,7 +667,7 @@ namespace KSoft.IO
 		public void StreamableElements<TKey, TValue, TContext>(TName elementName,
 			IDictionary<TKey, TValue> dic, TContext ctxt,
 			StreamAction<TKey, TContext> streamKey,
-			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
+			Predicate<KeyValuePair<TKey, TValue>>? shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
@@ -679,13 +679,13 @@ namespace KSoft.IO
 		public void StreamableElements<TKey, TValue>(TName elementName,
 			IDictionary<TKey, TValue> dic,
 			StreamAction<TKey, object> streamKey,
-			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
+			Predicate<KeyValuePair<TKey, TValue>>? shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>, new()
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(dic);
 
-			StreamableElements(elementName, dic, (object)null, streamKey, shouldWritePredicate);
+			StreamableElements(elementName, dic, (object)null!, streamKey, shouldWritePredicate);
 		}
 		#endregion
 
@@ -709,7 +709,7 @@ namespace KSoft.IO
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
 			ArgumentNullException.ThrowIfNull(array);
 
-			return StreamableFixedArray(elementName, array, (object)null, (nil) => new T());
+			return StreamableFixedArray(elementName, array, (object)null!, (nil) => new T());
 		}
 		#endregion
 

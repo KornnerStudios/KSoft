@@ -12,8 +12,8 @@ namespace KSoft.IO
 		where TDoc : class
 		where TCursor : class
 	{
-		TagElementStream<TDoc, TCursor, TName> mStream;
-		TCursor mOldCursor;
+		TagElementStream<TDoc, TCursor, TName>? mStream;
+		TCursor? mOldCursor;
 
 		#region Null
 		TagElementStreamBookmark(
@@ -47,16 +47,21 @@ namespace KSoft.IO
 
 			if (elementName != null)
 			{
-				(mStream = stream).StreamElementBegin(elementName, out mOldCursor);
+				stream.StreamElementBegin(elementName, out var oldCursor);
+				mStream = stream;
+				mOldCursor = oldCursor;
 			}
 		}
 
 		/// <summary>Returns the cursor of the underlying stream to the last saved cursor value</summary>
 		public void Dispose()
 		{
-			if (mStream != null)
+			var stream = mStream;
+			if (stream != null)
 			{
-				mStream.StreamElementEnd(ref mOldCursor);
+				var oldCursor = mOldCursor!;
+				stream.StreamElementEnd(ref oldCursor);
+				mOldCursor = oldCursor;
 				mStream = null;
 			}
 		}
@@ -71,8 +76,8 @@ namespace KSoft.IO
 		where TDoc : class
 		where TCursor : class
 	{
-		TagElementStream<TDoc, TCursor, TName> mStream;
-		TCursor mOldCursor;
+		TagElementStream<TDoc, TCursor, TName>? mStream;
+		TCursor? mOldCursor;
 
 		/// <summary>Saves the stream's cursor so a new one can be specified, but then later restored to the saved cursor, via <see cref="Dispose()"/></summary>
 		/// <param name="stream">The underlying stream for this bookmark</param>
@@ -80,7 +85,9 @@ namespace KSoft.IO
 		{
 			ArgumentNullException.ThrowIfNull(stream);
 
-			(mStream = stream).SaveCursor(null, out mOldCursor);
+			stream.SaveCursor(null, out var oldCursor);
+			mStream = stream;
+			mOldCursor = oldCursor;
 		}
 		/// <summary>Saves the stream's cursor and sets <paramref name="newCursor"/> to be the new cursor for the stream</summary>
 		/// <param name="stream">The underlying stream for this bookmark</param>
@@ -90,15 +97,20 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stream);
 			ArgumentNullException.ThrowIfNull(newCursor);
 
-			(mStream = stream).SaveCursor(newCursor, out mOldCursor);
+			stream.SaveCursor(newCursor, out var oldCursor);
+			mStream = stream;
+			mOldCursor = oldCursor;
 		}
 
 		/// <summary>Returns the cursor of the underlying stream to the last saved cursor value</summary>
 		public void Dispose()
 		{
-			if (mStream != null)
+			var stream = mStream;
+			if (stream != null)
 			{
-				mStream.RestoreCursor(ref mOldCursor);
+				var oldCursor = mOldCursor!;
+				stream.RestoreCursor(ref oldCursor);
+				mOldCursor = oldCursor;
 				mStream = null;
 			}
 		}

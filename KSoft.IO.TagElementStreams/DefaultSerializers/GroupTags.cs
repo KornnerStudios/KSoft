@@ -33,7 +33,7 @@ namespace KSoft.IO
 		}
 
 		static void StreamElements<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s,
-			ref Values.GroupTagData32[] tags)
+			ref Values.GroupTagData32[]? tags)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -47,7 +47,7 @@ namespace KSoft.IO
 				{
 					using (s.EnterCursorBookmark(node))
 					{
-						Values.GroupTagData32 data = null;
+						Values.GroupTagData32 data = null!;
 						Serialize(s, ref data);
 
 						list.Add(data);
@@ -58,7 +58,7 @@ namespace KSoft.IO
 			}
 			else if (s.IsWriting)
 			{
-				foreach (Values.GroupTagData32 data in tags)
+				foreach (Values.GroupTagData32 data in tags!)
 				{
 					using (s.EnterCursorBookmark(k_element_name))
 					{
@@ -80,7 +80,7 @@ namespace KSoft.IO
 			var guid = reading
 				? Values.KGuid.Empty
 				: collection.Uuid;
-			var tags = reading
+			Values.GroupTagData32[]? tags = reading
 				? null
 				// HACK: GroupTags is exposed as a IReadOnlyList, but at the time of this writing is implemented
 				// with a GroupTagData32[] as its backing field
@@ -101,7 +101,7 @@ namespace KSoft.IO
 				bool sort = false;
 				s.ReadAttributeOpt("sort", ref sort);
 
-				collection = new Values.GroupTag32Collection(guid, sort, tags);
+				collection = new Values.GroupTag32Collection(guid, sort, tags!);
 			}
 		}
 	};

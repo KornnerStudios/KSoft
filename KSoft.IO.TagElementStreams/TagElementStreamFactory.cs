@@ -10,9 +10,9 @@ namespace KSoft.IO
 		/// <summary>Get the file extension for a given format, or null if it isn't supported</summary>
 		/// <param name="format">Format to query the extension for. Supports type flags in value</param>
 		/// <returns>The file extension (with initial dot) for that given format. Or null if it isn't support (eg, requested binary, but only supports text)</returns>
-		public delegate string GetExtensionDelegate(TagElementStreamFormat format);
+		public delegate string? GetExtensionDelegate(TagElementStreamFormat format);
 		public delegate dynamic OpenFromStreamDelegate(TagElementStreamFormat format, System.IO.Stream sourceStream,
-			FileAccess permissions, object owner = null);
+			FileAccess permissions, object? owner = null);
 
 		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
 		public sealed class RegisteredFormat
@@ -20,8 +20,8 @@ namespace KSoft.IO
 			public string Name { get; private set; }
 			public TagElementStreamFormat BaseFormat { get; private set; }
 
-			internal GetExtensionDelegate GetExtension { get; private set; }
-			internal OpenFromStreamDelegate Open { get; private set; }
+			internal GetExtensionDelegate? GetExtension { get; private set; }
+			internal OpenFromStreamDelegate? Open { get; private set; }
 
 			internal RegisteredFormat(string name, TagElementStreamFormat baseFormat)
 			{
@@ -40,7 +40,7 @@ namespace KSoft.IO
 
 				#region Register Text
 				var extension_format = BaseFormat;
-				string extension = GetExtension(extension_format);
+				string? extension = GetExtension!(extension_format);
 				if (extension != null)
 				{
 					gRegisteredFileExtensions.Add(extension, extension_format);
@@ -49,7 +49,7 @@ namespace KSoft.IO
 				#region Register Binary
 				extension_format |= TagElementStreamFormat.Binary;
 				// #TODO: not all binary formats are implemented yet, and will throw an exception
-				try { extension = GetExtension(extension_format); }
+				try { extension = GetExtension!(extension_format); }
 				catch (NotImplementedException) { extension = null; }
 
 				if (extension != null)
@@ -73,7 +73,7 @@ namespace KSoft.IO
 		static readonly Dictionary<TagElementStreamFormat, RegisteredFormat> gRegisteredFormats;
 		static readonly Dictionary<string, TagElementStreamFormat> gRegisteredFileExtensions;
 
-		public static RegisteredFormat Register(TagElementStreamFormat baseFormat, string name = null)
+		public static RegisteredFormat Register(TagElementStreamFormat baseFormat, string? name = null)
 		{
 			ArgumentOutOfRangeException.ThrowIfEqual((int)baseFormat, (int)TagElementStreamFormat.Undefined, nameof(baseFormat));
 			ArgumentOutOfRangeException.ThrowIfNotEqual(
@@ -92,7 +92,7 @@ namespace KSoft.IO
 			var registration = new RegisteredFormat(name, baseFormat);
 			gRegisteredFormats.Add(baseFormat, registration);
 
-			return registration;
+			return registration!;
 		}
 
 		static RegisteredFormat GetRegistration(TagElementStreamFormat format, string operation)
@@ -101,14 +101,14 @@ namespace KSoft.IO
 
 			var base_format = format.GetBaseFormat();
 
-			if (!gRegisteredFormats.TryGetValue(base_format, out RegisteredFormat registration))
+			if (!gRegisteredFormats.TryGetValue(base_format, out RegisteredFormat? registration))
 			{
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo,
 					"Format {0} ({1}) is not registered, can't {2}",
 					base_format, format, operation));
 			}
 
-			return registration;
+			return registration!;
 		}
 
 		static void ThrowIfUnexpectedBaseFormat(TagElementStreamFormat format, TagElementStreamFormat expectedFormat)
@@ -141,7 +141,7 @@ namespace KSoft.IO
 			throw new Debug.UnreachableException(format.ToString());
 		}
 		static dynamic XmlOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
-			FileAccess permissions, object owner)
+			FileAccess permissions, object? owner)
 		{
 			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Xml);
 
@@ -178,7 +178,7 @@ namespace KSoft.IO
 			throw new Debug.UnreachableException(format.ToString());
 		}
 		static dynamic JsonOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
-			FileAccess permissions, object owner)
+			FileAccess permissions, object? owner)
 		{
 			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Json);
 
@@ -196,7 +196,7 @@ namespace KSoft.IO
 		#endregion
 
 		#region Yaml
-		static string YamlGetExtension(TagElementStreamFormat format)
+		static string? YamlGetExtension(TagElementStreamFormat format)
 		{
 			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Yaml);
 
@@ -212,7 +212,7 @@ namespace KSoft.IO
 			throw new Debug.UnreachableException(format.ToString());
 		}
 		static dynamic YamlOpenFromStream(TagElementStreamFormat format, System.IO.Stream sourceStream,
-			FileAccess permissions, object owner)
+			FileAccess permissions, object? owner)
 		{
 			ThrowIfUnexpectedBaseFormat(format, TagElementStreamFormat.Yaml);
 
@@ -249,7 +249,7 @@ namespace KSoft.IO
 		}
 
 		public static dynamic Open(System.IO.Stream sourceStream, TagElementStreamFormat format,
-			FileAccess permissions = FileAccess.ReadWrite, object owner = null)
+			FileAccess permissions = FileAccess.ReadWrite, object? owner = null)
 		{
 			ArgumentNullException.ThrowIfNull(sourceStream);
 			if (!sourceStream.HasPermissions(permissions))
@@ -259,11 +259,11 @@ namespace KSoft.IO
 
 			var registration = GetRegistration(format, "open");
 
-			return registration.Open(format, sourceStream, permissions, owner);
+			return registration.Open!(format, sourceStream, permissions, owner);
 		}
 
 		public static dynamic Open(string filename,
-			FileAccess permissions = FileAccess.ReadWrite, object owner = null)
+			FileAccess permissions = FileAccess.ReadWrite, object? owner = null)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(filename);
 

@@ -6,7 +6,7 @@ namespace KSoft.IO
 	partial class XmlElementStream
 	{
 		#region ReadElement impl
-		protected override string GetInnerText(XmlElement n)
+		protected override string? GetInnerText(XmlElement n)
 		{
 			var text_node = GetInnerTextNode(n);
 			if (text_node != null)
@@ -19,7 +19,7 @@ namespace KSoft.IO
 			return null;
 		}
 
-		private XmlNode GetInnerTextNode(XmlElement n)
+		private XmlNode? GetInnerTextNode(XmlElement n)
 		{
 			if (!n.HasChildNodes)
 			{
@@ -27,13 +27,13 @@ namespace KSoft.IO
 			}
 
 			var text_node = n.LastChild;
-			if (text_node.NodeType == XmlNodeType.Text)
+			if (text_node?.NodeType == XmlNodeType.Text)
 			{
 				return text_node;
 			}
 
 			text_node = n.FirstChild;
-			if (text_node.NodeType == XmlNodeType.Text)
+			if (text_node?.NodeType == XmlNodeType.Text)
 			{
 				return text_node;
 			}
@@ -57,7 +57,7 @@ namespace KSoft.IO
 
 			ValidateReadPermission();
 
-			XmlElement n = Cursor[name];
+			XmlElement? n = Cursor[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
@@ -78,7 +78,7 @@ namespace KSoft.IO
 		{
 			ValidateReadPermission();
 
-			XmlElement n = Cursor[name];
+			XmlElement? n = Cursor[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
@@ -96,14 +96,13 @@ namespace KSoft.IO
 		{
 			ValidateReadPermission();
 
-			XmlAttribute n = Cursor.Attributes[name];
+			XmlAttribute? n = Cursor.Attributes[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
 					"Attribute doesn't exist: " + name));
 			}
 
-			System.Diagnostics.Debug.Assert(n != null);
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
 			return n.Value;
@@ -114,11 +113,11 @@ namespace KSoft.IO
 		/// <summary>Streams out the InnerText of element <paramref name="name"/></summary>
 		/// <param name="name">Element name</param>
 		/// <returns></returns>
-		protected override string ReadElementOpt(string name)
+		protected override string? ReadElementOpt(string name)
 		{
 			ValidateReadPermission();
 
-			XmlElement n = Cursor[name];
+			XmlElement? n = Cursor[name];
 			if (n == null)
 			{
 				return null;
@@ -128,7 +127,7 @@ namespace KSoft.IO
 			ReadErrorNode = n;
 
 			// NOTE: GetInnerText will probably overwrite ReadErrorNode anyway
-			string it = GetInnerText(n);
+			string? it = GetInnerText(n);
 
 			return !string.IsNullOrEmpty(it)
 				? it
@@ -140,11 +139,11 @@ namespace KSoft.IO
 		/// <summary>Streams out the attribute data of <paramref name="name"/></summary>
 		/// <param name="name">Attribute name</param>
 		/// <returns></returns>
-		protected override string ReadAttributeOpt(string name)
+		protected override string? ReadAttributeOpt(string name)
 		{
 			ValidateReadPermission();
 
-			XmlAttribute n = Cursor.Attributes[name];
+			XmlAttribute? n = Cursor.Attributes[name];
 			if (n == null)
 			{
 				return null;

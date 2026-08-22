@@ -21,11 +21,11 @@ namespace KSoft.IO
 		}
 
 		#region Cursor
-		public override string CursorName { get { return Cursor?.Name; } }
+		public override string? CursorName { get { return Cursor?.Name; } }
 
 		public override void InitializeAtRootElement()
 		{
-			Cursor = Document.DocumentElement;
+			Cursor = Document.DocumentElement!;
 		}
 		#endregion
 
@@ -42,7 +42,7 @@ namespace KSoft.IO
 				return false;
 			}
 
-			XmlNode n = Cursor.Attributes[name];
+			XmlNode? n = Cursor.Attributes[name];
 
 			return n != null;
 		}
@@ -72,7 +72,7 @@ namespace KSoft.IO
 				return false;
 			}
 
-			XmlElement n = Cursor[name];
+			XmlElement? n = Cursor[name];
 
 			return n != null
 				// #REVIEW CA1820: When I changed this to IsNotNullOrEmpty, it broke pretty much everything. Need to evaluate dropping the n.Value check altogether.
@@ -118,7 +118,7 @@ namespace KSoft.IO
 #endif
 		}
 
-		public override string GetElementName(XmlElement element)
+		public override string? GetElementName(XmlElement? element)
 		{
 			if (element == null)
 			{
@@ -149,7 +149,7 @@ namespace KSoft.IO
 		/// <param name="owner">Initial owner object</param>
 		[SuppressMessage("Microsoft.Design", "CA3075:InsecureDTDProcessing")]
 		public XmlElementStream(System.IO.Stream sourceStream,
-			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null, string streamNameOverride = null)
+			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object? owner = null, string? streamNameOverride = null)
 		{
 			ArgumentNullException.ThrowIfNull(sourceStream);
 			if (!sourceStream.HasPermissions(permissions))
@@ -185,7 +185,7 @@ namespace KSoft.IO
 			StreamPermissions = permissions;
 			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
-			this.Owner = owner;
+			this.Owner = owner!;
 		}
 
 		/// <summary>Initialize an element stream from the XML file <paramref name="filename"/> with <see cref="owner"/> as the initial owner object</summary>
@@ -193,7 +193,7 @@ namespace KSoft.IO
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
 		public XmlElementStream(string filename,
-			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
+			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object? owner = null)
 		{
 			ArgumentNullException.ThrowIfNull(filename);
 
@@ -223,7 +223,7 @@ namespace KSoft.IO
 			StreamPermissions = permissions;
 			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
-			this.Owner = owner;
+			this.Owner = owner!;
 		}
 
 		/// <summary>
@@ -235,7 +235,7 @@ namespace KSoft.IO
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
 		public XmlElementStream(XmlDocument document, XmlElement cursor,
-			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object owner = null)
+			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object? owner = null)
 		{
 			ArgumentNullException.ThrowIfNull(document);
 			ArgumentNullException.ThrowIfNull(cursor);
@@ -252,14 +252,14 @@ namespace KSoft.IO
 			StreamPermissions = permissions;
 			StreamMode = StreamModeUtil.ToInitialMode(permissions);
 
-			this.Owner = owner;
+			this.Owner = owner!;
 		}
 
 		/// <summary>Initialize a new element stream with write permissions</summary>
 		/// <param name="owner">Initial owner object</param>
 		/// <param name="rootName">Name of the document element</param>
 		/// <returns></returns>
-		public static XmlElementStream CreateForWrite(string rootName, object owner = null)
+		public static XmlElementStream CreateForWrite(string rootName, object? owner = null)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(rootName);
 
@@ -272,7 +272,7 @@ namespace KSoft.IO
 			var @this = new XmlElementStream
 			{
 				Document = root,
-				Owner = owner,
+				Owner = owner!,
 			};
 
 			@this.StreamPermissions = System.IO.FileAccess.Write;

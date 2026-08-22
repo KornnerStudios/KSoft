@@ -19,7 +19,7 @@ namespace KSoft.IO
 		}
 
 		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
-			string str, ref TEnum value)
+			string? str, ref TEnum value)
 			where TEnum : struct, Enum
 		{
 			bool result = Enum.TryParse(str, ignoreCase, out TEnum temp);
@@ -36,7 +36,7 @@ namespace KSoft.IO
 			return TagElementStreamParseEnumResult.Success;
 		}
 		public static TagElementStreamParseEnumResult Parse<TEnum>(bool ignoreCase,
-			string str, ref int intValue)
+			string? str, ref int intValue)
 			where TEnum : struct, Enum
 		{
 			intValue = 0;
@@ -90,6 +90,7 @@ namespace KSoft.IO
 
 		/// <summary>Throws a suitable exception to detail the position information of the last read</summary>
 		/// <param name="detailsException">The additional details to include in the thrown exception (really, the inner exception. eg, InvalidData)</param>
+		[System.Diagnostics.CodeAnalysis.DoesNotReturn]
 		public abstract void ThrowReadException(Exception detailsException);
 		// #NOTE: this is dumb, but without doing this I get CS0535
 		void ICanThrowReadExceptionsWithExtraDetails.ThrowReadExeception(Exception detailsException) { ThrowReadException(detailsException); }
@@ -338,7 +339,7 @@ namespace KSoft.IO
 			{
 				using (EnterCursorBookmark(node))
 				{
-					var key = default(TKey);
+					var key = default(TKey)!;
 					streamKey(this, ctxt, ref key);
 
 					var value = valueCtor(ctxt);
@@ -408,7 +409,7 @@ namespace KSoft.IO
 			{
 				using (EnterCursorBookmark(node))
 				{
-					var key = default(TKey);
+					var key = default(TKey)!;
 					streamKey(this, ctxt, ref key);
 
 					var value = new TValue();

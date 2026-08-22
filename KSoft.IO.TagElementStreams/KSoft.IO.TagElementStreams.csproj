@@ -4,6 +4,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KSoft.IO</RootNamespace>
     <AssemblyName>KSoft.IO.TagElementStreams</AssemblyName>
+    <Nullable>enable</Nullable>
     <!-- Keep an explicit source list so hand-authored partials and generated surfaces stay reviewable. -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->

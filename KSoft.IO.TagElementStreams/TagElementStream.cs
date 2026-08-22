@@ -26,9 +26,9 @@ namespace KSoft.IO
 
 		#region Owner
 		/// <summary>Owner of this stream</summary>
-		public object Owner { get; set; }
+		public object Owner { get; set; } = null!;
 
-		public object UserData { get; set; }
+		public object UserData { get; set; } = null!;
 		#endregion
 
 		#region IKSoftStreamModeable
@@ -99,13 +99,13 @@ namespace KSoft.IO
 		#region StreamName
 		/// <summary></summary>
 		/// <remarks>If this is for a file, this is the file name this stream is handling</remarks>
-		public string StreamName { get; protected set; }
+		public string StreamName { get; protected set; } = null!;
 
 		protected void SetStreamName(System.IO.Stream stream)
 		{
 			System.Diagnostics.Debug.Assert(stream != null);
 
-			StreamName = null;
+			StreamName = null!;
 
 			if (stream is System.IO.FileStream fs)
 			{
@@ -121,13 +121,13 @@ namespace KSoft.IO
 
 		#region Document
 		/// <summary>Backing document (eg, XmlDocument) for this element stream</summary>
-		public TDoc Document { get; protected set; }
+		public TDoc Document { get; protected set; } = null!;
 		#endregion
 
 		#region Cursor
 		internal const string kCursorNullMsg = "Element cursor must not be null when writing an attribute.";
 
-		TCursor mCursor;
+		TCursor mCursor = null!;
 		/// <summary>Element data we are streaming data to and from</summary>
 		public TCursor Cursor {
 			get { return mCursor; }
@@ -163,7 +163,7 @@ namespace KSoft.IO
 		/// </summary>
 		/// <param name="newCursor">If not null, will be the new value of <see cref="Cursor"/></param>
 		/// <param name="oldCursor">On return, contains the value of <see cref="Cursor"/> before the call to this method</param>
-		public void SaveCursor(TCursor newCursor, out TCursor oldCursor)
+		public void SaveCursor(TCursor? newCursor, out TCursor oldCursor)
 		{
 			oldCursor = Cursor;
 			if (newCursor != null)
@@ -181,7 +181,7 @@ namespace KSoft.IO
 			}
 
 			Cursor = oldCursor;
-			oldCursor = null;
+			oldCursor = null!;
 		}
 
 		/// <summary>Enter a new tag element <b>(for reading)</b></summary>
@@ -294,7 +294,7 @@ namespace KSoft.IO
 
 		public abstract IEnumerable<TCursor> ElementsByName(TName localName);
 
-		public abstract TName GetElementName(TCursor element);
+		public abstract TName? GetElementName(TCursor? element);
 
 		protected abstract int PredictElementCount(TCursor cursor);
 		#endregion
@@ -309,9 +309,9 @@ namespace KSoft.IO
 		{
 			if (disposing)
 			{
-				mCursor = null;
+				mCursor = null!;
 
-				Owner = null;
+				Owner = null!;
 			}
 		}
 

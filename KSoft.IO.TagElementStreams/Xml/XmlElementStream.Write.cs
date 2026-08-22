@@ -20,7 +20,7 @@ namespace KSoft.IO
 
 		protected override void NestElement(XmlElement e, out XmlElement oldCursor)
 		{
-			oldCursor = null;
+			oldCursor = null!;
 
 			if (Cursor != null)
 			{
@@ -31,7 +31,7 @@ namespace KSoft.IO
 			}
 			else // if there is no XML node in scope, assume we're adding to the root
 			{
-				Document.DocumentElement.AppendChild(e);
+				Document.DocumentElement!.AppendChild(e);
 				Cursor = e;
 			}
 		}

@@ -7,7 +7,7 @@ namespace KSoft.IO
 		where TCursor : class
 	{
 		/// <summary>Element's qualified name, or null if <see cref="Cursor"/> is null</summary>
-		public abstract string CursorName { get; }
+		public abstract string? CursorName { get; }
 
 		#region GuidFormatString
 		string mGuidFormatString = Values.KGuid.kFormatHyphenated;

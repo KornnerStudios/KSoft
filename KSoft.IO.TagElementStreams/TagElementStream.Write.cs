@@ -247,7 +247,7 @@ namespace KSoft.IO
 
 		public void WriteStreamableElements<T>(TName elementName,
 			IEnumerable<T> coll,
-			Predicate<T> shouldWritePredicate = null)
+			Predicate<T>? shouldWritePredicate = null)
 			where T : ITagElementStreamable<TName>
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
@@ -293,7 +293,7 @@ namespace KSoft.IO
 		public void WriteStreamableElements<TKey, TValue, TContext>(TName elementName,
 			IDictionary<TKey, TValue> dic, TContext ctxt,
 			StreamAction<TKey, TContext> streamKey,
-			Predicate<KeyValuePair<TKey, TValue>> shouldWritePredicate = null)
+			Predicate<KeyValuePair<TKey, TValue>>? shouldWritePredicate = null)
 			where TValue : ITagElementStreamable<TName>
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
@@ -359,8 +359,8 @@ namespace KSoft.IO
 		where TDoc : class
 		where TCursor : class
 	{
-		TagElementStream<TDoc, TCursor, TName> mStream;
-		TCursor mOldCursor;
+		TagElementStream<TDoc, TCursor, TName>? mStream;
+		TCursor? mOldCursor;
 
 		/// <summary>Saves the stream's cursor so a new one can be specified, but then later restored to the saved cursor, via <see cref="Dispose()"/></summary>
 		/// <param name="stream">The underlying stream for this bookmark</param>
@@ -370,17 +370,20 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stream);
 			ArgumentNullException.ThrowIfNull(elementName);
 
-			mStream = null;
-			mOldCursor = null;
-			(mStream = stream).WriteElementBegin(elementName, out mOldCursor);
+			stream.WriteElementBegin(elementName, out var oldCursor);
+			mStream = stream;
+			mOldCursor = oldCursor;
 		}
 
 		/// <summary>Returns the cursor of the underlying stream to the last saved cursor value</summary>
 		public void Dispose()
 		{
-			if (mStream != null)
+			var stream = mStream;
+			if (stream != null)
 			{
-				mStream.WriteElementEnd(ref mOldCursor);
+				var oldCursor = mOldCursor!;
+				stream.WriteElementEnd(ref oldCursor);
+				mOldCursor = oldCursor;
 				mStream = null;
 			}
 		}
