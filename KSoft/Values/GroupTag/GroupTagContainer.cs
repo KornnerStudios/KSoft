@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -39,8 +41,8 @@ namespace KSoft.Values
 		#endregion
 
 		#region Find collections
-		protected GroupTagCollection TagCollection { get; private set; }
-		void FindStaticGroupsProperty(string collectionName = null)
+		protected GroupTagCollection? TagCollection { get; private set; }
+		void FindStaticGroupsProperty(string? collectionName = null)
 		{
 			if (string.IsNullOrEmpty(collectionName)) { collectionName = kDefaultName; }
 
@@ -57,7 +59,7 @@ namespace KSoft.Values
 			TagCollection = pi.GetValue(null, null) as GroupTagCollection;
 		}
 
-		private IEnumerable<KeyValuePair<string, GroupTagCollection>> mAllCollections;
+		private IEnumerable<KeyValuePair<string, GroupTagCollection?>> mAllCollections = null!;
 		void FindAllStaticGroupFields()
 		{
 			var pis = mHost.GetProperties(BindingFlags.Public | BindingFlags.Static);
@@ -65,7 +67,7 @@ namespace KSoft.Values
 			var tagc = from p in pis
 					   where p.PropertyType.IsSubclassOf(typeof(GroupTagCollection))
 					   //select p.GetValue(null, null) as GroupTagCollection;
-					   select new KeyValuePair<string, GroupTagCollection>(p.Name, p.GetValue(null, null) as GroupTagCollection);
+					   select new KeyValuePair<string, GroupTagCollection?>(p.Name, p.GetValue(null, null) as GroupTagCollection);
 
 			mAllCollections = tagc;
 		}
@@ -74,7 +76,7 @@ namespace KSoft.Values
 		/// <summary>Get the "main" <see cref="GroupTagCollection"/> property value from a group tag container</summary>
 		/// <param name="container">Type which acts as a <see cref="GroupTagCollection"/> container</param>
 		/// <returns></returns>
-		public static GroupTagCollection GetCollection(Type container)
+		public static GroupTagCollection? GetCollection(Type container)
 		{
 			ArgumentNullException.ThrowIfNull(container);
 
@@ -85,7 +87,7 @@ namespace KSoft.Values
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
 			}
 
-			return (attr[0] as GroupTagContainerAttribute).TagCollection;
+			return ((GroupTagContainerAttribute)attr[0]).TagCollection;
 		}
 		/// <summary>Get all <see cref="GroupTagCollection"/> property values from a group tag container</summary>
 		/// <param name="container">Type which acts as a <see cref="GroupTagCollection"/> container</param>
@@ -94,7 +96,7 @@ namespace KSoft.Values
 		/// and their respected values.
 		/// </returns>
 		/// <remarks>The "main" group is still included in the resulting enumeration</remarks>
-		public static IEnumerable<KeyValuePair<string, GroupTagCollection>> GetAllCollections(Type container)
+		public static IEnumerable<KeyValuePair<string, GroupTagCollection?>> GetAllCollections(Type container)
 		{
 			ArgumentNullException.ThrowIfNull(container);
 
@@ -105,7 +107,7 @@ namespace KSoft.Values
 				throw new ArgumentException(string.Format(Util.InvariantCultureInfo, "[{0}] doesn't have a ", container.FullName), nameof(container));
 			}
 
-			return (attr[0] as GroupTagContainerAttribute).mAllCollections;
+			return ((GroupTagContainerAttribute)attr[0]).mAllCollections;
 		}
 	};
 }

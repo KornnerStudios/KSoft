@@ -27,8 +27,28 @@ public sealed class GroupTagTest : BaseTestClass
 	{
 	}
 
+	[GroupTagContainer32(typeof(NullGroupsHost))]
+	sealed class NullGroupsTarget
+	{
+	}
+
+	[GroupTagContainer32(typeof(NonCollectionGroupsHost))]
+	sealed class NonCollectionGroupsTarget
+	{
+	}
+
 	sealed class MissingGroupsHost
 	{
+	}
+
+	sealed class NullGroupsHost
+	{
+		public static GroupTag32Collection Groups { get; } = null!;
+	}
+
+	sealed class NonCollectionGroupsHost
+	{
+		public static string Groups { get; } = "not a group collection";
 	}
 
 	sealed class ExposedGroupTagContainer32Attribute : GroupTagContainer32Attribute
@@ -289,6 +309,9 @@ public sealed class GroupTagTest : BaseTestClass
 		var collection = GroupTagContainerAttribute.GetCollection(typeof(TestGroupTagContainerTarget32));
 		Assert.AreSame(TestGroupTagContainerHost32.Groups, collection);
 
+		Assert.IsNull(GroupTagContainerAttribute.GetCollection(typeof(NullGroupsTarget)));
+		Assert.IsNull(GroupTagContainerAttribute.GetCollection(typeof(NonCollectionGroupsTarget)));
+
 		int collectionCount = 0;
 		foreach (var pair in GroupTagContainerAttribute.GetAllCollections(typeof(TestGroupTagContainerTarget32)))
 		{
@@ -297,5 +320,15 @@ public sealed class GroupTagTest : BaseTestClass
 			collectionCount++;
 		}
 		Assert.AreEqual(2, collectionCount);
+
+		int nullCollectionCount = 0;
+		foreach (var pair in GroupTagContainerAttribute.GetAllCollections(typeof(NullGroupsTarget)))
+		{
+			Assert.AreEqual("Groups", pair.Key);
+			Assert.IsNull(pair.Value);
+			nullCollectionCount++;
+		}
+		Assert.AreEqual(1, nullCollectionCount);
+		Assert.IsFalse(GroupTagContainerAttribute.GetAllCollections(typeof(NonCollectionGroupsTarget)).GetEnumerator().MoveNext());
 	}
 }
