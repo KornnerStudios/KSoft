@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 using TagWord = System.UInt64;
@@ -75,11 +77,11 @@ namespace KSoft.Values
 		/// <summary>Compares two <see cref="GroupTagData64"/> objects testing their group tags for equality</summary>
 		/// <param name="obj">other <see cref="GroupTagData64"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
-			if (obj is GroupTagData64)
+			if (obj is GroupTagData64 g)
 			{
-				return mID == (obj as GroupTagData64).mID;
+				return mID == g.mID;
 			}
 
 			return false;
@@ -125,7 +127,7 @@ namespace KSoft.Values
 		/// <summary>Compares this to another <see cref="GroupTagData64"/> object testing their <see cref="ID"/> fields for equality</summary>
 		/// <param name="other">other <see cref="GroupTagData64"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public override bool Equals(GroupTagData obj)
+		public override bool Equals(GroupTagData? obj)
 		{
 			if (obj is GroupTagData64 g)
 			{
@@ -272,7 +274,7 @@ namespace KSoft.Values
 		/// <param name="tag">optional result buffer</param>
 		/// <param name="isBigEndian">endian order override</param>
 		/// <returns>big-endian ordered eight-cc if <paramref name="isBigEndian"/> is true, little-endian if false</returns>
-		public static char[] FromULong(TagWord groupTag, char[] tag = null, bool isBigEndian = true)
+		public static char[] FromULong(TagWord groupTag, char[]? tag = null, bool isBigEndian = true)
 		{
 			if (tag != null && tag.Length < kExpectedTagLength)
 			{

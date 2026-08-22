@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace KSoft.Values
@@ -41,7 +43,7 @@ namespace KSoft.Values
 
 		/// <summary>Extra data that can be tagged to this Group Tag</summary>
 		[System.ComponentModel.Browsable(false)]
-		public object UserData { get; private set; }
+		public object? UserData { get; private set; }
 
 		/// <summary>Guid for this group tag</summary>
 		public KGuid Uuid	{ get; private set; } = KGuid.Empty;
@@ -125,7 +127,7 @@ namespace KSoft.Values
 
 		public override int GetHashCode() => Name.GetHashCode();
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is GroupTagData g)
 			{
@@ -137,8 +139,8 @@ namespace KSoft.Values
 		#endregion
 
 		#region Operators
-		public static bool operator ==(GroupTagData a, GroupTagData b) => a.Equals(b);
-		public static bool operator !=(GroupTagData a, GroupTagData b) => !(a == b);
+		public static bool operator ==(GroupTagData? a, GroupTagData? b) => a!.Equals(b);
+		public static bool operator !=(GroupTagData? a, GroupTagData? b) => !(a == b);
 
 		/// <summary>Returns the name of this group tag</summary>
 		/// <param name="value"></param>
@@ -197,23 +199,23 @@ namespace KSoft.Values
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <seealso cref="String.Compare(String, String, bool)"/>
-		public int Compare(GroupTagData x, GroupTagData y)
+		public int Compare(GroupTagData? x, GroupTagData? y)
 		{
 			System.Diagnostics.Debug.Assert(x != null);
 			System.Diagnostics.Debug.Assert(y != null);
 
-			return string.Compare(x.mName, y.mName, StringComparison.OrdinalIgnoreCase);
+			return string.Compare(x!.mName, y!.mName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>Does a comparison based on the group tag's names</summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
 		/// <seealso cref="String.Compare(String, String, bool)"/>
-		public int CompareTo(GroupTagData other)
+		public int CompareTo(GroupTagData? other)
 		{
 			System.Diagnostics.Debug.Assert(other != null);
 
-			return string.Compare(this.mName, other.mName, StringComparison.OrdinalIgnoreCase);
+			return string.Compare(this.mName, other!.mName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>Does a comparison based on the tag group's names</summary>
@@ -221,22 +223,22 @@ namespace KSoft.Values
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <seealso cref="String.Compare(String, String, bool)"/>
-		public int Compare(object x, object y)
+		public int Compare(object? x, object? y)
 		{
 			System.Diagnostics.Debug.Assert(x != null);
 			System.Diagnostics.Debug.Assert(y != null);
 
-			return Compare((GroupTagData)x, (GroupTagData)y);
+			return Compare((GroupTagData)x!, (GroupTagData)y!);
 		}
 		/// <summary>Does a comparison based on the tag group's names</summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		/// <seealso cref="String.Compare(String, String, bool)"/>
-		public int CompareTo(object obj)
+		public int CompareTo(object? obj)
 		{
 			System.Diagnostics.Debug.Assert(obj != null);
 
-			return CompareTo((GroupTagData)obj);
+			return CompareTo((GroupTagData)obj!);
 		}
 		#endregion
 
@@ -244,17 +246,17 @@ namespace KSoft.Values
 		/// <summary>Compares this to another <see cref="GroupTagData"/> object testing their "ID" fields for equality</summary>
 		/// <param name="other"></param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public abstract bool Equals(GroupTagData other);
+		public abstract bool Equals(GroupTagData? other);
 		/// <summary>Compares two <see cref="GroupTagData"/> objects testing their "ID" fields for equality</summary>
 		/// <param name="x">left-hand value for comparison expression</param>
 		/// <param name="y">right-hand value for comparison expression</param>
 		/// <returns>true if both <paramref name="x"/> and <paramref name="y"/> are equal</returns>
-		public bool Equals(GroupTagData x, GroupTagData y)
+		public bool Equals(GroupTagData? x, GroupTagData? y)
 		{
 			System.Diagnostics.Debug.Assert(x != null);
 			System.Diagnostics.Debug.Assert(y != null);
 
-			return x.Equals(y);
+			return x!.Equals(y);
 		}
 		/// <summary>Returns the hash code for this instance</summary>
 		/// <param name="obj"></param>
