@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿#nullable enable
+
+using System.Xml;
 
 namespace KSoft.Xml
 {
@@ -24,11 +26,11 @@ namespace KSoft.Xml
 		int IXmlLineInfo.LinePosition	{ get { return mLineInfo.LinePosition; } }
 		#endregion
 
-		XmlAttributeWithLocation GetAttributeWithLocation(string name)
+		XmlAttributeWithLocation? GetAttributeWithLocation(string name)
 		{
 			var attr = Attributes[name];
 
-			return (XmlAttributeWithLocation)attr;
+			return attr is null ? null : (XmlAttributeWithLocation)attr;
 		}
 
 		public Text.TextLineInfo GetAttributeLineInfo(string name)
