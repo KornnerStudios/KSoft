@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -104,7 +106,7 @@ namespace KSoft.Debug
 		internal class ReferencedStream
 			: IDisposable
 		{
-			private StreamWriter mStream;
+			private StreamWriter mStream = null!;
 			private readonly object mSyncObject;
 			private int mReferenceCount;
 			private bool mDisposed;
@@ -121,7 +123,7 @@ namespace KSoft.Debug
 				this.mStream = stream;
 			}
 
-			internal void Write(string message)
+			internal void Write(string? message)
 			{
 				object syncObject = this.mSyncObject;
 				lock (syncObject)
@@ -130,7 +132,7 @@ namespace KSoft.Debug
 				}
 			}
 
-			internal void WriteLine(string message)
+			internal void WriteLine(string? message)
 			{
 				object syncObject = this.mSyncObject;
 				lock (syncObject)
@@ -177,7 +179,7 @@ namespace KSoft.Debug
 							if (this.mReferenceCount <= 0)
 							{
 								this.mStream.Close();
-								this.mStream = null;
+								this.mStream = null!;
 							}
 						}
 					}
@@ -188,7 +190,11 @@ namespace KSoft.Debug
 			{
 				if (disposing && !this.mDisposed)
 				{
-					Util.DisposeAndNull(ref mStream);
+					if (mStream != null)
+					{
+						mStream.Dispose();
+						mStream = null!;
+					}
 					this.mDisposed = true;
 				}
 			}
@@ -231,7 +237,7 @@ namespace KSoft.Debug
 		static readonly string[] mSupportedAttributes;
 		private Collections.BitVector32 mPropertiesSet;
 
-		private bool GetPropertyIfNotSet(Property property, out string value)
+		private bool GetPropertyIfNotSet(Property property, out string? value)
 		{
 			value = null;
 			if (mPropertiesSet.Test(property))
@@ -255,9 +261,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.DoNotIncludeSourceName, out string property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeSourceName, out string? property))
 				{
-					this.DoNotIncludeSourceName = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.DoNotIncludeSourceName = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mDoNotIncludeSourceName;
 			}
@@ -273,9 +279,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.DoNotIncludeEventType, out string property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeEventType, out string? property))
 				{
-					this.DoNotIncludeEventType = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.DoNotIncludeEventType = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mDoNotIncludeEventType;
 			}
@@ -291,9 +297,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.DoNotIncludeEventId, out string property))
+				if (GetPropertyIfNotSet(Property.DoNotIncludeEventId, out string? property))
 				{
-					this.DoNotIncludeEventId = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.DoNotIncludeEventId = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mDoNotIncludeEventId;
 			}
@@ -309,9 +315,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.OnlyWriteExceptionMessage, out string property))
+				if (GetPropertyIfNotSet(Property.OnlyWriteExceptionMessage, out string? property))
 				{
-					this.OnlyWriteExceptionMessage = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.OnlyWriteExceptionMessage = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mOnlyWriteExceptionMessage;
 			}
@@ -328,9 +334,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.Append, out string property))
+				if (GetPropertyIfNotSet(Property.Append, out string? property))
 				{
-					this.Append = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.Append = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mAppend;
 			}
@@ -351,9 +357,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.AutoFlush, out string property))
+				if (GetPropertyIfNotSet(Property.AutoFlush, out string? property))
 				{
-					this.AutoFlush = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.AutoFlush = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mAutoFlush;
 			}
@@ -371,9 +377,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.BaseFileName, out string property))
+				if (GetPropertyIfNotSet(Property.BaseFileName, out string? property))
 				{
-					this.BaseFileName = property;
+					this.BaseFileName = property!;
 				}
 				return this.mBaseFileName;
 			}
@@ -397,9 +403,9 @@ namespace KSoft.Debug
 			[SecuritySafeCritical]
 			get
 			{
-				if (GetPropertyIfNotSet(Property.CustomLocation, out string property))
+				if (GetPropertyIfNotSet(Property.CustomLocation, out string? property))
 				{
-					this.CustomLocation = property;
+					this.CustomLocation = property!;
 				}
 				string fullPath = Path.GetFullPath(this.mCustomLocation);
 //				new FileIOPermission(FileIOPermissionAccess.PathDiscovery, fullPath).Demand();
@@ -427,9 +433,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.Delimiter, out string property))
+				if (GetPropertyIfNotSet(Property.Delimiter, out string? property))
 				{
-					this.Delimiter = property;
+					this.Delimiter = property!;
 				}
 				return this.mDelimiter;
 			}
@@ -445,10 +451,10 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.DiskSpaceExhaustedBehavior, out string property))
+				if (GetPropertyIfNotSet(Property.DiskSpaceExhaustedBehavior, out string? property))
 				{
 					var converter = TypeDescriptor.GetConverter(typeof(DiskSpaceExhaustedOption));
-					this.DiskSpaceExhaustedBehavior = (DiskSpaceExhaustedOption)converter.ConvertFromInvariantString(property);
+					this.DiskSpaceExhaustedBehavior = (DiskSpaceExhaustedOption)converter.ConvertFromInvariantString(property!)!;
 				}
 				return this.mDiskSpaceExhaustedBehavior;
 			}
@@ -467,9 +473,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.Encoding, out string property))
+				if (GetPropertyIfNotSet(Property.Encoding, out string? property))
 				{
-					this.Encoding = Encoding.GetEncoding(property);
+					this.Encoding = Encoding.GetEncoding(property!);
 				}
 				return this.mEncoding;
 			}
@@ -487,9 +493,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.IncludeHostName, out string property))
+				if (GetPropertyIfNotSet(Property.IncludeHostName, out string? property))
 				{
-					this.IncludeHostName = Convert.ToBoolean(property, CultureInfo.InvariantCulture);
+					this.IncludeHostName = Convert.ToBoolean(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mIncludeHostName;
 			}
@@ -507,10 +513,10 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.Location, out string property))
+				if (GetPropertyIfNotSet(Property.Location, out string? property))
 				{
 					TypeConverter converter = TypeDescriptor.GetConverter(typeof(LogFileLocation));
-					this.Location = (LogFileLocation)converter.ConvertFromInvariantString(property);
+					this.Location = (LogFileLocation)converter.ConvertFromInvariantString(property!)!;
 				}
 				return this.mLocation;
 			}
@@ -531,10 +537,10 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.LogFileCreationSchedule, out string property))
+				if (GetPropertyIfNotSet(Property.LogFileCreationSchedule, out string? property))
 				{
 					var converter = TypeDescriptor.GetConverter(typeof(LogFileCreationScheduleOption));
-					this.LogFileCreationSchedule = (LogFileCreationScheduleOption)converter.ConvertFromInvariantString(property);
+					this.LogFileCreationSchedule = (LogFileCreationScheduleOption)converter.ConvertFromInvariantString(property!)!;
 				}
 				return this.mLogFileDateStamp;
 			}
@@ -555,9 +561,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.MaxFileSize, out string property))
+				if (GetPropertyIfNotSet(Property.MaxFileSize, out string? property))
 				{
-					this.MaxFileSize = Convert.ToInt64(property, CultureInfo.InvariantCulture);
+					this.MaxFileSize = Convert.ToInt64(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mMaxFileSize;
 			}
@@ -577,9 +583,9 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.ReservedDiskSpace, out string property))
+				if (GetPropertyIfNotSet(Property.ReservedDiskSpace, out string? property))
 				{
-					this.ReserveDiskSpace = Convert.ToInt64(property, CultureInfo.InvariantCulture);
+					this.ReserveDiskSpace = Convert.ToInt64(property!, CultureInfo.InvariantCulture);
 				}
 				return this.mReserveDiskSpace;
 			}
@@ -596,7 +602,7 @@ namespace KSoft.Debug
 		#endregion
 
 		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
-		private ReferencedStream mStream;
+		private ReferencedStream mStream = null!;
 		private ReferencedStream ListenerStream
 		{
 			get
@@ -616,11 +622,11 @@ namespace KSoft.Debug
 		static string Application_UserAppDataPath =>
 			Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name!);
 		static string Application_CommonAppDataPath =>
 			Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name);
+				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name!);
 
 		//		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
 		public KSoftFileLogTraceListener(string name) : base(name)
@@ -648,7 +654,7 @@ namespace KSoft.Debug
 		{
 		}
 
-		private string mHostName;
+		private string mHostName = null!;
 		private string HostName
 		{
 			get
@@ -661,7 +667,7 @@ namespace KSoft.Debug
 			}
 		}
 
-		private string mFullFileName;
+		private string mFullFileName = null!;
 		public string FullLogFileName
 		{
 			[SecuritySafeCritical]
@@ -688,7 +694,7 @@ namespace KSoft.Debug
 				path = Application_CommonAppDataPath;
 				break;
 			case LogFileLocation.ExecutableDirectory:
-				path = Path.GetDirectoryName(Application_ExecutablePath);
+				path = Path.GetDirectoryName(Application_ExecutablePath)!;
 				break;
 			case LogFileLocation.Custom:
 				if (this.CustomLocation.IsNullOrEmpty())
@@ -715,7 +721,7 @@ namespace KSoft.Debug
 				text = text + "-" + this.mFirstDayOfWeek.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 				break;
 			}
-			return Path.Combine(path, text);
+			return Path.Combine(path!, text);
 		} }
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
@@ -771,12 +777,12 @@ namespace KSoft.Debug
 		#endregion
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void Write(string message)
+		public override void Write(string? message)
 		{
 			try
 			{
 				this.HandleDateChange();
-				long newEntrySize = this.Encoding.GetByteCount(message);
+				long newEntrySize = this.Encoding.GetByteCount(message!);
 				if (this.ResourcesAvailable(newEntrySize))
 				{
 					this.ListenerStream.Write(message);
@@ -795,12 +801,12 @@ namespace KSoft.Debug
 		}
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void WriteLine(string message)
+		public override void WriteLine(string? message)
 		{
 			try
 			{
 				this.HandleDateChange();
-				long newEntrySize = this.Encoding.GetByteCount(message + Environment.NewLine);
+				long newEntrySize = this.Encoding.GetByteCount(message! + Environment.NewLine);
 				if (this.ResourcesAvailable(newEntrySize))
 				{
 					this.ListenerStream.WriteLine(message);
@@ -819,7 +825,7 @@ namespace KSoft.Debug
 		}
 
 		#region Write helpers
-		private void WriteHeader(String source, TraceEventType eventType, int id)
+		private void WriteHeader(string? source, TraceEventType eventType, int id)
 		{
 			var sb = new StringBuilder();
 
@@ -848,7 +854,7 @@ namespace KSoft.Debug
 			}
 		}
 
-		private void WriteFooter(TraceEventCache eventCache)
+		private void WriteFooter(TraceEventCache? eventCache)
 		{
 			if (eventCache == null)
 			{
@@ -877,7 +883,7 @@ namespace KSoft.Debug
 						first = false;
 					}
 
-					TemporaryWrite(obj.ToString());
+					TemporaryWrite(obj.ToString()!);
 				}
 				TemporaryWriteLine(string.Empty);
 			}
@@ -907,11 +913,11 @@ namespace KSoft.Debug
 			TemporaryWriteFlush();
 		}
 
-		private void WriteData(object data)
+		private void WriteData(object? data)
 		{
-			if (data is AggregateException)
+			if (data is AggregateException aggregateException)
 			{
-				var ex = data as AggregateException;
+				var ex = aggregateException;
 				//TemporaryWrite("Exceptions: ");
 				TemporaryWriteLine(ex.Message);
 				IndentLevel++;
@@ -934,9 +940,9 @@ namespace KSoft.Debug
 
 				IndentLevel--;
 			}
-			else if (data is Exception)
+			else if (data is Exception exception)
 			{
-				var ex = data as Exception;
+				var ex = exception;
 				//TemporaryWrite("Exception: ");
 				TemporaryWriteLine(ex.Message);
 				IndentLevel++;
@@ -972,7 +978,7 @@ namespace KSoft.Debug
 			}
 			else
 			{
-				TemporaryWriteLine(data.ToString());
+				TemporaryWriteLine(data!.ToString()!);
 			}
 		}
 		#endregion
@@ -981,9 +987,9 @@ namespace KSoft.Debug
 
 		#region Trace methods
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+		public override void TraceEvent(TraceEventCache? eventCache, string? source, TraceEventType eventType, int id, string? message)
 		{
-			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, message, null, null, null))
+			if (Filter != null && !Filter.ShouldTrace(eventCache, source!, eventType, id, message, null, null, null))
 			{
 				return;
 			}
@@ -1052,9 +1058,9 @@ namespace KSoft.Debug
 		}
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
+		public override void TraceEvent(TraceEventCache? eventCache, string? source, TraceEventType eventType, int id, string? format, params object?[]? args)
 		{
-			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, format, args, null, null))
+			if (Filter != null && !Filter.ShouldTrace(eventCache, source!, eventType, id, format, args, null, null))
 			{
 				return;
 			}
@@ -1075,7 +1081,7 @@ namespace KSoft.Debug
 
 			if (args != null)
 			{
-				WriteLine(string.Format(CultureInfo.InvariantCulture, format, args));
+				WriteLine(string.Format(CultureInfo.InvariantCulture, format!, args));
 			}
 			else
 			{
@@ -1087,9 +1093,9 @@ namespace KSoft.Debug
 		}
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
+		public override void TraceData(TraceEventCache? eventCache, string? source, TraceEventType eventType, int id, object? data)
 		{
-			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, data, null))
+			if (Filter != null && !Filter.ShouldTrace(eventCache, source!, eventType, id, null, null, data, null))
 			{
 				return;
 			}
@@ -1104,7 +1110,7 @@ namespace KSoft.Debug
 			this.TraceEvent(eventCache, source, eventType, id, message);
 #else
 			WriteHeader(source, eventType, id);
-			string datastring = "";
+			string? datastring = "";
 			var actual_data = GetDataEntryForTrace(data);
 			if (actual_data != null)
 			{
@@ -1117,9 +1123,9 @@ namespace KSoft.Debug
 		}
 
 //		[HostProtection(SecurityAction.LinkDemand, Synchronization = true)]
-		public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
+		public override void TraceData(TraceEventCache? eventCache, string? source, TraceEventType eventType, int id, params object?[]? data)
 		{
-			if (Filter != null && !Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, data))
+			if (Filter != null && !Filter.ShouldTrace(eventCache, source!, eventType, id, null, null, null, data))
 			{
 				return;
 			}
@@ -1167,14 +1173,14 @@ namespace KSoft.Debug
 		}
 		#endregion
 
-		private object[] GetDataForTrace(params object[] args)
+		private object?[]? GetDataForTrace(params object?[]? args)
 		{
 			if (args.IsNullOrEmpty())
 			{
 				return args;
 			}
 
-			var result = new object[args.Length];
+			var result = new object?[args.Length];
 
 			for (int x = 0; x < result.Length; x++)
 			{
@@ -1185,7 +1191,7 @@ namespace KSoft.Debug
 			return result;
 		}
 
-		private static object GetDataEntryForTrace(object data)
+		private static object? GetDataEntryForTrace(object? data)
 		{
 			if (data == null)
 			{
@@ -1236,7 +1242,7 @@ namespace KSoft.Debug
 		private ReferencedStream GetStream()
 		{
 			int num = 0;
-			ReferencedStream referencedStream = null;
+			ReferencedStream referencedStream = null!;
 			string fullPath = Path.GetFullPath(this.LogFileName + ".log");
 			checked
 			{
@@ -1255,13 +1261,13 @@ namespace KSoft.Debug
 					object streams = mStreams;
 					lock (streams)
 					{
-						if (mStreams.TryGetValue(key, out ReferencedStream value))
+						if (mStreams.TryGetValue(key, out ReferencedStream? value))
 						{
-							referencedStream = value;
+							referencedStream = value!;
 							if (!referencedStream.IsInUse)
 							{
 								mStreams.Remove(key);
-								referencedStream = null;
+								referencedStream = null!;
 							}
 							else
 							{
@@ -1274,11 +1280,11 @@ namespace KSoft.Debug
 									return result;
 								}
 								num++;
-								referencedStream = null;
+								referencedStream = null!;
 								continue;
 							}
 						}
-						Encoding encoding = this.Encoding;
+						Encoding? encoding = this.Encoding;
 						try
 						{
 							if (this.Append)
@@ -1289,7 +1295,7 @@ namespace KSoft.Debug
 									encoding = this.Encoding;
 								}
 							}
-							var stream = new StreamWriter(fullPath2, this.Append, encoding);
+							var stream = new StreamWriter(fullPath2, this.Append, encoding!);
 							referencedStream = new ReferencedStream(stream);
 							referencedStream.AddReference();
 							mStreams.Add(key, referencedStream);
@@ -1322,7 +1328,7 @@ namespace KSoft.Debug
 						{
 							mStreams.Remove(this.mFullFileName.ToUpper(CultureInfo.InvariantCulture));
 						}
-						this.mStream = null;
+						this.mStream = null!;
 					}
 				}
 			}
@@ -1360,7 +1366,7 @@ namespace KSoft.Debug
 		[SecuritySafeCritical]
 		private long GetFreeDiskSpace()
 		{
-			string pathRoot = Path.GetPathRoot(Path.GetFullPath(this.FullLogFileName));
+			string pathRoot = Path.GetPathRoot(Path.GetFullPath(this.FullLogFileName))!;
 //			new FileIOPermission(FileIOPermissionAccess.PathDiscovery, pathRoot).Demand();
 			if (GetDiskFreeSpaceEx(pathRoot, out long num, out long _, out long _) && num > -1L)
 			{
@@ -1384,12 +1390,12 @@ namespace KSoft.Debug
 #endif
 		}
 
-		private Encoding GetFileEncoding(string fileName)
+		private Encoding? GetFileEncoding(string fileName)
 		{
-			Encoding result;
+			Encoding? result;
 			if (File.Exists(fileName))
 			{
-				StreamReader streamReader = null;
+				StreamReader? streamReader = null;
 				try
 				{
 					streamReader = new StreamReader(fileName, this.Encoding, true);
@@ -1405,8 +1411,7 @@ namespace KSoft.Debug
 					streamReader?.Close();
 				}
 			}
-			result = null;
-			return result;
+			return null;
 		}
 		#endregion
 
