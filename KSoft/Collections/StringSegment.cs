@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -123,7 +125,7 @@ namespace KSoft.Collections
 		{
 			return other.mData == mData && other.mOffset == mOffset && other.mCount == mCount;
 		}
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			return obj is StringSegment segment && Equals(segment);
 		}

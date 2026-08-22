@@ -57,4 +57,22 @@ public sealed class StringSegmentTest : BaseTestClass
 		Assert.AreEqual(1, segment.Count);
 		Assert.AreEqual('b', segment[0]);
 	}
+
+	#nullable enable
+
+	[TestMethod]
+	public void Equality_NullAndMatchingSegments_HaveExpectedResults()
+	{
+		var lhs = new StringSegment("abc", 1, 1);
+		var rhs = new StringSegment("abc", 1, 1);
+
+		Assert.IsTrue(lhs.Equals(rhs));
+		Assert.IsTrue(lhs.Equals((object)rhs));
+		Assert.IsFalse(lhs.Equals((object?)null));
+		Assert.IsFalse(lhs.Equals("abc"));
+		Assert.IsTrue(lhs == rhs);
+		Assert.IsFalse(lhs != rhs);
+	}
+
+	#nullable restore
 }
