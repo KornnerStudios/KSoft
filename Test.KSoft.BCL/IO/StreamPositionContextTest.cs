@@ -48,4 +48,10 @@ public sealed class StreamPositionContextTest : BaseTestClass
 
 		Assert.AreEqual(3, stream.Position);
 	}
+
+	[TestMethod]
+	public void DefaultDispose_DoesNotThrow()
+	{
+		default(StreamPositionContext).Dispose();
+	}
 }

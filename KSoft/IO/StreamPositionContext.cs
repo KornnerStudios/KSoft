@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 
 namespace KSoft.IO
@@ -9,7 +11,7 @@ namespace KSoft.IO
 	public struct StreamPositionContext : IDisposable
 	{
 		readonly long mPosition;
-		Stream mStream;
+		Stream? mStream;
 
 		#region Ctor
 		public StreamPositionContext(Stream baseStream)
