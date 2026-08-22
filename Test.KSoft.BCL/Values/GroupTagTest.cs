@@ -16,6 +16,12 @@ public sealed class GroupTagTest : BaseTestClass
 			new(new GroupTagData32("othr", "Other"));
 	}
 
+	sealed class TestGroupTagContainerHost64
+	{
+		public static GroupTag64Collection Groups { get; } =
+			new(new GroupTagData64("testtag8", "Test"));
+	}
+
 	[GroupTagContainer32(typeof(TestGroupTagContainerHost32))]
 	sealed class TestGroupTagContainerTarget32
 	{
@@ -220,6 +226,34 @@ public sealed class GroupTagTest : BaseTestClass
 		Assert.AreEqual("Test", collection["test".ToCharArray()]);
 		Assert.AreSame(groupTag, collection.FindGroupByTag("test"));
 		Assert.IsNull(collection.FindGroup("Missing"));
+	}
+
+	[TestMethod]
+	public void GroupTagCollections_SearchAndTypedContainerLookup_PreserveNullSentinels()
+	{
+		var collection32 = new GroupTag32Collection(
+			new GroupTagData32("zeta", "Zeta"),
+			new GroupTagData32("alph", "Alpha"));
+		var collection64 = new GroupTag64Collection(
+			new GroupTagData64("zetatag8", "Zeta"),
+			new GroupTagData64("alpha000", "Alpha"));
+
+		Assert.IsNull(collection32.FindGroup("Missing"));
+		Assert.IsNull(collection32.FindGroupByTag("miss"));
+		Assert.IsNull(collection32.FindGroup("miss".ToCharArray()));
+		Assert.IsNull(collection32.FindGroupByTag(0));
+		collection32.Sort();
+		Assert.AreEqual("Alpha", collection32.GroupTags[0].Name);
+
+		Assert.IsNull(collection64.FindGroup("Missing"));
+		Assert.IsNull(collection64.FindGroupByTag("missing!"));
+		Assert.IsNull(collection64.FindGroup("missing!".ToCharArray()));
+		Assert.IsNull(collection64.FindGroupByTag(0));
+		collection64.Sort();
+		Assert.AreEqual("Alpha", collection64.GroupTags[0].Name);
+
+		Assert.IsNull(new GroupTagContainer32Attribute(typeof(TestGroupTagContainerHost64)).Collection);
+		Assert.IsNull(new GroupTagContainer64Attribute(typeof(TestGroupTagContainerHost32)).Collection);
 	}
 
 	[TestMethod]

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,19 +16,19 @@ namespace KSoft.Values
 			: System.Collections.IComparer
 			, System.Collections.Generic.IComparer<GroupTagData>
 		{
-			public int Compare(object x, object y)
+			public int Compare(object? x, object? y)
 			{
 				System.Diagnostics.Debug.Assert(x != null);
 				System.Diagnostics.Debug.Assert(y != null);
 
-				return Compare((GroupTagData)x, (GroupTagData)y);
+				return Compare((GroupTagData)x!, (GroupTagData)y!);
 			}
-			public int Compare(GroupTagData x, GroupTagData y)
+			public int Compare(GroupTagData? x, GroupTagData? y)
 			{
 				System.Diagnostics.Debug.Assert(x != null);
 				System.Diagnostics.Debug.Assert(y != null);
 
-				return string.CompareOrdinal(x.Name, y.Name);
+				return string.CompareOrdinal(x!.Name, y!.Name);
 			}
 		};
 
@@ -121,7 +123,7 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
-		public GroupTagData FindGroup(char[] groupTag)
+		public GroupTagData? FindGroup(char[] groupTag)
 		{
 			ArgumentNullException.ThrowIfNull(groupTag);
 
@@ -136,7 +138,7 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="tagString"/> isn't a part of this collection</returns>
-		public GroupTagData FindGroupByTag(string tagString)
+		public GroupTagData? FindGroupByTag(string tagString)
 		{
 			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
 
@@ -152,7 +154,7 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupName">The name of a <see cref="GroupTagData"/> to search for</param>
 		/// <returns>Null if <paramref name="groupName"/> isn't a part of this collection</returns>
-		public GroupTagData FindGroup(string groupName)
+		public GroupTagData? FindGroup(string groupName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(groupName);
 

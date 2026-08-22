@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,7 +73,7 @@ namespace KSoft.Values
 		/// <summary>Find a <see cref="GroupTagData32"/> object in this collection based on it's group tag</summary>
 		/// <param name="tag">Group tag to find</param>
 		/// <returns><see cref="GroupTagData32"/> object existing in this collection, or null if not found.</returns>
-		public GroupTagDatum FindGroupByTag(TagWord tag)
+		public GroupTagDatum? FindGroupByTag(TagWord tag)
 		{
 			var matching_tags = from gt in GroupTags
 								where gt.ID == tag
@@ -130,6 +132,6 @@ namespace KSoft.Values
 		}
 
 		/// <summary>The "main" group of the class which this attribute was applied to</summary>
-		public GroupTag32Collection Collection { get { return TagCollection as GroupTag32Collection; } }
+		public GroupTag32Collection? Collection { get { return TagCollection as GroupTag32Collection; } }
 	};
 }
