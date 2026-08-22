@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using Exprs = System.Linq.Expressions;
 using Expr = System.Linq.Expressions.Expression;
 using Reflect = System.Reflection;
@@ -337,18 +339,18 @@ namespace KSoft.Reflection
 
 			var mem_expr = expr.Operand as Exprs.MemberExpression;
 
-			return PropertyNameFromMemberExpr(mem_expr);
+			return PropertyNameFromMemberExpr(mem_expr!);
 		}
 
 		static string PropertyNameFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
 			if (expr.Body is Exprs.MemberExpression)
 			{
-				return PropertyNameFromMemberExpr(expr.Body as Exprs.MemberExpression);
+				return PropertyNameFromMemberExpr((expr.Body as Exprs.MemberExpression)!);
 			}
 			else if (expr.Body is Exprs.UnaryExpression)
 			{
-				return PropertyNameFromUnaryExpr(expr.Body as Exprs.UnaryExpression);
+				return PropertyNameFromUnaryExpr((expr.Body as Exprs.UnaryExpression)!);
 			}
 
 			throw new NotSupportedException(expr.ToString());
@@ -388,17 +390,17 @@ namespace KSoft.Reflection
 
 			var mem_expr = expr.Operand as Exprs.MemberExpression;
 
-			return MemberFromExprMemberExpr(mem_expr);
+			return MemberFromExprMemberExpr(mem_expr!);
 		}
 		static Reflect.MemberInfo MemberFromLambdaExpr(Exprs.LambdaExpression expr)
 		{
 			if (expr.Body is Exprs.MemberExpression)
 			{
-				return MemberFromExprMemberExpr(expr.Body as Exprs.MemberExpression);
+				return MemberFromExprMemberExpr((expr.Body as Exprs.MemberExpression)!);
 			}
 			else if (expr.Body is Exprs.UnaryExpression)
 			{
-				return MemberFromExprUnaryExpr(expr.Body as Exprs.UnaryExpression);
+				return MemberFromExprUnaryExpr((expr.Body as Exprs.UnaryExpression)!);
 			}
 
 			throw new NotSupportedException(expr.ToString());
