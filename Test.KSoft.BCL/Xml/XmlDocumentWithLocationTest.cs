@@ -53,6 +53,15 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void GetFileLocationString_ElementWithoutLineInfoAndUnsetFileName_ReturnsNull()
+	{
+		var document = new XmlDocumentWithLocation();
+		var element = document.CreateElement("root");
+
+		Assert.IsNull(document.GetFileLocationString(element));
+	}
+
+	[TestMethod]
 	public void GetFileLocationString_ElementOrAttributeWithLineInfo_ReturnsFileLocation()
 	{
 		var document = CreateDocument();

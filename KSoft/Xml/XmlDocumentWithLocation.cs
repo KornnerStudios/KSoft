@@ -1,3 +1,5 @@
+﻿#nullable enable
+
 using System;
 using System.Xml;
 
@@ -5,14 +7,15 @@ namespace KSoft.Xml
 {
 	public class XmlDocumentWithLocation : XmlDocument
 	{
-		IXmlLineInfo mLoadReader;
+		IXmlLineInfo? mLoadReader;
 
-		public string FileName { get; set; }
+		public string? FileName { get; set; }
 
 		internal Text.TextLineInfo CurrentLineInfo { get {
-			if (mLoadReader != null && mLoadReader.HasLineInfo())
+			var loadReader = mLoadReader;
+			if (loadReader != null && loadReader.HasLineInfo())
 				{
-					return new Text.TextLineInfo(mLoadReader.LineNumber, mLoadReader.LinePosition);
+					return new Text.TextLineInfo(loadReader.LineNumber, loadReader.LinePosition);
 				}
 
 				return Text.TextLineInfo.Empty;
@@ -33,24 +36,24 @@ namespace KSoft.Xml
 		}
 
 		#region Create overrides
-		public override XmlAttribute CreateAttribute(string prefix, string localName, string namespaceURI)
+		public override XmlAttribute CreateAttribute(string? prefix, string localName, string? namespaceURI)
 		{
-			return new XmlAttributeWithLocation(prefix, localName, namespaceURI, this);
+			return new XmlAttributeWithLocation(prefix!, localName, namespaceURI!, this);
 		}
 
-		public override XmlCDataSection CreateCDataSection(string data)
+		public override XmlCDataSection CreateCDataSection(string? data)
 		{
-			return new XmlCDataSectionWithLocation(data, this);
+			return new XmlCDataSectionWithLocation(data!, this);
 		}
 
-		public override XmlElement CreateElement(string prefix, string localName, string namespaceURI)
+		public override XmlElement CreateElement(string? prefix, string localName, string? namespaceURI)
 		{
-			return new XmlElementWithLocation(prefix, localName, namespaceURI, this);
+			return new XmlElementWithLocation(prefix!, localName, namespaceURI!, this);
 		}
 
-		public override XmlText CreateTextNode(string text)
+		public override XmlText CreateTextNode(string? text)
 		{
-			return new XmlTextWithLocation(text, this);
+			return new XmlTextWithLocation(text!, this);
 		}
 		#endregion
 
@@ -66,7 +69,7 @@ namespace KSoft.Xml
 				"{0} ({1})",
 				FileName, Text.TextLineInfo.ToString(lineInfo, verboseString));
 		}
-		public string GetFileLocationString(XmlNode node, bool verboseString = false)
+		public string? GetFileLocationString(XmlNode node, bool verboseString = false)
 		{
 			ArgumentNullException.ThrowIfNull(node);
 
