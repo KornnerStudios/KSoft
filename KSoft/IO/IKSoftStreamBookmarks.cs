@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 
 namespace KSoft.IO
@@ -6,7 +8,7 @@ namespace KSoft.IO
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.Owner"/></summary>
 	public struct IKSoftStreamOwnerBookmark : IDisposable
 	{
-		IKSoftStream mStream;
+		IKSoftStream? mStream;
 		readonly object mOldOwner;
 
 		/// <summary>Saves the stream's owner so a new one can be specified, but is then later restored to the previous owner, via <see cref="Dispose()"/></summary>
@@ -34,7 +36,7 @@ namespace KSoft.IO
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.UserData"/></summary>
 	public struct IKSoftStreamUserDataBookmark : IDisposable
 	{
-		IKSoftStream mStream;
+		IKSoftStream? mStream;
 		readonly object mOldUserData;
 
 		/// <summary>Saves the stream's UserData so a new one can be specified, but is then later restored to the previous UserData, via <see cref="Dispose()"/></summary>
@@ -62,7 +64,7 @@ namespace KSoft.IO
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStreamModeable.StreamMode"/></summary>
 	public struct IKSoftStreamModeBookmark : IDisposable
 	{
-		IKSoftStreamModeable mStream;
+		IKSoftStreamModeable? mStream;
 		readonly FileAccess mOldMode;
 
 		/// <summary>Saves the stream's StreamMode so a new one can be specified, but is then later restored to the previous StreamMode, via <see cref="Dispose()"/></summary>
