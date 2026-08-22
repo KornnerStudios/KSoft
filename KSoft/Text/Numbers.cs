@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SysDebug = System.Diagnostics.Debug;
@@ -30,7 +32,7 @@ namespace KSoft
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string s, int startIndex
-			, Text.IHandleTextParseError handler = null)
+			, Text.IHandleTextParseError? handler = null)
 		{
 			Exception detailsException;
 
@@ -154,7 +156,7 @@ namespace KSoft
 		{
 			protected readonly StringListDesc mDesc;
 			protected readonly string mValues;
-			protected List<TListItem> mList;
+			protected List<TListItem>? mList;
 
 			protected TryParseNumberListBase(StringListDesc desc, string values)
 			{
@@ -164,11 +166,11 @@ namespace KSoft
 
 			protected abstract IEnumerable<T?> EmptyResult { get; }
 
-			void InitializeList()
+			List<TListItem> InitializeList()
 			{
 				// ReSharper disable once ImpureMethodCallOnReadonlyValueField
 				int predicated_count = mDesc.PredictedCount(mValues);
-				mList = new List<TListItem>(predicated_count);
+				return mList = new List<TListItem>(predicated_count);
 			}
 
 			protected abstract TListItem CreateItem(int start, int length);
@@ -182,7 +184,7 @@ namespace KSoft
 					return EmptyResult;
 				}
 
-				InitializeList();
+				var list = InitializeList();
 
 				bool found_terminator = false;
 				int value_length = mValues.Length;
@@ -213,7 +215,7 @@ namespace KSoft
 
 					if (length > 0)
 					{
-						mList.Add(CreateItem(start, length));
+						list.Add(CreateItem(start, length));
 					}
 
 					start = end + 1;
@@ -221,7 +223,7 @@ namespace KSoft
 
 				// #REVIEW: should we add support for throwing an exception or such when a terminator isn't encountered?
 
-				return mList.Count == 0
+				return list.Count == 0
 					? EmptyResult
 					: CreateResult();
 			}
