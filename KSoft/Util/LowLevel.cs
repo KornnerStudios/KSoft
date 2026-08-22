@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace KSoft.LowLevel.Util
@@ -9,7 +11,7 @@ namespace KSoft.LowLevel.Util
 		/// <summary>Convert a handle to object</summary>
 		/// <param name="nativePtr">Handle</param>
 		/// <returns>Managed object</returns>
-		public static object IntPtrToStructure(IntPtr nativePtr, Type t)
+		public static object? IntPtrToStructure(IntPtr nativePtr, Type t)
 		{
 			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 			ArgumentNullException.ThrowIfNull(t);
@@ -20,7 +22,7 @@ namespace KSoft.LowLevel.Util
 		/// <param name="nativePtr">Handle</param>
 		/// <typeparam name="T">Type to covert <paramref name="nativePtr"/> to</typeparam>
 		/// <returns>Managed object</returns>
-		public static T IntPtrToStructure<T>(IntPtr nativePtr)
+		public static T? IntPtrToStructure<T>(IntPtr nativePtr)
 		{
 			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 
@@ -35,11 +37,11 @@ namespace KSoft.LowLevel.Util
 		/// Doesn't destroy any pre-existing memory or objects inside <paramref name="nativePtr"/>
 		/// before the copy takes place
 		/// </remarks>
-		public static void StructureToPtr<T>(T theObj, IntPtr nativePtr)
+		public static void StructureToPtr<T>(T? theObj, IntPtr nativePtr)
 		{
 			ThrowIfZeroPointer(nativePtr, nameof(nativePtr));
 
-			Marshal.StructureToPtr(theObj, nativePtr, false);
+			Marshal.StructureToPtr(theObj!, nativePtr, false);
 		}
 
 		/// <summary>Allocate unmanaged memory for an object of type <paramref name="t"/></summary>

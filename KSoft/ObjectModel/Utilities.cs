@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Exprs = System.Linq.Expressions;
@@ -43,7 +45,7 @@ namespace KSoft.ObjectModel
 		}
 
 		private static readonly Dictionary<Type, Func<object, object>> gCollectionGetUnderlyingListFuncs = [];
-		public static List<T> GetUnderlyingItemsAsList<T>(System.Collections.ObjectModel.Collection<T> coll, bool throwOnError = true)
+		public static List<T>? GetUnderlyingItemsAsList<T>(System.Collections.ObjectModel.Collection<T>? coll, bool throwOnError = true)
 		{
 			if (coll == null)
 			{
@@ -54,7 +56,7 @@ namespace KSoft.ObjectModel
 			Func<object, object> getFunc;
 			lock (gCollectionGetUnderlyingListFuncs)
 			{
-				if (!gCollectionGetUnderlyingListFuncs.TryGetValue(collType, out getFunc))
+				if (!gCollectionGetUnderlyingListFuncs.TryGetValue(collType, out getFunc!))
 				{
 					getFunc = Reflection.Util.GenerateMemberGetter<object>(collType, "items");
 					gCollectionGetUnderlyingListFuncs.Add(collType, getFunc);
