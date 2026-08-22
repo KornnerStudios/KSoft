@@ -152,7 +152,6 @@ public sealed class SourceWriterTests
 				"/// </summary>",
 				"/// <param name=\"value\">Value to write</param>",
 				"/// <returns></returns>",
-				"[Contracts.Pure]",
 				"",
 			]),
 			writer.ToString());

@@ -30,7 +30,7 @@ internal static partial class BitsEncodingSourceBuilder
 		writer.WriteXmlDocParam("maxValue", "An enumeration's <b>kMax</b> value");
 		writer.WriteXmlDocParam(
 			"bitCount",
-			"Number of bits needed to represent NONE to (<paramref name=\"maxValue\"/> - 1)");
+			"Receives the positive bit count needed to represent NONE to (<paramref name=\"maxValue\"/> - 1)");
 		writer.WriteXmlDocParam(
 			"traceVerboseChecks",
 			"Should verbose checks be performed and traced? No side effects outside of DEBUG");
@@ -45,6 +45,7 @@ internal static partial class BitsEncodingSourceBuilder
 		writer.WriteLine(
 			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
 			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");
+		writer.WriteXmlDocReturns("A positive bitmask for the encoded value range");
 		writer.WritePurityAnnotation();
 		writer.WriteLine($"public static {wordSpec.Keyword} GetNoneableEncodingTraits({wordSpec.SignedKeyword} maxValue");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
@@ -59,10 +60,15 @@ internal static partial class BitsEncodingSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (maxValue <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, " +
+					"\"Maximum value must be positive.\");");
+			}
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 0 && " +
-				$"maxValue < {wordSpec.SignedKeyword}.MaxValue);");
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out bitCount) > 0);");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(maxValue, {wordSpec.SignedKeyword}.MaxValue);");
 			writer.WriteLine();
 			writer.WriteLine(
 				"// Add one to the max value, as NONE encoding adds one to the value when encoding " +

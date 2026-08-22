@@ -33,8 +33,16 @@ internal static partial class BitsCoreSourceBuilder
 			$"int startBitIndex = {GeneralBitCountConstantName(typeSpec)}-1)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(startBitIndex > 0, kBitSwap_StartBitIndexNotGreaterThanZero);");
-			writer.WriteLine($"Contract.Requires(startBitIndex < {GeneralBitCountConstantName(typeSpec)});");
+			writer.WriteLine("if (startBitIndex <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(startBitIndex), startBitIndex, " +
+					"kBitSwap_StartBitIndexNotGreaterThanZero);");
+			}
+			writer.WriteLine(
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startBitIndex, " +
+				$"{GeneralBitCountConstantName(typeSpec)});");
 			writer.WriteLine();
 			writer.WriteLine("if (value != 0 && value != " + typeSpec.Keyword + ".MaxValue)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))

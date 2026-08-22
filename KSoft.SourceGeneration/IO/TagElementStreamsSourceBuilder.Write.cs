@@ -112,7 +112,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void WriteElement(TName name, {typeSpec.Keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			if (IsString(typeSpec))
 			{
 				writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
@@ -137,7 +137,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			"NumeralBase toBase = kDefaultRadix)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine();
 			writer.WriteLine("WriteElement(WriteElementAppend(name), value, toBase);");
 		}
@@ -288,11 +288,11 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"public bool {methodName}(TName name, {keyword} value, Predicate<{keyword}> predicate{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(predicate != null);");
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(predicate);");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			if (includeCursorContract)
 			{
-				writer.WriteLine("Contract.Requires(Cursor != null, kCursorNullMsg);");
+				writer.WriteLine("if (Cursor == null) { throw new InvalidOperationException(kCursorNullMsg); }");
 			}
 
 			if (!onTrue && keyword == "string")
@@ -347,7 +347,8 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void WriteElements(TName elementName, ICollection<{keyword}> coll{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(elementName));");
+			writer.WriteLine(
+				"if (!ValidateNameArg(elementName)) { throw new ArgumentException(\"Invalid name.\", nameof(elementName)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("foreach (var value in coll)");

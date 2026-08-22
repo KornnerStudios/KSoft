@@ -79,7 +79,7 @@ internal static partial class BitsEncodingSourceBuilder
 			$"public static {wordSpec.Keyword} BitDecode({wordSpec.Keyword} bits, Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
 			writer.WriteLine();
 			writer.WriteLine($"return (bits >> traits.BitIndex) & traits.{BitMaskPropertyName(wordSpec)};");
 		}
@@ -94,7 +94,7 @@ internal static partial class BitsEncodingSourceBuilder
 			"Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentException>*/(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"return ({wordSpec.SignedKeyword})BitDecode(bits, traits.BitIndex, " +
@@ -168,10 +168,12 @@ internal static partial class BitsEncodingSourceBuilder
 			"int bitIndexLow, int bitIndexHigh)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndexLow >= 0 && bitIndexHigh >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndexLow);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndexHigh);");
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndexLow < k{wordSpec.ConstantKeyword}BitCount " +
-				$"&& bitIndexHigh < k{wordSpec.ConstantKeyword}BitCount);");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndexLow, k{wordSpec.ConstantKeyword}BitCount);");
+			writer.WriteLine(
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndexHigh, k{wordSpec.ConstantKeyword}BitCount);");
 			writer.WriteLine();
 			writer.WriteLine("var shifted = bits >> bitIndexLow; // Shift the bit field to start at the 0th bit");
 			writer.WriteLine(
@@ -195,12 +197,13 @@ internal static partial class BitsEncodingSourceBuilder
 			"int bitIndex, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex >= 0 && bitCount >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitCount);");
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex < k{wordSpec.ConstantKeyword}BitCount);");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, k{wordSpec.ConstantKeyword}BitCount);");
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex + (bitCount-1) " +
-				$"< k{wordSpec.ConstantKeyword}BitCount);");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex + (bitCount-1), " +
+				$"k{wordSpec.ConstantKeyword}BitCount);");
 			writer.WriteLine();
 			writer.WriteLine("return BitFieldExtractRange(bits, bitIndex, bitIndex + (bitCount-1));");
 		}

@@ -110,7 +110,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void ReadElement(TName name, ref {typeSpec.Keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine();
 			writer.WriteLine("ReadElement(GetElement(name), ref value);");
 		}
@@ -123,7 +123,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"public void ReadElement(TName name, ref {typeSpec.Keyword} value, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine();
 			writer.WriteLine("ReadElement(GetElement(name), ref value, fromBase);");
 		}
@@ -292,7 +292,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void ReadElements(TName name, ICollection<{keyword}> coll)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.ElementsByName(name), coll);");
@@ -324,7 +324,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"public void ReadElements(TName name, ICollection<{keyword}> coll, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			writer.WriteLine("ReadElements(this.ElementsByName(name), coll, fromBase);");
@@ -399,7 +399,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public int ReadFixedArray(TName name, {keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array);");
@@ -429,7 +429,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"public int ReadFixedArray(TName name, {keyword}[] array, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array, fromBase);");

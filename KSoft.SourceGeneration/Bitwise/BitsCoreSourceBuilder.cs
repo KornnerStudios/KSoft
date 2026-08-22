@@ -13,8 +13,7 @@ internal static partial class BitsCoreSourceBuilder
 	public const string VectorsHintName = "KSoft.Bits.Vectors.g.cs";
 
 	private static string BuildFile(
-		Action<SourceWriter> writeBody,
-		bool includeContractsAlias = true)
+		Action<SourceWriter> writeBody)
 	{
 		ExceptionHelpers.ThrowIfNull(writeBody, nameof(writeBody));
 
@@ -24,11 +23,6 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		if (includeContractsAlias)
-		{
-			writer.WriteContractsAliasUsing();
-		}
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();

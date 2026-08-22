@@ -17,7 +17,6 @@ internal static class EndianStreamsNumbersSourceBuilder
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Buffers.Binary;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
@@ -192,8 +191,7 @@ internal static class EndianStreamsNumbersSourceBuilder
 		writer.WriteLine($"public {typeSpec.Keyword}[] ReadFixedArray({typeSpec.Keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
-			writer.WriteLine($"Contract.Ensures(Contract.Result<{typeSpec.Keyword}[]>() != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return ReadFixedArray(array, 0, array.Length);");
 		}
@@ -220,8 +218,7 @@ internal static class EndianStreamsNumbersSourceBuilder
 		writer.WriteLine($"public {typeSpec.Keyword}[] WriteFixedArray({typeSpec.Keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
-			writer.WriteLine($"Contract.Ensures(Contract.Result<{typeSpec.Keyword}[]>() != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return WriteFixedArray(array, 0, array.Length);");
 		}
@@ -247,9 +244,9 @@ internal static class EndianStreamsNumbersSourceBuilder
 			$"public EndianStream StreamFixedArray({typeSpec.Keyword}[] array, int startIndex, int length)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
-			writer.WriteLine("Contract.Requires(startIndex >= 0);");
-			writer.WriteLine("Contract.Requires(length >= 0);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
 			writer.WriteLine();
 			writer.WriteLine("if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }");
 			writer.WriteLine("else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }");
@@ -260,7 +257,7 @@ internal static class EndianStreamsNumbersSourceBuilder
 		writer.WriteLine($"public EndianStream StreamFixedArray({typeSpec.Keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("return StreamFixedArray(array, 0, array.Length);");
 		}
@@ -268,10 +265,9 @@ internal static class EndianStreamsNumbersSourceBuilder
 
 	private static void WriteFixedArrayContracts(SourceWriter writer, NumberSpec typeSpec)
 	{
-		writer.WriteLine("Contract.Requires(array != null);");
-		writer.WriteLine("Contract.Requires(startIndex >= 0);");
-		writer.WriteLine("Contract.Requires(length >= 0);");
-		writer.WriteLine($"Contract.Ensures(Contract.Result<{typeSpec.Keyword}[]>() != null);");
+		writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
 	}
 
 	private static string ReadMethodName(NumberSpec typeSpec)

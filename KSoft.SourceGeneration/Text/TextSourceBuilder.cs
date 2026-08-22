@@ -42,7 +42,6 @@ internal static class TextSourceBuilder
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine("using StringBuilder = System.Text.StringBuilder;");
 		writer.WriteLine();
 		writer.WriteUnindentedLine("#pragma warning disable IDE0305 // Collection initialization can be simplified");
@@ -81,7 +80,6 @@ internal static class TextSourceBuilder
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using System.Linq;");
 		writer.WriteLine("using System.Threading.Tasks;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteUnindentedLine("#pragma warning disable IDE0301 // Collection initialization can be simplified");
 		writer.WriteLine();
@@ -206,8 +204,9 @@ internal static class TextSourceBuilder
 			$"public static string ToString({keyword} value, int radix = kBase10, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-			writer.WriteLine("Contract.Requires(radix >= 2 && radix <= digits.Length);");
+			writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfLessThan(radix, 2);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(radix, digits.Length);");
 			writer.WriteLine();
 			writer.WriteLine("return ToStringImpl(value, radix, digits);");
 		}
@@ -216,8 +215,9 @@ internal static class TextSourceBuilder
 			"string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-			writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
+			writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+			writer.WriteLine(
+				"if (!IsValidLookupTable(radix, digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(digits)); }");
 			writer.WriteLine();
 			writer.WriteLine("return ToStringImpl(value, (int)radix, digits);");
 		}
@@ -228,10 +228,12 @@ internal static class TextSourceBuilder
 				"NumeralBase radix = NumeralBase.Decimal, int startIndex = -1, string digits = kBase64Digits)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(sb != null);");
-				writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-				writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
-				writer.WriteLine("Contract.Requires(startIndex.IsNoneOrPositive());");
+				writer.WriteLine("ArgumentNullException.ThrowIfNull(sb);");
+				writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+				writer.WriteLine(
+					"if (!IsValidLookupTable(radix, digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(digits)); }");
+				writer.WriteLine(
+					"if (!startIndex.IsNoneOrPositive()) { throw new ArgumentOutOfRangeException(nameof(startIndex)); }");
 				writer.WriteLine("if (startIndex.IsNone())");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
@@ -246,9 +248,10 @@ internal static class TextSourceBuilder
 				"NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(sb != null);");
-				writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-				writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
+				writer.WriteLine("ArgumentNullException.ThrowIfNull(sb);");
+				writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+				writer.WriteLine(
+					"if (!IsValidLookupTable(radix, digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(digits)); }");
 				writer.WriteLine();
 				writer.WriteLine("ToStringBuilder(sb, value, (int)radix, digits);");
 				writer.WriteLine("return sb;");
@@ -336,8 +339,7 @@ internal static class TextSourceBuilder
 			writer.WriteLine($"\tPredicate<IEnumerable<{keyword}>> writeTerminator = null)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(!desc.RequiresTerminator || writeTerminator != null);");
-				writer.WriteLine("Contract.Ensures(Contract.Result<string>() != null);");
+				writer.WriteLine("if (desc.RequiresTerminator) { ArgumentNullException.ThrowIfNull(writeTerminator); }");
 				writer.WriteLine();
 				writer.WriteLine("var chars = new List<char>();");
 				writer.WriteLine();
@@ -531,8 +533,9 @@ internal static class TextSourceBuilder
 			"int startIndex = 0, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-			writer.WriteLine("Contract.Requires(radix >= 2 && radix <= digits.Length);");
+			writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfLessThan(radix, 2);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(radix, digits.Length);");
 			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
 			writer.WriteLine("result = 0;");
 			writer.WriteLine();
@@ -544,8 +547,9 @@ internal static class TextSourceBuilder
 			"int startIndex = 0, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-			writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
+			writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+			writer.WriteLine(
+				"if (!IsValidLookupTable(radix, digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(digits)); }");
 			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
 			writer.WriteLine("result = 0;");
 			writer.WriteLine();
@@ -557,8 +561,9 @@ internal static class TextSourceBuilder
 			"NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(digits));");
-			writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, digits));");
+			writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(digits);");
+			writer.WriteLine(
+				"if (!IsValidLookupTable(radix, digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(digits)); }");
 			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
 			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
 			writer.WriteLine("result = 0;");
@@ -606,7 +611,8 @@ internal static class TextSourceBuilder
 				"NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(IsValidLookupTable(radix, kBase64Digits));");
+				writer.WriteLine(
+					"if (!IsValidLookupTable(radix, kBase64Digits)) { throw new ArgumentException(\"Invalid lookup table.\", nameof(radix)); }");
 				writer.WriteLine();
 				writer.WriteLine("return ParseStringImpl(s, ref result, noThrow, (int)radix, startIndex, parseErrorHandler);");
 			}

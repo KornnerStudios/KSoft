@@ -41,8 +41,8 @@ internal static class BitStreamSourceBuilder
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
+		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		WriteCacheWordAlias(writer);
 		writer.WriteLine();
@@ -76,8 +76,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
+		writer.WriteLine("using System;");
 		writer.WriteLine();
 		WriteCacheWordAlias(writer);
 		writer.WriteLine();
@@ -117,7 +116,8 @@ internal static class BitStreamSourceBuilder
 			{
 				writer.WriteLine("out int _, out int _, out int _, out int _);");
 			}
-			writer.WriteLine("Contract.Assert(success, \"TWord is an invalid type for BitStream\");");
+			writer.WriteLine(
+				"if (!success) { throw new InvalidOperationException(\"TWord is an invalid type for BitStream.\"); }");
 			writer.WriteLine();
 			writer.WriteLine("Bits.BitmaskLookUpTableGenerate(kWordBitCount, out table);");
 		}
@@ -182,16 +182,11 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("void FlushCache()");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine(
-				"#if !CONTRACTS_FULL_SHIM // can't do this with our shim! ValueAtReturn sets out param to default ON ENTRY");
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out mCache) == 0);");
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out mCacheBitIndex) == 0);");
-			writer.WriteLine("#endif");
-			writer.WriteLine();
 			writer.WriteLine("if (mCacheBitIndex == 0) // no bits to flush!");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Assert(mCache == 0, \"Why is there data in the cache?\");");
+				writer.WriteLine(
+					"if (mCache != 0) { throw new InvalidOperationException(\"Why is there data in the cache?\"); }");
 				writer.WriteLine("return;");
 			}
 			writer.WriteLine();
@@ -219,6 +214,8 @@ internal static class BitStreamSourceBuilder
 			writer.WriteLine();
 			writer.WriteLine("mCache = 0;");
 			writer.WriteLine("mCacheBitIndex = 0;");
+			writer.WriteLine("System.Diagnostics.Debug.Assert(mCache == 0);");
+			writer.WriteLine("System.Diagnostics.Debug.Assert(mCacheBitIndex == 0);");
 		}
 	}
 
@@ -247,7 +244,9 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("void PutWordInCache(TWord word, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Ensures(Contract.OldValue(mCacheBitIndex) == mCacheBitIndex);");
+			writer.WriteLine("#if DEBUG");
+			writer.WriteLine("int original_cache_bit_index = mCacheBitIndex;");
+			writer.WriteLine("#endif");
 			writer.WriteLine();
 			writer.WriteLine("// amount to shift word before appending it to mCache bits");
 			writer.WriteLine("int shift = (kWordBitCount - mCacheBitIndex) - bitCount;");
@@ -256,6 +255,10 @@ internal static class BitStreamSourceBuilder
 			writer.WriteLine("word &= word_mask;");
 			writer.WriteLine("word <<= shift;");
 			writer.WriteLine("mCache |= word;");
+			writer.WriteLine();
+			writer.WriteLine("#if DEBUG");
+			writer.WriteLine("System.Diagnostics.Debug.Assert(mCacheBitIndex == original_cache_bit_index);");
+			writer.WriteLine("#endif");
 		}
 	}
 
@@ -384,7 +387,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine($"internal void ReadWord(out {keyword} word, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(bitCount <= kWordBitCount);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, kWordBitCount);");
 			writer.WriteLine();
 			writer.WriteLine("int bits_remaining = CacheBitsRemaining;");
 			writer.WriteLine();
@@ -432,7 +435,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine($"internal void WriteWord({typeSpec.Keyword} word, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(bitCount <= kWordBitCount);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, kWordBitCount);");
 			writer.WriteLine();
 			writer.WriteLine("int bits_remaining = CacheBitsRemaining;");
 			writer.WriteLine();
@@ -628,8 +631,8 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine($"\tint elementBitSize = {BitCountConstant(typeSpec)}{SignedParameterSuffix(typeSpec)})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
-			writer.WriteLine($"Contract.Requires(elementBitSize <= {BitCountConstant(typeSpec)});");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
+			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThan(elementBitSize, {BitCountConstant(typeSpec)});");
 			writer.WriteLine();
 			writer.WriteLine($"for (int x = 0; x < array.Length; x++) {{ {StreamArrayElementCall(typeSpec)} }}");
 			writer.WriteLine();
@@ -642,7 +645,7 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine($"public BitStream StreamFixedArray({typeSpec.Keyword}[] array)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(array != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine("for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }");
 			writer.WriteLine();
@@ -657,9 +660,9 @@ internal static class BitStreamSourceBuilder
 		WriteClosingParameterLine(writer, typeSpec);
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(IsReading || array != null);");
-			writer.WriteLine("Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);");
-			writer.WriteLine($"Contract.Requires(elementBitSize <= {BitCountConstant(typeSpec)});");
+			writer.WriteLine("if (!IsReading) { ArgumentNullException.ThrowIfNull(array); }");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(lengthBitSize, Bits.kInt32BitCount);");
+			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThan(elementBitSize, {BitCountConstant(typeSpec)});");
 			writer.WriteLine();
 			WriteArrayCountReadWriteBody(writer, typeSpec);
 			writer.WriteLine($"for (int x = 0; x < count; x++) {{ {StreamArrayElementCall(typeSpec)} }}");
@@ -674,8 +677,8 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("\tint lengthBitSize)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(IsReading || array != null);");
-			writer.WriteLine("Contract.Requires(lengthBitSize <= Bits.kInt32BitCount);");
+			writer.WriteLine("if (!IsReading) { ArgumentNullException.ThrowIfNull(array); }");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(lengthBitSize, Bits.kInt32BitCount);");
 			writer.WriteLine();
 			WriteArrayCountReadWriteBody(writer, typeSpec);
 			writer.WriteLine("for (int x = 0; x < count; x++) { Stream(ref array[x]); }");
@@ -691,9 +694,9 @@ internal static class BitStreamSourceBuilder
 		WriteClosingParameterLine(writer, typeSpec);
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(list != null);");
-			writer.WriteLine("Contract.Requires(countBitSize <= Bits.kInt32BitCount);");
-			writer.WriteLine($"Contract.Requires(elementBitSize <= {BitCountConstant(typeSpec)});");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(list);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(countBitSize, Bits.kInt32BitCount);");
+			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThan(elementBitSize, {BitCountConstant(typeSpec)});");
 			writer.WriteLine();
 			WriteElementsReadWriteBody(writer, typeSpec);
 			writer.WriteLine();
@@ -707,8 +710,8 @@ internal static class BitStreamSourceBuilder
 		writer.WriteLine("\tint countBitSize)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(list != null);");
-			writer.WriteLine("Contract.Requires(countBitSize <= Bits.kInt32BitCount);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(list);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfGreaterThan(countBitSize, Bits.kInt32BitCount);");
 			writer.WriteLine();
 			WriteNonIntegerElementsReadWriteBody(writer, typeSpec);
 			writer.WriteLine();
@@ -818,7 +821,7 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteBitCountContract(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
-		writer.WriteLine($"Contract.Requires(bitCount <= {BitCountConstant(typeSpec)});");
+		writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, {BitCountConstant(typeSpec)});");
 	}
 
 	private static string BitCountConstant(PrimitiveSpec typeSpec)

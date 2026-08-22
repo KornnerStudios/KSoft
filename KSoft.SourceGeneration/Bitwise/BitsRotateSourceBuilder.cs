@@ -15,8 +15,6 @@ internal static class BitsRotateSourceBuilder
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Numerics;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
@@ -46,8 +44,8 @@ internal static class BitsRotateSourceBuilder
 		writer.WriteLine($"public static {typeSpec.Keyword} {methodName}({typeSpec.Keyword} x, int shift)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentOutOfRangeException>*/(shift >= 0);");
-			writer.WriteLine($"Contract.Requires/*<ArgumentOutOfRangeException>*/(shift < {bitCountConstantName});");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(shift);");
+			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(shift, {bitCountConstantName});");
 			writer.WriteLine();
 
 			if (UsesBitOperations(typeSpec))

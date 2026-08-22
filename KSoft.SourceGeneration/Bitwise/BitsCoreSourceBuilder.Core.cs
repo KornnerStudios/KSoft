@@ -39,17 +39,20 @@ internal static partial class BitsCoreSourceBuilder
 	{
 		writer.WriteXmlDocSummary($"Generate an {typeSpec.SizeOfInBits}-bit bit count to bitmask table");
 		writer.WriteXmlDocParam("wordBitSize", "Number of bits to generate a table for");
-		writer.WriteXmlDocParam("lut", "Bitmask look up table");
+		writer.WriteXmlDocParam("lut", "Receives a non-null bitmask lookup table");
 		writer.WriteLine("/// <remarks>Treat <paramref name=\"lut\"/> as <b>read-only</b></remarks>");
 		writer.WriteLine($"public static void BitmaskLookUpTableGenerate(int wordBitSize, out {typeSpec.Keyword}[] lut)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (wordBitSize <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(wordBitSize), wordBitSize, " +
+					"\"Word bit size must be positive.\");");
+			}
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && " +
-				$"wordBitSize <= {BitCountConstantName(typeSpec)});");
-			writer.WriteLine("#if !CODE_ANALYSIS // it thinks lut is already assigned with this");
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out lut) != null);");
-			writer.WriteLine("#endif // CODE_ANALYSIS");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThan(wordBitSize, {BitCountConstantName(typeSpec)});");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"if (wordBitSize == {BitCountConstantName(typeSpec)} && {BitmaskLookupName(typeSpec)} != null)");
@@ -71,14 +74,20 @@ internal static partial class BitsCoreSourceBuilder
 
 		writer.WriteXmlDocSummary($"Generate an {typeSpec.SizeOfInBits}-bit bit count to bitmask table");
 		writer.WriteXmlDocParam("wordBitSize", "Number of bits to generate a table for");
-		writer.WriteXmlDocParam("lut", "Bitmask look up table");
+		writer.WriteXmlDocReturns("A non-null bitmask lookup table");
 		writer.WriteLine("/// <remarks>Treat <paramref name=\"lut\"/> as <b>read-only</b></remarks>");
 		writer.WriteLine($"public static {typeSpec.Keyword}[] {BitmaskLookupGenerateMethodName(typeSpec)}(int wordBitSize)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (wordBitSize <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(wordBitSize), wordBitSize, " +
+					"\"Word bit size must be positive.\");");
+			}
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(wordBitSize > 0 && " +
-				$"wordBitSize <= {BitCountConstantName(typeSpec)});");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThan(wordBitSize, {BitCountConstantName(typeSpec)});");
 			writer.WriteLine();
 			writer.WriteLine($"BitmaskLookUpTableGenerate(wordBitSize, out {typeSpec.Keyword}[] lut);");
 			writer.WriteLine();
@@ -195,10 +204,13 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine($"public static int GetMaxEnumBits({argumentType} maxValue)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine(
-				"Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 1, " +
-				"kGetMaxEnumBits_MaxValueOutOfRangeMessage);");
-			writer.WriteLine("Contract.Ensures(Contract.Result<int>() > 0);");
+			writer.WriteLine("if (maxValue <= 1)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, " +
+					"kGetMaxEnumBits_MaxValueOutOfRangeMessage);");
+			}
 			writer.WriteLine();
 			writer.WriteLine($"return Bits.IndexOfHighestBitSet({castPrefix}maxValue - 1) + 1;");
 		}
@@ -221,7 +233,8 @@ internal static partial class BitsCoreSourceBuilder
 	{
 		writer.WriteXmlDocSummary("Calculate the masking value for an enumeration");
 		writer.WriteXmlDocParam("maxValue", "An enumeration's <b>kMax</b> value");
-		writer.WriteXmlDocReturns("The smallest bit mask value for (<paramref name=\"maxValue\"/> - 1)");
+		writer.WriteXmlDocReturns(
+			"The smallest positive bit mask value for (<paramref name=\"maxValue\"/> - 1)");
 		writer.WriteLine(
 			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
 			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");
@@ -229,10 +242,13 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine($"public static {typeSpec.Keyword} GetBitmaskEnum({typeSpec.Keyword} maxValue)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine(
-				"Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 1, " +
-				"kGetBitmaskEnum_MaxValueOutOfRangeMessage);");
-			writer.WriteLine($"Contract.Ensures(Contract.Result<{typeSpec.Keyword}>() > 0);");
+			writer.WriteLine("if (maxValue <= 1)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, " +
+					"kGetBitmaskEnum_MaxValueOutOfRangeMessage);");
+			}
 			writer.WriteLine();
 			writer.WriteLine("int bit_count = GetMaxEnumBits(maxValue);");
 			writer.WriteLine();
@@ -246,7 +262,8 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteXmlDocParam(
 			"maxValue",
 			"A bit enumeration's <b>kMax</b> value. IE, the 'highest bit' plus one");
-		writer.WriteXmlDocReturns("The smallest bit mask value for (<paramref name=\"maxValue\"/> - 1)");
+		writer.WriteXmlDocReturns(
+			"The smallest bit mask value for (<paramref name=\"maxValue\"/> - 1)");
 		writer.WriteLine(
 			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
 			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");
@@ -254,12 +271,15 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteLine($"public static {typeSpec.Keyword} GetBitmaskFlags({typeSpec.Keyword} maxValue)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (maxValue <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(maxValue), maxValue, " +
+					"kGetBitmaskFlag_MaxValueOutOfRangeMessage);");
+			}
 			writer.WriteLine(
-				"Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue > 0, " +
-				"kGetBitmaskFlag_MaxValueOutOfRangeMessage);");
-			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(maxValue <= {BitCountConstantName(typeSpec)});");
-			writer.WriteLine($"Contract.Ensures(Contract.Result<{typeSpec.Keyword}>() > 0);");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThan(maxValue, ({typeSpec.Keyword}){BitCountConstantName(typeSpec)});");
 			writer.WriteLine();
 			writer.WriteLine($"return {BitCountToMaskMethodName(typeSpec)}((int)--maxValue);");
 		}
@@ -291,9 +311,15 @@ internal static partial class BitsCoreSourceBuilder
 			$"public static {typeSpec.SignedKeyword} {methodName}({typeSpec.SignedKeyword} value, int bitCount)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (bitCount <= 0)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(bitCount), bitCount, " +
+					"\"Bit count must be positive.\");");
+			}
 			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(bitCount > 0 && " +
-				$"bitCount <= {BitCountConstantName(typeSpec)});");
+				$"ArgumentOutOfRangeException.ThrowIfGreaterThan(bitCount, {BitCountConstantName(typeSpec)});");
 			if (clearValue)
 			{
 				writer.WriteLine($"const {typeSpec.Keyword} k_one = 1;");
@@ -323,7 +349,7 @@ internal static partial class BitsCoreSourceBuilder
 	{
 		writer.WriteXmlDocSummary("Calculate how many bits are needed to represent the provided value");
 		writer.WriteXmlDocParam("maxValue", "An enumeration's <b>kMax</b> value");
-		writer.WriteXmlDocReturns($"{returnsPrefix} (<paramref name=\"maxValue\"/> - 1)");
+		writer.WriteXmlDocReturns($"{returnsPrefix} (<paramref name=\"maxValue\"/> - 1), always positive");
 		writer.WriteLine(
 			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
 			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");

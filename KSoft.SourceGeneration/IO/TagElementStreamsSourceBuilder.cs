@@ -27,7 +27,6 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine("using Exprs = System.Linq.Expressions;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");

@@ -15,8 +15,6 @@ internal static class FlagsSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Bitwise");
 		writer.WriteLine();
@@ -122,7 +120,7 @@ internal static class FlagsSourceBuilder
 		writer.WriteLine($"public static bool Test({keyword} value, params {keyword}[] flags)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(flags != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(flags);");
 			writer.WriteLine();
 			WriteForeachFlagLoop(writer, "if (!Test(value, i))", "return false;");
 			writer.WriteLine();
@@ -144,7 +142,7 @@ internal static class FlagsSourceBuilder
 		writer.WriteLine($"public static bool TestAny({keyword} value, params {keyword}[] flags)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(flags != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(flags);");
 			writer.WriteLine();
 			WriteForeachFlagLoop(writer, "if (Test(value, i))", "return true;");
 			writer.WriteLine();

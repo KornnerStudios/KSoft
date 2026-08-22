@@ -16,8 +16,6 @@ internal static class EnumSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
@@ -136,7 +134,7 @@ internal static class EnumSourceBuilder
 	private static void WriteTraitFields(SourceWriter writer, NumberSpec spec)
 	{
 		writer.WriteLine(
-			"/// <remarks>Only made public for some Contracts in <see cref=\"Collections.EnumBitSet\"/></remarks>");
+			"/// <remarks>Only made public for <see cref=\"Collections.EnumBitSet\"/>.</remarks>");
 		writer.WriteLine("public static readonly bool kHasNone;");
 		writer.WriteXmlDocSummary(
 			"The <see cref=\"kEnumMaxMemberName\"/>\\<see cref=\"kFlagsMaxMemberName\"/>",
@@ -354,7 +352,7 @@ internal static class EnumSourceBuilder
 		writer.WriteLine($"public EnumBitEncoder{spec.SizeOfInBits}(int defaultBitIndex)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(defaultBitIndex >= 0);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(defaultBitIndex);");
 			writer.WriteLine();
 			writer.WriteLine("mDefaultBitIndex = defaultBitIndex;");
 		}
@@ -395,7 +393,7 @@ internal static class EnumSourceBuilder
 			writer.WriteLine();
 			WriteEncodeValuePreparation(writer, spec);
 			writer.WriteLine();
-			writer.WriteLine("Contract.Assert(v <= kMaxValue);");
+			writer.WriteLine("if (v > kMaxValue) { throw new InvalidOperationException(\"Value exceeds the maximum encoded value.\"); }");
 			WriteEncodeReturn(writer, spec);
 		}
 	}
@@ -409,7 +407,7 @@ internal static class EnumSourceBuilder
 			"Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
 			writer.WriteLine();
 			writer.WriteLine("return BitEncode(value, bits, traits.BitIndex);");
 		}
@@ -428,11 +426,13 @@ internal static class EnumSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			WriteBitIndexContracts(writer, spec);
-			writer.WriteLine($"Contract.Requires((bitIndex+kBitCount) < Bits.kInt{spec.SizeOfInBits}BitCount);");
+			writer.WriteLine(
+				$"if ((bitIndex+kBitCount) >= Bits.kInt{spec.SizeOfInBits}BitCount) " +
+				"{ throw new ArgumentOutOfRangeException(nameof(bitIndex)); }");
 			writer.WriteLine();
 			WriteEncodeValuePreparation(writer, spec);
 			writer.WriteLine();
-			writer.WriteLine("Contract.Assert(v <= kMaxValue);");
+			writer.WriteLine("if (v > kMaxValue) { throw new InvalidOperationException(\"Value exceeds the maximum encoded value.\"); }");
 			writer.WriteLine("bits = Reflection.EnumUtil<TEnum>.IsFlags");
 			writer.WriteLine($"\t? Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask)");
 			writer.WriteLine($"\t: Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);");
@@ -466,8 +466,8 @@ internal static class EnumSourceBuilder
 
 	private static void WriteBitIndexContracts(SourceWriter writer, NumberSpec spec)
 	{
-		writer.WriteLine("Contract.Requires(bitIndex >= 0);");
-		writer.WriteLine($"Contract.Requires(bitIndex < Bits.kInt{spec.SizeOfInBits}BitCount);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
+		writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Bits.kInt{spec.SizeOfInBits}BitCount);");
 	}
 
 	private static void WriteEncodeValuePreparation(SourceWriter writer, NumberSpec spec)
@@ -523,7 +523,8 @@ internal static class EnumSourceBuilder
 			WriteDecodeValuePreparation(writer, spec);
 			writer.WriteLine();
 			writer.WriteLine(
-				$"Contract.Assert(v <= kMaxValue || (kHasNone && v == {spec.Keyword}.MaxValue));");
+				$"if (v > kMaxValue && (!kHasNone || v != {spec.Keyword}.MaxValue)) " +
+				"{ throw new InvalidOperationException(\"Value exceeds the maximum encoded value.\"); }");
 			writer.WriteLine($"return Reflection.EnumValue<TEnum>.FromUInt{spec.SizeOfInBits}(v);");
 		}
 	}
@@ -535,7 +536,7 @@ internal static class EnumSourceBuilder
 		writer.WriteLine($"public TEnum BitDecode({spec.Keyword} bits, Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(!traits.IsEmpty);");
+			writer.WriteLine("if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
 			writer.WriteLine();
 			writer.WriteLine("return BitDecode(bits, traits.BitIndex);");
 		}
@@ -553,14 +554,17 @@ internal static class EnumSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			WriteBitIndexContracts(writer, spec);
-			writer.WriteLine($"Contract.Requires((bitIndex+kBitCount) < Bits.kInt{spec.SizeOfInBits}BitCount);");
+			writer.WriteLine(
+				$"if ((bitIndex+kBitCount) >= Bits.kInt{spec.SizeOfInBits}BitCount) " +
+				"{ throw new ArgumentOutOfRangeException(nameof(bitIndex)); }");
 			writer.WriteLine();
 			WriteDecodeValuePreparation(writer, spec);
 			writer.WriteLine();
 			writer.WriteLine("bitIndex += kBitCount;");
 			writer.WriteLine();
 			writer.WriteLine(
-				$"Contract.Assert(v <= kMaxValue || (kHasNone && v == {spec.Keyword}.MaxValue));");
+				$"if (v > kMaxValue && (!kHasNone || v != {spec.Keyword}.MaxValue)) " +
+				"{ throw new InvalidOperationException(\"Value exceeds the maximum encoded value.\"); }");
 			writer.WriteLine($"return Reflection.EnumValue<TEnum>.FromUInt{spec.SizeOfInBits}(v);");
 		}
 	}
@@ -619,7 +623,7 @@ internal static class EnumSourceBuilder
 		writer.WriteLine("public static void Read(IO.EndianReader s, out TEnum value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(s != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 			writer.WriteLine();
 			writer.WriteLine($"{spec.Keyword} stream_value = Reflection.EnumUtil<TEnum>.UnderlyingTypeCode switch");
 			using (writer.EnterBlock(SourceWriterBlockType.BracesStatement))
@@ -650,7 +654,7 @@ internal static class EnumSourceBuilder
 		writer.WriteLine("public static void Write(IO.EndianWriter s, TEnum value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(s != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 			writer.WriteLine();
 			writer.WriteLine(
 				$"{spec.Keyword} stream_value = Reflection.EnumValue<TEnum>.ToUInt{spec.SizeOfInBits}(value);");

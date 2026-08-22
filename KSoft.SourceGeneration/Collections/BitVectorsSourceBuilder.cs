@@ -18,8 +18,6 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using System.Diagnostics.CodeAnalysis;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Collections");
 		writer.WriteLine();
@@ -224,9 +222,14 @@ internal static class BitVectorsSourceBuilder
 			}
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
+				writer.WriteLine("if (!prevBitIndex.IsNoneOrPositive())");
+				using (writer.EnterBlock(SourceWriterBlockType.Braces))
+				{
+					writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(prevBitIndex));");
+				}
 				writer.WriteLine(
-					$"Contract.Requires(prevBitIndex.IsNoneOrPositive() && " +
-					$"prevBitIndex < Bits.k{spec.ConstantKeyword}BitCount);");
+					$"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(prevBitIndex, " +
+					$"Bits.k{spec.ConstantKeyword}BitCount);");
 				writer.WriteLine();
 				writer.WriteLine("for (int bit_index = prevBitIndex+1; bit_index < kNumberOfBits; bit_index++)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -251,14 +254,16 @@ internal static class BitVectorsSourceBuilder
 			writer.WriteLine("readonly get");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"Contract.Requires(bitIndex >= 0 && bitIndex < Bits.k{spec.ConstantKeyword}BitCount);");
+				writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
+				writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Bits.k{spec.ConstantKeyword}BitCount);");
 				writer.WriteLine();
 				writer.WriteLine($"return Bitwise.Flags.Test(mWord, (({spec.WordKeyword})1) << bitIndex);");
 			}
 			writer.WriteLine("set");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"Contract.Requires(bitIndex >= 0 && bitIndex < Bits.k{spec.ConstantKeyword}BitCount);");
+				writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
+				writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, Bits.k{spec.ConstantKeyword}BitCount);");
 				writer.WriteLine();
 				writer.WriteLine($"var flag = (({spec.WordKeyword})1) << bitIndex;");
 				writer.WriteLine();

@@ -35,7 +35,7 @@ internal static partial class BitsCoreSourceBuilder
 					$"Calculates how many <see cref=\"{VectorSystemTypeName(typeSpec)}\"/>s are needed " +
 					"to hold a bit vector of a certain length");
 				writer.WriteXmlDocParam("bitsCount", "Number of bits to be hosted in the vector");
-				writer.WriteXmlDocReturns();
+				writer.WriteXmlDocReturns("Number of vector elements required, never negative");
 				writer.WritePurityAnnotation();
 				writer.WriteLine($"public static int VectorLengthIn{VectorWordName(typeSpec)}(int bitsCount)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -194,7 +194,7 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteXmlDocSummary(
 			$"Get the procedure for building a mask of a {subject} in a vector, " +
 			$"relative to the vector's element size (<see cref=\"{systemTypeName}\"/>)");
-		writer.WriteXmlDocParam("proc", "");
+		writer.WriteXmlDocParam("proc", "Receives a non-null mask builder procedure");
 		writer.WriteXmlDocParam("byteOrder", "Order in which bits are enumerated (first to last)");
 		writer.WriteLine(
 			$"public static void GetVectorElement{methodPart}InT(out VectorElementBitMask<{typeSpec.Keyword}> proc,");
@@ -204,7 +204,6 @@ internal static partial class BitsCoreSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out proc) != null);");
 			writer.WriteLine();
 			writer.WriteLine("proc = byteOrder == Shell.EndianFormat.Big");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
@@ -229,25 +228,35 @@ internal static partial class BitsCoreSourceBuilder
 
 	private static void WriteVectorElementFromBufferMethods(SourceWriter writer, NumberSpec typeSpec)
 	{
+		writer.WriteXmlDocSummary("Read one vector element from a byte buffer");
+		writer.WriteXmlDocParam("buffer", "Byte buffer to read from");
+		writer.WriteXmlDocParam("index", "Offset in <paramref name=\"buffer\"/> to start reading at");
+		writer.WriteXmlDocParam("element", "Element to receive the buffer value");
 		writer.WriteLine(
 			$"public static void VectorElementFromBufferInT(byte[] buffer, int index, ref {typeSpec.Keyword} element)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentNullException>*/(buffer != null);");
-			writer.WriteLine("Contract.Requires/*<ArgumentOutOfRangeException>*/(index >= 0);");
-			writer.WriteLine(
-				$"Contract.Requires/*<ArgumentOutOfRangeException>*/(index+sizeof({typeSpec.Keyword}) <= buffer.Length);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(buffer);");
+			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(index);");
+			writer.WriteLine($"if (index + sizeof({typeSpec.Keyword}) > buffer.Length)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine(
+					"throw new ArgumentOutOfRangeException(nameof(index), index, " +
+					"\"Element exceeds the buffer length.\");");
+			}
 			writer.WriteLine();
 			writer.WriteLine(typeSpec.TypeCode == System.TypeCode.Byte
 				? "element = buffer[index];"
 				: $"element = BitConverter.To{TypeCodeName(typeSpec)}(buffer, index);");
 		}
 
+		writer.WriteXmlDocSummary("Get the procedure for reading one vector element from a byte buffer");
+		writer.WriteXmlDocParam("proc", "Receives a non-null buffer reader procedure");
 		writer.WriteLine(
 			$"public static void GetVectorElementFromBufferInT(out VectorElementFromBuffer<{typeSpec.Keyword}> proc)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Ensures(Contract.ValueAtReturn(out proc) != null);");
 			writer.WriteLine();
 			writer.WriteLine("proc = VectorElementFromBufferInT;");
 		}

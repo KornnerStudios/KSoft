@@ -13,7 +13,6 @@ internal static class IntegerMathSourceBuilder
 
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
-		writer.WriteContractsAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();

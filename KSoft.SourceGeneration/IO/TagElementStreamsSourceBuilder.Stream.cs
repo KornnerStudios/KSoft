@@ -175,7 +175,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void Stream{subject}(TName name, ref {keyword} value{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine();
 			WriteReadWriteBranch(
 				writer,
@@ -218,7 +218,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"Predicate<{keyword}> predicate = null{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine();
 			writer.WriteLine("if (predicate == null)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -275,7 +275,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			if (hasName)
 			{
-				writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+				writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 				writer.WriteLine();
 			}
 
@@ -356,7 +356,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void StreamElements(TName name, ICollection<{keyword}> coll{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(coll);");
 			writer.WriteLine();
 			WriteReadWriteBranch(
@@ -395,7 +395,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public int StreamFixedArray(TName name, {keyword}[] array{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires(ValidateNameArg(name));");
+			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
 			writer.WriteLine($"if (IsReading) {{ return ReadFixedArray(name, array{baseArgument}); }}");

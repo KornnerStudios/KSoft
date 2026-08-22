@@ -16,7 +16,6 @@ internal static class BitSetSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteContractsAliasUsing();
 		writer.WriteLine();
 		writer.WriteLine(
 			"using StateFilterEnumerator = KSoft.Collections.IReadOnlyBitSetEnumerators.StateFilterEnumerator;");

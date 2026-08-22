@@ -19,8 +19,6 @@ internal static partial class BitsEncodingSourceBuilder
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
@@ -34,15 +32,17 @@ internal static partial class BitsEncodingSourceBuilder
 	{
 		string constantKeyword = wordSpec.ConstantKeyword;
 
-		writer.WriteLine("Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex >= 0);");
-		writer.WriteLine($"Contract.Requires/*<ArgumentOutOfRangeException>*/(bitIndex < k{constantKeyword}BitCount);");
+		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(bitIndex);");
+		writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, k{constantKeyword}BitCount);");
 	}
 
 	private static void WriteBitMaskContract(SourceWriter writer)
-		=> writer.WriteLine("Contract.Requires/*<ArgumentException>*/(bitMask != 0);");
+		=> writer.WriteLine("if (bitMask == 0) { throw new ArgumentException(\"Bit mask must be non-zero.\", nameof(bitMask)); }");
 
 	private static void WriteBitCountAssert(SourceWriter writer, NumberSpec wordSpec)
-		=> writer.WriteLine($"Contract.Assert((bitIndex + bit_count) <= Bits.k{wordSpec.ConstantKeyword}BitCount);");
+		=> writer.WriteLine(
+			$"if ((bitIndex + bit_count) > Bits.k{wordSpec.ConstantKeyword}BitCount) " +
+			"{ throw new InvalidOperationException(\"Bit range exceeds the target word size.\"); }");
 
 	private static void WriteUnsignedDecodeXmlDocs(SourceWriter writer, bool includeBitMask)
 	{

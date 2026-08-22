@@ -31,8 +31,6 @@ internal static class ByteSwapSourceBuilder
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Buffers.Binary;");
-		writer.WriteContractsAliasUsing();
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Bitwise");
 		writer.WriteLine();

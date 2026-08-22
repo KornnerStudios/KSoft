@@ -6,7 +6,7 @@ namespace KSoft.SourceGeneration.Bitwise;
 internal static partial class BitsCoreSourceBuilder
 {
 	public static string BuildConstants()
-		=> BuildFile(WriteConstantsBody, includeContractsAlias: false);
+		=> BuildFile(WriteConstantsBody);
 
 	private static void WriteConstantsBody(SourceWriter writer)
 	{
@@ -99,7 +99,7 @@ internal static partial class BitsCoreSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("Contract.Requires/*<ArgumentNullException>*/(integerType != null);");
+			writer.WriteLine("ArgumentNullException.ThrowIfNull(integerType);");
 			writer.WriteLine();
 			writer.WriteLine("byteCount = bitCount = bitShift = bitMod = TypeExtensions.kNoneInt32;");
 			writer.WriteLine();

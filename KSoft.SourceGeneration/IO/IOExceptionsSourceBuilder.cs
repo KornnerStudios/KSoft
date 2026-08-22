@@ -40,8 +40,8 @@ internal static class IOExceptionsSourceBuilder
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("#nullable disable");
 		writer.WriteLine();
+		writer.WriteLine("using System;");
 		writer.WriteLine("using System.IO;");
-		writer.WriteContractShimAliasUsing();
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
 		writer.WriteLine();
@@ -88,7 +88,7 @@ internal static class IOExceptionsSourceBuilder
 				"dataDescription, found))");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(dataDescription));");
+				writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(dataDescription);");
 			}
 			writer.WriteLine(
 				$"public VersionMismatchException(string dataDescription, {spec.Keyword} expected, " +
@@ -98,7 +98,7 @@ internal static class IOExceptionsSourceBuilder
 				"found, VersionCompareDesc(expected, found)))");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(dataDescription));");
+				writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(dataDescription);");
 			}
 		}
 	}
@@ -116,7 +116,7 @@ internal static class IOExceptionsSourceBuilder
 					FormatToStringCall(spec, "expected") + ", " + FormatToStringCall(spec, "found") + ")");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires(s != null);");
+					writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 				}
 				writer.WriteLine();
 			}
@@ -152,7 +152,7 @@ internal static class IOExceptionsSourceBuilder
 				"expectedMax, found, VersionCompareDesc(expectedMin, expectedMax, found)))");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Contract.Requires(!string.IsNullOrEmpty(dataDescription));");
+				writer.WriteLine("ArgumentException.ThrowIfNullOrEmpty(dataDescription);");
 			}
 		}
 	}
@@ -173,7 +173,7 @@ internal static class IOExceptionsSourceBuilder
 					FormatToStringCall(spec, "expectedMax") + ", " + FormatToStringCall(spec, "found") + ")");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires(s != null);");
+					writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 				}
 				writer.WriteLine();
 			}
@@ -215,7 +215,7 @@ internal static class IOExceptionsSourceBuilder
 				writer.WriteLine($"\t\t{foundText})");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					writer.WriteLine("Contract.Requires(s != null);");
+					writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 				}
 				writer.WriteLine();
 			}
@@ -244,7 +244,7 @@ internal static class IOExceptionsSourceBuilder
 		string exceptionType,
 		bool hasRange)
 	{
-		writer.WriteLine("Contract.Requires(s != null);");
+		writer.WriteLine("ArgumentNullException.ThrowIfNull(s);");
 		writer.WriteLine();
 		writer.WriteLine($"var version = s.Read{spec.TypeCode}();");
 		if (hasRange)
