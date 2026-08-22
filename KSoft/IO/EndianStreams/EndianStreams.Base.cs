@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#nullable enable
+
+using System.IO;
 
 namespace KSoft.IO
 {
@@ -27,7 +29,7 @@ namespace KSoft.IO
 				// If we're not the owner, don't let BinaryReader dispose it
 				if (!BaseStreamOwner)
 				{
-					kSetBaseStream(this, null);
+					kSetBaseStream(this, null!);
 				}
 			}
 

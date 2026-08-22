@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace KSoft.Memory.Strings
@@ -20,7 +22,7 @@ namespace KSoft.Memory.Strings
 			{
 				mPool = pool;
 				mCurrentIndex = kBlankIndexState;
-				mCurrent = new KeyValuePair<Values.PtrHandle, string>(Values.PtrHandle.Null32, null);
+				mCurrent = new KeyValuePair<Values.PtrHandle, string>(Values.PtrHandle.Null32, null!);
 			}
 
 			#region IEnumerator<T> Members

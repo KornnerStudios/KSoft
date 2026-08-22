@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 
 namespace KSoft.IO
@@ -6,7 +8,7 @@ namespace KSoft.IO
 	/// <summary>Forces the stream to seek to the end of the virtual buffer when disposed</summary>
 	public struct IKSoftStreamWithVirtualBufferCleanup : IDisposable
 	{
-		IKSoftStreamWithVirtualBuffer mStream;
+		IKSoftStreamWithVirtualBuffer? mStream;
 		readonly long mBufferEnd;
 
 		public IKSoftStreamWithVirtualBufferCleanup(IKSoftStreamWithVirtualBuffer stream)
@@ -42,7 +44,7 @@ namespace KSoft.IO
 	/// <summary>Temporarily bookmarks a stream's VirtualBuffer properties</summary>
 	public struct IKSoftStreamWithVirtualBufferBookmark : IDisposable
 	{
-		IKSoftStreamWithVirtualBuffer mStream;
+		IKSoftStreamWithVirtualBuffer? mStream;
 		readonly long mOldStart, mOldLength;
 
 		public IKSoftStreamWithVirtualBufferBookmark(IKSoftStreamWithVirtualBuffer stream)
