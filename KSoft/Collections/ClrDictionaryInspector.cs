@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Reflect = System.Reflection;
@@ -10,6 +12,7 @@ namespace KSoft.Collections
 	// I forget what even sparked the need for this class. Because I could?
 	// It *does* end up exercising KSoft reflection and expression utils quite a bit, so there's that.
 	public sealed class ClrDictionaryInspector<TKey, TValue>
+		where TKey : notnull
 	{
 		#region Dictionary field names
 		// post-netframework, the names have underscore prefixes
@@ -58,9 +61,9 @@ namespace KSoft.Collections
 		private delegate ref int DicGetBucketDelegate(DicEntryHashCodeType hashCode);
 		private delegate ref int DicGetBucketDelegateWithThis(Dictionary<TKey, TValue> @this, DicEntryHashCodeType hashCode);
 
-		static readonly Func<Dictionary<TKey, TValue>, int[]> kGetDicBuckets;
+		static readonly Func<Dictionary<TKey, TValue>, int[]?> kGetDicBuckets;
 		static readonly /*Func<Dictionary<TKey, TValue>, DicEntryHashCodeType>*/DicGetBucketDelegateWithThis kCallDictGetBucket;
-		static readonly Func<Dictionary<TKey, TValue>, Array> kGetDicEntries;
+		static readonly Func<Dictionary<TKey, TValue>, Array?> kGetDicEntries;
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicCount;
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicVersion;
 		static readonly Func<Dictionary<TKey, TValue>, int> kGetDicFreeList;
@@ -95,7 +98,7 @@ namespace KSoft.Collections
 
 			#region Dictionary getters
 			kGetDicBuckets =
-				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, int[]>(kDicBucketsName);
+				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, int[]?>(kDicBucketsName);
 			kCallDictGetBucket =
 				Reflection.Util.GenerateObjectMethodProxy<
 					Dictionary<TKey, TValue>,
@@ -103,7 +106,7 @@ namespace KSoft.Collections
 					DicGetBucketDelegate>(
 						kDictGetBucketName);
 			kGetDicEntries =
-				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, Array>(kDicEntriesName);
+				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, Array?>(kDicEntriesName);
 			kGetDicCount =
 				Reflection.Util.GenerateMemberGetter<Dictionary<TKey, TValue>, int>(kDicCountName);
 			kGetDicVersion =
@@ -127,7 +130,7 @@ namespace KSoft.Collections
 
 		readonly Dictionary<TKey, TValue> mDic;
 		readonly int mExpectedVersion;
-		DicEntry[] mEntries;
+		DicEntry[]? mEntries;
 
 		public ClrDictionaryInspector(Dictionary<TKey, TValue> dic)
 		{
@@ -145,25 +148,28 @@ namespace KSoft.Collections
 			}
 		}
 
-		void InitializeEntries()
+		DicEntry[] InitializeEntries()
 		{
 			ThrowIfDictionaryWasModified();
 
-			mEntries = new DicEntry[Buckets.Count];
-			var array = kGetDicEntries(mDic);
+			var entries = new DicEntry[Buckets.Count];
+			mEntries = entries;
+			var array = kGetDicEntries(mDic)!;
 
 			for (int x = 0; x < array.Length; x++)
 			{
 				var entry = array.GetValue(x);
 
-				mEntries[x] = new DicEntry()
+				entries[x] = new DicEntry()
 				{
-					HashCode = kGetEntryHashCode(entry),
-					NextEntryIndex = kGetEntryNextEntryIndex(entry),
-					Key = kGetEntryKey(entry),
-					Value = kGetEntryValue(entry),
+					HashCode = kGetEntryHashCode(entry!),
+					NextEntryIndex = kGetEntryNextEntryIndex(entry!),
+					Key = kGetEntryKey(entry!),
+					Value = kGetEntryValue(entry!),
 				};
 			}
+
+			return entries;
 		}
 
 		public IReadOnlyList<int> Buckets { get {
@@ -172,12 +178,11 @@ namespace KSoft.Collections
 			return buckets ?? [];
 		} }
 		public IReadOnlyList<DicEntry> Entries { get {
-			if (mEntries == null)
-			{
-				InitializeEntries();
-			}
+			var entries = mEntries;
+			if (entries == null)
+				entries = InitializeEntries();
 
-			return mEntries;
+			return entries;
 		} }
 		public int Count { get => kGetDicCount(mDic); }
 		private int Version { get => kGetDicVersion(mDic); }
