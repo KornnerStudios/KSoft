@@ -1,4 +1,6 @@
-﻿/* This is a .NET port of the Douglas Crockford's JSMin 'C' project.
+﻿#nullable enable
+
+/* This is a .NET port of the Douglas Crockford's JSMin 'C' project.
  * The author's copyright message is reproduced below.
  */
 
@@ -70,11 +72,11 @@ namespace DouglasCrockford.JsMin
 
 		const int EOF = -1;
 
-		private StringBuilder _sb;
+		private StringBuilder? _sb;
 		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
-		private StringReader _reader;
+		private StringReader? _reader;
 		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
-		private StringWriter _writer;
+		private StringWriter? _writer;
 
 		private int _theA;
 		private int _theB;
@@ -127,7 +129,7 @@ namespace DouglasCrockford.JsMin
 				try
 				{
 					InnerMinify();
-					_writer.Flush();
+					_writer!.Flush();
 
 					minifiedContent = TrimStartAndToString(_sb);
 				}
@@ -171,7 +173,7 @@ namespace DouglasCrockford.JsMin
 
 			if (c == EOF)
 			{
-				c = _reader.Read();
+				c = _reader!.Read();
 			}
 
 			if (c >= ' ' || c == '\n' || c == EOF)
@@ -473,7 +475,7 @@ namespace DouglasCrockford.JsMin
 		/// <param name="c">The character</param>
 		private void Put(int c)
 		{
-			_writer.Write((char)c);
+			_writer!.Write((char)c);
 		}
 
 		#endregion
