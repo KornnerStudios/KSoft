@@ -4,7 +4,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KSoft.Math</RootNamespace>
     <AssemblyName>KSoft.Math</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">

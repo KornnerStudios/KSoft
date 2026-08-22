@@ -9,7 +9,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KSoft.Terminal</RootNamespace>
     <AssemblyName>KSoft.Terminal</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>

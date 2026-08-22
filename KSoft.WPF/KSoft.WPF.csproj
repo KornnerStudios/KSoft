@@ -4,7 +4,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KSoft.WPF</RootNamespace>
     <AssemblyName>KSoft.WPF</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>

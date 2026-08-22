@@ -4,27 +4,16 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KSoft.IO</RootNamespace>
     <AssemblyName>KSoft.IO.TagElementStreams</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <!-- Keep an explicit source list so hand-authored partials and generated surfaces stay reviewable. -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <!-- Source generation is authoritative for former T4 surfaces. -->
-    <KSoftUseSourceGeneration Condition=" '$(KSoftUseSourceGeneration)' == '' ">true</KSoftUseSourceGeneration>
     <!-- Keep emitted Roslyn sources under _obj for file-system inspection when a generator feature is active. -->
     <CompilerGeneratedFilesOutputPath
         Condition=" '$(CompilerGeneratedFilesOutputPath)' == '' "
         >$(IntermediateOutputPath)source-generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- CompilerVisibleProperty exposes the MSBuild switch to the Roslyn generator as build_property.*. -->
-    <CompilerVisibleProperty Include="KSoftUseSourceGeneration" />
-  </ItemGroup>
   <PropertyGroup>
     <!-- Do not link emitted .g.cs files back into the project; Roslyn owns the semantic generated document view. -->
-    <KSoftSourceGenerationEnabled Condition=" '$(KSoftUseSourceGeneration)' == 'true' ">true</KSoftSourceGenerationEnabled>
-    <KSoftSourceGenerationEnabled
-        Condition=" '$(KSoftSourceGenerationEnabled)' == '' ">false</KSoftSourceGenerationEnabled>
-    <EmitCompilerGeneratedFiles
-        Condition=" '$(KSoftSourceGenerationEnabled)' == 'true' ">true</EmitCompilerGeneratedFiles>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DefaultSerializers\Collections.cs" />
@@ -55,7 +44,6 @@
     </ProjectReference>
     <!-- Load KSoft.SourceGeneration as an analyzer only; this project must not reference it at runtime. -->
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj"
-        Condition=" '$(KSoftUseSourceGeneration)' == 'true' "
         OutputItemType="Analyzer"
         ReferenceOutputAssembly="False"
         PrivateAssets="all" />

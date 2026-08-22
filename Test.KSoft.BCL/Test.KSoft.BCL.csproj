@@ -4,7 +4,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Test.KSoft.BCL</RootNamespace>
     <AssemblyName>Test.KSoft.BCL</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\shared\source\BkBitStream.cs">

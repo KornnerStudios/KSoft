@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using KSoft.SourceGeneration;
 using KSoft.SourceGeneration.Diagnostics;
-using KSoft.SourceGeneration.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +12,7 @@ namespace Test.KSoft.SourceGeneration;
 public sealed class GeneratorDriverTests
 {
 	[TestMethod]
-	public void GeneratorDoesNotEmitProductionSourcesByDefaultTest()
+	public void GeneratorReportsUnsupportedTargetAssemblyTest()
 	{
 		CSharpCompilation compilation = CreateCompilation("GeneratorSmoke");
 		var driver = CSharpGeneratorDriver.Create(new KSoftSourceGenerator());
@@ -25,28 +23,13 @@ public sealed class GeneratorDriverTests
 			out var diagnostics,
 			TestContext.CancellationToken);
 
-		Assert.IsEmpty(diagnostics);
+		Assert.AreEqual(1, diagnostics.Length);
+		Assert.AreEqual(DiagnosticDescriptors.UnsupportedTargetAssembly.Id, diagnostics[0].Id);
 		Assert.AreEqual(1, outputCompilation.SyntaxTrees.Count());
 	}
 
 	[TestMethod]
-	public void GeneratorDoesNotEmitProductionSourcesWhenDisabledTest()
-	{
-		CSharpCompilation compilation = CreateCompilation(GeneratorTargetAssemblyFacts.KSoftAssemblyName);
-		var driver = CreateDriver(useSourceGeneration: false);
-
-		driver.RunGeneratorsAndUpdateCompilation(
-			compilation,
-			out Compilation outputCompilation,
-			out var diagnostics,
-			TestContext.CancellationToken);
-
-		Assert.IsEmpty(diagnostics);
-		Assert.AreEqual(1, outputCompilation.SyntaxTrees.Count());
-	}
-
-	[TestMethod]
-	public void GeneratorEmitsKSoftTargetSourcesWhenEnabledTest()
+	public void GeneratorEmitsKSoftTargetSourcesTest()
 	{
 		AssertGeneratorEmitsTargetSources(
 			GeneratorTargetAssembly.KSoft,
@@ -54,7 +37,7 @@ public sealed class GeneratorDriverTests
 	}
 
 	[TestMethod]
-	public void GeneratorEmitsTagElementStreamsTargetSourcesWhenEnabledTest()
+	public void GeneratorEmitsTagElementStreamsTargetSourcesTest()
 	{
 		AssertGeneratorEmitsTargetSources(
 			GeneratorTargetAssembly.KSoftIOTagElementStreams,
@@ -62,10 +45,10 @@ public sealed class GeneratorDriverTests
 	}
 
 	[TestMethod]
-	public void GeneratorReportsUnsupportedTargetAssemblyWhenEnabledTest()
+	public void GeneratorReportsUnsupportedTargetAssemblyWithDriverTest()
 	{
 		CSharpCompilation compilation = CreateCompilation("Unexpected.Assembly");
-		var driver = CreateDriver(useSourceGeneration: true);
+		var driver = CreateDriver();
 
 		driver.RunGeneratorsAndUpdateCompilation(
 			compilation,
@@ -88,22 +71,13 @@ public sealed class GeneratorDriverTests
 			[MetadataReference.CreateFromFile(typeof(object).Assembly.Location)]);
 	}
 
-	private static GeneratorDriver CreateDriver(bool useSourceGeneration)
-	{
-		var optionsProvider = new AnalyzerConfigOptionsProviderStub(new AnalyzerConfigOptionsStub(
-			new Dictionary<string, string>
-			{
-				[GeneratorOptions.UseSourceGenerationBuildProperty] = useSourceGeneration.ToString(),
-			}));
-		return CSharpGeneratorDriver.Create(
-			[new KSoftSourceGenerator().AsSourceGenerator()],
-			optionsProvider: optionsProvider);
-	}
+	private static GeneratorDriver CreateDriver() =>
+		CSharpGeneratorDriver.Create([new KSoftSourceGenerator().AsSourceGenerator()]);
 
 	private void AssertGeneratorEmitsTargetSources(GeneratorTargetAssembly targetAssembly, string assemblyName)
 	{
 		CSharpCompilation compilation = CreateCompilation(assemblyName);
-		var driver = CreateDriver(useSourceGeneration: true);
+		var driver = CreateDriver();
 
 		driver.RunGeneratorsAndUpdateCompilation(
 			compilation,

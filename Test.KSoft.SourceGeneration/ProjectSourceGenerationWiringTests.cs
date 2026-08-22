@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using KSoft.SourceGeneration.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Test.KSoft.SourceGeneration;
@@ -11,26 +10,19 @@ namespace Test.KSoft.SourceGeneration;
 [TestClass]
 public sealed class ProjectSourceGenerationWiringTests
 {
-	private const string kSingleSwitchCondition = " '$(KSoftUseSourceGeneration)' == 'true' ";
 	private const string kAnalyzerProjectReference =
 		"$(VitaRootDir)KSoft\\KSoft.SourceGeneration\\KSoft.SourceGeneration.csproj";
 
 	[TestMethod]
-	public void ProjectsExposeOnlySingleSourceGenerationBuildPropertyTest()
+	public void ProjectsDoNotExposeSourceGenerationBuildSwitchTest()
 	{
 		foreach (ProjectFile project in ProjectFiles())
 		{
 			var document = LoadProject(project);
-			var compilerVisibleProperties = ElementsNamed(document, "CompilerVisibleProperty")
-				.Select(static x => (string)x.Attribute("Include"))
-				.ToArray();
 
-			CollectionAssert.AreEqual(
-				new[] {
-					GeneratorOptions.UseSourceGenerationProperty,
-				},
-				compilerVisibleProperties,
-				project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "CompilerVisibleProperty"), project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "KSoftUseSourceGeneration"), project.DisplayName);
+			Assert.IsEmpty(ElementsNamed(document, "KSoftSourceGenerationEnabled"), project.DisplayName);
 			Assert.IsEmpty(ElementsNamed(document, "KSoftSourceGenerationProperty"), project.DisplayName);
 			Assert.IsFalse(
 				document.Descendants().Any(static x => IsLegacyFeatureFlagName(x.Name.LocalName)),
@@ -53,7 +45,7 @@ public sealed class ProjectSourceGenerationWiringTests
 	}
 
 	[TestMethod]
-	public void AnalyzerReferencesStayConditionedOnSingleSourceGenerationSwitchTest()
+	public void AnalyzerReferencesAreUnconditionalTest()
 	{
 		foreach (ProjectFile project in ProjectFiles())
 		{
@@ -61,7 +53,7 @@ public sealed class ProjectSourceGenerationWiringTests
 			var analyzerReference = ElementsNamed(document, "ProjectReference")
 				.Single(x => string.Equals((string)x.Attribute("Include"), kAnalyzerProjectReference, StringComparison.Ordinal));
 
-			Assert.AreEqual(kSingleSwitchCondition, (string)analyzerReference.Attribute("Condition"), project.DisplayName);
+			Assert.IsNull(analyzerReference.Attribute("Condition"), project.DisplayName);
 			Assert.AreEqual("Analyzer", analyzerReference.Attribute("OutputItemType")?.Value, project.DisplayName);
 			Assert.AreEqual("False", analyzerReference.Attribute("ReferenceOutputAssembly")?.Value, project.DisplayName);
 			Assert.AreEqual("all", analyzerReference.Attribute("PrivateAssets")?.Value, project.DisplayName);

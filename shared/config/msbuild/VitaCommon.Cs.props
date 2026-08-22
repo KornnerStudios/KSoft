@@ -17,9 +17,6 @@
     <!-- <TargetFrameworks>netcoreapp2.1;net48</TargetFrameworks> -->
     <!--FIXME: Need to figure out what we want to do here, as this format is not compatible with determinis-->
     <!-- <AssemblyVersion>0.0.%2a</AssemblyVersion> -->
-
-    <MicrosoftCodeContractsInstalled>false</MicrosoftCodeContractsInstalled>
-    <MicrosoftCodeContractsInstalled Condition=" '$(CodeContractsInstallDir)' != '' AND $(VisualStudioVersion) &lt;= 14.0 ">true</MicrosoftCodeContractsInstalled>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
@@ -43,42 +40,18 @@
     <!-- https://github.com/dotnet/roslyn-analyzers/issues/2003: when going from 2_9_8 to 2_9_9 I started getting threw an exception of type 'System.InvalidOperationException' with message 'Feature 'Flow-Analysis' is disabled.'. -->
     <Features>flow-analysis</Features>
 
-    <CodeContractsEnableRuntimeChecking>$(MicrosoftCodeContractsInstalled)</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-
-    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
-    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-
-    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled)==false " >None</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration.Contains(Debug))' ">
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
-    <DefineConstants Condition=" $(MicrosoftCodeContractsInstalled)==false ">CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
     <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
 
-    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled) ">Full</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration.Contains(Release))' ">
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <DefineConstants Condition=" $(MicrosoftCodeContractsInstalled)==false ">CONTRACTS_FULL_SHIM;$(DefineConstants)</DefineConstants>
-
-    <CodeContractsRuntimeCheckingLevel Condition=" $(MicrosoftCodeContractsInstalled) ">ReleaseRequires</CodeContractsRuntimeCheckingLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VitaPlatformType)' == 'AnyCPU' ">

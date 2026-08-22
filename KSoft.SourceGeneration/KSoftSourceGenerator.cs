@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using KSoft.SourceGeneration.Diagnostics;
-using KSoft.SourceGeneration.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -19,25 +18,13 @@ public sealed class KSoftSourceGenerator : IIncrementalGenerator
 	/// <param name="context">Generator initialization context.</param>
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		var options = context.AnalyzerConfigOptionsProvider
-			.Select(static (provider, _) => GeneratorOptions.From(provider.GlobalOptions));
-		var assemblyName = context.CompilationProvider
+		var input = context.CompilationProvider
 			.Select(static (compilation, _) => compilation.AssemblyName);
 
-		var input = options.Combine(assemblyName)
-			.Select(static (value, _) => new GenerationInput(value.Left, value.Right));
+		var generationInput = input.Select(static (assemblyName, _) => new GenerationInput(assemblyName));
 
-		context.RegisterSourceOutput(input, static (sourceContext, generationInput) =>
+		context.RegisterSourceOutput(generationInput, static (sourceContext, generationInput) =>
 		{
-			DiagnosticReporter.ReportInvalidOptions(sourceContext, generationInput.Options);
-			if (generationInput.Options.HasInvalidBooleanProperties)
-			{
-				return;
-			}
-			if (!generationInput.Options.UseSourceGeneration)
-			{
-				return;
-			}
 			if (generationInput.TargetAssembly == GeneratorTargetAssembly.Unsupported)
 			{
 				DiagnosticReporter.ReportUnsupportedTargetAssembly(sourceContext, generationInput);
