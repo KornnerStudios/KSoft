@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -211,7 +213,7 @@ namespace KSoft.Text
 		/// <returns>
 		/// True if both this object and <paramref name="obj"/> are equal.
 		/// False if <paramref name="obj"/> is not a <see cref="StringStorageEncoding"/></returns>
-		public override bool Equals(object value)
+		public override bool Equals(object? value)
 		{
 			//return mBaseEncoding.Equals(value);
 			if (value is StringStorageEncoding e)
@@ -235,13 +237,13 @@ namespace KSoft.Text
 		/// </summary>
 		/// <param name="obj">other <see cref="StringStorageEncoding"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public bool Equals(StringStorageEncoding other)
+		public bool Equals(StringStorageEncoding? other)
 		{
-			return mOptions == other.mOptions &&
+			return mOptions == other!.mOptions &&
 				mStorage.Equals(other.mStorage);
 		}
 
-		public bool Equals(StringStorageEncoding x, StringStorageEncoding y) => x.Equals(y);
+		public bool Equals(StringStorageEncoding? x, StringStorageEncoding? y) => x!.Equals(y);
 
 		public int GetHashCode(StringStorageEncoding obj) => obj.GetHashCode();
 		#endregion
@@ -251,13 +253,13 @@ namespace KSoft.Text
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public int Compare(StringStorageEncoding x, StringStorageEncoding y) => x.CompareTo(y);
+		public int Compare(StringStorageEncoding? x, StringStorageEncoding? y) => x!.CompareTo(y);
 		/// <summary>Compare this with another <see cref="StringStorageEncoding"/> object for similar underlying values</summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public int CompareTo(StringStorageEncoding other)
+		public int CompareTo(StringStorageEncoding? other)
 		{
-			int cmp = mStorage.CompareTo(other.mStorage);
+			int cmp = mStorage.CompareTo(other!.mStorage);
 
 			if (cmp == 0)
 			{
@@ -294,7 +296,7 @@ namespace KSoft.Text
 		/// </returns>
 		public static StringStorageEncoding TryAndGetStaticEncoding(StringStorage storageDesc)
 		{
-			StringStorageEncoding sse = Array.Find(kStorageEncodingList,
+			StringStorageEncoding? sse = Array.Find(kStorageEncodingList,
 				x => x.mStorage.Equals(storageDesc));
 
 			return sse ?? new StringStorageEncoding(storageDesc);
