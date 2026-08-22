@@ -47,7 +47,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	[TestMethod]
 	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShapeTest()
 	{
-		using var stream = XmlElementStream.CreateForWrite("root");
+		var stream = XmlElementStream.CreateForWrite("root");
 		var guid = new Values.KGuid(kGuidText);
 
 		stream.WriteAttribute("name", "Vita");
@@ -229,6 +229,36 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		AssertThrowsArgument(() => stream.ReadElementBegin(string.Empty, out _), "name");
 		AssertThrowsArgument(() => stream.ElementsByName(null!).GetEnumerator().MoveNext(), "localName");
 		AssertThrowsArgument(() => stream.ElementsByName(string.Empty).GetEnumerator().MoveNext(), "localName");
+	}
+
+	[TestMethod]
+	public void XmlElementStream_LifecycleNullStates_AreExposedByContractsTest()
+	{
+		using var stream = XmlElementStream.CreateForWrite("root");
+
+		Assert.IsNull(stream.Owner);
+		Assert.IsNull(stream.UserData);
+		Assert.IsNull(stream.StreamName);
+
+		var owner = new object();
+		var userData = new object();
+		stream.Owner = owner;
+		stream.UserData = userData;
+
+		using (var ownerBookmark = new IKSoftStreamOwnerBookmark(stream, null))
+		using (var userDataBookmark = new IKSoftStreamUserDataBookmark(stream, null))
+		{
+			Assert.IsNull(stream.Owner);
+			Assert.IsNull(stream.UserData);
+		}
+
+		Assert.AreSame(owner, stream.Owner);
+		Assert.AreSame(userData, stream.UserData);
+
+		stream.Dispose();
+
+		Assert.IsNull(stream.Owner);
+		Assert.IsNull(stream.Cursor);
 	}
 
 	[TestMethod]

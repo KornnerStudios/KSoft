@@ -21,7 +21,7 @@ internal static class EndianStreamsCoreSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
+		writer.WriteLine("#nullable enable annotations");
 		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.IO;");
@@ -109,9 +109,9 @@ internal static class EndianStreamsCoreSourceBuilder
 	private static void WriteCommonStateProperties(SourceWriter writer)
 	{
 		writer.WriteXmlDocSummary("Owner of this stream");
-		writer.WriteLine("public object Owner { get; set; }");
+		writer.WriteLine("public object? Owner { get; set; }");
 		writer.WriteLine();
-		writer.WriteLine("public object UserData { get; set; }");
+		writer.WriteLine("public object? UserData { get; set; }");
 		writer.WriteLine();
 		writer.WriteXmlDocSummary("Do we own the base stream?");
 		writer.WriteLine(
@@ -122,7 +122,7 @@ internal static class EndianStreamsCoreSourceBuilder
 		writer.WriteXmlDocSummary("Name of the underlying stream this object is interfacing with");
 		writer.WriteLine(
 			"/// <remarks>So if this endian stream is interfacing with a file, this will be it's name</remarks>");
-		writer.WriteLine("public string StreamName { get; private set; }");
+		writer.WriteLine("public string? StreamName { get; private set; }");
 		writer.WriteLine();
 		writer.WriteXmlDocSummary("Base address used for simulating pointers in the stream");
 		writer.WriteLine("/// <remarks>Default value is <see cref=\"Data.PtrHandle.Null32\"/></remarks>");
@@ -172,7 +172,7 @@ internal static class EndianStreamsCoreSourceBuilder
 	{
 		using (writer.EnterTypeDeclaration("class EndianFormatSwitchBlock : IDisposable"))
 		{
-			writer.WriteLine($"readonly {typeName} mStream;");
+			writer.WriteLine($"readonly {typeName}? mStream;");
 			writer.WriteLine("readonly Shell.EndianFormat mOldByteOrder;");
 			writer.WriteLine("readonly bool mOldRequiresByteSwap;");
 			writer.WriteXmlDocSummary("");
@@ -251,7 +251,7 @@ internal static class EndianStreamsCoreSourceBuilder
 	{
 		using (writer.EnterRegion("StringEncoding"))
 		{
-			writer.WriteLine("System.Text.Encoding mStringEncoding;");
+			writer.WriteLine("System.Text.Encoding? mStringEncoding;");
 		}
 	}
 

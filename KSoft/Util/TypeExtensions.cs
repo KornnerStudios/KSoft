@@ -107,12 +107,12 @@ namespace KSoft
 		public static /*IDisposable*/IO.IKSoftStreamOwnerBookmark EnterOwnerBookmark(this IO.IKSoftStream stream,
 			object? newOwner = null)
 		{
-			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner!);
+			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner);
 		}
 		public static /*IDisposable*/IO.IKSoftStreamUserDataBookmark EnterUserDataBookmark(this IO.IKSoftStream stream,
 			object? newUserData = null)
 		{
-			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData!);
+			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData);
 		}
 		/// <summary>Temporarily enter a new data streaming state</summary>
 		/// <param name="newMode"></param>

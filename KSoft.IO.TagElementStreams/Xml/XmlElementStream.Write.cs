@@ -84,6 +84,7 @@ namespace KSoft.IO
 		{
 			if (!string.IsNullOrEmpty(comment))
 			{
+				ThrowIfCursorNull();
 				Cursor.AppendChild(Document.CreateComment(comment));
 			}
 		}

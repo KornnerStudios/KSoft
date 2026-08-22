@@ -121,6 +121,7 @@ namespace KSoft.IO
 		public void ReadCursorEnum<TEnum>(ref TEnum enumValue)
 			where TEnum : struct, Enum
 		{
+			ThrowIfCursorNull();
 			ReadElementEnum(Cursor, ref enumValue);
 		}
 		/// <summary>Stream out the Value of <see cref="Cursor"/> into the enum <paramref name="enumValue"/></summary>
@@ -129,6 +130,7 @@ namespace KSoft.IO
 		public void ReadCursorEnum<TEnum>(ref int enumValue)
 			where TEnum : struct, Enum
 		{
+			ThrowIfCursorNull();
 			ReadElementEnum<TEnum>(Cursor, ref enumValue);
 		}
 
@@ -140,6 +142,7 @@ namespace KSoft.IO
 
 		public void ReadCursor(ref Values.KGuid value)
 		{
+			ThrowIfCursorNull();
 			ReadElement(Cursor, ref value);
 		}
 		#endregion

@@ -16,7 +16,7 @@ namespace KSoft.IO
 
 		#region IKSoftStream
 		/// <summary>Owner of this stream</summary>
-		public object Owner
+		public object? Owner
 		{
 			get { return Reader != null ? Reader.Owner : Writer.Owner; }
 			set {
@@ -25,7 +25,7 @@ namespace KSoft.IO
 			}
 		}
 
-		public object UserData
+		public object? UserData
 		{
 			get { return Reader != null ? Reader.UserData : Writer.UserData; }
 			set {
@@ -36,7 +36,7 @@ namespace KSoft.IO
 
 		/// <summary>Name of the underlying stream this object is interfacing with</summary>
 		/// <remarks>So if this endian stream is interfacing with a file, this will be it's name</remarks>
-		public string StreamName { get {
+		public string? StreamName { get {
 				 if (IsReading) return Reader.StreamName;
 			else if (IsWriting) return Writer.StreamName;
 			else throw new Debug.UnreachableException(StreamMode.ToString());

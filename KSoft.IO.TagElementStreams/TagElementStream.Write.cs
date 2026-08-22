@@ -27,11 +27,13 @@ namespace KSoft.IO
 		public void WriteCursorEnum<TEnum>(TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
+			ThrowIfCursorNull();
 			WriteElementEnum(Cursor, value, isFlags);
 		}
 
 		public void WriteCursor(Values.KGuid value)
 		{
+			ThrowIfCursorNull();
 			WriteElement(Cursor, value);
 		}
 		#endregion

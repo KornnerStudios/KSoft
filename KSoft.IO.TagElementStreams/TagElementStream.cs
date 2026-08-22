@@ -26,9 +26,9 @@ namespace KSoft.IO
 
 		#region Owner
 		/// <summary>Owner of this stream</summary>
-		public object Owner { get; set; } = null!;
+		public object? Owner { get; set; }
 
-		public object UserData { get; set; } = null!;
+		public object? UserData { get; set; }
 		#endregion
 
 		#region IKSoftStreamModeable
@@ -87,7 +87,8 @@ namespace KSoft.IO
 			}
 		}
 
-		void ThrowIfCursorNull()
+		[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(Cursor))]
+		protected void ThrowIfCursorNull()
 		{
 			if (Cursor == null)
 			{
@@ -99,13 +100,13 @@ namespace KSoft.IO
 		#region StreamName
 		/// <summary></summary>
 		/// <remarks>If this is for a file, this is the file name this stream is handling</remarks>
-		public string StreamName { get; protected set; } = null!;
+		public string? StreamName { get; protected set; }
 
 		protected void SetStreamName(System.IO.Stream stream)
 		{
 			System.Diagnostics.Debug.Assert(stream != null);
 
-			StreamName = null!;
+			StreamName = null;
 
 			if (stream is System.IO.FileStream fs)
 			{
@@ -127,9 +128,9 @@ namespace KSoft.IO
 		#region Cursor
 		internal const string kCursorNullMsg = "Element cursor must not be null when writing an attribute.";
 
-		TCursor mCursor = null!;
+		TCursor? mCursor;
 		/// <summary>Element data we are streaming data to and from</summary>
-		public TCursor Cursor {
+		public TCursor? Cursor {
 			get { return mCursor; }
 			set {
 				ArgumentNullException.ThrowIfNull(value);
@@ -165,6 +166,7 @@ namespace KSoft.IO
 		/// <param name="oldCursor">On return, contains the value of <see cref="Cursor"/> before the call to this method</param>
 		public void SaveCursor(TCursor? newCursor, out TCursor oldCursor)
 		{
+			ThrowIfCursorNull();
 			oldCursor = Cursor;
 			if (newCursor != null)
 			{
@@ -309,9 +311,9 @@ namespace KSoft.IO
 		{
 			if (disposing)
 			{
-				mCursor = null!;
+				mCursor = null;
 
-				Owner = null!;
+				Owner = null;
 			}
 		}
 

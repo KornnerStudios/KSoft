@@ -50,9 +50,10 @@ namespace KSoft.IO
 		public override bool AttributesExist { get { return Cursor != null && Cursor.HasAttributes; } }
 
 		public override IEnumerable<string> AttributeNames { get {
-			if (AttributesExist)
+			var cursor = Cursor;
+			if (cursor != null && cursor.HasAttributes)
 				{
-					foreach (XmlAttribute attr in Cursor.Attributes)
+					foreach (XmlAttribute attr in cursor.Attributes)
 					{
 						yield return attr.Name;
 					}
@@ -83,9 +84,10 @@ namespace KSoft.IO
 		public override bool ElementsExist { get { return Cursor != null && Cursor.HasChildNodes; } }
 
 		public override IEnumerable<XmlElement> Elements { get {
-			if (ElementsExist)
+			var cursor = Cursor;
+			if (cursor != null && cursor.HasChildNodes)
 			{
-				foreach (XmlNode n in Cursor)
+				foreach (XmlNode n in cursor)
 				{
 					if (n is XmlElement element)
 					{
@@ -99,9 +101,10 @@ namespace KSoft.IO
 		{
 			ArgumentException.ThrowIfNullOrEmpty(localName);
 
-			if (ElementsExist)
+			var cursor = Cursor;
+			if (cursor != null && cursor.HasChildNodes)
 			{
-				foreach (XmlNode n in Cursor.ChildNodes)
+				foreach (XmlNode n in cursor.ChildNodes)
 				{
 					if (n is XmlElement element && n.Name == localName)
 					{

@@ -56,15 +56,17 @@ namespace KSoft.IO
 			ArgumentException.ThrowIfNullOrEmpty(name);
 
 			ValidateReadPermission();
+			ThrowIfCursorNull();
+			var cursor = Cursor;
 
-			XmlElement? n = Cursor[name];
+			XmlElement? n = cursor[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
 					"Element doesn't exist: " + name));
 			}
 
-			oldCursor = Cursor;
+			oldCursor = cursor;
 			// update the error state with the node we're about to read from
 			ReadErrorNode = n;
 			Cursor = n;
@@ -77,8 +79,10 @@ namespace KSoft.IO
 		protected override XmlElement GetElement(string name)
 		{
 			ValidateReadPermission();
+			ThrowIfCursorNull();
+			var cursor = Cursor;
 
-			XmlElement? n = Cursor[name];
+			XmlElement? n = cursor[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
@@ -95,8 +99,10 @@ namespace KSoft.IO
 		protected override string ReadAttribute(string name)
 		{
 			ValidateReadPermission();
+			ThrowIfCursorNull();
+			var cursor = Cursor;
 
-			XmlAttribute? n = Cursor.Attributes[name];
+			XmlAttribute? n = cursor.Attributes[name];
 			if (n == null)
 			{
 				ThrowReadException(new System.Collections.Generic.KeyNotFoundException(
@@ -116,8 +122,10 @@ namespace KSoft.IO
 		protected override string? ReadElementOpt(string name)
 		{
 			ValidateReadPermission();
+			ThrowIfCursorNull();
+			var cursor = Cursor;
 
-			XmlElement? n = Cursor[name];
+			XmlElement? n = cursor[name];
 			if (n == null)
 			{
 				return null;
@@ -142,8 +150,10 @@ namespace KSoft.IO
 		protected override string? ReadAttributeOpt(string name)
 		{
 			ValidateReadPermission();
+			ThrowIfCursorNull();
+			var cursor = Cursor;
 
-			XmlAttribute? n = Cursor.Attributes[name];
+			XmlAttribute? n = cursor.Attributes[name];
 			if (n == null)
 			{
 				return null;

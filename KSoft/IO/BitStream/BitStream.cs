@@ -37,8 +37,8 @@ namespace KSoft.IO
 
 		#region IKSoftStream
 		/// <summary>Owner of this stream</summary>
-		public object Owner { get; set; } = null!;
-		public object UserData { get; set; } = null!;
+		public object? Owner { get; set; }
+		public object? UserData { get; set; }
 
 		/// <summary>Name for this bitstream, or an empty string</summary>
 		public string StreamName			{ get; private set; }

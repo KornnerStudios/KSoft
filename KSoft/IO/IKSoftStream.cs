@@ -6,10 +6,10 @@ namespace KSoft.IO
 	public interface IKSoftStream
 	{
 		/// <summary>Owner of this stream</summary>
-		object Owner { get; set; }
+		object? Owner { get; set; }
 
-		object UserData { get; set; }
+		object? UserData { get; set; }
 
-		string StreamName { get; }
+		string? StreamName { get; }
 	};
 }
