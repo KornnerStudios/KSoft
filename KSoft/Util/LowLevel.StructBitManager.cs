@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.LowLevel.Util
 {
@@ -63,7 +57,6 @@ namespace KSoft.LowLevel.Util
 		/// <summary>Copies the underlying <typeparamref name="T"/> object to a buffer</summary>
 		/// <param name="buffer">Buffer to copy the object into</param>
 		/// <param name="startIndex">Byte index to start the copy at</param>
-		[Contracts.Pure]
 		public void ToBuffer(byte[] buffer, int startIndex = 0)
 		{
 			ValidateBufferRange(buffer, startIndex);
@@ -72,10 +65,8 @@ namespace KSoft.LowLevel.Util
 		}
 		/// <summary>Get a buffer containing the underlying <typeparamref name="T"/> object's bytes</summary>
 		/// <returns>A buffer holding the underlying object's bytes</returns>
-		[Contracts.Pure]
 		public byte[] ToBuffer()
 		{
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] buffer = new byte[kSizeOf];
 			Marshal.Copy(mHandle, buffer, 0, kSizeOf);
@@ -92,7 +83,6 @@ namespace KSoft.LowLevel.Util
 
 		/// <summary>Get the underlying <typeparamref name="T"/> object</summary>
 		/// <returns>A copy of the underlying value type object</returns>
-		[Contracts.Pure]
 		public T ToValue()
 		{
 			return Unmanaged.IntPtrToStructure<T>(mHandle);

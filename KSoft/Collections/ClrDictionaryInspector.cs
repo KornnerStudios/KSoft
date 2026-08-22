@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Reflect = System.Reflection;
 
 namespace KSoft.Collections
@@ -90,9 +84,14 @@ namespace KSoft.Collections
 
 			// "If a nested type is generic, this method returns its generic type definition. This is true even if the enclosing generic type is a closed constructed type."
 			var dic_entry_type = typeof(Dictionary<TKey, TValue>)
-				.GetNestedType(kEntryTypeName, Reflect.BindingFlags.NonPublic)
-				.MakeGenericType(typeof(TKey), typeof(TValue));
-			Contract.Assert(dic_entry_type != null);
+				.GetNestedType(kEntryTypeName, Reflect.BindingFlags.NonPublic);
+			if (dic_entry_type == null)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Dictionary entry type '{0}' could not be found.",
+					kEntryTypeName));
+			}
+			dic_entry_type = dic_entry_type.MakeGenericType(typeof(TKey), typeof(TValue));
 
 			#region Dictionary getters
 			kGetDicBuckets =
@@ -138,15 +137,18 @@ namespace KSoft.Collections
 			mExpectedVersion = Version;
 		}
 
-		[Contracts.ContractInvariantMethod]
-		void ObjectInvariant()
+		void ThrowIfDictionaryWasModified()
 		{
-			Contract.Invariant(Version == mExpectedVersion,
-				"Tried to inspect a dictionary that has been modified since the inspector was created");
+			if (Version != mExpectedVersion)
+			{
+				throw new InvalidOperationException("Tried to inspect a dictionary that has been modified since the inspector was created.");
+			}
 		}
 
 		void InitializeEntries()
 		{
+			ThrowIfDictionaryWasModified();
+
 			mEntries = new DicEntry[Buckets.Count];
 			var array = kGetDicEntries(mDic);
 

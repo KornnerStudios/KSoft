@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -43,7 +38,10 @@ namespace KSoft.IO
 
 		private Text.TextLineInfoException GetLineInfoExceptionInternal()
 		{
-			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
+			if (mReadLineInfo == null)
+			{
+				throw new InvalidOperationException(kReadLineInfoIsNullMsg);
+			}
 
 			return new Text.TextLineInfoException(mReadLineInfo, mStream.StreamName);
 		}
@@ -57,14 +55,20 @@ namespace KSoft.IO
 		/// <param name="detailsException">The details (inner) exception of what went wrong</param>
 		public void ThrowReadExeception(Exception detailsException)
 		{
-			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
+			if (mReadLineInfo == null)
+			{
+				throw new InvalidOperationException(kReadLineInfoIsNullMsg);
+			}
 
 			throw GetReadException(detailsException);
 		}
 
 		public void LogReadExceptionWarning(Exception detailsException)
 		{
-			Contract.Assert(mReadLineInfo != null, kReadLineInfoIsNullMsg);
+			if (mReadLineInfo == null)
+			{
+				throw new InvalidOperationException(kReadLineInfoIsNullMsg);
+			}
 
 			Debug.Trace.IO.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
 				"Failed to parse tag value: {0}",

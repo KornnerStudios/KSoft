@@ -3,27 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft
 {
-	public static class Kontracts
-	{
-		public const string kCategory = "Microsoft.Contracts";
-
-		// Based on ContractsManual.pdf: 5.2.3, Delegating Checks to Other Methods
-		//Usage: [System.Diagnostics.CodeAnalysis.SuppressMessage(Kontracts.kCategory, Kontracts.kIgnoreOverrideId, Justification=Kontracts.kIgnoreOverrideJust)]
-		/// <summary>SuppressMessage warning id</summary>
-		public const string kIgnoreOverrideId = "CC1055";
-		/// <summary>SuppressMessage justification</summary>
-		public const string kIgnoreOverrideJust = "Validation performed in base method";
-	};
-
 	public static partial class Util
 	{
 		// Based on http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx
@@ -154,7 +136,6 @@ namespace KSoft
 		/// <summary>Convert a <b>time_t</b> or <b>time64_t</b> value to a <see cref="System.DateTime"/></summary>
 		/// <param name="time_t">The <b>time_t</b> numerical value</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static DateTime ConvertDateTimeFromUnixTime(
 			[SuppressMessage("Microsoft.Design", "CA1707:IdentifiersShouldNotContainUnderscores")]
 			long time_t)
@@ -167,7 +148,6 @@ namespace KSoft
 		/// <summary>Convert a <see cref="System.DateTime"/> to a <b>time64_t</b> value</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static long ConvertDateTimeToUnixTime(DateTime value)
 		{
 			ArgumentOutOfRangeException.ThrowIfLessThan(value, UnixTimeEpoch);
@@ -199,17 +179,14 @@ namespace KSoft
 			}
 			#endregion
 
-			[Contracts.Pure]
 			public static /*IComparer<T>*/ComparerFactory<T> Create(Func<T, T, int> comparer)
 			{
 				return new ComparerFactory<T>(comparer);
 			}
 		};
-		[Contracts.Pure]
 		public static IComparer<T> CreateComparer<T>(Func<T, T, int> comparer)
 		{
 			ArgumentNullException.ThrowIfNull(comparer);
-			Contract.Ensures(Contract.Result<IComparer<T>>() != null);
 
 			return ComparerFactory<T>.Create(comparer);
 		}
@@ -220,7 +197,6 @@ namespace KSoft
 		/// <param name="x">First object to compare</param>
 		/// <param name="y">Second object to compare</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool GenericReferenceEquals<T>(T x, T y)
 			where T : class, IEquatable<T>
 		{
@@ -244,7 +220,6 @@ namespace KSoft
 		/// <param name="rhs"></param>
 		/// <param name="choiceProperty"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static T MinChoice<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : class
 		{
@@ -262,7 +237,6 @@ namespace KSoft
 		/// <param name="rhs"></param>
 		/// <param name="choiceProperty"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static T MinChoiceValue<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : struct
 		{
@@ -279,7 +253,6 @@ namespace KSoft
 		/// <param name="rhs"></param>
 		/// <param name="choiceProperty"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static T MaxChoice<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : class
 		{
@@ -297,7 +270,6 @@ namespace KSoft
 		/// <param name="rhs"></param>
 		/// <param name="choiceProperty"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static T MaxChoiceValue<T>(T lhs, T rhs, Func<T, int> choiceProperty)
 			where T : struct
 		{
@@ -651,14 +623,13 @@ namespace KSoft
 		/// </summary>
 		/// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
 		/// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
-		/// <returns>The relative path from the start directory to the end path.</returns>
+		/// <returns>The relative path from the start directory, or <paramref name="toPath"/> when schemes differ.</returns>
 		public static string GetRelativePath(string fromPath, string toPath)
 		{
 			if (string.IsNullOrEmpty(fromPath))
 				throw new ArgumentNullException(nameof(fromPath));
 			if (string.IsNullOrEmpty(toPath))
 				throw new ArgumentNullException(nameof(toPath));
-			Contract.Ensures(Contract.Result<string>()==toPath || fromPath.IsNotNullOrEmpty());
 
 			Uri fromUri = new(AppendDirectorySeparatorChar(fromPath));
 			Uri toUri = new(AppendDirectorySeparatorChar(toPath));
@@ -680,11 +651,13 @@ namespace KSoft
 		}
 
 		/// <summary>Appends a slash if the path does not end with an extension and does not already have a slash</summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
+		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
+		/// <returns>
+		/// <paramref name="path"/> when it is null, empty, file-like, or already terminated; otherwise the path with a
+		/// trailing directory separator.
+		/// </returns>
 		public static string AppendDirectorySeparatorChar(string path)
 		{
-			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
 			string result = path;
 
@@ -703,11 +676,13 @@ namespace KSoft
 		#endregion
 
 		/// <summary>Prefixes a slash to the path if it does not already have a slash</summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
+		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
+		/// <returns>
+		/// <paramref name="path"/> when it is null, empty, or already rooted; otherwise the path with a leading
+		/// directory separator.
+		/// </returns>
 		public static string PrependDirectorySeparatorChar(string path)
 		{
-			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
 			string result = path;
 
@@ -724,11 +699,10 @@ namespace KSoft
 		}
 
 		/// <summary>Removes a final slash from the path if it has one</summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
+		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
+		/// <returns><paramref name="path"/> without one trailing directory separator when one is present.</returns>
 		public static string RemoveTrailingDirectorySeparatorChar(string path)
 		{
-			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
 			string result = path;
 
@@ -743,9 +717,11 @@ namespace KSoft
 			return result;
 		}
 
+		/// <summary>Replace normal directory separators with alternate directory separators.</summary>
+		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
+		/// <returns><paramref name="path"/> with directory separators replaced, or null/empty unchanged.</returns>
 		public static string ReplaceDirectorySeparatorWithAltChar(string path)
 		{
-			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
 			string result = path;
 
@@ -756,9 +732,11 @@ namespace KSoft
 
 			return result;
 		}
+		/// <summary>Replace alternate directory separators with normal directory separators.</summary>
+		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
+		/// <returns><paramref name="path"/> with alternate separators replaced, or null/empty unchanged.</returns>
 		public static string ReplaceAltDirectorySeparatorWithNormalChar(string path)
 		{
-			Contract.Ensures(Contract.Result<string>().IsNullOrEmpty() || path.IsNotNullOrEmpty());
 
 			string result = path;
 

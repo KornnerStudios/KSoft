@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 #nullable enable
 
@@ -21,7 +15,6 @@ namespace KSoft
 		/// <summary>Number of logical bits in a <see cref="System.Boolean"/></summary>
 		public const int kBooleanBitCount = 1;
 
-		[Contracts.Pure]
 		static int BitmaskLookUpTableGetLength(int wordBitSize)
 		{
 			// first element in the LUT is zero, followed by a mask for each range of bits up until wordBitSize
@@ -43,7 +36,7 @@ namespace KSoft
 		}
 		#endregion
 
-		#region Contract messages
+		#region Guard messages
 		const string kBitSwap_StartBitIndexNotGreaterThanZero =
 			"Doesn't make sense to bit swap 1 bit. Or to start at a negative index";
 
@@ -101,8 +94,10 @@ namespace KSoft
 				TSrc[] src, int srcOffset,
 				int srcCopyCount)
 			{
-				Contract.Assert(DestinationTypeSize != 0 && SourceTypeSize != 0,
-					"somebody used MemoryCopier's default constructor!");
+				if (DestinationTypeSize == 0 || SourceTypeSize == 0)
+				{
+					throw new InvalidOperationException("Somebody used MemoryCopier's default constructor.");
+				}
 
 				if (srcCopyCount == 0)
 				{
@@ -157,7 +152,6 @@ namespace KSoft
 		};
 
 		/// <remarks>Declared as public as it's used in code contracts. Caller responsible for null and index-positive checks</remarks>
-		[Contracts.Pure]
 		public static bool ArrayCopyFromBytesBoundsValidate(byte[] src, int srcOffset, Array dst, int dstOffset, int count, int elementSize)
 		{
 			if (count < 0)
@@ -181,7 +175,6 @@ namespace KSoft
 			return true;
 		}
 		/// <remarks>Declared as public as it's used in code contracts. Caller responsible for null and index-positive checks</remarks>
-		[Contracts.Pure]
 		public static bool ArrayCopyToBytesBoundsValidate(Array src, int srcOffset, byte[] dst, int dstOffset, int count, int elementSize)
 		{
 			if (count < 0)
@@ -206,42 +199,37 @@ namespace KSoft
 		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Signed representation of the high-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static int GetHighBitsSigned(uint value) => (int)((value >> 16) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Signed representation of the low-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static int GetLowBitsSigned(uint value) => (int)(value & 0xFFFFFFFF);
 
 		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static uint GetHighBits(ulong value) => (uint)((value >> 32) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static uint GetLowBits(ulong value) => (uint)(value & 0xFFFFFFFF);
 
 		/// <summary>Convenience function for getting the high order bits (LSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the high-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static int GetHighBitsSigned(ulong value) => (int)((value >> 32) & 0xFFFFFFFF);
 		/// <summary>Convenience function for getting the low order bits (MSB) in an unsigned integer</summary>
 		/// <param name="value"></param>
 		/// <returns>Unsigned representation of the low-bits in <paramref name="value"/></returns>
-		[Contracts.Pure]
 		public static int GetLowBitsSigned(ulong value) => (int)(value & 0xFFFFFFFF);
 		#endregion
 
 		#region HighestBitSetIndex
-		[Contracts.Pure]
+		/// <summary>Find the zero-based index of the highest set bit in a 32-bit unsigned integer.</summary>
+		/// <param name="value">Value to inspect.</param>
+		/// <returns>A value from 0 through <see cref="kInt32BitCount"/> - 1. For zero, returns 0.</returns>
 		public static byte IndexOfHighestBitSet(uint value)
 		{
-			Contract.Ensures(Contract.Result<byte>() < kInt32BitCount);
 
 			value |= value >> 1; // first round down to one less than a power of 2
 			value |= value >> 2;
@@ -252,10 +240,11 @@ namespace KSoft
 			uint index = (value * 0x07C4ACDDU) >> 27;
 			return kMultiplyDeBruijnBitPositionHighestBitSet32[index];
 		}
-		[Contracts.Pure]
+		/// <summary>Find the zero-based index of the highest set bit in a 64-bit unsigned integer.</summary>
+		/// <param name="value">Value to inspect.</param>
+		/// <returns>A value from 0 through <see cref="kInt64BitCount"/> - 1. For zero, returns 0.</returns>
 		public static byte IndexOfHighestBitSet(ulong value)
 		{
-			Contract.Ensures(Contract.Result<byte>() < kInt64BitCount);
 
 			int index;
 			uint high = GetHighBits(value);
@@ -276,41 +265,33 @@ namespace KSoft
 		#region LeadingZerosCount
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of leading zeros, from 0 through <see cref="kByteBitCount"/>.</returns>
 		public static byte LeadingZerosCount(byte value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kByteBitCount);
 			// #VITA_SHIM: Keep KSoft's byte-width result while using the BCL 32-bit primitive.
 			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 3) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of leading zeros, from 0 through <see cref="kInt16BitCount"/>.</returns>
 		public static byte LeadingZerosCount(ushort value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kInt16BitCount);
 			// #VITA_SHIM: Keep KSoft's ushort-width result while using the BCL 32-bit primitive.
 			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 2) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of leading zeros, from 0 through <see cref="kInt32BitCount"/>.</returns>
 		public static byte LeadingZerosCount(uint value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
 			return (byte)BitOperations.LeadingZeroCount(value);
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of leading zeros, from 0 through <see cref="kInt64BitCount"/>.</returns>
 		public static byte LeadingZerosCount(ulong value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
 			return (byte)BitOperations.LeadingZeroCount(value);
 		}
@@ -319,21 +300,17 @@ namespace KSoft
 		#region TrailingZerosCount
 		/// <summary>Count the "rightmost" consecutive zero bits (trailing) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of trailing zeros, from 0 through <see cref="kInt32BitCount"/>.</returns>
 		public static byte TrailingZerosCount(uint value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kInt32BitCount);
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
 			return (byte)BitOperations.TrailingZeroCount(value);
 		}
 		/// <summary>Count the "rightmost" consecutive zero bits (trailing) in an unsigned integer</summary>
 		/// <param name="value"></param>
-		/// <returns></returns>
-		[Contracts.Pure]
+		/// <returns>Number of trailing zeros, from 0 through <see cref="kInt64BitCount"/>.</returns>
 		public static byte TrailingZerosCount(ulong value)
 		{
-			Contract.Ensures(Contract.Result<byte>() <= kInt64BitCount);
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
 			return (byte)BitOperations.TrailingZeroCount(value);
 		}
@@ -356,7 +333,6 @@ namespace KSoft
 		/// <param name="bits">Unsigned integer to decode from</param>
 		/// <param name="traits"></param>
 		/// <returns>The enumeration\flags value as it stood before it was ever encoded into <paramref name="bits"/></returns>
-		[Contracts.Pure]
 		public static ushort BitDecode(ushort bits, Bitwise.BitFieldTraits traits)
 		{
 			ValidateUInt16BitFieldTraits(traits);
@@ -374,7 +350,6 @@ namespace KSoft
 		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
 		/// so any existing values will be lost after <paramref name="value"/> is added
 		/// </remarks>
-		[Contracts.Pure]
 		public static ushort BitEncode(ushort value, ushort bits, Bitwise.BitFieldTraits traits)
 		{
 			ValidateUInt16BitFieldTraits(traits);

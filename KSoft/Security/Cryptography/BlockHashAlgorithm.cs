@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using HashAlgorithm = System.Security.Cryptography.HashAlgorithm;
 
 namespace KSoft.Security.Cryptography

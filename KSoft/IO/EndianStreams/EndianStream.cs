@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // #TODO fix CA warnings
 #pragma warning disable IDE0011 // Use braces
@@ -309,7 +304,6 @@ namespace KSoft.IO
 		public static EndianStream UsingReader(EndianReader reader)
 		{
 			ArgumentNullException.ThrowIfNull(reader);
-			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
 			var s = new EndianStream
 			{
@@ -324,7 +318,6 @@ namespace KSoft.IO
 		public static EndianStream UsingWriter(EndianWriter writer)
 		{
 			ArgumentNullException.ThrowIfNull(writer);
-			Contract.Ensures(Contract.Result<EndianStream>() != null);
 
 			var s = new EndianStream
 			{
@@ -947,12 +940,17 @@ namespace KSoft.IO
 		#endregion
 
 		#region Stream List
+		/// <summary>Streams reference-type list elements, clearing and repopulating the list when reading.</summary>
+		/// <typeparam name="T">Serializable element type.</typeparam>
+		/// <param name="values">List to read into or write from.</param>
+		/// <param name="readCount">Number of elements to read. When writing, this is replaced by the list count.</param>
+		/// <param name="initializer">Factory used to create each element while reading.</param>
+		/// <returns>This stream.</returns>
 		public EndianStream StreamListElementsWithClear<T>(IList<T> values, int readCount, Func<T> initializer)
 			where T : class, IO.IEndianStreamSerializable
 		{
 			ArgumentNullException.ThrowIfNull(values);
 			ArgumentNullException.ThrowIfNull(initializer);
-			Contract.Ensures(values.Count == readCount);
 
 			bool reading = IsReading;
 
@@ -972,6 +970,9 @@ namespace KSoft.IO
 				if (reading)
 					values.Add(v);
 			}
+
+			System.Diagnostics.Debug.Assert(values.Count == readCount,
+				"StreamListElementsWithClear should leave the list with the requested element count.");
 
 			return this;
 		}
@@ -1157,7 +1158,14 @@ namespace KSoft.IO
 			if (IsReading)
 				position = BaseStream.Position;
 			else if (IsWriting)
-				Contract.Assert(position == BaseStream.Position);
+			{
+				if (position != BaseStream.Position)
+				{
+					throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+						"Stream position must be {0}; actual position is {1}.",
+						position, BaseStream.Position));
+				}
+			}
 		}
 	};
 }

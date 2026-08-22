@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -58,14 +53,12 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 			where TStreamType : struct
 		{
-			Contract.Ensures(Contract.Result<IEnumBinaryStreamer<TEnum>>() != null);
 
 			return EnumBinaryStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumBinaryStreamer<TEnum> ForBinary<TEnum>()
 			where TEnum : struct, Enum
 		{
-			Contract.Ensures(Contract.Result<IEnumBinaryStreamer<TEnum>>() != null);
 
 			return EnumBinaryStreamer<TEnum>.Instance;
 		}
@@ -76,14 +69,12 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 			where TStreamType : struct
 		{
-			Contract.Ensures(Contract.Result<IEnumEndianStreamer<TEnum>>() != null);
 
 			return EnumBinaryStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumEndianStreamer<TEnum> For<TEnum>()
 			where TEnum : struct, Enum
 		{
-			Contract.Ensures(Contract.Result<IEnumEndianStreamer<TEnum>>() != null);
 
 			return EnumBinaryStreamer<TEnum>.Instance;
 		}

@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 #nullable enable
 
@@ -59,7 +54,12 @@ namespace KSoft.Bitwise
 				int size_in_codes = 0;
 
 				int codes_index = codesStartIndex;
-				Contract.Assert(kCodes[codes_index] == (int)BsCode.ArrayStart);
+				if (kCodes[codes_index] != (int)BsCode.ArrayStart)
+				{
+					throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+						"Byte swap code at index {0} must be {1}; actual value is {2}.",
+						codes_index, BsCode.ArrayStart, (BsCode)kCodes[codes_index]));
+				}
 
 				int array_count = kCodes[codes_index + 1]; // array count comes after ArrayStart
 

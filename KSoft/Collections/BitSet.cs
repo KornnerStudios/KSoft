@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using KSoft.Bitwise;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // the 'implementation word'
 using TWord = System.UInt32;
@@ -53,7 +48,10 @@ namespace KSoft.Collections
 		{
 			bool success = Bits.GetBitConstants(typeof(TWord),
 				out int word_byte_count, out int word_bit_count, out int word_bit_shift, out kWordBitMod);
-			Contract.Assert(success, "TWord is an invalid type for BitSet");
+			if (!success)
+			{
+				throw new InvalidOperationException("TWord is an invalid type for BitSet.");
+			}
 
 			kVectorLengthInT = Bits.GetVectorLengthInT<TWord>();
 			Bits.GetVectorElementBitMaskInT(out kVectorElementBitMask);
@@ -794,13 +792,16 @@ namespace KSoft.Collections
 		public bool IsSubsetOf(IReadOnlyBitSet other)
 		{
 			ArgumentNullException.ThrowIfNull(other);
-			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+			if (other is not BitSet other_bit_set)
+			{
+				throw new NotSupportedException("Only implemented to work with BitSet.");
+			}
 
 			// THIS is a subset of OTHER if it contains the same set bits as OTHER
 			// If THIS is larger, then OTHER couldn't contain the bits of THIS
 			return Length <= other.Length &&
 				// verify all our bits exist in OTHER
-				((BitSet)other).BitwiseEquals(this, this.Length);
+				other_bit_set.BitwiseEquals(this, this.Length);
 		}
 		/// <summary>This set includes all of other</summary>
 		/// <param name="other"></param>
@@ -808,13 +809,16 @@ namespace KSoft.Collections
 		public bool IsSupersetOf(IReadOnlyBitSet other)
 		{
 			ArgumentNullException.ThrowIfNull(other);
-			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+			if (other is not BitSet other_bit_set)
+			{
+				throw new NotSupportedException("Only implemented to work with BitSet.");
+			}
 
 			// THIS is a superset of OTHER if it contains the same set bits as OTHER
 			// If THIS is shorter, then THIS couldn't contain the bits of OTHER
 			return Length >= other.Length &&
 				// verify all of OTHER's bits exist in THIS
-				this.BitwiseEquals((BitSet)other, other.Length);
+				this.BitwiseEquals(other_bit_set, other.Length);
 		}
 		/// <summary>This set's bits match 1+ bits in other</summary>
 		/// <param name="other"></param>
@@ -822,7 +826,10 @@ namespace KSoft.Collections
 		public bool Overlaps(IReadOnlyBitSet other)
 		{
 			ArgumentNullException.ThrowIfNull(other);
-			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+			if (other is not BitSet value)
+			{
+				throw new NotSupportedException("Only implemented to work with BitSet.");
+			}
 
 			if (object.ReferenceEquals(other, this))
 			{
@@ -833,7 +840,6 @@ namespace KSoft.Collections
 			{
 				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
 				// has tweaked alignment-only data
-				var value = (BitSet)other;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
 				for (int x = 0; x < length_in_words; x++)
 				{
@@ -856,7 +862,10 @@ namespace KSoft.Collections
 		public bool OverlapsSansZeros(IReadOnlyBitSet other)
 		{
 			ArgumentNullException.ThrowIfNull(other);
-			Contract.Assert(other is BitSet, "Only implemented to work with BitSet");
+			if (other is not BitSet value)
+			{
+				throw new NotSupportedException("Only implemented to work with BitSet.");
+			}
 
 			if (object.ReferenceEquals(other, this))
 			{
@@ -867,7 +876,6 @@ namespace KSoft.Collections
 			{
 				// NOTE: this algorithm doesn't play nice with auto-aligned arrays where a Bit Operation
 				// has tweaked alignment-only data
-				var value = (BitSet)other;
 				int length_in_words = System.Math.Min(LengthInWords, value.LengthInWords);
 				for (int x = 0; x < length_in_words; x++)
 				{

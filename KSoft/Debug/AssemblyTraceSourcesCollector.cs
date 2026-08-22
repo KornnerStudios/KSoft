@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Debug
 {
@@ -31,7 +26,12 @@ namespace KSoft.Debug
 				}
 
 				var trace_source = (TraceSource)prop.GetValue(null);
-				Contract.Assert(trace_source != null, prop.Name);
+				if (trace_source == null)
+				{
+					throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+						"TraceSource property '{0}' returned null.",
+						prop.Name));
+				}
 
 				sources.Add(trace_source);
 			}

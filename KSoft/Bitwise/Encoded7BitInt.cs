@@ -1,10 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Bitwise
 {
@@ -50,11 +44,9 @@ namespace KSoft.Bitwise
 
 		/// <summary>Calculate how many bytes it would take to encode a value into a 7-bit integer</summary>
 		/// <param name="value">Value to encode</param>
-		/// <returns>Number of bytes it would take to encode <paramref name="value"/></returns>
+		/// <returns>Number of bytes it would take to encode <paramref name="value"/>, from 1 through 4.</returns>
 		public static int CalculateSize(int value)
 		{
-			Contract.Ensures(Contract.Result<int>() > 0);
-			Contract.Ensures(Contract.Result<int>() < 5);
 
 			ValidateValue(value);
 

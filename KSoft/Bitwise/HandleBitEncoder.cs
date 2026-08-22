@@ -1,10 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Bitwise
 {
@@ -16,13 +10,6 @@ namespace KSoft.Bitwise
 	{
 		IntegerUnion mBits;
 		int mBitIndex;
-
-		[Contracts.ContractInvariantMethod]
-		readonly void ObjectInvariant()
-		{
-			Contract.Invariant(mBitIndex >= 0);
-			Contract.Invariant(mBitIndex <= Bits.kInt64BitCount);
-		}
 
 		/// <summary>How many bits have actually been consumed by the handle data</summary>
 		public readonly int UsedBitCount => mBitIndex;

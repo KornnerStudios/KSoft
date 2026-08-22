@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Memory.Strings
 {
@@ -58,9 +52,6 @@ namespace KSoft.Memory.Strings
 		/// </remarks>
 		public bool IsFixedLength => mFixedLength != 0 && !HasLengthPrefix;
 		#endregion
-
-		[Contracts.ContractInvariantMethod]
-		readonly void ObjectInvariant()	{ Contract.Invariant(mFixedLength >= 0); }
 
 		#region Ctor
 		static void ValidateFixedLengthStorage(StringStorageWidthType widthType, StringStorageType type, short fixedLength)

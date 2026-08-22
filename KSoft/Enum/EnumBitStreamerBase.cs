@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -19,7 +14,6 @@ namespace KSoft.IO
 			where TStreamType : struct
 			where TOptions : EnumBitStreamerOptions, new()
 		{
-			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
 
 			return EnumBitStreamer<TEnum, TStreamType, TOptions>.Instance;
 		}
@@ -27,14 +21,12 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 			where TStreamType : struct
 		{
-			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
 
 			return EnumBitStreamer<TEnum, TStreamType>.Instance;
 		}
 		public static IEnumBitStreamer<TEnum> For<TEnum>()
 			where TEnum : struct, Enum
 		{
-			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
 
 			return EnumBitStreamer<TEnum>.Instance;
 		}
@@ -43,7 +35,6 @@ namespace KSoft.IO
 			where TEnum : struct, Enum
 			where TOptions : EnumBitStreamerOptions, new()
 		{
-			Contract.Ensures(Contract.Result<IEnumBitStreamer<TEnum>>() != null);
 
 			return EnumBitStreamerWithOptions<TEnum, TOptions>.Instance;
 		}

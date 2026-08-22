@@ -29,6 +29,18 @@ public sealed class BitFieldTraitsTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void Empty_HasZeroFieldRange()
+	{
+		var traits = BitFieldTraits.Empty;
+
+		Assert.AreEqual(0, traits.BitCount);
+		Assert.AreEqual(0, traits.BitIndex);
+		Assert.AreEqual(0, traits.NextFieldBitIndex);
+		Assert.AreEqual(0, traits.FieldsBitCount);
+		Assert.IsTrue(traits.IsEmpty);
+	}
+
+	[TestMethod]
 	public void Constructor_ValidBitCount_InitializesZeroBasedField()
 	{
 		var traits = new BitFieldTraits(5);

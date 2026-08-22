@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Memory.Strings
 {
@@ -154,7 +153,6 @@ namespace KSoft.Memory.Strings
 		/// This method is not written to support configurations whose <see cref="Config.AllowDuplicates"/>
 		/// is set to true. The first instance will ALWAYS be returned.
 		/// </remarks>
-		[Contracts.Pure]
 		public Values.PtrHandle GetAddress(string value)
 		{
 			int index;
@@ -179,7 +177,6 @@ namespace KSoft.Memory.Strings
 		/// <param name="address"></param>
 		/// <returns>Index of <paramref name="address"/> or -1 if not found</returns>
 		/// <remarks>Actually returns the index used internally tracking strings\offsets</remarks>
-		[Contracts.Pure]
 		/*public*/ int GetIndex(Values.PtrHandle address)
 		{
 			return mReferences.FindIndex(x => x == address);
@@ -195,7 +192,6 @@ namespace KSoft.Memory.Strings
 		/// <remarks>
 		/// Code contracts will cause an assert if the address doesn't start a new string
 		/// </remarks>
-		[Contracts.Pure]
 		public string Get(Values.PtrHandle address)	{ return mPool[GetIndex(address)]; }
 		/// <summary>Get the string thats located at <paramref name="address"/></summary>
 		/// <param name="address"></param>

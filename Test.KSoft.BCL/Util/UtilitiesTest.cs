@@ -259,6 +259,54 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
+		public void Util_PathHelpers_PreserveNullEmptyAndNormalizeSeparators()
+		{
+			string nullPath = null!;
+			string separator = Path.DirectorySeparatorChar.ToString();
+			string altSeparator = Path.AltDirectorySeparatorChar.ToString();
+
+			Assert.IsNull(Util.AppendDirectorySeparatorChar(nullPath));
+			Assert.AreEqual(string.Empty, Util.AppendDirectorySeparatorChar(string.Empty));
+			Assert.AreEqual("file.txt", Util.AppendDirectorySeparatorChar("file.txt"));
+			Assert.AreEqual("folder" + separator, Util.AppendDirectorySeparatorChar("folder"));
+
+			Assert.IsNull(Util.PrependDirectorySeparatorChar(nullPath));
+			Assert.AreEqual(string.Empty, Util.PrependDirectorySeparatorChar(string.Empty));
+			Assert.AreEqual(separator + "folder", Util.PrependDirectorySeparatorChar("folder"));
+			Assert.AreEqual(separator + "folder", Util.PrependDirectorySeparatorChar(separator + "folder"));
+
+			Assert.IsNull(Util.RemoveTrailingDirectorySeparatorChar(nullPath));
+			Assert.AreEqual(string.Empty, Util.RemoveTrailingDirectorySeparatorChar(string.Empty));
+			Assert.AreEqual("folder", Util.RemoveTrailingDirectorySeparatorChar("folder" + separator));
+
+			Assert.IsNull(Util.ReplaceDirectorySeparatorWithAltChar(nullPath));
+			Assert.AreEqual(string.Empty, Util.ReplaceDirectorySeparatorWithAltChar(string.Empty));
+			Assert.AreEqual("a" + altSeparator + "b", Util.ReplaceDirectorySeparatorWithAltChar("a" + separator + "b"));
+
+			Assert.IsNull(Util.ReplaceAltDirectorySeparatorWithNormalChar(nullPath));
+			Assert.AreEqual(string.Empty, Util.ReplaceAltDirectorySeparatorWithNormalChar(string.Empty));
+			Assert.AreEqual("a" + separator + "b",
+				Util.ReplaceAltDirectorySeparatorWithNormalChar("a" + altSeparator + "b"));
+		}
+
+		[TestMethod]
+		public void TypeExtensions_ProcessorSizeHelpers_ReturnDocumentedRanges()
+		{
+			Assert.AreEqual(-1, TypeExtensions.GetBitCount(Shell.ProcessorSize.AnyCPU));
+			Assert.AreEqual(Bits.kInt32BitCount, TypeExtensions.GetBitCount(Shell.ProcessorSize.x32));
+			Assert.AreEqual(Bits.kInt64BitCount, TypeExtensions.GetBitCount(Shell.ProcessorSize.x64));
+
+			Assert.AreEqual(-1, TypeExtensions.GetByteCount(Shell.ProcessorSize.AnyCPU));
+			Assert.AreEqual(sizeof(int), TypeExtensions.GetByteCount(Shell.ProcessorSize.x32));
+			Assert.AreEqual(sizeof(long), TypeExtensions.GetByteCount(Shell.ProcessorSize.x64));
+
+			Assert.IsTrue(TypeExtensions.GetBitCount(Shell.ProcessorWordSize.x8) > 0);
+			Assert.IsTrue(TypeExtensions.GetBitCount(Shell.ProcessorWordSize.x64) > 0);
+			Assert.IsTrue(TypeExtensions.GetByteCount(Shell.ProcessorWordSize.x8) > 0);
+			Assert.IsTrue(TypeExtensions.GetByteCount(Shell.ProcessorWordSize.x64) > 0);
+		}
+
+		[TestMethod]
 		public void TypeExtensions_SystemUtilityGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull(() => _ = "{0}".FormatWith(null!, 1), "provider");

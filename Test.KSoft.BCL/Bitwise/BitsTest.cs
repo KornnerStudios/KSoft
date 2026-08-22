@@ -356,6 +356,18 @@ namespace KSoft.Bitwise.Test
 
 		#region Leading/Trailing ZerosCount
 		[TestMethod]
+		public void IndexOfHighestBitSet_ReturnsWidthLimitedIndex()
+		{
+			Assert.AreEqual(0, Bits.IndexOfHighestBitSet(0U));
+			Assert.AreEqual(0, Bits.IndexOfHighestBitSet(1U));
+			Assert.AreEqual(Bits.kInt32BitCount - 1, Bits.IndexOfHighestBitSet(uint.MaxValue));
+
+			Assert.AreEqual(0, Bits.IndexOfHighestBitSet(0UL));
+			Assert.AreEqual(0, Bits.IndexOfHighestBitSet(1UL));
+			Assert.AreEqual(Bits.kInt64BitCount - 1, Bits.IndexOfHighestBitSet(ulong.MaxValue));
+		}
+
+		[TestMethod]
 		public void LeadingZerosCountNarrowWidthsStayWidthLimitedTest()
 		{
 			Assert.AreEqual(Bits.kByteBitCount, (int)Bits.LeadingZerosCount(byte.MinValue));
@@ -598,19 +610,17 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
 		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
 		{
-			Assert.Throws<Exception>(() =>
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
 				Bits.GetNoneableEncodingTraits(0, out int _)
 			);
 		}
 
 		[TestMethod]
-		// we expect an (internal) System.Diagnostics.Contracts.__ContractsRuntime+ContractException
 		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
 		{
-			Assert.Throws<Exception>(() =>
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
 				Bits.GetNoneableEncodingTraits(int.MaxValue, out int _)
 			);
 		}

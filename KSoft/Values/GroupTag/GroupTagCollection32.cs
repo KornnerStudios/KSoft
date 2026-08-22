@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts = System.Diagnostics.Contracts;
 
 using TagWord = System.UInt32;
 
@@ -64,7 +63,6 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData32"/></summary>
 		/// <param name="groupTag">The id of a group tag to search for</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
-		[Contracts.Pure]
 		public int FindGroupIndexByTag(TagWord groupTag)
 		{
 			return GroupTags.FindIndex(gt => gt.ID == groupTag);
@@ -73,7 +71,6 @@ namespace KSoft.Values
 		/// <summary>Find a <see cref="GroupTagData32"/> object in this collection based on it's group tag</summary>
 		/// <param name="tag">Group tag to find</param>
 		/// <returns><see cref="GroupTagData32"/> object existing in this collection, or null if not found.</returns>
-		[Contracts.Pure]
 		public GroupTagDatum FindGroupByTag(TagWord tag)
 		{
 			var matching_tags = from gt in GroupTags
@@ -86,7 +83,6 @@ namespace KSoft.Values
 		/// <summary>Determines if a group tag ID exists in this collection</summary>
 		/// <param name="tag">Group tag id to find</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public bool Contains(TagWord tag)
 		{
 			return GroupTags.Any(gt => gt.ID == tag);

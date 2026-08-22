@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft
 {
@@ -21,12 +15,10 @@ namespace KSoft
 		/// <returns></returns>
 		public delegate int VectorLengthInT(int bitsCount);
 		#region Bit Vector length calculations
-		[Contracts.Pure]
 //		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorLengthInT GetVectorLengthInT<T>()
 			where T : struct
 		{
-			Contract.Ensures(Contract.Result<VectorLengthInT>() != null);
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
@@ -56,12 +48,10 @@ namespace KSoft
 		/// <returns>Index of an element (T) which holds the bit in question</returns>
 		public delegate int VectorIndexInT(int bitIndex);
 		#region Bit Vector bitIndex to vector_index
-		[Contracts.Pure]
 //		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorIndexInT GetVectorIndexInT<T>()
 			where T : struct
 		{
-			Contract.Ensures(Contract.Result<VectorIndexInT>() != null);
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
@@ -82,12 +72,10 @@ namespace KSoft
 		/// <returns></returns>
 		public delegate int VectorBitIndexInT(int index, int bitOffset);
 		#region Bit Vector cursor to bitIndex
-		[Contracts.Pure]
 //		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorBitIndexInT GetVectorBitIndexInT<T>()
 			where T : struct
 		{
-			Contract.Ensures(Contract.Result<VectorBitIndexInT>() != null);
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 
@@ -108,12 +96,10 @@ namespace KSoft
 		/// <param name="bitOffset">Element bit offset of the current</param>
 		public delegate void VectorBitCursorInT(int bitIndex, out int index, out int bitOffset);
 		#region Bit Vector cursor from bitIndex
-		[Contracts.Pure]
 //		[SuppressMessage("Microsoft.Design", "CA2208:InstantiateArgumentExceptionsCorrectly")]
 		public static VectorBitCursorInT GetVectorBitCursorInT<T>()
 			where T : struct
 		{
-			Contract.Ensures(Contract.Result<VectorBitCursorInT>() != null);
 
 			TypeCode c = Type.GetTypeCode(typeof(T));
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
 
 #nullable enable
 
@@ -42,7 +41,6 @@ namespace KSoft.Debug
 		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static TResult CastValue<TResult>(object value)
 			where TResult : struct
 		{
@@ -91,7 +89,6 @@ namespace KSoft.Debug
 		/// When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/>
 		/// </exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static TResult CastReference<TIn, TResult>(TIn value)
 			where TIn : class
 			where TResult : class
@@ -109,7 +106,6 @@ namespace KSoft.Debug
 		/// <exception cref="ArgumentNullException">value == null</exception>
 		/// <exception cref="ArgumentException">When <paramref name="value"/> can't be converted to <typeparamref name="TResult"/></exception>
 		/// <remarks>Ignores user conversions</remarks>
-		[Contracts.Pure]
 		public static TResult CastReference<TResult>(object value)
 			where TResult : class
 		{

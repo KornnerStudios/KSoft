@@ -166,7 +166,7 @@ namespace KSoft
 
 			void InitializeList()
 			{
-				// ReSharper disable once ImpureMethodCallOnReadonlyValueField - yes IT IS fucking Pure you POS
+				// ReSharper disable once ImpureMethodCallOnReadonlyValueField
 				int predicated_count = mDesc.PredictedCount(mValues);
 				mList = new List<TListItem>(predicated_count);
 			}

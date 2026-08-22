@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Values
 {
@@ -64,7 +63,6 @@ namespace KSoft.Values
 		#region Indexers
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
-		[Contracts.Pure]
 		public string this[char[] tag] { get {
 			Verify.GroupTags.ExactLength(tag, NullGroupTag.Tag.Length, nameof(tag));
 
@@ -84,7 +82,6 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
-		[Contracts.Pure]
 		public int FindGroupIndexByTag(char[] groupTag)
 		{
 			Verify.GroupTags.ExactLength(groupTag, NullGroupTag.Tag.Length, nameof(groupTag));
@@ -94,7 +91,6 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="tagString"/> or <b>-1</b> if not found</returns>
-		[Contracts.Pure]
 		public int FindGroupIndexByTag(string tagString)
 		{
 			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
@@ -105,7 +101,6 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="groupName">The name of a <see cref="GroupTagData"/> to search for</param>
 		/// <returns>Index of <paramref name="groupName"/> or <b>-1</b> if not found</returns>
-		[Contracts.Pure]
 		public int FindGroupIndex(string groupName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(groupName);
@@ -116,7 +111,6 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a supplied <see cref="GroupTagData"/> object</summary>
 		/// <param name="group"><see cref="GroupTagData"/> object whose index we want to find</param>
 		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
-		[Contracts.Pure]
 		public int FindGroupIndex(GroupTagData group)
 		{
 			ArgumentNullException.ThrowIfNull(group);
@@ -127,7 +121,6 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
-		[Contracts.Pure]
 		public GroupTagData FindGroup(char[] groupTag)
 		{
 			ArgumentNullException.ThrowIfNull(groupTag);
@@ -143,7 +136,6 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="tagString"/> isn't a part of this collection</returns>
-		[Contracts.Pure]
 		public GroupTagData FindGroupByTag(string tagString)
 		{
 			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
@@ -160,7 +152,6 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupName">The name of a <see cref="GroupTagData"/> to search for</param>
 		/// <returns>Null if <paramref name="groupName"/> isn't a part of this collection</returns>
-		[Contracts.Pure]
 		public GroupTagData FindGroup(string groupName)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(groupName);
@@ -180,7 +171,6 @@ namespace KSoft.Values
 
 		/// <summary>Does the collection contain multiple elements which share the same group tag and\or name?</summary>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public bool ContainsDuplicates()
 		{
 			var all_tags =	from gt in BaseGroupTags select gt.TagString;

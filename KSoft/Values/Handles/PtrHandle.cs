@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Contracts = System.Diagnostics.Contracts;
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Values
@@ -331,14 +330,12 @@ namespace KSoft.Values
 		/// <param name="rhs">right-hand value for comparison expression</param>
 		/// <returns><paramref name="lhs"/> == <paramref name="rhs"/></returns>
 		/// <remarks>Ignores address size</remarks>
-		[Contracts.Pure]
 		public static bool operator ==(PtrHandle lhs, PtrHandle rhs)	{ return /*lhs.Is64bit == rhs.Is64bit &&*/ lhs.Handle == rhs.Handle; }
 		/// <summary>Compare two addresses (inequality)</summary>
 		/// <param name="lhs">left-hand value for comparison expression</param>
 		/// <param name="rhs">right-hand value for comparison expression</param>
 		/// <returns><paramref name="lhs"/> != <paramref name="rhs"/></returns>
 		/// <remarks>Ignores address size</remarks>
-		[Contracts.Pure]
 		public static bool operator !=(PtrHandle lhs, PtrHandle rhs)	{ return /*lhs.Is64bit != rhs.Is64bit &&*/ lhs.Handle != rhs.Handle; }
 		/// <summary>Compare two addresses (greater-than or equal)</summary>
 		/// <param name="lhs">left-hand value for comparison expression</param>

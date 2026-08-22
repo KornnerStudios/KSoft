@@ -1,5 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Bitwise
 {
@@ -61,7 +60,6 @@ namespace KSoft.Bitwise
 		/// <summary>Tests if this.Value has <paramref name="flag"/></summary>
 		/// <param name="flag">flag to test</param>
 		/// <returns>True if <paramref name="flag"/> is set</returns>
-		[Contracts.Pure]
 		public bool Test(uint flag)	=> (mValue & flag) == flag;
 
 		#region Add

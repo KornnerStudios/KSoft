@@ -1,5 +1,4 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-
+﻿
 namespace KSoft
 {
 	public static partial class IntegerMath
@@ -32,7 +31,6 @@ namespace KSoft
 		/// <param name="value"></param>
 		/// <param name="mult"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static uint RoundUpUInt32(uint value, uint mult)
 		{
 			if (mult == 0)

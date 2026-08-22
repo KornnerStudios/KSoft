@@ -548,26 +548,24 @@ public class EndianStreamsTest : BaseTestClass
 		AssertReadEndianStreamFixedArrayRange(CreateLittleEndianFixedArrayRangeBytes(), Shell.EndianFormat.Little);
 	}
 
-#if CONTRACTS_FULL_SHIM
 	[TestMethod]
-	public void FixedArrayInvalidArgumentsKeepUntypedContractShimBehaviorTest()
+	public void FixedArrayInvalidArgumentsThrowExplicitExceptionsTest()
 	{
 		using var writerStream = new MemoryStream();
 		using var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
 
-		AssertContractShimException(() => writer.WriteFixedArray((ushort[])null, 0, 0));
-		AssertContractShimException(() => writer.WriteFixedArray(new ushort[1], -1, 1));
-		AssertContractShimException(() => writer.WriteFixedArray(new ushort[1], 0, -1));
+		Assert.Throws<ArgumentNullException>(() => writer.WriteFixedArray((ushort[])null, 0, 0));
+		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], -1, 1));
+		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], 0, -1));
 
 		using var reader = new EndianReader(
 			new MemoryStream(new byte[] { 0x12, 0x34 }),
 			Shell.EndianFormat.Big);
 
-		AssertContractShimException(() => reader.ReadFixedArray((ushort[])null, 0, 0));
-		AssertContractShimException(() => reader.ReadFixedArray(new ushort[1], -1, 1));
-		AssertContractShimException(() => reader.ReadFixedArray(new ushort[1], 0, -1));
+		Assert.Throws<ArgumentNullException>(() => reader.ReadFixedArray((ushort[])null, 0, 0));
+		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], -1, 1));
+		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], 0, -1));
 	}
-#endif
 
 	[TestMethod]
 	public void FixedArrayOutOfRangePreservesPartialSideEffectsTest()
@@ -1046,15 +1044,6 @@ public class EndianStreamsTest : BaseTestClass
 		Assert.AreEqual(0x3FF0000000000000L, BitConverter.DoubleToInt64Bits(doubleValues[1]));
 		Assert.AreEqual(unchecked((long)0xFFF8000000000001UL), BitConverter.DoubleToInt64Bits(doubleValues[2]));
 	}
-
-#if CONTRACTS_FULL_SHIM
-	static void AssertContractShimException(Action action)
-	{
-		var exception = Assert.Throws<Exception>(action);
-
-		Assert.AreEqual("System.Diagnostics.ContractsShim.ContractShimException", exception.GetType().FullName);
-	}
-#endif
 
 	static byte[] CreateBigEndianPrimitiveBytes() => new byte[] {
 		0x12, 0x34,

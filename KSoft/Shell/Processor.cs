@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Interop = System.Runtime.InteropServices;
 
 #nullable enable
@@ -57,7 +52,12 @@ namespace KSoft.Shell
 			encoder.Encode32(procSize, BitEncoders.ProcessorSize);
 			encoder.Encode32(instSet, BitEncoders.InstructionSet);
 
-			Contract.Assert(encoder.UsedBitCount == Processor.BitCount);
+			if (encoder.UsedBitCount != Processor.BitCount)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Encoded processor handle used {0} bits; expected {1}.",
+					encoder.UsedBitCount, Processor.BitCount));
+			}
 
 			handle = encoder.GetHandle32();
 		}
@@ -180,9 +180,12 @@ namespace KSoft.Shell
 		{
 			// #TODO figure out a a utility to do this generically for bit-encoded handles that can run
 			// in the internal Constants class.
-			Contract.Assert(Processor.BitCount < Bits.kInt32BitCount,
-				"Handle bits needs to be <= 31 (ie, sans sign bit) in order for this implementation of CompareTo to " +
-				"reasonably work");
+			if (Processor.BitCount >= Bits.kInt32BitCount)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Handle bit count must be less than {0}; actual bit count is {1}.",
+					Bits.kInt32BitCount, Processor.BitCount));
+			}
 
 			int lhs_data = (int)lhs.mHandle;
 			int rhs_data = (int)rhs.mHandle;

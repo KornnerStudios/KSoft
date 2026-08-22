@@ -1,11 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // #TODO fix CA warnings
 #pragma warning disable IDE0011 // Use braces
@@ -296,7 +291,6 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(array);
 			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			for (int x = startIndex, end = startIndex+length; x < end; x++)
 				Write(array[x]);
@@ -306,7 +300,6 @@ namespace KSoft.IO
 		public bool[] WriteFixedArray(bool[] array)
 		{
 			ArgumentNullException.ThrowIfNull(array);
-			Contract.Ensures(Contract.Result<bool[]>() != null);
 
 			return WriteFixedArray(array, 0, array.Length);
 		}

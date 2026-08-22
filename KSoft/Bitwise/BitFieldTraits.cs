@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 #nullable enable
 
@@ -25,14 +20,14 @@ namespace KSoft.Bitwise
 		#endregion
 
 		/// <summary>The number of bits this field consumes</summary>
+		/// <value>0 for <see cref="Empty"/>; otherwise 1 through <see cref="kMaxBitCount"/>.</value>
 		public readonly int BitCount { get {
-			Contract.Ensures(Contract.Result<int>() > 0 && Contract.Result<int>() <= kMaxBitCount);
 
 			return mBitCount;
 		} }
 		/// <summary>The bit offset where this field begins</summary>
+		/// <value>0 through <see cref="kMaxBitCount"/> - 1.</value>
 		public readonly int BitIndex { get {
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() < kMaxBitCount);
 
 			return mBitIndex;
 		} }
@@ -55,13 +50,24 @@ namespace KSoft.Bitwise
 			}
 		} }
 		public readonly ushort Bitmask16 { get {
-			Contract.Assert(!Is64Bit, "Tried to access a 64-bit based BitField's bitmask as 16-bits");
-			Contract.Assert(Bitmask.u32 == (ushort)Bitmask.u32, "Tried to access 32-bit based BitField bitmask as 16-bits");
+			if (Is64Bit)
+			{
+				throw new InvalidOperationException("Tried to access a 64-bit based BitField's bitmask as 16-bits.");
+			}
+			if (Bitmask.u32 != (ushort)Bitmask.u32)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Tried to access 32-bit based BitField bitmask as 16-bits; actual bitmask is 0x{0:X8}.",
+					Bitmask.u32));
+			}
 
 			return (ushort)Bitmask.u32;
 		} }
 		public readonly uint Bitmask32 { get {
-			Contract.Assert(!Is64Bit, "Tried to access a 64-bit based BitField's bitmask as 32-bits");
+			if (Is64Bit)
+			{
+				throw new InvalidOperationException("Tried to access a 64-bit based BitField's bitmask as 32-bits.");
+			}
 
 			return Bitmask.u32;
 		} }
@@ -72,8 +78,9 @@ namespace KSoft.Bitwise
 		/// <remarks>This would be the case if the default constructor was called (as this is a value type)</remarks>
 		public readonly bool IsEmpty => BitCount == 0;
 
+		/// <summary>The first bit index after this field.</summary>
+		/// <value>0 through <see cref="kMaxBitCount"/>.</value>
 		public readonly int NextFieldBitIndex { get {
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= kMaxBitCount);
 
 			return BitIndex + BitCount;
 		} }
@@ -81,9 +88,9 @@ namespace KSoft.Bitwise
 		/// <summary>
 		/// Get the total number of bits consumed by this field and all the bits before <see cref="BitIndex"/>.
 		/// </summary>
+		/// <value>0 through <see cref="kMaxBitCount"/>.</value>
 		/// <remarks>Mainly a utility for exposing a total "BitCount" for a handle composed of bit-fields</remarks>
 		public readonly int FieldsBitCount { get {
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= kMaxBitCount);
 
 			return BitIndex + BitCount;
 		} }
@@ -116,8 +123,6 @@ namespace KSoft.Bitwise
 			mBitCount = (byte)bitCount;
 			mBitIndex = (byte)bitIndex;
 			mIs32Bit = bitCount <= Bits.kInt32BitCount;
-
-			Contract.Assert(Is32Bit || Is64Bit);
 		}
 
 		static int ValidateBitCount(int bitCount)

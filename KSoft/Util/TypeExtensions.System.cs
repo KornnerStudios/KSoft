@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Contracts = System.Diagnostics.Contracts;
 using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft
@@ -16,7 +15,6 @@ namespace KSoft
 		public const string kDefaultArrayValueSeperator = ",";
 
 		#region TypeCode
-		[Contracts.Pure]
 		public static TypeCode TryGetTypeCode(this object theObj)
 		{
 			var type_code = TypeCode.Empty;
@@ -29,7 +27,6 @@ namespace KSoft
 			return type_code;
 		}
 
-		[Contracts.Pure]
 		public static bool IsSigned(this TypeCode c)
 		{
 			return c switch
@@ -39,7 +36,6 @@ namespace KSoft
 			};
 		}
 
-		[Contracts.Pure]
 		public static bool IsUnsigned(this TypeCode c)
 		{
 			return c switch
@@ -406,36 +402,30 @@ namespace KSoft
 			return string.Format(provider, format, args);
 		}
 
-		[Contracts.Pure]
 		public static bool IsNullOrEmpty(this string str)
 		{
 			return string.IsNullOrEmpty(str);
 		}
-		[Contracts.Pure]
 		public static bool IsNotNullOrEmpty(this string str)
 		{
 			return !string.IsNullOrEmpty(str);
 		}
 
-		[Contracts.Pure]
 		public static bool StartsWith(this string str, char character)
 		{
 			return str != null && str.Length > 0 && str[0] == character;
 		}
 
-		[Contracts.Pure]
 		public static bool EndsWith(this string str, char character)
 		{
 			return str != null && str.Length > 0 && str[str.Length-1] == character;
 		}
 
-		[Contracts.Pure]
 		public static bool Contains(this string str, char c)
 		{
 			return !string.IsNullOrEmpty(str) && str.Contains(c);
 		}
 
-		[Contracts.Pure]
 		public static int GetDeterministicHashCode(this string str)
 		{
 			if (string.IsNullOrEmpty(str))
@@ -562,7 +552,6 @@ namespace KSoft
 		#endregion
 
 		#region Array
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerator<T> GetGenericEnumerator<T>(this T[] array)
 		{
@@ -571,7 +560,6 @@ namespace KSoft
 			return (IEnumerator<T>)array.GetEnumerator();
 		}
 
-		[Contracts.Pure]
 		public static string ArrayToConcatString(this Array array
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
@@ -594,7 +582,6 @@ namespace KSoft
 			return sb.ToString();
 		}
 
-		[Contracts.Pure]
 		public static bool EqualsZero<T>(this T[] array)
 			where T : struct, IEquatable<T>
 		{
@@ -612,7 +599,6 @@ namespace KSoft
 
 			return true;
 		}
-		[Contracts.Pure]
 		public static bool EqualsDefault<T>(this T[] array)
 			where T : class, IEquatable<T>, new()
 		{
@@ -630,7 +616,6 @@ namespace KSoft
 
 			return true;
 		}
-		[Contracts.Pure]
 		public static bool EqualsArray<T>(this T[] lhs, T[] rhs, int lhsOffset = 0)
 			where T : IEquatable<T>
 		{
@@ -659,7 +644,6 @@ namespace KSoft
 			return true;
 		}
 
-		[Contracts.Pure]
 		public static bool TrueForAny<T>(this T[] array, Predicate<T> match)
 		{
 			ArgumentNullException.ThrowIfNull(array);
@@ -767,7 +751,6 @@ namespace KSoft
 		/// <param name="subject">The type in question</param>
 		/// <param name="genericType">The interface type which the subject may or may not implement</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool ImplementsInterface(this Type subject, Type interfaceType)
 		{
 			ArgumentNullException.ThrowIfNull(subject);
@@ -785,7 +768,6 @@ namespace KSoft
 		/// <param name="genericType">The generic type which has a single type parameter, which will be populated with subject</param>
 		/// <returns></returns>
 		/// <remarks>See: http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern </remarks>
-		[Contracts.Pure]
 		public static bool IsCuriouslyRecurringTemplatePattern(this Type subject, Type genericType)
 		{
 			ArgumentNullException.ThrowIfNull(subject);
@@ -831,21 +813,18 @@ namespace KSoft
 		#endregion
 
 		#region Collections
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static bool IsNullOrEmpty<T>(this ICollection<T> coll)
 		{
 			return coll == null || coll.Count == 0;
 		}
 
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static bool IsNotNullOrEmpty<T>(this ICollection<T> coll)
 		{
 			return coll != null && coll.Count != 0;
 		}
 
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> seq)
 		{
@@ -856,7 +835,6 @@ namespace KSoft
 		/// <param name="seq">The sequence to act on</param>
 		/// <returns>True if there are duplicates, false if all values are distinct</returns>
 		/// <remarks>Based on this answer http://stackoverflow.com/a/4712539/444977 </remarks>
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static bool ContainsDuplicates<T>(this IEnumerable<T> seq)
 		{
@@ -864,7 +842,6 @@ namespace KSoft
 			return !seq.All(new HashSet<T>().Add);
 		}
 
-		[Contracts.Pure]
 		public static TOutput[] ConvertAllArray<TInput, TOutput>(this IList<TInput> list, Converter<TInput, TOutput> converter)
 		{
 			ArgumentNullException.ThrowIfNull(converter);
@@ -884,7 +861,6 @@ namespace KSoft
 			return array;
 		}
 
-		[Contracts.Pure]
 		public static int FindIndex<T>(this IEnumerable<T> seq, Predicate<T> match)
 		{
 			ArgumentNullException.ThrowIfNull(seq);
@@ -897,7 +873,6 @@ namespace KSoft
 			return found.Value ?? TypeExtensions.kNone;
 		}
 
-		[Contracts.Pure]
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			int startIndex, int count, Predicate<T> match)
 		{
@@ -919,7 +894,6 @@ namespace KSoft
 
 			return TypeExtensions.kNone;
 		}
-		[Contracts.Pure]
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			int startIndex, Predicate<T> match)
 		{
@@ -927,7 +901,6 @@ namespace KSoft
 
 			return FindIndex(list, startIndex, list.Count-startIndex, match);
 		}
-		[Contracts.Pure]
 		public static int FindIndex<T>(this IReadOnlyList<T> list,
 			Predicate<T> match)
 		{
@@ -970,7 +943,6 @@ namespace KSoft
 			}
 		}
 
-		[Contracts.Pure]
 		public static bool EqualsList<T>(this IList<T> lhs, IList<T> rhs, int lhsOffset = 0)
 			where T : IEquatable<T>
 		{
@@ -999,7 +971,6 @@ namespace KSoft
 			return true;
 		}
 
-		[Contracts.Pure]
 		public static string ToConcatString<T>(this IEnumerable<T> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
@@ -1021,7 +992,6 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		[Contracts.Pure]
 		public static string ToConcatBinaryString(this IEnumerable<bool> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
@@ -1043,7 +1013,6 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		[Contracts.Pure]
 		public static string ToConcatLowerString(this IEnumerable<bool> e
 			, string valueSeperator = kDefaultArrayValueSeperator)
 		{
@@ -1065,7 +1034,6 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		[Contracts.Pure]
 		public static string ToConcatStringInvariant(this IEnumerable<float> e
 			, string valueSeperator = kDefaultArrayValueSeperator
 			, string format = null)
@@ -1088,7 +1056,6 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		[Contracts.Pure]
 		public static string ToConcatStringInvariant(this IEnumerable<double> e
 			, string valueSeperator = kDefaultArrayValueSeperator
 			, string format = null)
@@ -1136,18 +1103,15 @@ namespace KSoft
 		#endregion
 
 		#region IO
-		[Contracts.Pure]
 		public static bool CanRead(this System.IO.FileAccess value)
 		{
 			return (value & System.IO.FileAccess.Read) == System.IO.FileAccess.Read;
 		}
-		[Contracts.Pure]
 		public static bool CanWrite(this System.IO.FileAccess value)
 		{
 			return (value & System.IO.FileAccess.Write) == System.IO.FileAccess.Write;
 		}
 
-		[Contracts.Pure]
 		public static long BytesRemaining(this System.IO.Stream s)
 		{
 			ArgumentNullException.ThrowIfNull(s);
@@ -1156,7 +1120,6 @@ namespace KSoft
 
 			return s.Length - s.Position;
 		}
-		[Contracts.Pure]
 		public static long BytesRemaining(this System.IO.Stream s, long endPosition)
 		{
 			ArgumentNullException.ThrowIfNull(s);
@@ -1166,7 +1129,6 @@ namespace KSoft
 
 			return endPosition - s.Position;
 		}
-		[Contracts.Pure]
 		public static bool HasPermissions(this System.IO.Stream s, System.IO.FileAccess permissions)
 		{
 			ArgumentNullException.ThrowIfNull(s);
@@ -1445,7 +1407,6 @@ namespace KSoft
 		// Based on http://www.codeproject.com/Tips/72637/Get-CustomAttributes-the-easy-way.aspx
 
 		/// <summary>Returns first custom attribute of type T in the inheritance chain</summary>
-		[Contracts.Pure]
 		public static T GetCustomAttribute<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
@@ -1455,7 +1416,6 @@ namespace KSoft
 		}
 
 		/// <summary>Returns all custom attributes of type T in the inheritance chain</summary>
-		[Contracts.Pure]
 		public static IEnumerable<T> GetCustomAttributes<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
@@ -1475,7 +1435,6 @@ namespace KSoft
 		/// <param name="keySelector"></param>
 		/// <param name="comparerFunc">Comparison delegate</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static IOrderedEnumerable<TSrc> OrderBy<TSrc, TKey>(this IEnumerable<TSrc> src,
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
@@ -1493,7 +1452,6 @@ namespace KSoft
 		/// <param name="keySelector"></param>
 		/// <param name="comparerFunc">Comparison delegate</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static IOrderedEnumerable<TSrc> OrderByDescending<TSrc, TKey>(this IEnumerable<TSrc> src,
 			Func<TSrc, TKey> keySelector, Func<TKey, TKey, int> comparerFunc)
 		{
@@ -1670,7 +1628,6 @@ namespace KSoft
 			} }
 		}
 
-		[Contracts.Pure]
 		public static bool ItemsIsGenericList<T>(this ObservableCollection<T> list)
 		{
 			if (list == null)

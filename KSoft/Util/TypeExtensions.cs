@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Text;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft
 {
@@ -27,33 +21,27 @@ namespace KSoft
 		public const int kNoneInt32 = kNone;
 		public const long kNoneInt64 = kNone;
 
-		[Contracts.Pure]
 		public static bool IsNone(this int value)
 		{
 			return value == kNoneInt32;
 		}
-		[Contracts.Pure]
 		public static bool IsNotNone(this int value)
 		{
 			return value != kNoneInt32;
 		}
-		[Contracts.Pure]
 		public static bool IsNoneOrPositive(this int value)
 		{
 			return value >= kNoneInt32;
 		}
 
-		[Contracts.Pure]
 		public static bool IsNone(this long value)
 		{
 			return value == kNoneInt64;
 		}
-		[Contracts.Pure]
 		public static bool IsNotNone(this long value)
 		{
 			return value != kNoneInt64;
 		}
-		[Contracts.Pure]
 		public static bool IsNoneOrPositive(this long value)
 		{
 			return value >= kNoneInt64;
@@ -63,7 +51,6 @@ namespace KSoft
 		#region Fluent
 		// Based on http://stackoverflow.com/questions/271398/what-are-your-favorite-extension-methods-for-c-codeplex-com-extensionoverflow/3842545#3842545
 
-		[Contracts.Pure]
 		[System.Diagnostics.DebuggerStepThrough]
 		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default)
 			where T : class
@@ -102,17 +89,14 @@ namespace KSoft
 		#endregion
 
 		#region Collections
-		[Contracts.Pure]
 		public static Collections.TreeTraversalDirection GetOrder(this Collections.TreeTraversalDirection dir)
 		{
 			return dir & Collections.TreeTraversalDirection.kOrderMask;
 		}
-		[Contracts.Pure]
 		public static Collections.TreeTraversalDirection GetDirections(this Collections.TreeTraversalDirection dir)
 		{
 			return dir & Collections.TreeTraversalDirection.kDirMask;
 		}
-		[Contracts.Pure]
 		public static bool HasFlag(this Collections.TreeTraversalOrders orders, Collections.TreeTraversalOrders flag)
 		{
 			return (orders & flag) == flag;
@@ -299,10 +283,8 @@ namespace KSoft
 		/// <summary>Get the encoding implementation based off the storage width type</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static Encoding GetEncoding(this MS.StringStorageWidthType type)
 		{
-			Contract.Ensures(Contract.Result<Encoding>() != null);
 
 			return type switch
 			{
@@ -321,7 +303,6 @@ namespace KSoft
 		/// </summary>
 		/// <param name="enc">Instance of an encoding whose type we'll use to determine the storage type</param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static MS.StringStorageWidthType FromEncoding(Encoding enc)
 		{
 			ArgumentNullException.ThrowIfNull(enc);
@@ -341,7 +322,6 @@ namespace KSoft
 		/// <summary>Does this string type use a length prefix when serialized?</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool UsesLengthPrefix(this MS.StringStorageType type)
 		{
 			return type == MS.StringStorageType.Pascal;
@@ -350,7 +330,6 @@ namespace KSoft
 		/// <summary>Does this width type support variable length characters (code points)?</summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static bool IsVariableWidth(this MS.StringStorageWidthType type)
 		{
 //			return	type == MS.StringStorageWidthType.UTF7 ||
@@ -360,9 +339,11 @@ namespace KSoft
 		#endregion
 
 		#region Shell
+		/// <summary>Get the bit count for a processor size.</summary>
+		/// <param name="value">Processor size to inspect.</param>
+		/// <returns>The processor bit count, or -1 when <paramref name="value"/> does not name a concrete size.</returns>
 		public static int GetBitCount(Shell.ProcessorSize value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= -1);
 
 			return value switch
 			{
@@ -372,9 +353,11 @@ namespace KSoft
 			};
 		}
 
+		/// <summary>Get the byte count for a processor size.</summary>
+		/// <param name="value">Processor size to inspect.</param>
+		/// <returns>The processor byte count, or -1 when <paramref name="value"/> does not name a concrete size.</returns>
 		public static int GetByteCount(Shell.ProcessorSize value)
 		{
-			Contract.Ensures(Contract.Result<int>() >= -1);
 
 			return value switch
 			{
@@ -384,17 +367,21 @@ namespace KSoft
 			};
 		}
 
+		/// <summary>Get the bit count for a processor word size.</summary>
+		/// <param name="value">Processor word size to inspect.</param>
+		/// <returns>A positive bit count derived from <paramref name="value"/>.</returns>
 		public static int GetBitCount(Shell.ProcessorWordSize value)
 		{
-			Contract.Ensures(Contract.Result<int>() > 0);
 
 			int shift = (int)value;
 			return 8 << shift;
 		}
 
+		/// <summary>Get the byte count for a processor word size.</summary>
+		/// <param name="value">Processor word size to inspect.</param>
+		/// <returns>A positive byte count derived from <paramref name="value"/>.</returns>
 		public static int GetByteCount(Shell.ProcessorWordSize value)
 		{
-			Contract.Ensures(Contract.Result<int>() > 0);
 
 			int mul = (int)value + 1;
 			return 8 * mul;
@@ -406,7 +393,6 @@ namespace KSoft
 		/// <param name="ef"></param>
 		/// <returns>True if the runtime byte order is the same as this</returns>
 		/// <see cref="Shell.Platform.Environment"/>
-		[Contracts.Pure]
 		public static bool IsSameAsRuntime(this Shell.EndianFormat ef)
 		{
 			return ef == Shell.Platform.Environment.ProcessorType.ByteOrder;
@@ -415,7 +401,6 @@ namespace KSoft
 		/// <summary>Get the inverse of this byte order</summary>
 		/// <param name="ef"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static Shell.EndianFormat Invert(this Shell.EndianFormat ef)
 		{
 			return ef == Shell.EndianFormat.Little ? Shell.EndianFormat.Big : Shell.EndianFormat.Little;

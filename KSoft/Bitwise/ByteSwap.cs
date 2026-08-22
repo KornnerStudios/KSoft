@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 #nullable enable
 
@@ -82,7 +76,6 @@ namespace KSoft.Bitwise
 		public static int SwapData(IByteSwappable definition, byte[] buffer,
 			int startIndex = 0, int count = 1)
 		{
-			Contract.Ensures(Contract.Result<int>() >= 0);
 
 			ArgumentNullException.ThrowIfNull(definition);
 			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
@@ -100,7 +93,13 @@ namespace KSoft.Bitwise
 				buffer_index = swap.SwapData(buffer, buffer_index);
 			}
 
-			Contract.Assert(buffer_index == (startIndex + (definition.SizeOf * count)));
+			int expected_buffer_index = startIndex + (definition.SizeOf * count);
+			if (buffer_index != expected_buffer_index)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Byte swap consumed {0} bytes; expected {1}.",
+					buffer_index - startIndex, expected_buffer_index - startIndex));
+			}
 			return buffer_index;
 		}
 
@@ -126,7 +125,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Single" /> and returns the result</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static float SwapSingle(
 			float value)
 		{
@@ -136,7 +134,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Single" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapSingle(
 			ref float value)
 		{
@@ -147,7 +144,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			float value)
 		{
@@ -169,7 +165,6 @@ namespace KSoft.Bitwise
 		/// <summary>Swaps a <see cref="Double" /> and returns the result</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		[Contracts.Pure]
 		public static double SwapDouble(
 			double value)
 		{
@@ -179,7 +174,6 @@ namespace KSoft.Bitwise
 		}
 		/// <summary>Swaps a <see cref="Double" /> by reference</summary>
 		/// <param name="value"></param>
-		[Contracts.Pure]
 		public static void SwapDouble(
 			ref double value)
 		{
@@ -190,7 +184,6 @@ namespace KSoft.Bitwise
 		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
 		/// <param name="value">value to replace the buffer's current bytes with</param>
 		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		[Contracts.Pure]
 		public static void ReplaceBytes(byte[] buffer, int offset,
 			double value)
 		{

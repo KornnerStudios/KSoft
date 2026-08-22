@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Exprs = System.Linq.Expressions;
 using Expr = System.Linq.Expressions.Expression;
 using Reflect = System.Reflection;
@@ -420,27 +415,42 @@ namespace KSoft.Reflection
 			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
-			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
+			if (member is not Reflect.PropertyInfo property)
+			{
+				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
+					"Expression member must be a property; actual member type is {0}.",
+					member.MemberType));
+			}
 
-			return member as Reflect.PropertyInfo;
+			return property;
 		}
 		public static Reflect.PropertyInfo PropertyFromExpr<T>(Exprs.Expression<Func<T, object>> expr)
 		{
 			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
-			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
+			if (member is not Reflect.PropertyInfo property)
+			{
+				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
+					"Expression member must be a property; actual member type is {0}.",
+					member.MemberType));
+			}
 
-			return member as Reflect.PropertyInfo;
+			return property;
 		}
 		public static Reflect.PropertyInfo PropertyFromExpr<T, TProp>(Exprs.Expression<Func<T, TProp>> expr)
 		{
 			ValidateMemberAccessExpression(expr);
 
 			var member = MemberFromLambdaExpr(expr);
-			Contract.Assert(member.MemberType == Reflect.MemberTypes.Property);
+			if (member is not Reflect.PropertyInfo property)
+			{
+				throw new InvalidOperationException(string.Format(KSoft.Util.InvariantCultureInfo,
+					"Expression member must be a property; actual member type is {0}.",
+					member.MemberType));
+			}
 
-			return member as Reflect.PropertyInfo;
+			return property;
 		}
 		#endregion
 	};

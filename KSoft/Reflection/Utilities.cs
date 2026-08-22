@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Reflect = System.Reflection;
 using Interop = System.Runtime.InteropServices;
 
@@ -16,21 +10,17 @@ namespace KSoft.Reflection
 		Justification="I don't care about System.Web.Util")]
 	public static partial class Util
 	{
-		[Contracts.Pure]
 		public static bool IsEnumType(object maybeType) =>
 			maybeType is Type type && type.IsEnum;
 
-		[Contracts.Pure]
 		public static bool IsEnumTypeOrNull(object maybeType) =>
 			maybeType == null || IsEnumType(maybeType);
 
-		[Contracts.Pure]
 		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
 		{
 			ArgumentNullException.ThrowIfNull(enumType);
 			if (!enumType.IsEnum)
 				throw new ArgumentException(null, nameof(enumType));
-			Contract.Ensures(Contract.Result<List<Reflect.FieldInfo>>() != null);
 
 			return EnumUtils.GetEnumFields(enumType);
 		}
@@ -47,7 +37,6 @@ namespace KSoft.Reflection
 			if (callConv == Interop.CallingConvention.ThisCall)
 				throw new ArgumentException("TODO: ThisCall's require a different implementation", nameof(callConv)); // #TODO
 
-			Contract.Ensures(Contract.Result<T>() != null);
 
 			var type = typeof(T);
 			var method = type.GetMethod(kDelegateInvokeMethodName);

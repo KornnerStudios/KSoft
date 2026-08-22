@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.IO
 {
@@ -437,7 +432,6 @@ namespace KSoft.IO
 		public byte[] ReadBytes(int byteCount)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(byteCount);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] buffer = new byte[byteCount];
 
@@ -452,7 +446,6 @@ namespace KSoft.IO
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
 			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (buffer.Length > 0)
 			{

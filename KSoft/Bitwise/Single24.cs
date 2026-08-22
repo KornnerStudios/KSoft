@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Bitwise
 {
@@ -188,12 +183,27 @@ namespace KSoft.Bitwise
 
 			newMantissa >>= kMantissaBitDiff;
 
-			Contract.Assert(newExponent>=1 && newExponent<=Single24.kExponentMaxValue);
-			Contract.Assert(newMantissa <= Single24.kMantissaBitMask);
+			if (newExponent < 1 || newExponent > Single24.kExponentMaxValue)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Single24 exponent must be in the range [1, {0}]; actual exponent is {1}.",
+					Single24.kExponentMaxValue, newExponent));
+			}
+			if (newMantissa > Single24.kMantissaBitMask)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Single24 mantissa must be <= 0x{0:X}; actual mantissa is 0x{1:X}.",
+					Single24.kMantissaBitMask, newMantissa));
+			}
 			uint v = newMantissa;
 			v |= newExponent << Single24.kExponentBitIndex;
 			v |= sign == 1 ? Single24.kSignBit : 0U;
-			Contract.Assert(v <= Single24.kBitMask);
+			if (v > Single24.kBitMask)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Single24 encoded value must be <= 0x{0:X}; actual value is 0x{1:X}.",
+					Single24.kBitMask, v));
+			}
 
 			encodedBits = v;
 			return true;

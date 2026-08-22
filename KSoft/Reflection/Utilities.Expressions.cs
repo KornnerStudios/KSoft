@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Linq;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Expr = System.Linq.Expressions.Expression;
 using Reflect = System.Reflection;
 
@@ -121,7 +116,6 @@ namespace KSoft.Reflection
 				throw new ArgumentException(null, nameof(TSig));
 			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
 				throw new ArgumentException(null, nameof(TFunc));
-			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			var type = typeof(T);
 			var sig_method_info = typeof(TSig).GetMethod(kDelegateInvokeMethodName);
@@ -223,7 +217,6 @@ namespace KSoft.Reflection
 				throw new ArgumentException(null, nameof(type));
 			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
 				throw new ArgumentException(null, nameof(TFunc));
-			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			return GenerateConstructorFuncImpl<TFunc>(type, bindingAttr);
 		}
@@ -234,7 +227,6 @@ namespace KSoft.Reflection
 		{
 			if (!typeof(TFunc).IsSubclassOf(typeof(Delegate)))
 				throw new ArgumentException(null, nameof(TFunc));
-			Contract.Ensures(Contract.Result<TFunc>() != null);
 
 			var type = typeof(T);
 

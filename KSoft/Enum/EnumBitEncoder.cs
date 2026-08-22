@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft
 {
@@ -29,7 +23,6 @@ namespace KSoft
 		/// On return <paramref name="bits"/> has <paramref name="value"/> encoded into it and
 		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
 		/// </remarks>
-		[Contracts.Pure]
 		public void BitEncode(TEnum value, ref ulong bits, ref int bitIndex)
 		{
 			ValidateBitIndex(bitIndex);
@@ -40,7 +33,12 @@ namespace KSoft
 				v++;
 			}
 
-			Contract.Assert(v <= kMaxValue);
+			if (v > kMaxValue)
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Encoded enum value must be <= {0}; actual value is {1}.",
+					kMaxValue, v));
+			}
 			bits = Reflection.EnumUtil<TEnum>.IsFlags
 				? Bits.BitEncodeFlags(v, bits, bitIndex, kBitmask)
 				: Bits.BitEncodeEnum (v, bits, bitIndex, kBitmask);
@@ -56,7 +54,6 @@ namespace KSoft
 		/// <remarks>
 		/// <paramref name="bitIndex"/> is incremented by the bit count of the underlying enumeration
 		/// </remarks>
-		[Contracts.Pure]
 		public TEnum BitDecode(ulong bits, ref int bitIndex)
 		{
 			ValidateBitIndex(bitIndex);
@@ -69,7 +66,12 @@ namespace KSoft
 
 			bitIndex += kBitCount;
 
-			Contract.Assert(v <= kMaxValue || (kHasNone && v == ulong.MaxValue));
+			if (v > kMaxValue && (!kHasNone || v != ulong.MaxValue))
+			{
+				throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
+					"Decoded enum value must be <= {0}; actual value is {1}.",
+					kMaxValue, v));
+			}
 			return Reflection.EnumValue<TEnum>.FromUInt64(v);
 		}
 
