@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -31,10 +33,10 @@ namespace KSoft.Memory.Strings
 		/// <summary>Configuration instance data for this pool</summary>
 		public StringMemoryPoolSettings Settings { get; private set; }
 
-		List<string> mPool;
-		List<Values.PtrHandle> mReferences;
+		List<string> mPool = null!;
+		List<Values.PtrHandle> mReferences = null!;
 		/// <remarks>Only created when <see cref="UseStringToIndex"/> is true</remarks>
-		Dictionary<string, int> mStringToIndex;
+		Dictionary<string, int> mStringToIndex = null!;
 		// null string offset starts off null in case the user doesn't want an implicit null
 		Values.PtrHandle mNullReference = kInvalidReference;
 		readonly Text.StringStorageEncoding mEncoding;
@@ -244,7 +246,7 @@ namespace KSoft.Memory.Strings
 			s.Write(Size);
 		}
 
-		int[] ioStringLengths;
+		int[]? ioStringLengths;
 		/// <summary>Read the character count for the string values from a stream</summary>
 		/// <param name="s"></param>
 		/// <remarks>
