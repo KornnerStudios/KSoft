@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using Expr = System.Linq.Expressions.Expression;
 using Reflect = System.Reflection;
@@ -67,7 +69,7 @@ namespace KSoft.Reflection
 				? GetDynamicDelegateFuncType(paramCount)
 				: GetDynamicDelegateActionType(paramCount);
 		}
-		static Type[] GetDynamicDelegateParamTypes(Type result, params Type[] parameters)
+		static Type[] GetDynamicDelegateParamTypes(Type? result, params Type[] parameters)
 		{
 			bool has_result = result != null;
 
@@ -82,12 +84,12 @@ namespace KSoft.Reflection
 					types[i++] = param;
 				}
 
-				types[i] = result;
+				types[i] = result!;
 			}
 
 			return types;
 		}
-		public static Type GenerateDynamicDelegateType(Type result, params Type[] parameters)
+		public static Type GenerateDynamicDelegateType(Type? result, params Type[] parameters)
 		{
 			ArgumentNullException.ThrowIfNull(parameters);
 			if (parameters.Length > kGenerateDynamicDelegateMaximumParameters)
@@ -118,7 +120,7 @@ namespace KSoft.Reflection
 				throw new ArgumentException(null, nameof(TFunc));
 
 			var type = typeof(T);
-			var sig_method_info = typeof(TSig).GetMethod(kDelegateInvokeMethodName);
+			var sig_method_info = typeof(TSig).GetMethod(kDelegateInvokeMethodName)!;
 			var method_params = sig_method_info.GetParameters().Select(p => p.ParameterType).ToArray();
 			var method = type.GetMethod(methodName, bindingAttr, null, method_params, null);
 
@@ -158,7 +160,7 @@ namespace KSoft.Reflection
 			where TFunc : class
 		{
 			var func_type = typeof(TFunc);
-			var func_method_info = func_type.GetMethod(kDelegateInvokeMethodName);
+			var func_method_info = func_type.GetMethod(kDelegateInvokeMethodName)!;
 			#region func_method_info validation
 			if (!func_method_info.ReturnType.IsAssignableFrom(type))
 			{
