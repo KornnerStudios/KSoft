@@ -506,6 +506,26 @@ namespace KSoft.Test
 			Assert.AreEqual(0x12345UL, payload);
 		}
 
+		#nullable enable
+
+		[TestMethod]
+		public void Enum_HandleBitEncoderEqualityTest()
+		{
+			var lhs = new Bitwise.HandleBitEncoder();
+			var rhs = new Bitwise.HandleBitEncoder();
+			lhs.Encode64(0x12345UL, 0xFFFFFUL);
+			rhs.Encode64(0x12345UL, 0xFFFFFUL);
+
+			Assert.IsTrue(lhs.Equals(rhs));
+			Assert.IsTrue(lhs.Equals((object)rhs));
+			Assert.IsFalse(lhs.Equals((object?)null));
+			Assert.IsFalse(lhs.Equals("HandleBitEncoder"));
+			Assert.IsTrue(lhs == rhs);
+			Assert.IsFalse(lhs != rhs);
+		}
+
+		#nullable restore
+
 		[TestMethod]
 		public void Enum_HandleBitEncoderNoneableTest()
 		{

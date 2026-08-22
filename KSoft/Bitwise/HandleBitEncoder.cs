@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Bitwise
 {
@@ -42,7 +44,7 @@ namespace KSoft.Bitwise
 		}
 
 		#region Overrides
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			if (obj is HandleBitEncoder o)
 			{
