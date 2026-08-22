@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -76,7 +78,7 @@ namespace KSoft.Xml
 		}
 #endif
 
-		public new object Deserialize(XmlReader xmlReader)
+		public new object? Deserialize(XmlReader xmlReader)
 		{
 			var result = base.Deserialize(xmlReader);
 
@@ -96,7 +98,7 @@ namespace KSoft.Xml
 		}
 #endif
 
-		public new object Deserialize(XmlReader xmlReader, string encodingStyle)
+		public new object? Deserialize(XmlReader xmlReader, string? encodingStyle)
 		{
 			var result = base.Deserialize(xmlReader, encodingStyle);
 
@@ -105,7 +107,7 @@ namespace KSoft.Xml
 			return result;
 		}
 
-		public new object Deserialize(XmlReader xmlReader, XmlDeserializationEvents events)
+		public new object? Deserialize(XmlReader xmlReader, XmlDeserializationEvents events)
 		{
 			var result = base.Deserialize(xmlReader, events);
 
@@ -114,7 +116,7 @@ namespace KSoft.Xml
 			return result;
 		}
 
-		public new object Deserialize(XmlReader xmlReader, string encodingStyle, XmlDeserializationEvents events)
+		public new object? Deserialize(XmlReader xmlReader, string? encodingStyle, XmlDeserializationEvents events)
 		{
 			var result = base.Deserialize(xmlReader, encodingStyle, events);
 
@@ -125,9 +127,9 @@ namespace KSoft.Xml
 
 		public bool DontRecursivelyCheckForDeserializationCallbacks { get; set; }
 
-		private void CheckForDeserializationCallbacks(object deserializedObject)
+		private void CheckForDeserializationCallbacks(object? deserializedObject)
 		{
-			var deserializedObjectType = deserializedObject.GetType();
+			var deserializedObjectType = deserializedObject!.GetType();
 			// due to boxing, invoking the callback won't modify the original object
 			if (deserializedObjectType.IsValueType)
 			{
@@ -150,7 +152,7 @@ namespace KSoft.Xml
 
 			foreach (var propertyInfo in properties)
 			{
-				var interfaceType = propertyInfo.PropertyType.GetInterface(enumerableGenericType.FullName);
+				var interfaceType = propertyInfo.PropertyType.GetInterface(enumerableGenericType.FullName!);
 				if (interfaceType != null)
 				{
 					if (!interfaceType.GenericTypeArguments[0].IsValueType)
