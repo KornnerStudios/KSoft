@@ -125,5 +125,13 @@ namespace KSoft.Bitwise.Test
 			var castException = Assert.ThrowsExactly<ArgumentNullException>(() => _ = (uint)(Flags32)null!);
 			Assert.AreEqual("value", castException.ParamName);
 		}
+
+		[TestMethod]
+		public void Flags32_EqualsNull_ReturnsFalse()
+		{
+			var flags = new Flags32(1U);
+
+			Assert.IsFalse(flags.Equals(null));
+		}
 	}
 }

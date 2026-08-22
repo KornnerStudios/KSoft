@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Bitwise
 {
@@ -107,7 +109,7 @@ namespace KSoft.Bitwise
 		/// <summary>Tests whether or not <paramref name="obj"/> is equal to this</summary>
 		/// <param name="obj">The other object</param>
 		/// <returns>Returns true if <paramref name="obj"/> is a <see cref="Flags32"/> object and if it's value is the same as this</returns>
-		public override bool Equals(object obj)	{ return obj is Flags32 flags && flags.mValue == mValue; }
+		public override bool Equals(object? obj)	{ return obj is Flags32 flags && flags.mValue == mValue; }
 		/// <summary><see cref="uint.GetHashCode()"/></summary>
 		/// <returns></returns>
 		/// <remarks>Beware: this uses the underlying flags value's hash code</remarks>
