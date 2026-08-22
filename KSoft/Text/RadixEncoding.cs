@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -132,7 +134,7 @@ namespace KSoft.Text
 			}
 		}
 		#region Decode (Little Endian)
-		byte[] DecodeImpl(string chars, int startIndex = 0)
+		byte[]? DecodeImpl(string chars, int startIndex = 0)
 		{
 			var bi = new BigInteger();
 			for (int x = startIndex; x < chars.Length; x++)
@@ -149,7 +151,7 @@ namespace KSoft.Text
 
 			return bi.ToByteArray();
 		}
-		byte[] DecodeImplWithPadding(string chars)
+		byte[]? DecodeImplWithPadding(string chars)
 		{
 			int pad_count = 0;
 			for (int x = 0; x < chars.Length; x++, pad_count++)
@@ -161,13 +163,13 @@ namespace KSoft.Text
 			}
 
 			var result = DecodeImpl(chars, pad_count);
-			DecodeImplPadResult(ref result, pad_count);
+			DecodeImplPadResult(ref result!, pad_count);
 
 			return result;
 		}
 		#endregion
 		#region Decode (Big Endian)
-		byte[] DecodeImplReversed(string chars, int startIndex = 0)
+		byte[]? DecodeImplReversed(string chars, int startIndex = 0)
 		{
 			var bi = new BigInteger();
 			for (int x = (chars.Length-1)-startIndex; x >= 0; x--)
@@ -184,7 +186,7 @@ namespace KSoft.Text
 
 			return bi.ToByteArray();
 		}
-		byte[] DecodeImplReversedWithPadding(string chars)
+		byte[]? DecodeImplReversedWithPadding(string chars)
 		{
 			int pad_count = 0;
 			for (int x = chars.Length - 1; x >= 0; x--, pad_count++)
@@ -196,7 +198,7 @@ namespace KSoft.Text
 			}
 
 			var result = DecodeImplReversed(chars, pad_count);
-			DecodeImplPadResult(ref result, pad_count);
+			DecodeImplPadResult(ref result!, pad_count);
 
 			return result;
 		}
@@ -211,7 +213,7 @@ namespace KSoft.Text
 		/// additional zero byte that wasn't in the input. So a 4 byte buffer was encoded, this could end up
 		/// returning a 5 byte buffer, with the extra byte being null.
 		/// </remarks>
-		public byte[] Decode(string radixChars)
+		public byte[]? Decode(string radixChars)
 		{
 			ArgumentNullException.ThrowIfNull(radixChars);
 

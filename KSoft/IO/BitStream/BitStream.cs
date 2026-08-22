@@ -37,9 +37,8 @@ namespace KSoft.IO
 
 		#region IKSoftStream
 		/// <summary>Owner of this stream</summary>
-		public object Owner { get; set; }
-
-		public object UserData { get; set; }
+		public object Owner { get; set; } = null!;
+		public object UserData { get; set; } = null!;
 
 		/// <summary>Name for this bitstream, or an empty string</summary>
 		public string StreamName			{ get; private set; }
@@ -184,7 +183,7 @@ namespace KSoft.IO
 					BaseStream.Dispose();
 				}
 
-				BaseStream = null;
+				BaseStream = null!;
 				StreamPermissions = 0;
 			}
 		}

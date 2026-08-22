@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -19,7 +21,7 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
-			Encoding enc = null;
+			Encoding? enc = null;
 			int length = buffer.Length - index;
 
 			/*
@@ -88,7 +90,7 @@ namespace KSoft.Text
 		// preserve output behavior for string-only writers.
 		private static bool TextWriterOverridesSpanWrite(TextWriter stream)
 		{
-			MethodInfo spanWriteMethod = stream.GetType().GetMethod(nameof(TextWriter.Write),
+			MethodInfo? spanWriteMethod = stream.GetType().GetMethod(nameof(TextWriter.Write),
 				kTextWriterSpanWriteParameterTypes);
 
 			return spanWriteMethod != null && spanWriteMethod.DeclaringType != typeof(TextWriter);
@@ -362,7 +364,7 @@ namespace KSoft.Text
 		/// <param name="padding">Padding string to appear before each line of hex characters. Can be null.</param>
 		/// <param name="digitsPerLine">Number of hex characters per line</param>
 		public static void ByteArrayToAlignedOutput(byte[] data, TextWriter output
-			, string padding = null
+			, string? padding = null
 			, int digitsPerLine = kDefaultHexDigitsPerLine)
 		{
 			ArgumentNullException.ThrowIfNull(data);

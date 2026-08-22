@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace KSoft.IO
@@ -168,7 +170,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(list);
 			Verify.Bits.AtMost(countBitSize, Bits.kInt32BitCount);
 
-			return StreamElements(list, countBitSize, (object)null, (nil) => new T());
+			return StreamElements(list, countBitSize, (object)null!, (nil) => new T());
 		}
 		#endregion
 	};
