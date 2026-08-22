@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Text
 {
@@ -13,7 +15,7 @@ namespace KSoft.Text
 		/// </summary>
 		/// <param name="str"></param>
 		/// <returns></returns>
-		public static bool ParseBooleanLazy(string str)
+		public static bool ParseBooleanLazy(string? str)
 		{
 			if (str == "1" ||
 				string.Compare(str, "true", StringComparison.OrdinalIgnoreCase)==0 ||
@@ -56,7 +58,7 @@ namespace KSoft.Text
 		}
 		#endregion
 
-		static DefaultTextParseErrorHandler gDefaultTextParseErrorHandler;
+		static DefaultTextParseErrorHandler? gDefaultTextParseErrorHandler;
 		public static IHandleTextParseError DefaultTextParseErrorHandler { get {
 			if (gDefaultTextParseErrorHandler == null)
 			{
