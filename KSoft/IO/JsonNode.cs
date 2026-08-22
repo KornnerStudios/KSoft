@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace KSoft.IO
 	static class JsonNodeGlobals
 	{
 		[ThreadStatic]
-		public static List<string> gErrorsOutputList;
+		public static List<string>? gErrorsOutputList;
 		public static List<string> ErrorsOutputList =>
 			gErrorsOutputList ?? (gErrorsOutputList = []);
 		public static bool HasErrorsOutput =>
@@ -19,16 +21,16 @@ namespace KSoft.IO
 	};
 
 	//[SuppressMessage("Microsoft.Design", "CA1815")]
-	public struct JsonNode(IDictionary<string, object> parsedData)
+	public struct JsonNode(IDictionary<string, object>? parsedData)
 	{
-		private IDictionary<string, object> mData = parsedData;
+		private IDictionary<string, object> mData = parsedData!;
 
 		public readonly bool IsNull => mData == null;
 		public readonly bool IsNotNull => mData != null;
 		public readonly bool IsEmpty => IsNull || mData.Count == 0;
 		public readonly bool IsNotEmpty => IsNotNull && mData.Count > 0;
 
-		public readonly IDictionary<string, object> DictionaryData { get { return mData; } }
+		public readonly IDictionary<string, object>? DictionaryData { get { return mData; } }
 
 		public static JsonNode New { get {
 			return new JsonNode
@@ -104,9 +106,9 @@ namespace KSoft.IO
 				return Null;
 			}
 
-			IDictionary<string, object> childData;
+			IDictionary<string, object>? childData;
 
-			if (mData.TryGetValue(valueName, out object existingValue))
+			if (mData.TryGetValue(valueName, out object? existingValue))
 			{
 				childData = existingValue as IDictionary<string, object>;
 
@@ -114,7 +116,7 @@ namespace KSoft.IO
 				{
 					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
-						valueName, existingValue.GetType()));
+						valueName, existingValue!.GetType()));
 					return Null;
 				}
 			}
@@ -134,9 +136,9 @@ namespace KSoft.IO
 				return Null;
 			}
 
-			IDictionary<string, object> childData;
+			IDictionary<string, object>? childData;
 
-			if (mData.TryGetValue(valueName, out object existingValue))
+			if (mData.TryGetValue(valueName, out object? existingValue))
 			{
 				childData = existingValue as IDictionary<string, object>;
 
@@ -144,7 +146,7 @@ namespace KSoft.IO
 				{
 					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to get a child node named {0} with an unexpected type: {1}",
-						valueName, existingValue.GetType()));
+						valueName, existingValue!.GetType()));
 					return Null;
 				}
 			}
@@ -164,9 +166,9 @@ namespace KSoft.IO
 				return false;
 			}
 
-			IList<object> existingArray;
+			IList<object>? existingArray;
 
-			if (mData.TryGetValue(valueName, out object existingValue))
+			if (mData.TryGetValue(valueName, out object? existingValue))
 			{
 				existingArray = existingValue as IList<object>;
 
@@ -174,7 +176,7 @@ namespace KSoft.IO
 				{
 					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
-						valueName, existingValue.GetType()));
+						valueName, existingValue!.GetType()));
 					return false;
 				}
 			}
@@ -200,9 +202,9 @@ namespace KSoft.IO
 				return false;
 			}
 
-			IList<object> existingArray;
+			IList<object>? existingArray;
 
-			if (mData.TryGetValue(valueName, out object existingValue))
+			if (mData.TryGetValue(valueName, out object? existingValue))
 			{
 				existingArray = existingValue as IList<object>;
 
@@ -210,7 +212,7 @@ namespace KSoft.IO
 				{
 					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to add a child node named {0} when a value already exists but is an unexpected type: {1}",
-						valueName, existingValue.GetType()));
+						valueName, existingValue!.GetType()));
 					return false;
 				}
 			}
@@ -235,9 +237,9 @@ namespace KSoft.IO
 				yield break;
 			}
 
-			IList<object> array;
+			IList<object>? array;
 
-			if (mData.TryGetValue(valueName, out object existingValue))
+			if (mData.TryGetValue(valueName, out object? existingValue))
 			{
 				array = existingValue as IList<object>;
 
@@ -245,7 +247,7 @@ namespace KSoft.IO
 				{
 					Debug.Trace.IO.TraceDataSansId(System.Diagnostics.TraceEventType.Error, string.Format(Util.InvariantCultureInfo,
 						"Trying to get a child node named {0} with an unexpected type: {1}",
-						valueName, existingValue.GetType()));
+						valueName, existingValue!.GetType()));
 					yield break;
 				}
 			}
@@ -473,25 +475,25 @@ namespace KSoft.IO
 		#endregion
 
 		#region GetValue
-		public readonly object TryGetValueForName(string valueName)
+		public readonly object? TryGetValueForName(string valueName)
 		{
 			if (IsEmpty)
 			{
 				return null;
 			}
 
-			mData.TryGetValue(valueName, out object value);
+			mData.TryGetValue(valueName, out object? value);
 
 			return value;
 		}
 
 		public readonly bool GetValue(string valueName, ref bool retVal)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 
 			return ParseValue(value, ref retVal);
 		}
-		private static bool ParseValue(object value, ref bool retVal)
+		private static bool ParseValue(object? value, ref bool retVal)
 		{
 			if (value == null)
 			{
@@ -552,11 +554,11 @@ namespace KSoft.IO
 
 		public readonly bool GetValue(string valueName, ref string retVal)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 
 			return ParseValue(value, ref retVal);
 		}
-		private static bool ParseValue(object value, ref string retVal)
+		private static bool ParseValue(object? value, ref string retVal)
 		{
 			if (value == null)
 			{
@@ -576,7 +578,7 @@ namespace KSoft.IO
 
 		public readonly bool GetValue(string valueName, ref int retVal)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 
 			return ParseValue(value, ref retVal, valueName);
 		}
@@ -591,7 +593,7 @@ namespace KSoft.IO
 
 			return parsed;
 		}
-		private static bool ParseValue(object value, ref int retVal, string valueName = null)
+		private static bool ParseValue(object? value, ref int retVal, string? valueName = null)
 		{
 			if (value == null)
 			{
@@ -635,11 +637,11 @@ namespace KSoft.IO
 
 		public readonly bool GetValue(string valueName, ref long retVal)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 
 			return ParseValue(value, ref retVal, valueName);
 		}
-		private static bool ParseValue(object value, ref long retVal, string valueName = null)
+		private static bool ParseValue(object? value, ref long retVal, string? valueName = null)
 		{
 			if (value == null)
 			{
@@ -692,8 +694,8 @@ namespace KSoft.IO
 			retVal = (float)doubleValue;
 			return true;
 		}
-		private static bool ParseValue(object value, ref float retVal
-			, string valueName = null)
+		private static bool ParseValue(object? value, ref float retVal
+			, string? valueName = null)
 		{
 			double doubleValue = 0;
 			if (!ParseValue(value, ref doubleValue, valueName))
@@ -707,12 +709,12 @@ namespace KSoft.IO
 
 		public readonly bool GetValue(string valueName, ref double retVal)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 
 			return ParseValue(value, ref retVal, valueName);
 		}
-		private static bool ParseValue(object value, ref double retVal
-			, string valueName = null)
+		private static bool ParseValue(object? value, ref double retVal
+			, string? valueName = null)
 		{
 			if (value == null)
 			{
@@ -757,7 +759,7 @@ namespace KSoft.IO
 		public readonly bool GetEnumValue<TEnum>(string valueName, ref TEnum retVal)
 			where TEnum : struct, Enum
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return false;
@@ -789,7 +791,7 @@ namespace KSoft.IO
 			, string valueSeperator = ",", bool logFailures = true)
 			where TEnum : struct, Enum
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return null;
@@ -834,7 +836,7 @@ namespace KSoft.IO
 			, string valueSeperator = ",", bool logFailures = true)
 			where TEnum : struct, Enum
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return null;
@@ -877,7 +879,7 @@ namespace KSoft.IO
 		public readonly bool GetValue(string valueName, List<string> list
 			, bool sort = false, string valueSeperator = ",")
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return false;
@@ -906,7 +908,7 @@ namespace KSoft.IO
 		public readonly bool GetPodValues<T>(string valueName, IList<T> list
 			, bool clearFirst = true)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return false;
@@ -925,9 +927,9 @@ namespace KSoft.IO
 			var type = typeof(T);
 			var typeCode = Type.GetTypeCode(type);
 
-			foreach (object o in objList)
+			foreach (object? o in objList)
 			{
-				object parsedValue = null;
+				object? parsedValue = null;
 				switch (typeCode)
 				{
 					case TypeCode.Boolean:
@@ -989,7 +991,7 @@ namespace KSoft.IO
 
 					case TypeCode.String:
 					{
-						string str = null;
+						string str = null!;
 						if (ParseValue(o, ref str))
 						{
 							parsedValue = Convert.ChangeType(str, typeCode, Util.InvariantCultureInfo);
@@ -1018,7 +1020,7 @@ namespace KSoft.IO
 
 		public readonly bool GetRangeValues(string valueName, ref int min, ref int max)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return false;
@@ -1072,7 +1074,7 @@ namespace KSoft.IO
 
 		public readonly bool GetRangeValues(string valueName, ref float min, ref float max)
 		{
-			object value = TryGetValueForName(valueName);
+			object? value = TryGetValueForName(valueName);
 			if (value == null)
 			{
 				return false;
