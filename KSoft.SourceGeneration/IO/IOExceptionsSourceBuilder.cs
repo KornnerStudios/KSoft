@@ -38,8 +38,6 @@ internal static class IOExceptionsSourceBuilder
 	private static void WriteFileHeader(SourceWriter writer)
 	{
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.IO;");
 		writer.WriteLine();

@@ -45,6 +45,17 @@ public sealed class GeneratorDriverTests
 	}
 
 	[TestMethod]
+	public void GeneratorEmitsFullNullableContextForEveryConsumerSourceTest()
+	{
+		AssertGeneratedSourcesUseFullNullableContext(
+			GeneratorTargetAssembly.KSoft,
+			GeneratorTargetAssemblyFacts.KSoftAssemblyName);
+		AssertGeneratedSourcesUseFullNullableContext(
+			GeneratorTargetAssembly.KSoftIOTagElementStreams,
+			GeneratorTargetAssemblyFacts.KSoftIOTagElementStreamsAssemblyName);
+	}
+
+	[TestMethod]
 	public void GeneratorReportsUnsupportedTargetAssemblyWithDriverTest()
 	{
 		CSharpCompilation compilation = CreateCompilation("Unexpected.Assembly");
@@ -105,6 +116,40 @@ public sealed class GeneratorDriverTests
 		foreach (GeneratedSourceRegistration source in otherSources)
 		{
 			Assert.IsFalse(outputPaths.Any(x => x.EndsWith(source.HintName, StringComparison.Ordinal)));
+		}
+	}
+
+	private void AssertGeneratedSourcesUseFullNullableContext(
+		GeneratorTargetAssembly targetAssembly,
+		string assemblyName)
+	{
+		CSharpCompilation compilation = CreateCompilation(assemblyName);
+		var driver = CreateDriver();
+
+		driver.RunGeneratorsAndUpdateCompilation(
+			compilation,
+			out Compilation outputCompilation,
+			out var diagnostics,
+			TestContext.CancellationToken);
+
+		Assert.IsEmpty(diagnostics);
+		var targetHintNames = GeneratorRegistry.FeaturesForTarget(targetAssembly)
+			.SelectMany(static x => x.Sources)
+			.Select(static x => x.HintName)
+			.ToArray();
+		var generatedSources = outputCompilation.SyntaxTrees
+			.Where(x => targetHintNames.Any(hintName => x.FilePath.EndsWith(hintName, StringComparison.Ordinal)))
+			.Select(static x => x.GetText().ToString())
+			.ToArray();
+
+		Assert.AreEqual(targetHintNames.Length, generatedSources.Length);
+		foreach (string source in generatedSources)
+		{
+			StringAssert.Contains(source, "#nullable enable");
+			Assert.IsFalse(source.Contains("#nullable disable", StringComparison.Ordinal));
+			Assert.IsFalse(source.Contains("#nullable restore", StringComparison.Ordinal));
+			Assert.IsFalse(source.Contains("#nullable warnings", StringComparison.Ordinal));
+			Assert.IsFalse(source.Contains("#nullable enable annotations", StringComparison.Ordinal));
 		}
 	}
 };

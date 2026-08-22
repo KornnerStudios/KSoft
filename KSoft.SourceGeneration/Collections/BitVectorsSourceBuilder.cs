@@ -13,8 +13,6 @@ internal static class BitVectorsSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using System.Diagnostics.CodeAnalysis;");
@@ -119,7 +117,7 @@ internal static class BitVectorsSourceBuilder
 			{
 				writer.WriteLine("=> mWord == other.mWord;");
 			}
-			writer.WriteLine("public override readonly bool Equals(object o)");
+			writer.WriteLine("public override readonly bool Equals(object? o)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
 				writer.WriteLine($"if (o is not {spec.TypeName})");
@@ -782,7 +780,7 @@ internal static class BitVectorsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine(", bool stateFilter = true");
-			writer.WriteLine(", List<string> results = null)");
+			writer.WriteLine(", List<string>? results = null)");
 			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -812,7 +810,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine("public readonly string ToString<TEnum>(TEnum maxCount");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine(", string valueSeperator = \",\"");
+			writer.WriteLine(", string? valueSeperator = \",\"");
 			writer.WriteLine(", bool stateFilter = true)");
 			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
@@ -933,7 +931,7 @@ internal static class BitVectorsSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine(", string valueSeperator = \",\"");
-			writer.WriteLine(", ICollection<string> errorsOutput = null)");
+			writer.WriteLine(", ICollection<string>? errorsOutput = null)");
 			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -954,10 +952,10 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteXmlDocReturns(
 			"True if all strings were parsed successfully, false if there were some strings that failed to parse");
 		WriteEnumBitIndexTypeParamDoc(writer);
-		writer.WriteLine("public bool TryParseFlags<TEnum>(IEnumerable<string> collection");
+		writer.WriteLine("public bool TryParseFlags<TEnum>(IEnumerable<string>? collection");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine(", ICollection<string> errorsOutput = null)");
+			writer.WriteLine(", ICollection<string>? errorsOutput = null)");
 			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -994,7 +992,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteLine("private bool? TryParseFlag<TEnum>(string flagStr");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
-			writer.WriteLine(", ICollection<string> errorsOutput = null)");
+			writer.WriteLine(", ICollection<string>? errorsOutput = null)");
 			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))

@@ -38,8 +38,6 @@ internal static class TextSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using StringBuilder = System.Text.StringBuilder;");
@@ -74,8 +72,6 @@ internal static class TextSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using System.Linq;");
@@ -116,8 +112,6 @@ internal static class TextSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteUnindentedLine("#pragma warning disable IDE0300 // Collection initialization can be simplified");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Text");
@@ -336,7 +330,7 @@ internal static class TextSourceBuilder
 		using (writer.EnterRegion($"ToStringList {code}"))
 		{
 			writer.WriteLine($"public static string ToStringList(StringListDesc desc, IEnumerable<{keyword}> values,");
-			writer.WriteLine($"\tPredicate<IEnumerable<{keyword}>> writeTerminator = null)");
+			writer.WriteLine(			$"\tPredicate<IEnumerable<{keyword}>>? writeTerminator = null)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
 				writer.WriteLine("if (desc.RequiresTerminator) { ArgumentNullException.ThrowIfNull(writeTerminator); }");
@@ -529,7 +523,7 @@ internal static class TextSourceBuilder
 		string returnPrefix = hasDoubleSpaceReturn ? "return  s" : "return s";
 
 		writer.WriteLine(
-			$"public static bool TryParse(string s, out {keyword} result, int radix = kBase10, " +
+			$"public static bool TryParse(string? s, out {keyword} result, int radix = kBase10, " +
 			"int startIndex = 0, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -543,7 +537,7 @@ internal static class TextSourceBuilder
 			writer.WriteLine("\tTryParseImpl(s, ref result, radix, startIndex, s.Length, digits);");
 		}
 		writer.WriteLine(
-			$"public static bool TryParse(string s, out {keyword} result, NumeralBase radix = NumeralBase.Decimal, " +
+			$"public static bool TryParse(string? s, out {keyword} result, NumeralBase radix = NumeralBase.Decimal, " +
 			"int startIndex = 0, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -557,7 +551,7 @@ internal static class TextSourceBuilder
 			writer.WriteLine("\tTryParseImpl(s, ref result, (int)radix, startIndex, s.Length, digits);");
 		}
 		writer.WriteLine(
-			$"public static bool TryParseRange(string s, out {keyword} result, int startIndex, int length, " +
+			$"public static bool TryParseRange(string? s, out {keyword} result, int startIndex, int length, " +
 			"NumeralBase radix = NumeralBase.Decimal, string digits = kBase64Digits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -581,15 +575,15 @@ internal static class TextSourceBuilder
 		using (writer.EnterRegion($"ParseString {code}"))
 		{
 			writer.WriteLine(
-				$"static bool ParseStringImpl(string s, ref {keyword} value, bool noThrow, int radix, int startIndex");
-			writer.WriteLine("\t, Text.IHandleTextParseError parseErrorHandler)");
+				$"static bool ParseStringImpl(string? s, ref {keyword} value, bool noThrow, int radix, int startIndex");
+			writer.WriteLine("\t, Text.IHandleTextParseError? parseErrorHandler)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
 				writer.WriteLine("var result = string.IsNullOrEmpty(s)");
 				writer.WriteLine("\t? ParseErrorType.NoInput");
 				writer.WriteLine("\t: ParseErrorType.None;");
 				writer.WriteLine();
-				writer.WriteLine("if (result != ParseErrorType.NoInput && (startIndex < 0 || startIndex >= s.Length))");
+				writer.WriteLine("if (!string.IsNullOrEmpty(s) && (startIndex < 0 || startIndex >= s.Length))");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
 					writer.WriteLine("result = ParseErrorType.InvalidStartIndex;");
@@ -605,9 +599,9 @@ internal static class TextSourceBuilder
 				writer.WriteLine();
 				writer.WriteLine("return HandleParseError(result, noThrow, s, startIndex, parseErrorHandler);");
 			}
-			writer.WriteLine($"public static bool ParseString(string s, ref {keyword} result, bool noThrow");
+			writer.WriteLine($"public static bool ParseString(string? s, ref {keyword} result, bool noThrow");
 			writer.WriteLine(
-				"\t, Text.IHandleTextParseError parseErrorHandler = null, " +
+				"\t, Text.IHandleTextParseError? parseErrorHandler = null, " +
 				"NumeralBase radix = NumeralBase.Decimal, int startIndex = 0)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
@@ -684,10 +678,11 @@ internal static class TextSourceBuilder
 			{
 			}
 			writer.WriteLine();
-			writer.WriteLine($"static {nullableKeyword} ProcessItemAsync(object state)");
+			writer.WriteLine($"static {nullableKeyword} ProcessItemAsync(object? state)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"var args = (Tuple<{asyncName}, int, int>)state;");
+				writer.WriteLine($"var args = state as Tuple<{asyncName}, int, int> ??");
+				writer.WriteLine("\tthrow new ArgumentNullException(nameof(state));");
 				writer.WriteLine("var me = args.Item1;");
 				writer.WriteLine("return me.ProcessItem(args.Item2, args.Item3);");
 			}
@@ -745,7 +740,7 @@ internal static class TextSourceBuilder
 			writer.WriteLine($"protected override IEnumerable<{nullableKeyword}> CreateResult()");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("return mList;");
+				writer.WriteLine("return mList ?? EmptyResult;");
 			}
 		}
 		writer.WriteLine($"public static IEnumerable<{nullableKeyword}> TryParse{code}(StringListDesc desc, string values)");

@@ -21,8 +21,6 @@ internal static class EndianStreamsCoreSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable enable annotations");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.IO;");
 		writer.WriteLine();
@@ -47,8 +45,6 @@ internal static class EndianStreamsCoreSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
 		using (writer.EnterTypeDeclaration("partial class TypeExtensions"))
@@ -68,8 +64,6 @@ internal static class EndianStreamsCoreSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.IO");
@@ -354,7 +348,7 @@ internal static class EndianStreamsCoreSourceBuilder
 		{
 			using (writer.EnterRegion("VirtualAddressTranslation"))
 			{
-				writer.WriteLine("Memory.VirtualAddressTranslationStack mVAT;");
+				writer.WriteLine("Memory.VirtualAddressTranslationStack? mVAT;");
 				writer.WriteLine();
 				WriteVerifyVATMethod(writer);
 				WriteVirtualAddressTranslationInitializeMethod(writer);
@@ -369,6 +363,7 @@ internal static class EndianStreamsCoreSourceBuilder
 	private static void WriteVerifyVATMethod(SourceWriter writer)
 	{
 		writer.WriteXmlDocSummary("Verify the state of the VAT (is it initialized?)");
+		writer.WriteLine("[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(mVAT))]");
 		writer.WriteLine("void VerifyVAT()");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{

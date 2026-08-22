@@ -39,8 +39,6 @@ internal static class BitStreamSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine();
@@ -74,8 +72,6 @@ internal static class BitStreamSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		WriteCacheWordAlias(writer);

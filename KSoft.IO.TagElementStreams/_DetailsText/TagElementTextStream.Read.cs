@@ -66,22 +66,22 @@ namespace KSoft.IO
 			return true;
 		}
 
-		public static bool ParseString(string input, ref char value, bool noThrow
+		public static bool ParseString(string? input, ref char value, bool noThrow
 			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
-			if (result == ParseErrorType.None)
+			if (!string.IsNullOrEmpty(input))
 			{
 				value = input[0];
 			}
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}
-		public static bool ParseString(string input, ref bool value, bool noThrow
+		public static bool ParseString(string? input, ref bool value, bool noThrow
 			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
-			if (result == ParseErrorType.None)
+			if (!string.IsNullOrEmpty(input))
 			{
 				value = Text.Util.ParseBooleanLazy(input);
 			}
@@ -90,11 +90,11 @@ namespace KSoft.IO
 		}
 
 		#region Real
-		public static bool ParseString(string input, ref float value, bool noThrow
+		public static bool ParseString(string? input, ref float value, bool noThrow
 			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
-			if (result == ParseErrorType.None)
+			if (!string.IsNullOrEmpty(input))
 			{
 				// #HACK HaloWars data has floats with C-based 'f' suffix
 				char last_char = input[input.Length - 1];
@@ -108,11 +108,11 @@ namespace KSoft.IO
 
 			return ParseHandleError(result, noThrow, input, errorState);
 		}
-		public static bool ParseString(string input, ref double value, bool noThrow
+		public static bool ParseString(string? input, ref double value, bool noThrow
 			, TextStreamReadErrorState errorState)
 		{
 			var result = ParseVerifyInput(input);
-			if (result == ParseErrorType.None)
+			if (!string.IsNullOrEmpty(input))
 			{
 				result = ParseVerifyResult(result, Numbers.DoubleTryParseInvariant(input, out value));
 			}

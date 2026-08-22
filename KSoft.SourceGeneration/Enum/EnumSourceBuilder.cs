@@ -13,8 +13,6 @@ internal static class EnumSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
@@ -33,8 +31,6 @@ internal static class EnumSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Reflection");

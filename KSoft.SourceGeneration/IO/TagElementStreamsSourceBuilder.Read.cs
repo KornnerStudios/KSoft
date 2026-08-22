@@ -25,12 +25,14 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadElementImpl(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = typeSpec.Keyword;
+
 		writer.WriteXmlDocSummary(
 			"Stream out the InnerText of element <paramref name=\"name\"/> into " +
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("n", "Node element to read");
 		writer.WriteXmlDocParam("value", "value to receive the data");
-		writer.WriteLine($"protected abstract void ReadElement(TCursor n, ref {typeSpec.Keyword} value);");
+		writer.WriteLine($"protected abstract void ReadElement(TCursor n, ref {keyword} value);");
 	}
 
 	private static void WriteReadElementImpl(SourceWriter writer, NumberSpec typeSpec)
@@ -60,11 +62,14 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadCursor(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = typeSpec.Keyword;
+
 		writer.WriteXmlDocSummary("Stream out the Value of <see cref=\"Cursor\"/> into <paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("value", "value to receive the data");
-		writer.WriteLine($"public void ReadCursor(ref {typeSpec.Keyword} value)");
+		writer.WriteLine($"public void ReadCursor(ref {keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("ThrowIfCursorNull();");
 			writer.WriteLine("ReadElement(Cursor, ref value);");
 		}
 	}
@@ -79,6 +84,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void ReadCursor(ref {typeSpec.Keyword} value, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("ThrowIfCursorNull();");
 			writer.WriteLine("ReadElement(Cursor, ref value, fromBase);");
 		}
 	}
@@ -102,12 +108,14 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadElement(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = typeSpec.Keyword;
+
 		writer.WriteXmlDocSummary(
 			"Stream out the InnerText of element <paramref name=\"name\"/> into " +
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("name", "Element name");
 		writer.WriteXmlDocParam("value", "value to receive the data");
-		writer.WriteLine($"public void ReadElement(TName name, ref {typeSpec.Keyword} value)");
+		writer.WriteLine($"public void ReadElement(TName name, ref {keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
@@ -148,12 +156,14 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadAttribute(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = typeSpec.Keyword;
+
 		writer.WriteXmlDocSummary(
 			"Stream out the attribute data of <paramref name=\"name\"/> into " +
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("name", "Attribute name");
 		writer.WriteXmlDocParam("value", "value to receive the data");
-		writer.WriteLine($"public abstract void ReadAttribute(TName name, ref {typeSpec.Keyword} value);");
+		writer.WriteLine($"public abstract void ReadAttribute(TName name, ref {keyword} value);");
 	}
 
 	private static void WriteReadAttribute(SourceWriter writer, NumberSpec typeSpec)
@@ -189,6 +199,11 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadElementOpt(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = OptionalReadKeyword(typeSpec);
+		string valueParameter = IsString(typeSpec)
+			? "[System.Diagnostics.CodeAnalysis.NotNullWhen(true)] ref string? value"
+			: $"ref {keyword} value";
+
 		writer.WriteXmlDocSummary(
 			"Stream out the InnerText of element <paramref name=\"name\"/> into " +
 			"<paramref name=\"value\"/>");
@@ -196,7 +211,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteXmlDocParam("value", "value to receive the data");
 		writer.WriteLine("/// <remarks>If inner text is just an empty string, the stream ignores its existence</remarks>");
 		writer.WriteXmlDocReturns("true if the value exists");
-		writer.WriteLine($"public abstract bool ReadElementOpt(TName name, ref {typeSpec.Keyword} value);");
+		writer.WriteLine($"public abstract bool ReadElementOpt(TName name, {valueParameter});");
 	}
 
 	private static void WriteReadElementOpt(SourceWriter writer, NumberSpec typeSpec)
@@ -228,13 +243,18 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteReadAttributeOpt(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
+		string keyword = OptionalReadKeyword(typeSpec);
+		string valueParameter = IsString(typeSpec)
+			? "[System.Diagnostics.CodeAnalysis.NotNullWhen(true)] ref string? value"
+			: $"ref {keyword} value";
+
 		writer.WriteXmlDocSummary(
 			"Stream out the attribute data of <paramref name=\"name\"/> into " +
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("name", "Attribute name");
 		writer.WriteXmlDocParam("value", "value to receive the data");
 		writer.WriteXmlDocReturns("true if the value exists");
-		writer.WriteLine($"public abstract bool ReadAttributeOpt(TName name, ref {typeSpec.Keyword} value);");
+		writer.WriteLine($"public abstract bool ReadAttributeOpt(TName name, {valueParameter});");
 	}
 
 	private static void WriteReadAttributeOpt(SourceWriter writer, NumberSpec typeSpec)
@@ -345,7 +365,8 @@ internal static partial class TagElementStreamsSourceBuilder
 			{
 				if (initializer == null)
 				{
-					writer.WriteLine($"var value = default({keyword});");
+					string initializerExpression = keyword == "string" ? "string.Empty" : $"default({keyword})";
+					writer.WriteLine($"{keyword} value = {initializerExpression};");
 				}
 				else
 				{

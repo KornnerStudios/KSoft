@@ -23,8 +23,6 @@ internal static partial class TagElementStreamsSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine("using System.Collections.Generic;");
 		writer.WriteLine("using Exprs = System.Linq.Expressions;");
@@ -137,4 +135,7 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static bool IsString(PrimitiveSpec typeSpec)
 		=> typeSpec.TypeCode == TypeCode.String;
+
+	private static string OptionalReadKeyword(PrimitiveSpec typeSpec)
+		=> IsString(typeSpec) ? "string?" : typeSpec.Keyword;
 };

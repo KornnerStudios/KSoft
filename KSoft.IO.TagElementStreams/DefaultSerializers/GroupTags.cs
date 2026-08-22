@@ -12,11 +12,11 @@ namespace KSoft.IO
 		{
 			bool reading = s.IsReading;
 
-			var group_tag = reading
-				? null
+			string group_tag = reading
+				? string.Empty
 				: value.TagString;
-			var name = reading
-				? null
+			string name = reading
+				? string.Empty
 				: value.Name;
 			var guid = reading
 				? Values.KGuid.Empty

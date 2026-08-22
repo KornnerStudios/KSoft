@@ -186,6 +186,7 @@ internal static partial class TagElementStreamsSourceBuilder
 
 	private static void WriteStreamNamedOptValue(SourceWriter writer, string subject, string keyword, bool includeBase)
 	{
+		string optionalKeyword = keyword == "string" ? "string?" : keyword;
 		string baseParameter = includeBase
 			? ", NumeralBase numBase = kDefaultRadix"
 			: "";
@@ -214,8 +215,8 @@ internal static partial class TagElementStreamsSourceBuilder
 			$"/// <seealso cref=\"Write{subject}OptOnTrue(TName, {keyword}, Predicate{{{keyword}}}" +
 			$"{(includeBase ? ", NumeralBase" : "")})\"/>");
 		writer.WriteLine(
-			$"public bool Stream{subject}Opt(TName name, ref {keyword} value, " +
-			$"Predicate<{keyword}> predicate = null{baseParameter})");
+			$"public bool Stream{subject}Opt(TName name, ref {optionalKeyword} value, " +
+			$"Predicate<{optionalKeyword}>? predicate = null{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
@@ -223,7 +224,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("if (predicate == null)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"predicate = Predicates.True<{keyword}>;");
+				writer.WriteLine($"predicate = Predicates.True<{optionalKeyword}>;");
 			}
 
 			writer.WriteLine();
@@ -243,6 +244,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		bool isOptional = subject is StreamSubject.ElementOpt or StreamSubject.AttributeOpt;
 		bool isInteger = typeSpec.IsInteger;
 		string keyword = typeSpec.Keyword;
+		string optionalKeyword = isOptional && keyword == "string" ? "string?" : keyword;
 		string returnType = isOptional
 			? "bool"
 			: "void";
@@ -250,7 +252,7 @@ internal static partial class TagElementStreamsSourceBuilder
 			? "TName name, "
 			: "";
 		string predicateParameter = isOptional
-			? $", Predicate<{keyword}> predicate = null"
+			? $", Predicate<{optionalKeyword}>? predicate = null"
 			: "";
 		string baseParameter = isInteger
 			? ", NumeralBase numBase = kDefaultRadix"
@@ -270,7 +272,7 @@ internal static partial class TagElementStreamsSourceBuilder
 
 		writer.WriteLine(
 			$"public {returnType} Stream{subjectName}<T>({nameParameter}T theObj, " +
-			$"Exprs.Expression<Func<T, {keyword}>> propExpr{predicateParameter}{baseParameter})");
+			$"Exprs.Expression<Func<T, {optionalKeyword}>> propExpr{predicateParameter}{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			if (hasName)
@@ -295,7 +297,11 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("if (IsReading)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"var value = default({keyword});");
+				string valueKeyword = isOptional ? optionalKeyword : keyword;
+				string initializerExpression = isOptional
+					? $"default({valueKeyword})"
+					: keyword == "string" ? "string.Empty" : $"default({keyword})";
+				writer.WriteLine($"{valueKeyword} value = {initializerExpression};");
 				writer.WriteLine($"{assignmentPrefix}Read{subjectName}({nameArgument}ref value{baseArgument});");
 				if (isOptional)
 				{
@@ -311,12 +317,19 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("else if (IsWriting)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
+				writer.WriteLine("var propertyValue = property.GetValue(theObj, null);");
+				writer.WriteLine($"if (propertyValue is not {keyword} value)");
+				using (writer.EnterBlock(SourceWriterBlockType.Braces))
+				{
+					writer.WriteLine("throw new InvalidOperationException(\"Property value cannot be null.\");");
+				}
+				writer.WriteLine();
 				string predicateArgument = isOptional
 					? ", predicate"
 					: "";
 				writer.WriteLine(
-					$"{assignmentPrefix}Write{subjectName}{writeOptSuffix}({nameArgument}({keyword})" +
-					$"property.GetValue(theObj, null){predicateArgument}{baseArgument});");
+					$"{assignmentPrefix}Write{subjectName}{writeOptSuffix}({nameArgument}value" +
+					$"{predicateArgument}{baseArgument});");
 			}
 
 			if (isOptional)

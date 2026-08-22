@@ -16,8 +16,6 @@ internal static partial class BitsEncodingSourceBuilder
 		ExceptionHelpers.ThrowIfNull(writeBody, nameof(writeBody));
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");

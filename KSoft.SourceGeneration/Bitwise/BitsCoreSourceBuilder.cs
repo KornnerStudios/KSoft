@@ -20,8 +20,6 @@ internal static partial class BitsCoreSourceBuilder
 		var writer = new SourceWriter();
 
 		writer.WriteGeneratedFileHeader();
-		writer.WriteLine("#nullable disable");
-		writer.WriteLine();
 		writer.WriteLine("using System;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");

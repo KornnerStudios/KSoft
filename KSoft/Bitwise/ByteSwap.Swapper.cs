@@ -62,7 +62,6 @@ namespace KSoft.Bitwise
 
 				int array_count = kCodes[codes_index + 1]; // array count comes after ArrayStart
 
-				bool buffer_is_valid = buffer != null;
 				int buffer_index = startIndex;
 				for (int elements_remaining = array_count; elements_remaining > 0; )
 				{
@@ -75,7 +74,7 @@ namespace KSoft.Bitwise
 						{
 							#region Word
 							case (int)BsCode.Int16:
-								if (buffer_is_valid)
+								if (buffer != null)
 								{
 									SwapInt16(buffer, buffer_index);
 									buffer_index += sizeof(short);
@@ -89,7 +88,7 @@ namespace KSoft.Bitwise
 
 							#region DWord
 							case (int)BsCode.Int32:
-								if (buffer_is_valid)
+								if (buffer != null)
 								{
 									SwapInt32(buffer, buffer_index);
 									buffer_index += sizeof(int);
@@ -103,7 +102,7 @@ namespace KSoft.Bitwise
 
 							#region QWord
 							case (int)BsCode.Int64:
-								if (buffer_is_valid)
+								if (buffer != null)
 								{
 									SwapInt64(buffer, buffer_index);
 									buffer_index += sizeof(long);
@@ -122,7 +121,7 @@ namespace KSoft.Bitwise
 									out recursive_size_in_bytes, out recursive_size_in_codes,
 									codes_index);
 
-								if (buffer_is_valid)
+								if (buffer != null)
 								{
 									buffer_index += recursive_size_in_bytes;
 								}
@@ -146,7 +145,7 @@ namespace KSoft.Bitwise
 									throw new Debug.UnreachableException();
 								}
 
-								if (buffer_is_valid)
+								if (buffer != null)
 								{
 									buffer_index += current_code;
 								}
@@ -162,7 +161,7 @@ namespace KSoft.Bitwise
 
 				outSizeInBytes = size_in_bytes;
 				outSizeInCodes = size_in_codes;
-				return buffer_is_valid
+				return buffer != null
 					? buffer_index
 					: TypeExtensions.kNone;
 			}

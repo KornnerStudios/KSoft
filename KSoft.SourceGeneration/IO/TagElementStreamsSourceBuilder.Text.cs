@@ -30,12 +30,14 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			foreach (PrimitiveSpec typeSpec in MiscTypes())
 			{
-				writer.WriteLine($"protected override void ReadElement(TCursor n, ref {typeSpec.Keyword} value)");
+				string keyword = typeSpec.Keyword;
+				writer.WriteLine($"protected override void ReadElement(TCursor n, ref {keyword} value)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
 					if (IsString(typeSpec))
 					{
-						writer.WriteLine("value = GetInnerText(n);");
+						writer.WriteLine(
+							"value = GetInnerText(n) ?? throw new InvalidOperationException(\"Element inner text must not be null.\");");
 					}
 					else
 					{
@@ -66,7 +68,8 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			foreach (PrimitiveSpec typeSpec in MiscTypes())
 			{
-				writer.WriteLine($"public override void ReadAttribute(string name, ref {typeSpec.Keyword} value)");
+				string keyword = typeSpec.Keyword;
+				writer.WriteLine($"public override void ReadAttribute(string name, ref {keyword} value)");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
 					if (IsString(typeSpec))
@@ -103,7 +106,11 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			foreach (PrimitiveSpec typeSpec in MiscTypes())
 			{
-				writer.WriteLine($"public override bool ReadElementOpt(string name, ref {typeSpec.Keyword} value)");
+				string keyword = OptionalReadKeyword(typeSpec);
+				string valueParameter = IsString(typeSpec)
+					? "[System.Diagnostics.CodeAnalysis.NotNullWhen(true)] ref string? value"
+					: $"ref {keyword} value";
+				writer.WriteLine($"public override bool ReadElementOpt(string name, {valueParameter})");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
 					if (IsString(typeSpec))
@@ -140,7 +147,11 @@ internal static partial class TagElementStreamsSourceBuilder
 		{
 			foreach (PrimitiveSpec typeSpec in MiscTypes())
 			{
-				writer.WriteLine($"public override bool ReadAttributeOpt(string name, ref {typeSpec.Keyword} value)");
+				string keyword = OptionalReadKeyword(typeSpec);
+				string valueParameter = IsString(typeSpec)
+					? "[System.Diagnostics.CodeAnalysis.NotNullWhen(true)] ref string? value"
+					: $"ref {keyword} value";
+				writer.WriteLine($"public override bool ReadAttributeOpt(string name, {valueParameter})");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
 					if (IsString(typeSpec))

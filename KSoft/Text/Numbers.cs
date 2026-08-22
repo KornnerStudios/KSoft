@@ -29,7 +29,7 @@ namespace KSoft
 		public const string kBase64Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 		public const string kBase64DigitsRfc4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string s, int startIndex
+		static bool HandleParseError(ParseErrorType errorType, bool noThrow, string? s, int startIndex
 			, Text.IHandleTextParseError? handler = null)
 		{
 			Exception detailsException;
@@ -53,7 +53,7 @@ namespace KSoft
 
 				case ParseErrorType.InvalidStartIndex:
 					detailsException = new ArgumentOutOfRangeException(nameof(s), string.Format
-						(Util.InvariantCultureInfo, "'{0}' is out of range of the input length of '{1}'", startIndex, s.Length));
+						(Util.InvariantCultureInfo, "'{0}' is out of range of the input length of '{1}'", startIndex, s?.Length ?? 0));
 					break;
 
 				default:

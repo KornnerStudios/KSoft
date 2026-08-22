@@ -50,7 +50,7 @@ namespace KSoft.IO
 
 			bool reading = IsReading;
 			string? str = reading
-				? null
+				? string.Empty
 				: stringResolver(ctxt, id);
 
 			StreamCursor(ref str);
@@ -154,7 +154,7 @@ namespace KSoft.IO
 
 			bool reading = IsReading;
 			string? str = reading
-				? null
+				? string.Empty
 				: stringResolver(ctxt, id);
 
 			StreamElement(name, ref str);
@@ -253,7 +253,7 @@ namespace KSoft.IO
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver,
-			Predicate<string>? predicate = null)
+			Predicate<string?>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(idResolver);
@@ -261,13 +261,16 @@ namespace KSoft.IO
 
 			bool reading = IsReading;
 			string? str = reading
-				? null
+				? string.Empty
 				: stringResolver(ctxt, id);
 
 			bool executed = StreamElementOpt(name, ref str, predicate);
 
 			if (reading && executed)
+			{
+				ArgumentNullException.ThrowIfNull(str);
 				id = idResolver(ctxt, str);
+			}
 
 			return executed;
 		}
@@ -492,8 +495,8 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(stringResolver);
 
 			bool reading = IsReading;
-			string? str = reading
-				? null
+			string str = reading
+				? string.Empty
 				: stringResolver(ctxt, id);
 
 			StreamAttribute(name, ref str);
@@ -553,7 +556,7 @@ namespace KSoft.IO
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,
 			Func<TContext, TIdentifer, string> stringResolver,
-			Predicate<string>? predicate = null)
+			Predicate<string?>? predicate = null)
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
 			ArgumentNullException.ThrowIfNull(idResolver);
@@ -561,13 +564,16 @@ namespace KSoft.IO
 
 			bool reading = IsReading;
 			string? str = reading
-				? null
+				? string.Empty
 				: stringResolver(ctxt, id);
 
 			bool executed = StreamAttributeOpt(name, ref str, predicate);
 
 			if (reading && executed)
+			{
+				ArgumentNullException.ThrowIfNull(str);
 				id = idResolver(ctxt, str);
+			}
 
 			return executed;
 		}
@@ -868,7 +874,7 @@ namespace KSoft.IO
 			}
 		}
 		[SuppressMessage("Microsoft.Design", "CA1308:NormalizeStringsToUppercase")]
-		public bool StreamStringOpt(TName name, ref string value, bool toLower,
+		public bool StreamStringOpt(TName name, ref string? value, bool toLower,
 			TagElementNodeType type = TagElementNodeType.Attribute, bool intern = false)
 		{
 			ThrowIfInvalidNodeNameArg(name, type, nameof(name));
@@ -876,10 +882,15 @@ namespace KSoft.IO
 			bool result = true;
 				 if (type == TagElementNodeType.Element)	result = StreamElementOpt(name, ref value, Predicates.IsNotNullOrEmpty);
 			else if (type == TagElementNodeType.Attribute)	result = StreamAttributeOpt(name, ref value, Predicates.IsNotNullOrEmpty);
-			else if (type == TagElementNodeType.Text)		StreamCursor(ref value);
+			else if (type == TagElementNodeType.Text)
+			{
+				value ??= string.Empty;
+				StreamCursor(ref value);
+			}
 
 			if (IsReading && result)
 			{
+				ArgumentNullException.ThrowIfNull(value);
 				if (toLower) value = value.ToLowerInvariant();
 				if (intern) value = string.Intern(value);
 			}

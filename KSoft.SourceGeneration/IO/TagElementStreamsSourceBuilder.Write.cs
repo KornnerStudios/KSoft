@@ -68,6 +68,7 @@ internal static partial class TagElementStreamsSourceBuilder
 				writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
 			}
 
+			writer.WriteLine("ThrowIfCursorNull();");
 			writer.WriteLine("WriteElement(Cursor, value);");
 		}
 	}
@@ -80,6 +81,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine($"public void WriteCursor({typeSpec.Keyword} value, NumeralBase toBase = kDefaultRadix)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("ThrowIfCursorNull();");
 			writer.WriteLine("WriteElement(Cursor, value, toBase);");
 		}
 	}
@@ -252,6 +254,8 @@ internal static partial class TagElementStreamsSourceBuilder
 		bool includeCursorContract,
 		bool includeBase)
 	{
+		bool isString = keyword == "string";
+		string nullableKeyword = isString ? "string?" : keyword;
 		string predicateDoc = onTrue
 			? "Predicate that defines the conditions for when <paramref name=\"value\"/> <b>is</b> written"
 			: "Predicate that defines the conditions for when <paramref name=\"value\"/> <b>isn't</b> written";
@@ -285,7 +289,7 @@ internal static partial class TagElementStreamsSourceBuilder
 
 		writer.WriteXmlDocReturns("True if <paramref name=\"value\"/> was written");
 		writer.WriteLine(
-			$"public bool {methodName}(TName name, {keyword} value, Predicate<{keyword}> predicate{baseParameter})");
+			$"public bool {methodName}(TName name, {nullableKeyword} value, Predicate<{nullableKeyword}> predicate{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("ArgumentNullException.ThrowIfNull(predicate);");
@@ -310,6 +314,11 @@ internal static partial class TagElementStreamsSourceBuilder
 			writer.WriteLine("if (result)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
+				if (isString)
+				{
+					writer.WriteLine("ArgumentNullException.ThrowIfNull(value);");
+				}
+
 				writer.WriteLine($"Write{subject}(name, value{writeBaseArgument});");
 			}
 
