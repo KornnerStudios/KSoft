@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -10,9 +12,9 @@ namespace KSoft.IO
 {
 	public sealed partial class EndianStream : IKSoftBinaryStream, IKSoftStreamModeable, IKSoftStreamWithVirtualBuffer
 	{
-		public Stream BaseStream { get; private set; }
-		public EndianReader Reader { get; private set; }
-		public EndianWriter Writer { get; private set; }
+		public Stream BaseStream { get; private set; } = null!;
+		public EndianReader Reader { get; private set; } = null!;
+		public EndianWriter Writer { get; private set; } = null!;
 
 		#region IKSoftStream
 		/// <summary>Owner of this stream</summary>
@@ -193,7 +195,7 @@ namespace KSoft.IO
 		/// <summary>Convenience class for C# "using" statements where we want to temporarily inverse the current byte order</summary>
 		class EndianFormatSwitchBlock : IDisposable
 		{
-			readonly IDisposable mReaderSwitch, mWriterSwitch;
+			readonly IDisposable? mReaderSwitch, mWriterSwitch;
 
 			/// <summary></summary>
 			/// <param name="s"></param>
@@ -270,7 +272,7 @@ namespace KSoft.IO
 
 		public EndianStream(Stream baseStream, Encoding encoding,
 			Shell.EndianFormat byteOrder,
-			object streamOwner = null, string name = null, FileAccess permissions = FileAccess.ReadWrite)
+			object? streamOwner = null, string? name = null, FileAccess permissions = FileAccess.ReadWrite)
 		{
 			ArgumentNullException.ThrowIfNull(baseStream);
 			ArgumentNullException.ThrowIfNull(encoding);
@@ -280,14 +282,14 @@ namespace KSoft.IO
 			StreamMode = 0;
 
 			if (baseStream.CanRead && permissions.CanRead())
-				Reader = new EndianReader(baseStream, encoding, byteOrder, streamOwner, name);
+				Reader = new EndianReader(baseStream, encoding, byteOrder, streamOwner!, name!);
 			if (baseStream.CanWrite && permissions.CanWrite())
-				Writer = new EndianWriter(baseStream, encoding, byteOrder, streamOwner, name);
+				Writer = new EndianWriter(baseStream, encoding, byteOrder, streamOwner!, name!);
 		}
 
 		public EndianStream(Stream baseStream,
 			Shell.EndianFormat byteOrder,
-			object streamOwner = null, string name = null, FileAccess permissions = FileAccess.ReadWrite)
+			object? streamOwner = null, string? name = null, FileAccess permissions = FileAccess.ReadWrite)
 		{
 			ArgumentNullException.ThrowIfNull(baseStream);
 
@@ -296,9 +298,9 @@ namespace KSoft.IO
 			StreamMode = 0;
 
 			if (baseStream.CanRead && permissions.CanRead())
-				Reader = new EndianReader(baseStream, byteOrder, streamOwner, name);
+				Reader = new EndianReader(baseStream, byteOrder, streamOwner!, name!);
 			if (baseStream.CanWrite && permissions.CanWrite())
-				Writer = new EndianWriter(baseStream, byteOrder, streamOwner, name);
+				Writer = new EndianWriter(baseStream, byteOrder, streamOwner!, name!);
 		}
 
 		public static EndianStream UsingReader(EndianReader reader)
@@ -340,12 +342,12 @@ namespace KSoft.IO
 			if (Reader != null)
 			{
 				Reader.Dispose();
-				Reader = null;
+				Reader = null!;
 			}
 			if (Writer != null)
 			{
 				Writer.Dispose();
-				Writer = null;
+				Writer = null!;
 			}
 		}
 		#endregion
