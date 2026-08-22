@@ -1,4 +1,3 @@
-﻿#nullable enable
 
 using System;
 using Exprs = System.Linq.Expressions;

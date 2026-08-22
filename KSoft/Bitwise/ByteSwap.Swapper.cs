@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-#nullable enable
 
 namespace KSoft.Bitwise
 {

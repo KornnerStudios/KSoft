@@ -1,4 +1,3 @@
-﻿#nullable enable
 
 /*
  * Copyright (c) 2013 Calvin Rien

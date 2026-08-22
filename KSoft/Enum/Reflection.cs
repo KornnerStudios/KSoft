@@ -5,7 +5,6 @@ using System.Reflection;
 using Expr = System.Linq.Expressions.Expression;
 using ExprParam = System.Linq.Expressions.ParameterExpression;
 
-#nullable enable
 
 namespace KSoft.Reflection
 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 
-#nullable enable
 
 namespace KSoft.Debug
 {

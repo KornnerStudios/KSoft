@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Interop = System.Runtime.InteropServices;
 
-#nullable enable
 
 namespace KSoft.Values
 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Interop = System.Runtime.InteropServices;
 
-#nullable enable
 
 namespace KSoft.Shell
 {

@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using DebuggerStepThrough = System.Diagnostics.DebuggerStepThroughAttribute;
 
-#nullable enable
 
 namespace KSoft
 {

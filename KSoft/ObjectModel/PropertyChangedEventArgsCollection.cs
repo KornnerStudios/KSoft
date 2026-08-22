@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Exprs = System.Linq.Expressions;
 using ComponentModel = System.ComponentModel;
 
-#nullable enable
 
 namespace KSoft.ObjectModel
 {
