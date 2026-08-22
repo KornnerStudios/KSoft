@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.IO
 {
@@ -12,7 +14,7 @@ namespace KSoft.IO
 		, ICanThrowReadExceptionsWithExtraDetails
 	{
 		readonly IKSoftStream mStream;
-		Text.ITextLineInfo mReadLineInfo;
+		Text.ITextLineInfo? mReadLineInfo;
 		public Func<Exception> GetLineInfoException { get; private set; }
 
 		public TextStreamReadErrorState(IKSoftStream textStream)
@@ -26,7 +28,7 @@ namespace KSoft.IO
 
 		/// <summary>Line info of the last read that took place</summary>
 		/// <remarks>Rather, about to take place. Should be set before a read with a possible error executes</remarks>
-		public Text.ITextLineInfo LastReadLineInfo
+		public Text.ITextLineInfo? LastReadLineInfo
 		{
 			get { return mReadLineInfo; }
 			set { mReadLineInfo = value; }
@@ -48,7 +50,7 @@ namespace KSoft.IO
 
 		private Text.TextLineInfoException GetReadException(Exception detailsException)
 		{
-			return new Text.TextLineInfoException(detailsException, mReadLineInfo, mStream.StreamName);
+			return new Text.TextLineInfoException(detailsException, mReadLineInfo!, mStream.StreamName);
 		}
 
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/> using <see cref="LastReadLineInfo"/></summary>

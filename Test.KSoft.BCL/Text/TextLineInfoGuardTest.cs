@@ -55,6 +55,27 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void TextStreamReadErrorState_WithoutLineInfo_ThrowsInvalidOperationException()
+	{
+		using var stream = new IO.EndianStream(new System.IO.MemoryStream());
+		var errorState = new IO.TextStreamReadErrorState(stream);
+		var detailsException = new InvalidOperationException("details");
+		const string expectedMessage =
+			"A Text stream reader implementation failed to set the LastReadLineInfo before a read took place. " +
+			"Guess what? Said read just failed";
+
+		Assert.IsNull(errorState.LastReadLineInfo);
+		Assert.AreEqual(expectedMessage,
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = errorState.GetLineInfoException()).Message);
+		Assert.AreEqual(expectedMessage,
+			Assert.ThrowsExactly<InvalidOperationException>(
+				() => errorState.ThrowReadExeception(detailsException)).Message);
+		Assert.AreEqual(expectedMessage,
+			Assert.ThrowsExactly<InvalidOperationException>(
+				() => errorState.LogReadExceptionWarning(detailsException)).Message);
+	}
+
+	[TestMethod]
 	public void TextLineInfoException_CopiesLineInfoAndStreamName()
 	{
 		var lineInfo = new TextLineInfo(4, 5);
@@ -64,5 +85,18 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 		Assert.AreEqual("file.txt", exception.StreamName);
 		Assert.AreEqual(4, exception.LineNumber);
 		Assert.AreEqual(5, exception.LinePosition);
+	}
+
+	[TestMethod]
+	public void TextLineInfoException_AllowsOptionalExceptionAndUnknownStreamName()
+	{
+		var lineInfo = new TextLineInfo(4, 5);
+
+		var nullNameException = new TextLineInfoException(null!, lineInfo, null);
+		var emptyNameException = new TextLineInfoException(lineInfo, string.Empty);
+
+		Assert.IsNull(nullNameException.InnerException);
+		Assert.AreEqual("<unknown text stream>", nullNameException.StreamName);
+		Assert.AreEqual("<unknown text stream>", emptyNameException.StreamName);
 	}
 }

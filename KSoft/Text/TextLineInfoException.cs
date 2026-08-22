@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace KSoft.Text
 {
@@ -13,7 +15,7 @@ namespace KSoft.Text
 
 		public string StreamName { get => mStreamName; }
 
-		public TextLineInfoException(Exception innerException, ITextLineInfo lineInfo, string streamName = null)
+		public TextLineInfoException(Exception? innerException, ITextLineInfo lineInfo, string? streamName = null)
 			: base("Text stream error", innerException)
 		{
 			ArgumentNullException.ThrowIfNull(lineInfo);
@@ -26,7 +28,7 @@ namespace KSoft.Text
 			mStreamName = streamName;
 			mLineInfo = new TextLineInfo(lineInfo);
 		}
-		public TextLineInfoException(ITextLineInfo lineInfo, string streamName = null)
+		public TextLineInfoException(ITextLineInfo lineInfo, string? streamName = null)
 			: this(null, lineInfo, streamName)
 		{
 		}
