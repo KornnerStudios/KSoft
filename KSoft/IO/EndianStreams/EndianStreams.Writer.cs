@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using System.Text;
 
@@ -38,7 +40,7 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		public EndianWriter(Stream output, Encoding encoding,
-			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null)
+			Shell.EndianFormat byteOrder, object? streamOwner = null, string? name = null)
 			: base(Util.ThrowIfNull(output), Util.ThrowIfNull(encoding))
 		{
 			BaseStreamOwner = true;
@@ -63,7 +65,7 @@ namespace KSoft.IO
 		/// <param name="name">Special name to associate with this stream</param>
 		/// <remarks>Defaults to <see cref="System.Text.UTF8Encoding"/> for the string encoding</remarks>
 		public EndianWriter(Stream output, Shell.EndianFormat byteOrder,
-			object streamOwner = null, string name = null) : this(output, Encoding.UTF8, byteOrder, streamOwner, name)
+			object? streamOwner = null, string? name = null) : this(output, Encoding.UTF8, byteOrder, streamOwner!, name!)
 		{
 		}
 		/// <summary>Create a new binary writer which uses the environment's endian format</summary>

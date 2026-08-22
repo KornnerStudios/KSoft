@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using System.Text;
 
@@ -25,7 +27,7 @@ namespace KSoft.IO
 		/// <param name="streamOwner">Owner object of this stream, or null</param>
 		/// <param name="name">Special name to associate with this stream</param>
 		public EndianReader(Stream input, Encoding encoding,
-			Shell.EndianFormat byteOrder, object streamOwner = null, string name = null)
+			Shell.EndianFormat byteOrder, object? streamOwner = null, string? name = null)
 			: base(Util.ThrowIfNull(input), Util.ThrowIfNull(encoding))
 		{
 			BaseStreamOwner = true;
@@ -50,7 +52,7 @@ namespace KSoft.IO
 		/// <param name="name">Special name to associate with this stream</param>
 		/// <remarks>Defaults to <see cref="System.Text.UTF8Encoding"/> for the string encoding</remarks>
 		public EndianReader(Stream input, Shell.EndianFormat byteOrder,
-			object streamOwner = null, string name = null) : this(input, new UTF8Encoding(), byteOrder, streamOwner, name)
+			object? streamOwner = null, string? name = null) : this(input, new UTF8Encoding(), byteOrder, streamOwner!, name!)
 		{
 		}
 		/// <summary>Create a new binary reader which uses the environment's endian format</summary>
