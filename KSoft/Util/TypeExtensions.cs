@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Text;
 
 namespace KSoft
@@ -52,7 +54,7 @@ namespace KSoft
 		// Based on http://stackoverflow.com/questions/271398/what-are-your-favorite-extension-methods-for-c-codeplex-com-extensionoverflow/3842545#3842545
 
 		[System.Diagnostics.DebuggerStepThrough]
-		public static TRet NullOr<T, TRet>(this T theObj, Func<T, TRet> func, TRet elseValue = default)
+		public static TRet? NullOr<T, TRet>(this T? theObj, Func<T, TRet> func, TRet? elseValue = default)
 			where T : class
 		{
 			ArgumentNullException.ThrowIfNull(func);
@@ -105,14 +107,14 @@ namespace KSoft
 
 		#region IO
 		public static /*IDisposable*/IO.IKSoftStreamOwnerBookmark EnterOwnerBookmark(this IO.IKSoftStream stream,
-			object newOwner = null)
+			object? newOwner = null)
 		{
-			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner);
+			return new IO.IKSoftStreamOwnerBookmark(stream, newOwner!);
 		}
 		public static /*IDisposable*/IO.IKSoftStreamUserDataBookmark EnterUserDataBookmark(this IO.IKSoftStream stream,
-			object newUserData = null)
+			object? newUserData = null)
 		{
-			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData);
+			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData!);
 		}
 		/// <summary>Temporarily enter a new data streaming state</summary>
 		/// <param name="newMode"></param>
@@ -314,7 +316,7 @@ namespace KSoft
 //				UTF7Encoding => MS.StringStorageWidthType.UTF7,
 				UTF8Encoding => MS.StringStorageWidthType.UTF8,
 				UTF32Encoding => MS.StringStorageWidthType.UTF32,
-				Text.StringStorageEncoding => (enc as Text.StringStorageEncoding).Storage.WidthType,
+				Text.StringStorageEncoding => (enc as Text.StringStorageEncoding)!.Storage.WidthType,
 				_ => throw new Debug.UnreachableException(enc.GetType().ToString())
 			};
 		}
