@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -28,7 +30,6 @@ namespace KSoft
 		/// <param name="value">Value to validate</param>
 		/// <param name="paramName">Caller argument expression for <paramref name="value"/></param>
 		/// <returns><paramref name="value"/> after null validation</returns>
-		#nullable enable
 		[return: NotNull]
 		public static T ThrowIfNull<T>(
 			[NotNull] T? value,
@@ -38,7 +39,6 @@ namespace KSoft
 			ArgumentNullException.ThrowIfNull(value, paramName);
 			return value;
 		}
-		#nullable restore
 
 		public static System.Globalization.CultureInfo InvariantCultureInfo { get => System.Globalization.CultureInfo.InvariantCulture; }
 
@@ -48,39 +48,19 @@ namespace KSoft
 		#endregion
 
 		#region static GetNullException function ptr
-		private static Func<Exception> gGetNullException;
-		internal static Func<Exception> GetNullException { get {
-			if (gGetNullException == null)
-			{
-				gGetNullException = () => null;
-			}
-
-			return gGetNullException;
-		} }
+		private static Func<Exception?>? gGetNullException;
+		internal static Func<Exception?> GetNullException =>
+			gGetNullException ??= () => null;
 		#endregion
 
 		#region static pre-boxed boolean values
-		private static object gFalseObject;
+		private static object? gFalseObject;
 		/// <summary>false boolean pre-boxed to an object</summary>
-		public static object FalseObject { get {
-			if (gFalseObject == null)
-			{
-				gFalseObject = (object)false;
-			}
+		public static object FalseObject => gFalseObject ??= false;
 
-			return gFalseObject;
-		} }
-
-		private static object gTrueObject;
+		private static object? gTrueObject;
 		/// <summary>true boolean pre-boxed to an object</summary>
-		public static object TrueObject { get {
-			if (gTrueObject == null)
-			{
-				gTrueObject = (object)true;
-			}
-
-			return gTrueObject;
-		} }
+		public static object TrueObject => gTrueObject ??= true;
 		#endregion
 
 		#region IDisposable
@@ -95,7 +75,7 @@ namespace KSoft
 		/// <summary>If <paramref name="theObj"/> isn't already null, calls its Dispose and nulls the reference</summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="theObj"></param>
-		public static void DisposeAndNull<T>(ref T theObj)
+		public static void DisposeAndNull<T>(ref T? theObj)
 			where T : class, IDisposable
 		{
 			if (theObj != null)
@@ -106,11 +86,11 @@ namespace KSoft
 		}
 		#endregion
 
-		public static void ClearAndNull<T>(ref T[] array)
+		public static void ClearAndNull<T>(ref T[]? array)
 		{
 			array = null;
 		}
-		public static void ClearAndNull<T>(ref ICollection<T> coll)
+		public static void ClearAndNull<T>(ref ICollection<T>? coll)
 		{
 			if (coll != null)
 			{
@@ -173,9 +153,9 @@ namespace KSoft
 			}
 
 			#region IComparer<T> Members
-			public int Compare(T x, T y)
+			public int Compare(T? x, T? y)
 			{
-				return mComparer(x, y);
+				return mComparer(x!, y!);
 			}
 			#endregion
 
@@ -197,7 +177,7 @@ namespace KSoft
 		/// <param name="x">First object to compare</param>
 		/// <param name="y">Second object to compare</param>
 		/// <returns></returns>
-		public static bool GenericReferenceEquals<T>(T x, T y)
+		public static bool GenericReferenceEquals<T>(T? x, T? y)
 			where T : class, IEquatable<T>
 		{
 			// Handles 'x is same instance as y' and 'null == null'
@@ -289,7 +269,7 @@ namespace KSoft
 		}
 		// Based on AppendFormatHelper in https://referencesource.microsoft.com/#mscorlib/system/text/stringbuilder.cs
 		/// <summary>Returns the number of expected arguments to successfully call string.Format, or a negative number representing the offset at which there is an error</summary>
-		public static int CountNumberOfFormatArguments(string format)
+		public static int CountNumberOfFormatArguments(string? format)
 		{
 			if (string.IsNullOrEmpty(format))
 			{
@@ -468,7 +448,7 @@ namespace KSoft
 		}
 		#endregion
 
-		public static string[] Trim(string[] array)
+		public static string[]? Trim(string[]? array)
 		{
 			if (array == null || array.Length == 0)
 			{
@@ -528,7 +508,7 @@ namespace KSoft
 		/// <summary>
 		/// Emulate .NET's Enum.TryParse. Only real difference is we by default IGNORE CASE, and they don't
 		/// </summary>
-		public static bool TryParseEnum<TEnum>(string str, out TEnum value
+		public static bool TryParseEnum<TEnum>(string? str, out TEnum value
 			, bool ignoreCase = true)
 			where TEnum : struct, Enum
 		{
@@ -539,7 +519,7 @@ namespace KSoft
 		/// Emulate .NET's Enum.TryParse. Only real difference is we by default IGNORE CASE, and they don't
 		/// </summary>
 		/// <remarks>Opt = Optional, as it we won't overwrite 'value' on failure (can't overload based on ref/out alone)</remarks>
-		public static bool TryParseEnumOpt<TEnum>(string str, ref TEnum value
+		public static bool TryParseEnumOpt<TEnum>(string? str, ref TEnum value
 			, bool ignoreCase = true)
 			where TEnum : struct, Enum
 		{
@@ -564,7 +544,7 @@ namespace KSoft
 #endif
 		}
 
-		public static bool ParseStringList(string line, List<string> list
+		public static bool ParseStringList(string? line, List<string>? list
 			, bool sort = false
 			, string valueSeperator = TypeExtensions.kDefaultArrayValueSeperator)
 		{
@@ -593,7 +573,7 @@ namespace KSoft
 
 			return true;
 		}
-		public static bool ParseStringList(IEnumerable<string> collection, List<string> list
+		public static bool ParseStringList(IEnumerable<string>? collection, List<string>? list
 			, bool sort = false)
 		{
 			if (collection == null)
@@ -626,9 +606,9 @@ namespace KSoft
 		/// <returns>The relative path from the start directory, or <paramref name="toPath"/> when schemes differ.</returns>
 		public static string GetRelativePath(string fromPath, string toPath)
 		{
-			if (string.IsNullOrEmpty(fromPath))
+			if (fromPath is null || fromPath.Length == 0)
 				throw new ArgumentNullException(nameof(fromPath));
-			if (string.IsNullOrEmpty(toPath))
+			if (toPath is null || toPath.Length == 0)
 				throw new ArgumentNullException(nameof(toPath));
 
 			Uri fromUri = new(AppendDirectorySeparatorChar(fromPath));
@@ -656,10 +636,11 @@ namespace KSoft
 		/// <paramref name="path"/> when it is null, empty, file-like, or already terminated; otherwise the path with a
 		/// trailing directory separator.
 		/// </returns>
-		public static string AppendDirectorySeparatorChar(string path)
+		[return: NotNullIfNotNull(nameof(path))]
+		public static string? AppendDirectorySeparatorChar(string? path)
 		{
 
-			string result = path;
+			string? result = path;
 
 			if (result.IsNotNullOrEmpty())
 			{
@@ -681,10 +662,11 @@ namespace KSoft
 		/// <paramref name="path"/> when it is null, empty, or already rooted; otherwise the path with a leading
 		/// directory separator.
 		/// </returns>
-		public static string PrependDirectorySeparatorChar(string path)
+		[return: NotNullIfNotNull(nameof(path))]
+		public static string? PrependDirectorySeparatorChar(string? path)
 		{
 
-			string result = path;
+			string? result = path;
 
 			if (result.IsNotNullOrEmpty())
 			{
@@ -701,10 +683,11 @@ namespace KSoft
 		/// <summary>Removes a final slash from the path if it has one</summary>
 		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
 		/// <returns><paramref name="path"/> without one trailing directory separator when one is present.</returns>
-		public static string RemoveTrailingDirectorySeparatorChar(string path)
+		[return: NotNullIfNotNull(nameof(path))]
+		public static string? RemoveTrailingDirectorySeparatorChar(string? path)
 		{
 
-			string result = path;
+			string? result = path;
 
 			if (result.IsNotNullOrEmpty())
 			{
@@ -720,10 +703,11 @@ namespace KSoft
 		/// <summary>Replace normal directory separators with alternate directory separators.</summary>
 		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
 		/// <returns><paramref name="path"/> with directory separators replaced, or null/empty unchanged.</returns>
-		public static string ReplaceDirectorySeparatorWithAltChar(string path)
+		[return: NotNullIfNotNull(nameof(path))]
+		public static string? ReplaceDirectorySeparatorWithAltChar(string? path)
 		{
 
-			string result = path;
+			string? result = path;
 
 			if (result.IsNotNullOrEmpty())
 			{
@@ -735,10 +719,11 @@ namespace KSoft
 		/// <summary>Replace alternate directory separators with normal directory separators.</summary>
 		/// <param name="path">Path to normalize. Null or empty values are returned unchanged.</param>
 		/// <returns><paramref name="path"/> with alternate separators replaced, or null/empty unchanged.</returns>
-		public static string ReplaceAltDirectorySeparatorWithNormalChar(string path)
+		[return: NotNullIfNotNull(nameof(path))]
+		public static string? ReplaceAltDirectorySeparatorWithNormalChar(string? path)
 		{
 
-			string result = path;
+			string? result = path;
 
 			if (result.IsNotNullOrEmpty())
 			{

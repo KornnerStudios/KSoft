@@ -76,10 +76,12 @@ namespace KSoft.Test
 			Assert.AreEqual(now_clamped, converted);
 		}
 
+		#nullable enable
+
 		[TestMethod]
 		public void Util_GenericReferenceEqualsTest()
 		{
-			string x = "x", y = "y";
+			string? x = "x", y = "y";
 
 			Assert.IsTrue(Util.GenericReferenceEquals(x, x));
 			Assert.IsTrue(Util.GenericReferenceEquals(x, y) == Util.GenericReferenceEquals(y, x));
@@ -90,6 +92,49 @@ namespace KSoft.Test
 			x = null;
 			Assert.IsTrue(Util.GenericReferenceEquals(x, y));
 		}
+
+		[TestMethod]
+		public void Util_NullPreservingHelpers_RetainExistingBehavior()
+		{
+			var nullExceptionFactory = Util.GetNullException;
+			Assert.IsNull(nullExceptionFactory());
+			Assert.AreSame(nullExceptionFactory, Util.GetNullException);
+
+			Assert.AreSame(Util.FalseObject, Util.FalseObject);
+			Assert.AreEqual(false, Util.FalseObject);
+			Assert.AreSame(Util.TrueObject, Util.TrueObject);
+			Assert.AreEqual(true, Util.TrueObject);
+
+			int comparerCalls = 0;
+			var comparer = Util.CreateComparer<string>((lhs, rhs) =>
+			{
+				comparerCalls++;
+				Assert.IsNull(lhs);
+				Assert.IsNull(rhs);
+				return 0;
+			});
+			Assert.AreEqual(0, comparer.Compare(null, null));
+			Assert.AreEqual(1, comparerCalls);
+
+			IDisposable? disposable = new MemoryStream();
+			Util.DisposeAndNull(ref disposable);
+			Assert.IsNull(disposable);
+
+			string[]? array = [];
+			Util.ClearAndNull(ref array);
+			Assert.IsNull(array);
+
+			var collectionInstance = new List<int> { 1 };
+			ICollection<int>? collection = collectionInstance;
+			Util.ClearAndNull(ref collection);
+			Assert.IsNull(collection);
+			Assert.AreEqual(0, collectionInstance.Count);
+
+			string[]? nullArray = null;
+			Assert.IsNull(Util.Trim(nullArray));
+		}
+
+		#nullable restore
 
 		[TestMethod]
 		public void Util_ThrowIfNullTest()
