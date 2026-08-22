@@ -4,6 +4,7 @@
 		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>Test.KSoft.SourceGeneration</RootNamespace>
 		<AssemblyName>Test.KSoft.SourceGeneration</AssemblyName>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>

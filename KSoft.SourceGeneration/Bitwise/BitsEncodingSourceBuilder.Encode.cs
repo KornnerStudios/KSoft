@@ -172,7 +172,8 @@ internal static partial class BitsEncodingSourceBuilder
 			"Bitwise.BitFieldTraits traits)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
+			writer.WriteLine(
+				"if (traits.IsEmpty) { throw new ArgumentException(\"Traits must not be empty.\", nameof(traits)); }");
 			writer.WriteLine();
 			writer.WriteLine($"var bitmask = traits.{BitMaskPropertyName(wordSpec)};");
 			writer.WriteLine("// Use the bit mask's invert so we can get all of the non-value bits");
@@ -248,7 +249,7 @@ internal static partial class BitsEncodingSourceBuilder
 
 	private static void WriteBitEncodeClearingRemarks(
 		SourceWriter writer,
-		string firstContinuationLine,
+		string? firstContinuationLine,
 		string secondContinuationPrefix)
 	{
 		writer.WriteLine("/// <remarks>");

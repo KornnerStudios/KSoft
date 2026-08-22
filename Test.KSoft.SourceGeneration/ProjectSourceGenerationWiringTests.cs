@@ -51,7 +51,10 @@ public sealed class ProjectSourceGenerationWiringTests
 		{
 			var document = LoadProject(project);
 			var analyzerReference = ElementsNamed(document, "ProjectReference")
-				.Single(x => string.Equals((string)x.Attribute("Include"), kAnalyzerProjectReference, StringComparison.Ordinal));
+				.Single(x => string.Equals(
+					(string?)x.Attribute("Include"),
+					kAnalyzerProjectReference,
+					StringComparison.Ordinal));
 
 			Assert.IsNull(analyzerReference.Attribute("Condition"), project.DisplayName);
 			Assert.AreEqual("Analyzer", analyzerReference.Attribute("OutputItemType")?.Value, project.DisplayName);
@@ -67,7 +70,8 @@ public sealed class ProjectSourceGenerationWiringTests
 		{
 			var document = LoadProject(project);
 			var projectReferenceIncludes = ElementsNamed(document, "ProjectReference")
-				.Select(static x => (string)x.Attribute("Include"))
+				.Select(static x => (string?)x.Attribute("Include"))
+				.OfType<string>()
 				.ToArray();
 
 			Assert.IsFalse(
@@ -107,7 +111,7 @@ public sealed class ProjectSourceGenerationWiringTests
 
 	private static string FindKSoftRoot()
 	{
-		var directory = new DirectoryInfo(AppContext.BaseDirectory);
+		DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
 		while (directory != null)
 		{
 			string directProject = Path.Combine(

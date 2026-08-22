@@ -5,6 +5,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>KSoft.SourceGeneration</RootNamespace>
 		<AssemblyName>KSoft.SourceGeneration</AssemblyName>
+		<Nullable>enable</Nullable>
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<!-- RS2008: Release tracking files are intentionally omitted while the generator is internal-only groundwork. -->

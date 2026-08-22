@@ -335,7 +335,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		SourceWriter writer,
 		string keyword,
 		string readStatement,
-		string initializer = null)
+		string? initializer = null)
 	{
 		writer.WriteLine("foreach (var node in elements)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
