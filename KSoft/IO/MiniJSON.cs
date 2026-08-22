@@ -1,4 +1,6 @@
-﻿/*
+﻿#nullable enable
+
+/*
  * Copyright (c) 2013 Calvin Rien
  *
  * Based on the JSON parser by Patrick van Bergen
@@ -93,7 +95,7 @@ namespace MiniJSON {
         // KM00 start
         public static string PrettyPrintSpace { get; set; } = "\t";
 
-        private static object ConvertInt64(Type returnType, long number)
+        private static object? ConvertInt64(Type returnType, long number)
         {
             return Type.GetTypeCode(returnType) switch
             {
@@ -112,7 +114,7 @@ namespace MiniJSON {
             };
         }
 
-        private static object ConvertDouble(Type returnType, double number)
+        private static object? ConvertDouble(Type returnType, double number)
         {
             return Type.GetTypeCode(returnType) switch
             {
@@ -144,7 +146,7 @@ namespace MiniJSON {
         }
 
         #region GetValue
-        public static T GetValue<T>(object jsonObject, string[] keyPath, T defaultValue = default)
+        public static T? GetValue<T>(object? jsonObject, string[] keyPath, T? defaultValue = default)
         {
             if (keyPath.Length == 0)
             {
@@ -153,25 +155,25 @@ namespace MiniJSON {
 
             for (var i = 0; i < keyPath.Length - 1; i++)
             {
-                jsonObject = GetValue<object>(jsonObject, keyPath[i]);
+                jsonObject = GetValue<object?>(jsonObject, keyPath[i]);
             }
 
             return GetValue<T>(jsonObject, keyPath[keyPath.Length - 1], defaultValue);
         }
 
-        public static object GetValue(object jsonObject, string key, object defaultValue = null)
+        public static object? GetValue(object? jsonObject, string key, object? defaultValue = null)
         {
-            return GetValue<object>(jsonObject, key, defaultValue);
+            return GetValue<object?>(jsonObject, key, defaultValue);
         }
 
-        public static T GetValue<T>(object jsonObject, string key, T defaultValue = default)
+        public static T? GetValue<T>(object? jsonObject, string key, T? defaultValue = default)
         {
             if (jsonObject is not Dictionary<string, object> dict)
             {
                 return defaultValue;
             }
 
-            if (!dict.TryGetValue(key, out object result))
+            if (!dict.TryGetValue(key, out object? result))
             {
                 return defaultValue;
             }
@@ -213,12 +215,12 @@ namespace MiniJSON {
                 }
             }
 
-            return (T)result;
+            return (T?)result;
         }
         #endregion
 
         #region SetValue
-        public static void SetValue(object jsonObject, string[] keyPath, object value)
+        public static void SetValue(object jsonObject, string[] keyPath, object? value)
         {
             for (int i = 0; i < keyPath.Length - 1; i++)
             {
@@ -234,7 +236,7 @@ namespace MiniJSON {
             Json.SetValue(jsonObject, keyPath[keyPath.Length - 1], value);
         }
 
-        public static void SetValue(object jsonObject, string key, object value)
+        public static void SetValue(object jsonObject, string key, object? value)
         {
             if (jsonObject is not Dictionary<string, object> dict)
             {
@@ -247,7 +249,7 @@ namespace MiniJSON {
             }
             else
             {
-                dict[key] = value;
+                dict[key] = value!;
             }
         }
         #endregion
@@ -258,7 +260,7 @@ namespace MiniJSON {
         /// </summary>
         /// <param name="json">A JSON string.</param>
         /// <returns>An List&lt;object&gt;, a Dictionary&lt;string, object&gt;, a double, an integer,a string, null, true, or false</returns>
-        public static object Deserialize(string json) {
+        public static object? Deserialize(string? json) {
             // save the string for debug information
             if (json == null) {
                 return null;
@@ -295,7 +297,7 @@ namespace MiniJSON {
                 json = new StringReader(jsonString);
             }
 
-            public static object Parse(string jsonString) {
+            public static object? Parse(string jsonString) {
                 using (var instance = new Parser(jsonString)) {
                     return instance.ParseValue();
                 }
@@ -303,11 +305,11 @@ namespace MiniJSON {
 
             public void Dispose() {
                 json.Dispose();
-                json = null;
+                json = null!;
             }
 
-            Dictionary<string, object> ParseObject() {
-                Dictionary<string, object> table = new Dictionary<string, object>();
+            Dictionary<string, object?>? ParseObject() {
+                Dictionary<string, object?> table = new Dictionary<string, object?>();
 
                 // ditch opening brace
                 json.Read();
@@ -323,7 +325,7 @@ namespace MiniJSON {
                         return table;
                     case TOKEN.STRING:
                         // name
-                        string name = ParseString();
+                        string? name = ParseString();
                         if (name == null) {
                             return null;
                         }
@@ -337,7 +339,7 @@ namespace MiniJSON {
 
                         // value
                         TOKEN valueToken = NextToken;
-                         object value = ParseByToken(valueToken);
+                         object? value = ParseByToken(valueToken);
                          if (value == null && valueToken != TOKEN.NULL)
                              return null;
                          table[name] = value;
@@ -348,14 +350,14 @@ namespace MiniJSON {
                 }
             }
 
-            List<object> ParseArray() {
+            List<object?>? ParseArray() {
                 // KM00: changed this method to handle invalid arrays
                 // see: https://gist.github.com/darktable/1411710/16b47b4865745c4f6278e2e60d2cda53b84447d3
                 // "MiniJSON causes an OutOfMemoryException..."
                 // but also had to change the way 'array' is allocated
 
                 // KM00 start
-                List<object> array = null;// = new List<object>();
+                List<object?>? array = null;// = new List<object>();
                 // KM00 end
 
                 // ditch opening bracket
@@ -380,14 +382,14 @@ namespace MiniJSON {
                         break;
                     // KM00 end
                     default:
-                        object value = ParseByToken(nextToken);
+                        object? value = ParseByToken(nextToken);
                         if (value == null && nextToken != TOKEN.NULL)
                             return null;
 
                         // KM00 start
                         if (array == null)
                         {
-                            array = new List<object>();
+                            array = new List<object?>();
                         }
                         // KM00 end
 
@@ -399,19 +401,19 @@ namespace MiniJSON {
                 // KM00 start
                 if (array == null)
                 {
-                    array = new List<object>();
+                    array = new List<object?>();
                 }
                 // KM00 end
 
                 return array;
             }
 
-            object ParseValue() {
+            object? ParseValue() {
                 TOKEN nextToken = NextToken;
                 return ParseByToken(nextToken);
             }
 
-            object ParseByToken(TOKEN token) {
+            object? ParseByToken(TOKEN token) {
                 switch (token) {
                 case TOKEN.STRING:
                     return ParseString();
@@ -433,8 +435,8 @@ namespace MiniJSON {
             }
 
             // KM00 start
-            private StringBuilder mParseStringBuffer;
-            private char[] mParseStringHexBuffer;
+            private StringBuilder? mParseStringBuffer;
+            private char[]? mParseStringHexBuffer;
             private static bool IsHexDigit(char c)
             {
                 return
@@ -444,7 +446,7 @@ namespace MiniJSON {
                     ;
             }
             // KM00 end
-            string ParseString() {
+            string? ParseString() {
                 // KM00 start
                 if (mParseStringBuffer == null)
                 {
@@ -585,7 +587,7 @@ namespace MiniJSON {
             }
 
             // KM00 start
-            private StringBuilder mNextWordStringBuffer;
+            private StringBuilder? mNextWordStringBuffer;
             // KM00 end
             string NextWord {
                 get {
@@ -673,7 +675,7 @@ namespace MiniJSON {
         /// </summary>
         /// <param name="theObj">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        public static string Serialize(object theObj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
+        public static string Serialize(object? theObj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
             return Serializer.Serialize(theObj, prettyPrint, numPrettyPrintLevels);
         }
 
@@ -686,7 +688,7 @@ namespace MiniJSON {
                 builder = new StringBuilder();
             }
 
-            public static string Serialize(object obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
+            public static string Serialize(object? obj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
                 var instance = new Serializer
                 {
                     prettyPrint = prettyPrint,
@@ -697,10 +699,10 @@ namespace MiniJSON {
                 return instance.builder.ToString();
             }
 
-            void SerializeValue(object value, int level = 0) {
-                IList asList;
-                IDictionary asDict;
-                string asStr;
+            void SerializeValue(object? value, int level = 0) {
+                IList? asList;
+                IDictionary? asDict;
+                string? asStr;
 
                 if (value == null) {
                     builder.Append("null");
@@ -734,7 +736,7 @@ namespace MiniJSON {
                         PrettyPrintNewLine(level + 1);
                     }
 
-                    SerializeString(e.ToString());
+                    SerializeString(e.ToString()!);
                     builder.Append(':');
 
                     SerializeValue(obj[e], level + 1);
@@ -840,7 +842,7 @@ namespace MiniJSON {
                     // KM00 changed to ToStringInvariant with recommended round trip specifier
                     builder.Append(Convert.ToDouble(value, Util.InvariantCultureInfo).ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier));
                 } else {
-                    SerializeString(value.ToString());
+                    SerializeString(value.ToString()!);
                 }
             }
 
