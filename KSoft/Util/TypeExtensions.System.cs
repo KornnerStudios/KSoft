@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 
+#nullable enable
+
 namespace KSoft
 {
 	partial class TypeExtensions
@@ -15,7 +17,7 @@ namespace KSoft
 		public const string kDefaultArrayValueSeperator = ",";
 
 		#region TypeCode
-		public static TypeCode TryGetTypeCode(this object theObj)
+		public static TypeCode TryGetTypeCode(this object? theObj)
 		{
 			var type_code = TypeCode.Empty;
 
@@ -46,7 +48,7 @@ namespace KSoft
 		}
 		#endregion
 
-		public static string ToStringInvariant(this float v, string format = null)
+		public static string ToStringInvariant(this float v, string? format = null)
 		{
 			if (!string.IsNullOrEmpty(format))
 			{
@@ -55,7 +57,7 @@ namespace KSoft
 
 			return v.ToString(System.Globalization.CultureInfo.InvariantCulture);
 		}
-		public static string ToStringInvariant(this double v, string format = null)
+		public static string ToStringInvariant(this double v, string? format = null)
 		{
 			if (!string.IsNullOrEmpty(format))
 			{
@@ -151,13 +153,13 @@ namespace KSoft
 		{
 		}
 
-		public static Exception GetOnlyExceptionOrAllWhenAggregate(this Exception e)
+		public static Exception? GetOnlyExceptionOrAllWhenAggregate(this Exception? e)
 		{
 			var ae = e as AggregateException;
 			return ae.GetOnlyExceptionOrAll() ?? e;
 		}
 
-		public static Exception GetOnlyExceptionOrAll(this AggregateException e)
+		public static Exception? GetOnlyExceptionOrAll(this AggregateException? e)
 		{
 			if (e == null)
 			{
@@ -214,23 +216,23 @@ namespace KSoft
 					{
 						flattenedExceptions.Add(currentInnerException);
 
-						currentInnerAsAggregate = currentInnerException.InnerException as AggregateException;
-						if (currentInnerAsAggregate != null)
+						var nestedAggregate = currentInnerException.InnerException as AggregateException;
+						if (nestedAggregate != null)
 						{
-							exceptionsToFlatten.Add(currentInnerAsAggregate);
+							exceptionsToFlatten.Add(nestedAggregate);
 						}
 					}
 				}
 			}
 
-			var inner = flattenedExceptions.Count > 0
+			IEnumerable<Exception> inner = flattenedExceptions.Count > 0
 				? flattenedExceptions.Distinct()
-				: null;
+				: [];
 
 			return new AggregateException(e.Message, inner);
 		}
 
-		public static string ToBasicString(this Exception e)
+		public static string? ToBasicString(this Exception? e)
 		{
 			if (e == null)
 			{
@@ -255,7 +257,7 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		public static string ToVerboseString(this Exception e)
+		public static string? ToVerboseString(this Exception? e)
 		{
 			if (e == null)
 			{
@@ -297,6 +299,10 @@ namespace KSoft
 			for (int x = 0; x < trace.FrameCount; x++)
 			{
 				var frame = trace.GetFrame(x);
+				if (frame == null)
+				{
+					continue;
+				}
 
 				var mb = frame.GetMethod();
 				if (mb == null)
@@ -304,14 +310,14 @@ namespace KSoft
 					continue;
 				}
 
-				Type classType = mb.DeclaringType;
+				Type? classType = mb.DeclaringType;
 				if (classType == null)
 				{
 					continue;
 				}
 
 				// Add namespace.classname:MethodName
-				string ns = classType.Namespace;
+				string? ns = classType.Namespace;
 				if (!string.IsNullOrEmpty(ns))
 				{
 					sb.Append(ns);
@@ -340,7 +346,7 @@ namespace KSoft
 
 				sb.Append(')');
 
-				string path = frame.GetFileName();
+				string? path = frame.GetFileName();
 				if (path.IsNotNullOrEmpty())
 				{
 					// Unify path names to unix style
@@ -402,26 +408,26 @@ namespace KSoft
 			return string.Format(provider, format, args);
 		}
 
-		public static bool IsNullOrEmpty(this string str)
+		public static bool IsNullOrEmpty([NotNullWhen(false)] this string? str)
 		{
 			return string.IsNullOrEmpty(str);
 		}
-		public static bool IsNotNullOrEmpty(this string str)
+		public static bool IsNotNullOrEmpty([NotNullWhen(true)] this string? str)
 		{
 			return !string.IsNullOrEmpty(str);
 		}
 
-		public static bool StartsWith(this string str, char character)
+		public static bool StartsWith(this string? str, char character)
 		{
 			return str != null && str.Length > 0 && str[0] == character;
 		}
 
-		public static bool EndsWith(this string str, char character)
+		public static bool EndsWith(this string? str, char character)
 		{
 			return str != null && str.Length > 0 && str[str.Length-1] == character;
 		}
 
-		public static bool Contains(this string str, char c)
+		public static bool Contains(this string? str, char c)
 		{
 			return !string.IsNullOrEmpty(str) && str.Contains(c);
 		}
@@ -450,7 +456,7 @@ namespace KSoft
 			return h;
 		}
 
-		public static char[] ToWideCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
+		public static char[] ToWideCharBuffer(this string? s, int maxBufferSize, bool nullTerminate = true)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
 
@@ -470,7 +476,7 @@ namespace KSoft
 			return buffer;
 		}
 
-		public static byte[] ToAsciiCharBuffer(this string s, int maxBufferSize, bool nullTerminate = true)
+		public static byte[] ToAsciiCharBuffer(this string? s, int maxBufferSize, bool nullTerminate = true)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(maxBufferSize);
 
@@ -498,8 +504,10 @@ namespace KSoft
 			return buffer;
 		}
 
-		/// <remarks>Handles the case where no args are provided, for whatever reason, so there's no hidden object[] allocation</remarks>
-		public static string AddFormat(this ICollection<string> collection, string value)
+		/// <remarks>
+		/// Handles the case where no args are provided, for whatever reason, so there's no hidden object[] allocation.
+		/// </remarks>
+		public static string? AddFormat(this ICollection<string>? collection, string value)
 		{
 			if (collection != null && !collection.IsReadOnly)
 			{
@@ -509,7 +517,7 @@ namespace KSoft
 			return null;
 		}
 
-		public static string AddFormat(this ICollection<string> collection, string format, params object[] args)
+		public static string? AddFormat(this ICollection<string>? collection, string format, params object[] args)
 		{
 			if (collection != null && !collection.IsReadOnly)
 			{
@@ -520,7 +528,7 @@ namespace KSoft
 			return null;
 		}
 
-		public static string Join(this IList<string> list
+		public static string Join(this IList<string>? list
 			, string valueSeperator = ",")
 		{
 			if (list.IsNullOrEmpty() || valueSeperator.IsNullOrEmpty())
@@ -560,8 +568,8 @@ namespace KSoft
 			return (IEnumerator<T>)array.GetEnumerator();
 		}
 
-		public static string ArrayToConcatString(this Array array
-			, string valueSeperator = kDefaultArrayValueSeperator)
+		public static string ArrayToConcatString(this Array? array
+			, string? valueSeperator = kDefaultArrayValueSeperator)
 		{
 			if (array == null || array.Length == 0)
 			{
@@ -576,7 +584,7 @@ namespace KSoft
 					sb.Append(valueSeperator);
 				}
 
-				sb.Append(obj.ToString());
+				sb.Append(obj?.ToString());
 			}
 
 			return sb.ToString();
@@ -675,7 +683,7 @@ namespace KSoft
 		{
 			if (length <= loopThreshold)
 			{
-				var zero = default(T);
+				T zero = default!;
 				for (int x = 0; x < array.Length; x++)
 				{
 					array[x] = zero;
@@ -713,7 +721,8 @@ namespace KSoft
 					array[index] = fillValue;
 				}
 
-				// use the starting block to fill the rest, increasing the block size by however much we've filled so far or what's left
+				// Use the starting block to fill the rest, increasing the block size by however much we've filled
+				// so far or what's left.
 				for (; index < length; index += block_size, block_size *= 2)
 				{
 					int copy_length = System.Math.Min(block_size, length-index) * sizeOfT;
@@ -765,7 +774,9 @@ namespace KSoft
 
 		/// <summary>Test whether the subject type derives from a generic type using CRTP</summary>
 		/// <param name="subject">The type in question</param>
-		/// <param name="genericType">The generic type which has a single type parameter, which will be populated with subject</param>
+		/// <param name="genericType">
+		/// The generic type which has a single type parameter, which will be populated with subject.
+		/// </param>
 		/// <returns></returns>
 		/// <remarks>See: http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern </remarks>
 		public static bool IsCuriouslyRecurringTemplatePattern(this Type subject, Type genericType)
@@ -814,19 +825,19 @@ namespace KSoft
 
 		#region Collections
 		[System.Diagnostics.DebuggerStepThrough]
-		public static bool IsNullOrEmpty<T>(this ICollection<T> coll)
+		public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this ICollection<T>? coll)
 		{
 			return coll == null || coll.Count == 0;
 		}
 
 		[System.Diagnostics.DebuggerStepThrough]
-		public static bool IsNotNullOrEmpty<T>(this ICollection<T> coll)
+		public static bool IsNotNullOrEmpty<T>([NotNullWhen(true)] this ICollection<T>? coll)
 		{
 			return coll != null && coll.Count != 0;
 		}
 
 		[System.Diagnostics.DebuggerStepThrough]
-		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> seq)
+		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? seq)
 		{
 			return seq ?? /*Enumerable.Empty<T>()*/[];
 		}
@@ -842,7 +853,9 @@ namespace KSoft
 			return !seq.All(new HashSet<T>().Add);
 		}
 
-		public static TOutput[] ConvertAllArray<TInput, TOutput>(this IList<TInput> list, Converter<TInput, TOutput> converter)
+		public static TOutput[]? ConvertAllArray<TInput, TOutput>(
+			this IList<TInput>? list,
+			Converter<TInput, TOutput> converter)
 		{
 			ArgumentNullException.ThrowIfNull(converter);
 
@@ -910,7 +923,8 @@ namespace KSoft
 		}
 
 		/// <summary>
-		/// Grows the collection, using the default value of <typeparamref name="T"/>, if it is less than <paramref name="requiredCount"/>
+		/// Grows the collection using the default value of <typeparamref name="T"/> if it is less than
+		/// <paramref name="requiredCount"/>.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="collection"></param>
@@ -924,7 +938,7 @@ namespace KSoft
 
 			if (collection.Count < requiredCount)
 			{
-				var default_value = default(T);
+				T default_value = default!;
 				int add_count = requiredCount - collection.Count;
 
 				// arbitrary add threshold for List optimization
@@ -971,8 +985,8 @@ namespace KSoft
 			return true;
 		}
 
-		public static string ToConcatString<T>(this IEnumerable<T> e
-			, string valueSeperator = kDefaultArrayValueSeperator)
+		public static string ToConcatString<T>(this IEnumerable<T>? e
+			, string? valueSeperator = kDefaultArrayValueSeperator)
 		{
 			if (e == null)
 			{
@@ -987,13 +1001,13 @@ namespace KSoft
 					sb.Append(valueSeperator);
 				}
 
-				sb.Append(obj.ToString());
+				sb.Append(obj?.ToString());
 			}
 
 			return sb.ToString();
 		}
-		public static string ToConcatBinaryString(this IEnumerable<bool> e
-			, string valueSeperator = kDefaultArrayValueSeperator)
+		public static string ToConcatBinaryString(this IEnumerable<bool>? e
+			, string? valueSeperator = kDefaultArrayValueSeperator)
 		{
 			if (e == null)
 			{
@@ -1013,8 +1027,8 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		public static string ToConcatLowerString(this IEnumerable<bool> e
-			, string valueSeperator = kDefaultArrayValueSeperator)
+		public static string ToConcatLowerString(this IEnumerable<bool>? e
+			, string? valueSeperator = kDefaultArrayValueSeperator)
 		{
 			if (e == null)
 			{
@@ -1034,9 +1048,9 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		public static string ToConcatStringInvariant(this IEnumerable<float> e
-			, string valueSeperator = kDefaultArrayValueSeperator
-			, string format = null)
+		public static string ToConcatStringInvariant(this IEnumerable<float>? e
+			, string? valueSeperator = kDefaultArrayValueSeperator
+			, string? format = null)
 		{
 			if (e == null)
 			{
@@ -1056,9 +1070,9 @@ namespace KSoft
 
 			return sb.ToString();
 		}
-		public static string ToConcatStringInvariant(this IEnumerable<double> e
-			, string valueSeperator = kDefaultArrayValueSeperator
-			, string format = null)
+		public static string ToConcatStringInvariant(this IEnumerable<double>? e
+			, string? valueSeperator = kDefaultArrayValueSeperator
+			, string? format = null)
 		{
 			if (e == null)
 			{
@@ -1087,14 +1101,14 @@ namespace KSoft
 		#endregion
 
 		#region Diagnostics
-		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, params object[] data)
+		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, params object?[] data)
 		{
 			ArgumentNullException.ThrowIfNull(source);
 
 			source.TraceData(eventType, TypeExtensions.kNone, data);
 		}
 
-		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, object data)
+		public static void TraceDataSansId(this TraceSource source, TraceEventType eventType, object? data)
 		{
 			ArgumentNullException.ThrowIfNull(source);
 
@@ -1193,7 +1207,7 @@ namespace KSoft
 		public static byte[] ComputeHash(this System.Security.Cryptography.HashAlgorithm algo,
 			System.IO.Stream inputStream, long offset, long count,
 			bool restorePosition = false,
-			byte[] preallocatedBuffer = null)
+			byte[]? preallocatedBuffer = null)
 		{
 			ArgumentNullException.ThrowIfNull(inputStream);
 			if (!inputStream.CanSeek)
@@ -1261,7 +1275,7 @@ namespace KSoft
 				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
 			}
 
-			return algo.Hash;
+			return algo.Hash ?? throw new InvalidOperationException("Hash algorithm did not produce a hash.");
 		}
 
 		//[Obsolete("Use StreamBlockHashComputer instead")]
@@ -1320,7 +1334,8 @@ namespace KSoft
 			// #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
 			// which means the algo's Initialize method will be executed before the call returns!
 			// .netframework did not do this:
-			// https://github.com/microsoft/referencesource/blob/ec9fa9ae770d522a5b5f0607898044b7478574a3/mscorlib/system/security/cryptography/hashalgorithm.cs#L172
+			// https://github.com/microsoft/referencesource/blob/ec9fa9ae770d522a5b5f0607898044b7478574a3/
+			// mscorlib/system/security/cryptography/hashalgorithm.cs#L172
 			algo.TransformFinalBlock(buffer, 0, 0); // yes, 0 bytes, all bytes should have been taken care of already
 
 			if (restorePosition)
@@ -1328,12 +1343,12 @@ namespace KSoft
 				inputStream.Seek(orig_pos, System.IO.SeekOrigin.Begin);
 			}
 
-			return algo.Hash;
+			return algo.Hash ?? throw new InvalidOperationException("Hash algorithm did not produce a hash.");
 		}
 		#endregion
 
 		#region Event handlers
-		public static void SafeNotify(this PropertyChangedEventHandler handler,
+		public static void SafeNotify(this PropertyChangedEventHandler? handler,
 			object sender, PropertyChangedEventArgs args)
 		{
 			if (handler != null)
@@ -1341,7 +1356,7 @@ namespace KSoft
 				handler(sender, args);
 			}
 		}
-		public static void SafeNotify(this PropertyChangedEventHandler handler,
+		public static void SafeNotify(this PropertyChangedEventHandler? handler,
 			object sender, PropertyChangedEventArgs[] argsList, int startIndex = 0)
 		{
 			Verify.Buffers.StartIndexWithinLength(argsList, startIndex);
@@ -1355,7 +1370,7 @@ namespace KSoft
 				}
 			}
 		}
-		public static void SafeNotify(this System.Collections.Specialized.NotifyCollectionChangedEventHandler handler,
+		public static void SafeNotify(this System.Collections.Specialized.NotifyCollectionChangedEventHandler? handler,
 			object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)
 		{
 			if (handler != null)
@@ -1365,7 +1380,7 @@ namespace KSoft
 		}
 
 		// Based on http://www.codeproject.com/KB/cs/EventSafeTrigger.aspx
-		public static void SafeTrigger(this EventHandler eventToTrigger,
+		public static void SafeTrigger(this EventHandler? eventToTrigger,
 			object sender, EventArgs eventArgs)
 		{
 			if (eventToTrigger != null)
@@ -1374,7 +1389,7 @@ namespace KSoft
 			}
 		}
 
-		public static void SafeTrigger<TEventArgs>(this EventHandler<TEventArgs> eventToTrigger,
+		public static void SafeTrigger<TEventArgs>(this EventHandler<TEventArgs>? eventToTrigger,
 			object sender, TEventArgs eventArgs)
 			where TEventArgs : EventArgs
 		{
@@ -1384,8 +1399,8 @@ namespace KSoft
 			}
 		}
 
-		public static TReturnType SafeTrigger<TEventArgs, TReturnType>
-			(this EventHandler<TEventArgs> eventToTrigger, object sender,
+		public static TReturnType? SafeTrigger<TEventArgs, TReturnType>
+			(this EventHandler<TEventArgs>? eventToTrigger, object sender,
 			TEventArgs eventArgs, Func<TEventArgs, TReturnType> retrieveDataFunction)
 			where TEventArgs : EventArgs
 		{
@@ -1407,7 +1422,7 @@ namespace KSoft
 		// Based on http://www.codeproject.com/Tips/72637/Get-CustomAttributes-the-easy-way.aspx
 
 		/// <summary>Returns first custom attribute of type T in the inheritance chain</summary>
-		public static T GetCustomAttribute<T>(this ICustomAttributeProvider provider, bool inherited = false)
+		public static T? GetCustomAttribute<T>(this ICustomAttributeProvider provider, bool inherited = false)
 			where T : Attribute
 		{
 			ArgumentNullException.ThrowIfNull(provider);
@@ -1426,7 +1441,8 @@ namespace KSoft
 		#endregion
 
 		#region OrderBy LINQ
-		// Based on http://stackoverflow.com/questions/271398/what-are-your-favorite-extension-methods-for-c-codeplex-com-extensionoverflow/858681#858681
+		// Based on http://stackoverflow.com/questions/271398/
+		// what-are-your-favorite-extension-methods-for-c-codeplex-com-extensionoverflow/858681#858681
 
 		/// <summary>Sorts elements in a sequence in ascending order</summary>
 		/// <typeparam name="TSrc"></typeparam>
@@ -1595,40 +1611,29 @@ namespace KSoft
 			private delegate void OnCollectionChangedDelegate(NotifyCollectionChangedEventArgs e);
 			public delegate void OnCollectionChangedWithThis(ObservableCollection<T> @this, NotifyCollectionChangedEventArgs e);
 
-			private static Func<ObservableCollection<T>, IList<T>> gGetItems;
+			private static Func<ObservableCollection<T>, IList<T>>? gGetItems;
 			public static Func<ObservableCollection<T>, IList<T>> GetItems { get {
-				if (gGetItems == null)
-				{
-					gGetItems = Reflection.Util.GenerateMemberGetter<ObservableCollection<T>, IList<T>>("Items");
-				}
-
-				return gGetItems;
+				return gGetItems ??= Reflection.Util.GenerateMemberGetter<ObservableCollection<T>, IList<T>>("Items");
 			} }
 
-			private static OnPropertyChangedDelegateWithThis gOnPropertyChangedFunc;
+			private static OnPropertyChangedDelegateWithThis? gOnPropertyChangedFunc;
 			public static OnPropertyChangedDelegateWithThis OnPropertyChangedFunc { get {
-				if (gOnPropertyChangedFunc == null)
-				{
-					gOnPropertyChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnPropertyChangedDelegateWithThis, OnPropertyChangedDelegate>
-						("OnPropertyChanged");
-				}
-
-				return gOnPropertyChangedFunc;
+				return gOnPropertyChangedFunc ??= Reflection.Util.GenerateObjectMethodProxy<
+					ObservableCollection<T>,
+					OnPropertyChangedDelegateWithThis,
+					OnPropertyChangedDelegate>("OnPropertyChanged");
 			} }
 
-			private static OnCollectionChangedWithThis gOnCollectionChangedFunc;
+			private static OnCollectionChangedWithThis? gOnCollectionChangedFunc;
 			public static OnCollectionChangedWithThis OnCollectionChangedFunc { get {
-				if (gOnCollectionChangedFunc == null)
-				{
-					gOnCollectionChangedFunc = Reflection.Util.GenerateObjectMethodProxy<ObservableCollection<T>, OnCollectionChangedWithThis, OnCollectionChangedDelegate>
-						("OnCollectionChanged");
-				}
-
-				return gOnCollectionChangedFunc;
+				return gOnCollectionChangedFunc ??= Reflection.Util.GenerateObjectMethodProxy<
+					ObservableCollection<T>,
+					OnCollectionChangedWithThis,
+					OnCollectionChangedDelegate>("OnCollectionChanged");
 			} }
 		}
 
-		public static bool ItemsIsGenericList<T>(this ObservableCollection<T> list)
+		public static bool ItemsIsGenericList<T>(this ObservableCollection<T>? list)
 		{
 			if (list == null)
 			{
