@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Reflect = System.Reflection;
@@ -10,10 +12,10 @@ namespace KSoft.Reflection
 		Justification="I don't care about System.Web.Util")]
 	public static partial class Util
 	{
-		public static bool IsEnumType(object maybeType) =>
+		public static bool IsEnumType(object? maybeType) =>
 			maybeType is Type type && type.IsEnum;
 
-		public static bool IsEnumTypeOrNull(object maybeType) =>
+		public static bool IsEnumTypeOrNull(object? maybeType) =>
 			maybeType == null || IsEnumType(maybeType);
 
 		public static List<Reflect.FieldInfo> GetEnumFields(Type enumType)
@@ -39,7 +41,7 @@ namespace KSoft.Reflection
 
 
 			var type = typeof(T);
-			var method = type.GetMethod(kDelegateInvokeMethodName);
+			var method = type.GetMethod(kDelegateInvokeMethodName)!;
 			var ret_type = method.ReturnType;
 			var param_types = (from param in method.GetParameters()
 							   select param.ParameterType)
@@ -93,7 +95,7 @@ namespace KSoft.Reflection
 			il.EmitCalli(Reflect.Emit.OpCodes.Calli, callConv, ret_type, param_types);
 			il.Emit(Reflect.Emit.OpCodes.Ret);
 
-			return invoke.CreateDelegate(type) as T;
+			return (invoke.CreateDelegate(type) as T)!;
 		}
 	};
 }
