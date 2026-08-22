@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Debug.Test;
@@ -31,5 +32,14 @@ public sealed class ValueCheckTest : BaseTestClass
 		AssertThrowsArgumentNull(() => ValueCheck.IsDistinct("description", null!, Array.Empty<int>()), "valueName");
 		AssertThrowsArgument(() => ValueCheck.IsDistinct("description", string.Empty, Array.Empty<int>()), "valueName");
 		AssertThrowsArgumentNull(() => ValueCheck.IsDistinct("description", "value", (int[])null!), "seq");
+	}
+
+	[TestMethod]
+	public void AreEqual_NullDisplayValuesStillReportMismatch()
+	{
+		var exception = Assert.ThrowsExactly<InvalidDataException>(
+			() => ValueCheck.AreEqual<string>("field", null!, "actual"));
+
+		Assert.Contains("field. Expected '' but got 'actual'", exception.Message);
 	}
 }

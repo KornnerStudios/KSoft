@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 
+#nullable enable
+
 namespace KSoft.Debug
 {
 	public static class ValueCheck
 	{
 		public static void AreEqual<T>(string description, T expected, T actual,
-			string expectedDisplayValue = null, string actualDisplayValue = null)
+			string? expectedDisplayValue = null, string? actualDisplayValue = null)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(description);
 
@@ -15,11 +17,11 @@ namespace KSoft.Debug
 			{
 				if (expectedDisplayValue == null)
 				{
-					expectedDisplayValue = expected.ToString();
+					expectedDisplayValue = expected?.ToString();
 				}
 				if (actualDisplayValue == null)
 				{
-					actualDisplayValue = actual.ToString();
+					actualDisplayValue = actual?.ToString();
 				}
 
 				throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,

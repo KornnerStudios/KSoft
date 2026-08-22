@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
+#nullable enable
+
 namespace KSoft.Debug
 {
 	public static class AssemblyTraceSourcesCollector
 	{
-		public static List<TraceSource> FromClass(Type debugTraceClass, List<TraceSource> sources = null)
+		public static List<TraceSource> FromClass(Type debugTraceClass, List<TraceSource>? sources = null)
 		{
 			ArgumentNullException.ThrowIfNull(debugTraceClass);
 
@@ -25,7 +27,7 @@ namespace KSoft.Debug
 					continue;
 				}
 
-				var trace_source = (TraceSource)prop.GetValue(null);
+				TraceSource? trace_source = (TraceSource?)prop.GetValue(null);
 				if (trace_source == null)
 				{
 					throw new InvalidOperationException(string.Format(Util.InvariantCultureInfo,
@@ -39,7 +41,7 @@ namespace KSoft.Debug
 			return sources;
 		}
 
-		public static List<TraceSource> FromClasses(List<TraceSource> sources, params Type[] debugTraceClasses)
+		public static List<TraceSource> FromClasses(List<TraceSource>? sources, params Type[] debugTraceClasses)
 		{
 			ArgumentNullException.ThrowIfNull(debugTraceClasses);
 
