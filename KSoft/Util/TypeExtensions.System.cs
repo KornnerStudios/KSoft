@@ -1481,7 +1481,7 @@ namespace KSoft
 		#endregion
 
 		#region ObjectModel
-		public static bool SetFieldVal<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
+		public static bool SetFieldVal<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler? handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
@@ -1510,7 +1510,7 @@ namespace KSoft
 			return true;
 		}
 
-		public static bool SetFieldEnum<TEnum>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
+		public static bool SetFieldEnum<TEnum>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler? handler
 			, ref TEnum field, TEnum value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
@@ -1539,7 +1539,7 @@ namespace KSoft
 			return true;
 		}
 
-		public static bool SetFieldObj<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
+		public static bool SetFieldObj<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler? handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
@@ -1575,7 +1575,7 @@ namespace KSoft
 			return true;
 		}
 
-		public static bool SetField<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler handler
+		public static bool SetField<T>(this INotifyPropertyChanged theObj, PropertyChangedEventHandler? handler
 			, ref T field, T value
 			, bool overrideChecks = false
 			, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")

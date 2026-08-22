@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.ComponentModel;
 
 namespace KSoft.ObjectModel
@@ -6,7 +8,7 @@ namespace KSoft.ObjectModel
 	public abstract class BasicViewModel
 		: INotifyPropertyChanged
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 
 		protected virtual void OnPropertyChanged(
 			[System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
