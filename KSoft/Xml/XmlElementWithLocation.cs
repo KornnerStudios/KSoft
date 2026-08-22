@@ -1,4 +1,3 @@
-
 using System.Xml;
 
 namespace KSoft.Xml

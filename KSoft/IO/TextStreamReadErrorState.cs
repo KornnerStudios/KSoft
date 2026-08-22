@@ -1,4 +1,3 @@
-
 using System;
 
 namespace KSoft.IO
@@ -54,6 +53,7 @@ namespace KSoft.IO
 
 		/// <summary>Throws a <see cref="Text.TextLineInfoException"/> using <see cref="LastReadLineInfo"/></summary>
 		/// <param name="detailsException">The details (inner) exception of what went wrong</param>
+		[System.Diagnostics.CodeAnalysis.DoesNotReturn]
 		public void ThrowReadExeception(Exception detailsException)
 		{
 			if (mReadLineInfo == null)
