@@ -2,63 +2,40 @@
 using System.Diagnostics.CodeAnalysis;
 using DebuggerStepThrough = System.Diagnostics.DebuggerStepThroughAttribute;
 
+#nullable enable
+
 namespace KSoft
 {
 	public static class Predicates
 	{
 		#region IsFalse/True
-		private static Predicate<bool> gIsFalse;
+		private static Predicate<bool>? gIsFalse;
 		public static Predicate<bool> IsFalse { get {
-			if (gIsFalse == null)
-			{
-				gIsFalse = b => !b;
-			}
-
-			return gIsFalse;
+			return gIsFalse ??= b => !b;
 		} }
 
-		private static Predicate<bool> gIsTrue;
+		private static Predicate<bool>? gIsTrue;
 		public static Predicate<bool> IsTrue { get {
-			if (gIsTrue == null)
-			{
-				gIsTrue = b => b;
-			}
-
-			return gIsTrue;
+			return gIsTrue ??= b => b;
 		} }
 		#endregion
 
 		#region IsNotNullOrEmpty
-		private static Predicate<string> gIsNotNullOrEmpty;
-		public static Predicate<string> IsNotNullOrEmpty { get {
-			if (gIsNotNullOrEmpty == null)
-			{
-				gIsNotNullOrEmpty = s => !string.IsNullOrEmpty(s);
-			}
-
-			return gIsNotNullOrEmpty;
+		private static Predicate<string?>? gIsNotNullOrEmpty;
+		public static Predicate<string?> IsNotNullOrEmpty { get {
+			return gIsNotNullOrEmpty ??= s => !string.IsNullOrEmpty(s);
 		} }
 		#endregion
 
 		#region HasItems/Bits
-		private static Predicate<System.Collections.ICollection> gHasItems;
-		public static Predicate<System.Collections.ICollection> HasItems { get {
-			if (gHasItems == null)
-			{
-				gHasItems = coll => coll != null && coll.Count > 0;
-			}
-
-			return gHasItems;
+		private static Predicate<System.Collections.ICollection?>? gHasItems;
+		public static Predicate<System.Collections.ICollection?> HasItems { get {
+			return gHasItems ??= coll => coll != null && coll.Count > 0;
 		} }
 
-		private static Predicate<Collections.IReadOnlyBitSet> gHasBits;
-		public static Predicate<Collections.IReadOnlyBitSet> HasBits { get {
-			if (gHasBits == null)
-			{
-				gHasBits = set => set != null && set.Cardinality > 0;
-			}
-
-			return gHasBits;
+		private static Predicate<Collections.IReadOnlyBitSet?>? gHasBits;
+		public static Predicate<Collections.IReadOnlyBitSet?> HasBits { get {
+			return gHasBits ??= set => set != null && set.Cardinality > 0;
 		} }
 		#endregion
 
@@ -75,7 +52,7 @@ namespace KSoft
 		[DebuggerStepThrough] public static bool False<T>(T dummy)	{ return false; }
 
 		[DebuggerStepThrough]
-		public static bool IsNotNull<T>(T theObj)
+		public static bool IsNotNull<T>(T? theObj)
 			where T : class
 		{ return theObj != null; }
 
