@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Interop = System.Runtime.InteropServices;
@@ -210,12 +212,12 @@ namespace KSoft.Values
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <see cref=""/>
-		readonly int System.Collections.IComparer.Compare(object x, object y)	{ return Compare((PtrHandle)x, (PtrHandle)y); }
+		readonly int System.Collections.IComparer.Compare(object? x, object? y)	{ return Compare((PtrHandle)x!, (PtrHandle)y!); }
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		/// <see cref=""/>
-		readonly int IComparable.CompareTo(object obj)							{ return Compare(this, (PtrHandle)obj); }
+		readonly int IComparable.CompareTo(object? obj)							{ return Compare(this, (PtrHandle)obj!); }
 		#endregion
 
 		#region IEquatable & IEqualityComparer Members
@@ -243,7 +245,7 @@ namespace KSoft.Values
 		/// <summary>Compares two <see cref="PtrHandle"/> objects testing their address size and address value</summary>
 		/// <param name="obj">other <see cref="PtrHandle"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			if (obj is PtrHandle p)
 			{

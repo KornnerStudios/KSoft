@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace KSoft.Memory.Strings
@@ -177,7 +179,7 @@ namespace KSoft.Memory.Strings
 		/// <returns>
 		/// True if both this object and <paramref name="obj"/> are equal.
 		/// False if <paramref name="obj"/> is not a <see cref="StringStorage"/></returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			if (obj is StringStorage s)
 			{
@@ -244,12 +246,12 @@ namespace KSoft.Memory.Strings
 		/// <param name="y"></param>
 		/// <returns></returns>
 		/// <see cref="int Compare(StringStorage, StringStorage)"/>
-		public int Compare(object x, object y) => Compare((StringStorage)x, (StringStorage)y);
+		public int Compare(object? x, object? y) => Compare((StringStorage)x!, (StringStorage)y!);
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
 		/// <see cref="int CompareTo(StringStorage)"/>
-		public int CompareTo(object obj) => CompareTo((StringStorage)obj);
+		public int CompareTo(object? obj) => CompareTo((StringStorage)obj!);
 		#endregion
 
 		#region Operators
