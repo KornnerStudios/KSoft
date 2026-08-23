@@ -89,6 +89,7 @@ namespace KSoft.IO
 	/// streamer. Numeric casts between stream type and enum backing type are still handled by
 	/// <see cref="Reflection.EnumValue{TEnum}"/> so signed/unsigned wrap behavior stays centralized.
 	/// </remarks>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Static initialization creates delegates and the instance from one validated stream-type configuration.")]
 	public class EnumBinaryStreamer<TEnum, TStreamType> : EnumBinaryStreamerBase, IEnumEndianStreamer<TEnum>
 		where TEnum : struct, Enum
 		where TStreamType : struct

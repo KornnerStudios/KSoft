@@ -22,6 +22,7 @@ namespace KSoft.Collections
 	[Serializable, System.Runtime.InteropServices.ComVisible(true)]
 	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+	[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Static initialization validates the implementation word and initializes interdependent bit-vector fields.")]
 	public sealed partial class BitSet
 		: ICollection<bool>, System.Collections.ICollection
 		, IReadOnlyBitSet
@@ -43,7 +44,6 @@ namespace KSoft.Collections
 
 		static readonly Func<TWord, byte> kCountZerosForNextBit;
 
-		//[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static BitSet()
 		{
 			bool success = Bits.GetBitConstants(typeof(TWord),

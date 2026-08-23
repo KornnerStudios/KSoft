@@ -15,6 +15,7 @@ namespace KSoft.IO
 	/// <see cref="Reflection.EnumValue{TEnum}"/>. Decode applies none-sentinel adjustment before optional bit swap;
 	/// encode applies those options in the same order before writing.
 	/// </remarks>
+	[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Static initialization creates delegates, cached options, and the instance from one validated configuration.")]
 	public class EnumBitStreamer<TEnum, TStreamType, TOptions> : EnumBitStreamerBase, IEnumBitStreamer<TEnum>
 		where TEnum : struct, Enum
 		where TStreamType : struct

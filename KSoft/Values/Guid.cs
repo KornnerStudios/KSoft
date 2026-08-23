@@ -85,6 +85,7 @@ namespace KSoft.Values
 		// nesting these into a static class makes them run before the struct's static ctor...
 		// which, being a value type cctor, may not run when we want it
 		/// <summary><see cref="System.Guid"/> internal accessors</summary>
+		[SuppressMessage("Microsoft.Design", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Static initialization generates the delegates used to access Guid's internal fields.")]
 		static class SysGuid
 		{
 			const string kData1Name = "_a";

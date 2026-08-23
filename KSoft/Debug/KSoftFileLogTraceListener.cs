@@ -93,14 +93,6 @@ namespace KSoft.Debug
 	public class KSoftFileLogTraceListener
 		: TraceListener
 	{
-		static KSoftFileLogTraceListener()
-		{
-			var prop_names = Enum.GetNames<Property>().ToList();
-			prop_names.Remove(Property.kNumberOf.ToString());
-
-			mSupportedAttributes = prop_names.ToArray();
-		}
-
 		internal class ReferencedStream
 			: IDisposable
 		{
@@ -232,7 +224,9 @@ namespace KSoft.Debug
 
 			kNumberOf
 		};
-		static readonly string[] mSupportedAttributes;
+		static readonly string[] mSupportedAttributes = Enum.GetNames<Property>()
+			.Where(name => name != nameof(Property.kNumberOf))
+			.ToArray();
 		private Collections.BitVector32 mPropertiesSet;
 
 		private bool GetPropertyIfNotSet(Property property, out string? value)
