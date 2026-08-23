@@ -241,7 +241,7 @@ namespace MiniJSON {
                 return;
             }
 
-            if (key.Contains('.'))
+            if (key.Contains('.', StringComparison.Ordinal))
             {
                 Json.SetValue(dict, key.Split('.'), value);
             }
@@ -271,7 +271,7 @@ namespace MiniJSON {
             const string WORD_BREAK = "{}[],:\"";
 
             public static bool IsWordBreak(char c) {
-                return Char.IsWhiteSpace(c) || WORD_BREAK.IndexOf(c) != -1;
+                return Char.IsWhiteSpace(c) || WORD_BREAK.IndexOf(c, StringComparison.Ordinal) != -1;
             }
 
             enum TOKEN {
@@ -537,7 +537,7 @@ namespace MiniJSON {
 
                 // Allow scientific notation in floating point numbers by @shiwano
                 // https://github.com/Jackyjjc/MiniJSON.cs/commit/6de00beb134bbab9d873033a48b32e4067ed0c25
-                if (!number.Contains('.') && !number.Contains('E') && !number.Contains('e')) {
+                if (!number.Contains('.', StringComparison.Ordinal) && !number.Contains('E', StringComparison.Ordinal) && !number.Contains('e', StringComparison.Ordinal)) {
                     // KM00 start
                     if (Int64.TryParse(number, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out long parsedInt))
                     {

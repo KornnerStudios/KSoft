@@ -142,7 +142,7 @@ namespace KSoft.Collections
 		{
 			if (mData != null)
 			{
-				return (mData.GetHashCode() ^ mOffset) ^ mCount;
+				return (mData.GetHashCode(StringComparison.Ordinal) ^ mOffset) ^ mCount;
 			}
 
 			return 0;

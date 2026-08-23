@@ -73,8 +73,8 @@ public sealed class GeneratorDriverTests
 			.GetText()
 			.ToString();
 
-		StringAssert.Contains(source, "string? value = propertyValue as string;");
-		StringAssert.Contains(source, "ArgumentNullException.ThrowIfNull(value);");
+		StringAssert.Contains(source, "string? value = propertyValue as string;", StringComparison.Ordinal);
+		StringAssert.Contains(source, "ArgumentNullException.ThrowIfNull(value);", StringComparison.Ordinal);
 	}
 
 	[TestMethod]
@@ -167,7 +167,7 @@ public sealed class GeneratorDriverTests
 		Assert.AreEqual(targetHintNames.Length, generatedSources.Length);
 		foreach (string source in generatedSources)
 		{
-			StringAssert.Contains(source, "#nullable enable");
+			StringAssert.Contains(source, "#nullable enable", StringComparison.Ordinal);
 			Assert.IsFalse(source.Contains("#nullable disable", StringComparison.Ordinal));
 			Assert.IsFalse(source.Contains("#nullable restore", StringComparison.Ordinal));
 			Assert.IsFalse(source.Contains("#nullable warnings", StringComparison.Ordinal));

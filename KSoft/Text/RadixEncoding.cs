@@ -137,7 +137,7 @@ namespace KSoft.Text
 			var bi = new BigInteger();
 			for (int x = startIndex; x < chars.Length; x++)
 			{
-				int i = kDigits.IndexOf(chars[x]);
+				int i = kDigits.IndexOf(chars[x], StringComparison.Ordinal);
 				if (i < 0)
 				{
 					return null; // invalid character
@@ -172,7 +172,7 @@ namespace KSoft.Text
 			var bi = new BigInteger();
 			for (int x = (chars.Length-1)-startIndex; x >= 0; x--)
 			{
-				int i = kDigits.IndexOf(chars[x]);
+				int i = kDigits.IndexOf(chars[x], StringComparison.Ordinal);
 				if (i < 0)
 				{
 					return null; // invalid character

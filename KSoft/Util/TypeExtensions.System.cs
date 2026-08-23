@@ -428,7 +428,7 @@ namespace KSoft
 
 		public static bool Contains(this string? str, char c)
 		{
-			return !string.IsNullOrEmpty(str) && str.Contains(c);
+			return !string.IsNullOrEmpty(str) && str.Contains(c, StringComparison.Ordinal);
 		}
 
 		public static int GetDeterministicHashCode(this string str)

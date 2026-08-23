@@ -69,7 +69,7 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 		Assert.AreEqual("test.xml (1, 2)", document.GetFileLocationString(document.DocumentElement!));
 		StringAssert.StartsWith(
 			document.GetFileLocationString(document.DocumentElement!.GetAttributeNode("attr")!),
-			"test.xml (1, ");
+			"test.xml (1, ", StringComparison.Ordinal);
 	}
 
 	[TestMethod]

@@ -123,7 +123,7 @@ namespace KSoft.Values
 			"['{0," + (this is GroupTagData32 ? "4" : "8") + "}'  {1}]",
 			TagString, Name);
 
-		public override int GetHashCode() => Name.GetHashCode();
+		public abstract override int GetHashCode();
 
 		public override bool Equals(object? obj)
 		{

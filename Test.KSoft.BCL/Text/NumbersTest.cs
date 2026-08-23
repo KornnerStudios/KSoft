@@ -7,7 +7,7 @@ namespace KSoft.Text.Test
 	public partial class NumbersTest : BaseTestClass
 	{
 		const string kInt32ListString = "-516,517,519,520,521,522,523,-1258";
-		static readonly string kInt32ListStringWithSpaces = kInt32ListString.Replace(",", ", ");
+		static readonly string kInt32ListStringWithSpaces = kInt32ListString.Replace(",", ", ", StringComparison.Ordinal);
 		static readonly int[] kInt32List = [
 			-516,517,519,520,521,522,523,-1258,
 		];

@@ -84,7 +84,7 @@ namespace KSoft.Reflection.Test
 			var exception = AssertThrowsArgument("callConv", () =>
 				_ = Util.GetDelegateForFunctionPointer<MessageBoxDelegate>(new IntPtr(1), kThisCall));
 
-			StringAssert.StartsWith(exception.Message, "TODO: ThisCall's require a different implementation");
+			StringAssert.StartsWith(exception.Message, "TODO: ThisCall's require a different implementation", StringComparison.Ordinal);
 		}
 
 		[TestMethod]
@@ -129,7 +129,7 @@ namespace KSoft.Reflection.Test
 					typeof(int),
 					nameof(GenericTypeDefinition<int>.Value)));
 
-			StringAssert.StartsWith(exception.Message, "Type must be a reference type");
+			StringAssert.StartsWith(exception.Message, "Type must be a reference type", StringComparison.Ordinal);
 			AssertThrowsArgumentNull("memberName", () =>
 				_ = Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>(null!));
 			AssertThrowsArgument("memberName", () =>
