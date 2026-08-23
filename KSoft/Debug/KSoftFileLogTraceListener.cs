@@ -599,7 +599,8 @@ namespace KSoft.Debug
 		}
 		#endregion
 
-		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
+		[SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Released by the reference-counted CloseCurrentStream.")]
 		private ReferencedStream mStream = null!;
 		private ReferencedStream ListenerStream
 		{

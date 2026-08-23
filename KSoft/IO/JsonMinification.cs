@@ -73,7 +73,8 @@ namespace DouglasCrockford.JsMin
 		private StringBuilder? _sb;
 		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
 		private StringReader? _reader;
-		//[SuppressMessage("Microsoft.Design", "CA2213:DisposableFieldsShouldBeDisposed")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Disposed and nulled with DisposeAndNull in Dispose and finally.")]
 		private StringWriter? _writer;
 
 		private int _theA;
