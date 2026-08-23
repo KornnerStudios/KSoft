@@ -16,8 +16,8 @@ namespace KSoft.Text
 		public static bool ParseBooleanLazy(string? str)
 		{
 			if (str == "1" ||
-				string.Compare(str, "true", StringComparison.OrdinalIgnoreCase)==0 ||
-				string.Compare(str, "on", StringComparison.OrdinalIgnoreCase)==0 )
+				string.Equals(str, "true", StringComparison.OrdinalIgnoreCase) ||
+				string.Equals(str, "on", StringComparison.OrdinalIgnoreCase) )
 			{
 				return true;
 			}

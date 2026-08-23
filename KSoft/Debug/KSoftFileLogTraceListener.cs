@@ -386,7 +386,7 @@ namespace KSoft.Debug
 				ArgumentNullException.ThrowIfNull(value);
 
 				Path.GetFullPath(value); // VB code did this...I guess to 'inherit' its exceptions
-				if (string.Compare(value, this.mBaseFileName, StringComparison.OrdinalIgnoreCase) != 0)
+				if (!string.Equals(value, this.mBaseFileName, StringComparison.OrdinalIgnoreCase))
 				{
 					this.CloseCurrentStream();
 					this.mBaseFileName = value;
@@ -416,7 +416,7 @@ namespace KSoft.Debug
 				{
 					Directory.CreateDirectory(fullPath);
 				}
-				if (this.Location == LogFileLocation.Custom & string.Compare(fullPath, this.mCustomLocation, StringComparison.OrdinalIgnoreCase) != 0)
+				if (this.Location == LogFileLocation.Custom & !string.Equals(fullPath, this.mCustomLocation, StringComparison.OrdinalIgnoreCase))
 				{
 					this.CloseCurrentStream();
 				}

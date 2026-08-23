@@ -522,14 +522,14 @@ namespace KSoft.IO
 
 						default:
 						{
-							if (string.Compare(str, "true", StringComparison.OrdinalIgnoreCase) == 0 ||
-								string.Compare(str, "on", StringComparison.OrdinalIgnoreCase) == 0)
+							if (string.Equals(str, "true", StringComparison.OrdinalIgnoreCase) ||
+								string.Equals(str, "on", StringComparison.OrdinalIgnoreCase))
 							{
 								temp = true;
 							}
 							else if (
-								string.Compare(str, "false", StringComparison.OrdinalIgnoreCase) == 0 ||
-								string.Compare(str, "off", StringComparison.OrdinalIgnoreCase) == 0)
+								string.Equals(str, "false", StringComparison.OrdinalIgnoreCase) ||
+								string.Equals(str, "off", StringComparison.OrdinalIgnoreCase))
 							{
 								temp = false;
 							}
