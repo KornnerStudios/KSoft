@@ -61,7 +61,7 @@ namespace KSoft.IO.Test
 		};
 
 		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
-		internal class SignExtendOptions : EnumBitStreamerOptions
+		internal sealed class SignExtendOptions : EnumBitStreamerOptions
 		{
 			public override bool SignExtend => true;
 		};
@@ -369,7 +369,7 @@ namespace KSoft.IO.Test
 			Three,
 		};
 		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
-		internal class EnumBinaryStreamerBase1Options : EnumBitStreamerOptions
+		internal sealed class EnumBinaryStreamerBase1Options : EnumBitStreamerOptions
 		{
 			public override bool UseNoneSentinelEncoding { get { return true; } }
 		};

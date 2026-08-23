@@ -90,6 +90,7 @@ namespace KSoft
 	{
 		//[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields",
 		//	Justification = "x32 could probably just be wrapped in #if DEBUG...but what if you don't ever run debug?")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains the 32-bit encoder as a documented bit-layout counterpart.")]
 		static readonly EnumBitEncoder32<TEnum> x32 = new();
 		static readonly EnumBitEncoder64<TEnum> x64 = new();
 

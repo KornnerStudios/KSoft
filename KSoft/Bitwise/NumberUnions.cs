@@ -5,6 +5,7 @@ namespace KSoft.Bitwise
 {
 	/// <summary>Unionized value of a UInt32 and a Single</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Provides an overlapping binary representation.")]
 	public struct SingleUnion
 	{
 		[FieldOffset(0)] public uint Integer;
@@ -23,6 +24,7 @@ namespace KSoft.Bitwise
 	};
 	/// <summary>Unionized value of a UInt64 and a Double</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Provides an overlapping binary representation.")]
 	public struct DoubleUnion
 	{
 		[FieldOffset(0)] public ulong Integer;
@@ -42,6 +44,7 @@ namespace KSoft.Bitwise
 
 	/// <summary>Unionized value of a UInt64 and a UInt32</summary>
 	[StructLayout(LayoutKind.Explicit)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Provides an overlapping binary representation.")]
 	public struct IntegerUnion
 	{
 		[FieldOffset(0)] public ulong u64;

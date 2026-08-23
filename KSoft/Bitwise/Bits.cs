@@ -48,6 +48,7 @@ namespace KSoft
 		#region Memory/ArrayCopy
 		// #REVIEW: Does #DOTNET5 enable us to change this to a class and use stackalloc?
 		//[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Provides copy operations over unmanaged values.")]
 		public readonly struct MemoryCopier<TDst, TSrc>
 			where TDst : struct
 			where TSrc : struct

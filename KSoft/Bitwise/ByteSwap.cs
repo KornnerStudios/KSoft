@@ -35,6 +35,7 @@ namespace KSoft.Bitwise
 		internal const int kMinumumNumberOfDefinitionBsCodes = 4;
 
 		//[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Describes byte-swap operations.")]
 		public readonly struct BsDefinition
 			: IByteSwappable
 		{

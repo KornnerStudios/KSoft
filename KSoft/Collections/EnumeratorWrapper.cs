@@ -9,6 +9,7 @@ namespace KSoft
 	/// implementation, but the type has other data/properties which can be enumerated with a foreach.
 	/// </remarks>
 	/// <see cref="Collections.BitSet.ClearBitIndices"/>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Wraps an enumerator.")]
 	public readonly struct EnumeratorWrapper<T>
 		: IEnumerable<T>
 	{
@@ -31,6 +32,7 @@ namespace KSoft
 	/// implementation, but the type has other data/properties which can be enumerated with a foreach.
 	/// </remarks>
 	/// <see cref="Collections.BitSet.ClearBitIndices"/>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Wraps an enumerator.")]
 	public readonly struct EnumeratorWrapper<T, TEnumerator>
 		: IEnumerable<T>
 		where TEnumerator : struct, IEnumerator<T>

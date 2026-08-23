@@ -4,6 +4,7 @@ using System.IO;
 namespace KSoft.IO
 {
 	/// <summary>Forces the stream to seek to the end of the virtual buffer when disposed</summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores virtual-buffer state when disposed.")]
 	public struct IKSoftStreamWithVirtualBufferCleanup : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer? mStream;
@@ -40,6 +41,7 @@ namespace KSoft.IO
 		}
 	};
 	/// <summary>Temporarily bookmarks a stream's VirtualBuffer properties</summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores virtual-buffer state when disposed.")]
 	public struct IKSoftStreamWithVirtualBufferBookmark : IDisposable
 	{
 		IKSoftStreamWithVirtualBuffer? mStream;
@@ -69,6 +71,7 @@ namespace KSoft.IO
 	/// </summary>
 	/// <see cref="IKSoftStreamWithVirtualBufferBookmark"/>
 	/// <see cref="IKSoftStreamWithVirtualBufferCleanup"/>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores virtual-buffer state when disposed.")]
 	public struct IKSoftStreamWithVirtualBufferAndBookmark : IDisposable
 	{
 		IKSoftStreamWithVirtualBufferBookmark mBookmark;

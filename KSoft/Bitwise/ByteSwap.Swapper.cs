@@ -7,6 +7,7 @@ namespace KSoft.Bitwise
 	partial class ByteSwap
 	{
 		//[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Performs byte-swap operations.")]
 		public readonly struct Swapper
 		{
 			readonly short[] kCodes;

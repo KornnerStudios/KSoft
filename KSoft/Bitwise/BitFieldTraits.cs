@@ -7,6 +7,7 @@ namespace KSoft.Bitwise
 	/// <summary>Represents the info needed to compose a specific bit-field</summary>
 	//[SuppressMessage("Microsoft.Design", "CA1815")]
 	public struct BitFieldTraits
+		: IEquatable<BitFieldTraits>
 	{
 		public const int kMaxBitCount = Bits.kInt64BitCount;
 
@@ -166,6 +167,14 @@ namespace KSoft.Bitwise
 			: this(false, ValidateBitCount(bitCount), ValidateNextFieldBitIndex(prev, bitCount))
 		{
 		}
+		#endregion
+
+		#region Overrides
+		public override readonly bool Equals(object? obj) => obj is BitFieldTraits other && Equals(other);
+		public readonly bool Equals(BitFieldTraits other) => mBitCount == other.mBitCount && mBitIndex == other.mBitIndex && mIs32Bit == other.mIs32Bit;
+		public static bool operator ==(BitFieldTraits left, BitFieldTraits right) => left.Equals(right);
+		public static bool operator !=(BitFieldTraits left, BitFieldTraits right) => !left.Equals(right);
+		public override readonly int GetHashCode() => HashCode.Combine(mBitCount, mBitIndex, mIs32Bit);
 		#endregion
 
 		#region Util ctors

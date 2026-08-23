@@ -8,6 +8,7 @@ public sealed class GroupTagTest : BaseTestClass
 {
 	const string TestUuid = "00000000-0000-0000-0000-000000000000";
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Provides static tags discovered by GroupTagContainer reflection.")]
 	sealed class TestGroupTagContainerHost32
 	{
 		public static GroupTag32Collection Groups { get; } =
@@ -16,6 +17,7 @@ public sealed class GroupTagTest : BaseTestClass
 			new(new GroupTagData32("othr", "Other"));
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Provides static tags discovered by GroupTagContainer reflection.")]
 	sealed class TestGroupTagContainerHost64
 	{
 		public static GroupTag64Collection Groups { get; } =
@@ -23,29 +25,35 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[GroupTagContainer32(typeof(TestGroupTagContainerHost32))]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Supplies metadata consumed by GroupTagContainer reflection.")]
 	sealed class TestGroupTagContainerTarget32
 	{
 	}
 
 	[GroupTagContainer32(typeof(NullGroupsHost))]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Supplies intentional invalid metadata for reflection validation.")]
 	sealed class NullGroupsTarget
 	{
 	}
 
 	[GroupTagContainer32(typeof(NonCollectionGroupsHost))]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Supplies intentional invalid metadata for reflection validation.")]
 	sealed class NonCollectionGroupsTarget
 	{
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Intentional missing-member fixture for reflection validation.")]
 	sealed class MissingGroupsHost
 	{
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Intentional null-member fixture for reflection validation.")]
 	sealed class NullGroupsHost
 	{
 		public static GroupTag32Collection Groups { get; } = null!;
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Intentional non-collection fixture for reflection validation.")]
 	sealed class NonCollectionGroupsHost
 	{
 		public static string Groups { get; } = "not a group collection";

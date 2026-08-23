@@ -4,6 +4,7 @@ using System.IO;
 namespace KSoft.IO
 {
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.Owner"/></summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores stream state when disposed.")]
 	public struct IKSoftStreamOwnerBookmark : IDisposable
 	{
 		IKSoftStream? mStream;
@@ -32,6 +33,7 @@ namespace KSoft.IO
 	};
 
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStream.UserData"/></summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores stream state when disposed.")]
 	public struct IKSoftStreamUserDataBookmark : IDisposable
 	{
 		IKSoftStream? mStream;
@@ -60,6 +62,7 @@ namespace KSoft.IO
 	};
 
 	/// <summary>Temporarily bookmarks a stream's <see cref="IKSoftStreamModeable.StreamMode"/></summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores stream state when disposed.")]
 	public struct IKSoftStreamModeBookmark : IDisposable
 	{
 		IKSoftStreamModeable? mStream;

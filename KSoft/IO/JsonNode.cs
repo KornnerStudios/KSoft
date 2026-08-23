@@ -19,6 +19,7 @@ namespace KSoft.IO
 	};
 
 	//[SuppressMessage("Microsoft.Design", "CA1815")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a mutable JSON node.")]
 	public struct JsonNode(IDictionary<string, object>? parsedData)
 	{
 		private IDictionary<string, object> mData = parsedData!;

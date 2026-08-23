@@ -64,6 +64,7 @@ namespace KSoft.Bitwise
 
 		/// <summary>23</summary>
 		const int kSignBitIndex = kExponentBitIndex + kExponentBitCount;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains Single24 bit-layout documentation.")]
 		const int kSignBitCount = 1;
 		/// <summary>0x00800000 = 1 LHS 23</summary>
 		const uint kSignBitMask = 1U << kSignBitIndex;
@@ -84,6 +85,7 @@ namespace KSoft.Bitwise
 		const uint kMantissaBitDiffBitMask = (1U << kMantissaBitDiff) - 1;
 		/// <remarks>Exponent is encoded in offset-binary, so we can't just shift the bits like mantissa</remarks>
 		[Obsolete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains Single24 bit-layout documentation.")]
 		const int kExponentBitDiff = Single32.kExponentBitCount - kExponentBitCount;
 
 		/// <summary>0xFFFFFF = 0x00800000 | 0x007E0000 | 0x0001FFFF</summary>

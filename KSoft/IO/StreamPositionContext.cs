@@ -6,6 +6,7 @@ namespace KSoft.IO
 	/// <summary>
 	/// Records the current position of the stream, and returns the stream's cursor to that position when the context object is disposed
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Restores stream position when disposed.")]
 	public struct StreamPositionContext : IDisposable
 	{
 		readonly long mPosition;

@@ -7,6 +7,7 @@ namespace KSoft.ObjectModel.Test;
 [TestClass]
 public sealed class PropertyChangedEventArgsCollectionTest : BaseTestClass
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Used as an expression target in property-name caching tests.")]
 	sealed class Model
 	{
 		public string Name { get; set; } = string.Empty;

@@ -28,11 +28,12 @@ namespace KSoft.Reflection.Test
 	{
 		delegate int MessageBoxDelegate(IntPtr hWnd, string lpText, string lpCaption, uint uType);
 
-		class GenericTypeDefinition<T>
+		[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Closed and inspected by reflection utility tests.")]
+		sealed class GenericTypeDefinition<T>
 		{
 			public T Value { get; set; } = default!;
 		};
-		class MemberAccessTarget
+		sealed class MemberAccessTarget
 		{
 			public int Field;
 
@@ -300,7 +301,7 @@ namespace KSoft.Reflection.Test
 #endif
 
 		#region Set private property
-		class PropertySetPrivateClass
+		sealed class PropertySetPrivateClass
 		{
 			public const string kInitialValue = "Can't touch this!";
 			public const string kModifiedValue = "Rape!";
@@ -333,7 +334,7 @@ namespace KSoft.Reflection.Test
 		#endregion
 
 		#region PropertyNameFromExpr
-		class TestPropertyNameFromExprClass
+		sealed class TestPropertyNameFromExprClass
 		{
 			public int Property { get; set; }
 		};
@@ -352,7 +353,8 @@ namespace KSoft.Reflection.Test
 		#endregion
 
 		#region GenerateLiteralMemberGetterTest
-		internal class ClassContainingDefaultFileStreamBufferSizeLiteral
+		[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Inspected by the reflection literal-member getter test.")]
+		internal sealed class ClassContainingDefaultFileStreamBufferSizeLiteral
 		{
 			protected const int DefaultFileStreamBufferSize = 4096;
 		};
@@ -396,7 +398,7 @@ namespace KSoft.Reflection.Test
 		};
 		// ReSharper disable once ClassNeverInstantiated.Local
 		[SuppressMessage("Microsoft.Design", "CA1812:AvoidUninstantiatedInternalClasses")]
-		class MemberSetterTestClass
+		sealed class MemberSetterTestClass
 		{
 #pragma warning disable 649
 			private readonly string mValueReadonly = null!;
@@ -502,7 +504,8 @@ namespace KSoft.Reflection.Test
 
 			}
 		};
-		internal class TestGenerateConstructorFuncSubClass : TestGenerateConstructorFuncClass
+		[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Constructed through the reflection-generated constructor test.")]
+		internal sealed class TestGenerateConstructorFuncSubClass : TestGenerateConstructorFuncClass
 		{
 			public TestGenerateConstructorFuncSubClass()
 				: base(null!, 0.0)

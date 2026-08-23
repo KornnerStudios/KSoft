@@ -626,12 +626,12 @@ namespace KSoft.Bitwise.Test
 		}
 		#endregion
 
-		class TestUnionData1
+		sealed class TestUnionData1
 		{
 			public string Str = string.Empty;
 			public bool Bool = false;
 		};
-		class TestUnionData2
+		sealed class TestUnionData2
 		{
 			public int Index;
 		};
