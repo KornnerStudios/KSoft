@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	// http://burtleburtle.net/bob/c/lookup3.c

@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	public static partial class Crc32

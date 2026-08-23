@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	/// <remarks>http://bretm.home.comcast.net/~bretm/hash/7.html</remarks>

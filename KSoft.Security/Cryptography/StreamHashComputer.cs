@@ -2,8 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design",

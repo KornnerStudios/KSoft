@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable enable
-
 // #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
 // which means the algo's Initialize method will be executed before the call returns!
 // .netframework did not do this:

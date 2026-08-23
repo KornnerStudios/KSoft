@@ -1,8 +1,6 @@
 ﻿using System;
 using HashAlgorithm = System.Security.Cryptography.HashAlgorithm;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	// See also Karl Malbrain's compact CRC-32, with pre and post conditioning.

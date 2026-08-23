@@ -1,7 +1,5 @@
 ﻿using System;
 
-#nullable enable
-
 namespace KSoft.Security.Cryptography
 {
 	/// <summary>Jenkins One-at-a-time hash</summary>
