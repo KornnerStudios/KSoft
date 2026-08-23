@@ -24,7 +24,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region BitEnumType
-		public Type BitsEnumType
+		public Type? BitsEnumType
 		{
 			get { return (Type)GetValue(BitsEnumTypeProperty); }
 			set { SetValue(BitsEnumTypeProperty, value); }
@@ -36,7 +36,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region FlagsEnumType
-		public Type FlagsEnumType
+		public Type? FlagsEnumType
 		{
 			get { return (Type)GetValue(FlagsEnumTypeProperty); }
 			set { SetValue(FlagsEnumTypeProperty, value); }
@@ -49,7 +49,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region BitsUserInterfaceSource
-		public IBitVectorUserInterfaceData BitsUserInterfaceSource
+		public IBitVectorUserInterfaceData? BitsUserInterfaceSource
 		{
 			get { return (IBitVectorUserInterfaceData)GetValue(BitsUserInterfaceSourceProperty); }
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
@@ -148,9 +148,9 @@ namespace KSoft.WPF.Controls
 		{
 			var ctrl = (BitVectorControl)d;
 
-			var bit_enum_type = (Type)e.NewValue;
+			var bit_enum_type = e.NewValue as Type;
 
-			IBitVectorUserInterfaceData ui_source = null;
+			IBitVectorUserInterfaceData? ui_source = null;
 			if (bit_enum_type != null)
 			{
 				if (e.Property == BitsEnumTypeProperty)
@@ -169,7 +169,7 @@ namespace KSoft.WPF.Controls
 		private static void OnBitsUserInterfaceSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var ctrl = (BitVectorControl)d;
-			var source = (IBitVectorUserInterfaceData)e.NewValue;
+			var source = e.NewValue as IBitVectorUserInterfaceData;
 
 			var newBitItems = new ObservableCollection<BitItemModel>();
 			if (source != null)

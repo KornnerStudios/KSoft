@@ -5,6 +5,7 @@
     <RootNamespace>KSoft.WPF</RootNamespace>
     <AssemblyName>KSoft.WPF</AssemblyName>
     <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <NeutralLanguage>en</NeutralLanguage>

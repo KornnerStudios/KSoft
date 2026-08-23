@@ -13,7 +13,7 @@ namespace KSoft.WPF.Controls
 	public partial class SelectableFolderControl : UserControl
 	{
 		#region Text
-		public string Text
+		public string? Text
 		{
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
@@ -78,7 +78,10 @@ namespace KSoft.WPF.Controls
 			var dlg = new WindowsForms.FolderSelectDialog();
 			{
 				dlg.Title = Description;
-				dlg.InitialDirectory = Text;
+				if (Text != null)
+				{
+					dlg.InitialDirectory = Text;
+				}
 				if (dlg.ShowDialog(parentWindowHandleWrapper.Handle))
 				{
 					Text = dlg.FileName;

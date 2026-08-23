@@ -7,7 +7,7 @@ namespace KSoft.WPF
 	[ValueConversion(typeof(bool), typeof(Visibility))]
 	public sealed class BoolToVisiblityConverter : IValueConverter
 	{
-		private static BoolToVisiblityConverter gVisibleOrHidden;
+		private static BoolToVisiblityConverter? gVisibleOrHidden;
 		public static BoolToVisiblityConverter VisibleOrHidden { get {
 			if (gVisibleOrHidden == null)
 			{
@@ -18,7 +18,7 @@ namespace KSoft.WPF
 
 			return gVisibleOrHidden;
 		} }
-		private static BoolToVisiblityConverter gVisibleOrHiddenInverted;
+		private static BoolToVisiblityConverter? gVisibleOrHiddenInverted;
 		public static BoolToVisiblityConverter VisibleOrHiddenInverted { get {
 			if (gVisibleOrHiddenInverted == null)
 			{
@@ -31,7 +31,7 @@ namespace KSoft.WPF
 			return gVisibleOrHiddenInverted;
 		} }
 
-		private static BoolToVisiblityConverter gVisibleOrCollapsed;
+		private static BoolToVisiblityConverter? gVisibleOrCollapsed;
 		public static BoolToVisiblityConverter VisibleOrCollapsed { get {
 			if (gVisibleOrCollapsed == null)
 			{
@@ -43,7 +43,7 @@ namespace KSoft.WPF
 
 			return gVisibleOrCollapsed;
 		} }
-		private static BoolToVisiblityConverter gVisibleOrCollapsedInverted;
+		private static BoolToVisiblityConverter? gVisibleOrCollapsedInverted;
 		public static BoolToVisiblityConverter VisibleOrCollapseInverted { get {
 			if (gVisibleOrCollapsedInverted == null)
 			{

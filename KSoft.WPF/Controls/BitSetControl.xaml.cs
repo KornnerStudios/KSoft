@@ -26,7 +26,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region BitEnumType
-		public Type BitsEnumType
+		public Type? BitsEnumType
 		{
 			get { return (Type)GetValue(BitsEnumTypeProperty); }
 			set { SetValue(BitsEnumTypeProperty, value); }
@@ -38,7 +38,7 @@ namespace KSoft.WPF.Controls
 		#endregion
 
 		#region BitsUserInterfaceSource
-		public IBitVectorUserInterfaceData BitsUserInterfaceSource
+		public IBitVectorUserInterfaceData? BitsUserInterfaceSource
 		{
 			get { return (IBitVectorUserInterfaceData)GetValue(BitsUserInterfaceSourceProperty); }
 			set { SetValue(BitsUserInterfaceSourceProperty, value); }
@@ -50,7 +50,7 @@ namespace KSoft.WPF.Controls
 
 		#region BitVector
 		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public Collections.BitSet BitVector
+		public Collections.BitSet? BitVector
 		{
 			get { return (Collections.BitSet)GetValue(BitVectorProperty); }
 			set { SetValue(BitVectorProperty, value); }
@@ -102,7 +102,7 @@ namespace KSoft.WPF.Controls
 		}
 		#endregion
 
-		private void AssignItems(Collections.BitSet newBits)
+		private void AssignItems(Collections.BitSet? newBits)
 		{
 			if (newBits == null)
 			{
@@ -161,9 +161,9 @@ namespace KSoft.WPF.Controls
 		{
 			var ctrl = (BitSetControl)d;
 
-			var bit_enum_type = (Type)e.NewValue;
+			var bit_enum_type = e.NewValue as Type;
 
-			IBitVectorUserInterfaceData ui_source = null;
+			IBitVectorUserInterfaceData? ui_source = null;
 			if (bit_enum_type != null)
 			{
 				if (e.Property == BitsEnumTypeProperty)
@@ -178,7 +178,7 @@ namespace KSoft.WPF.Controls
 		private static void OnBitsUserInterfaceSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var ctrl = (BitSetControl)d;
-			var source = (IBitVectorUserInterfaceData)e.NewValue;
+			var source = e.NewValue as IBitVectorUserInterfaceData;
 
 			var newBitItems = new ObservableCollection<BitItemModel>();
 			if (source != null)
@@ -203,8 +203,8 @@ namespace KSoft.WPF.Controls
 		{
 			var ctrl = (BitSetControl)d;
 
-			var vold = (Collections.BitSet)e.OldValue;
-			var vnew = (Collections.BitSet)e.NewValue;
+			var vold = e.OldValue as Collections.BitSet;
+			var vnew = e.NewValue as Collections.BitSet;
 			if (vold == vnew)
 			{
 				return;

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -13,9 +14,6 @@ namespace KSoft.WPF.Controls
 	public class NumericTextBox
 		: Control
 	{
-		private TextBlock mTextBlock;
-		private TextBox mTextBox;
-
 		static NumericTextBox()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericTextBox),
@@ -74,57 +72,56 @@ namespace KSoft.WPF.Controls
 
 		public override void OnApplyTemplate()
 		{
-			mTextBlock = (TextBlock)Template.FindName("TextBlock", this);
+			var textBlock = Template.FindName("TextBlock", this) as TextBlock
+				?? throw new InvalidOperationException("NumericTextBox template must contain a TextBlock named \"TextBlock\".");
+			var textBox = Template.FindName("TextBox", this) as TextBox
+				?? throw new InvalidOperationException("NumericTextBox template must contain a TextBox named \"TextBox\".");
 
 			var originalPosition = new Point();
 			double originalValue = 0;
 			var mouseMoved = false;
 
-			mTextBlock.MouseDown += (sender, e) =>
+			textBlock.MouseDown += (sender, e) =>
 			{
-				originalPosition = e.GetPosition(mTextBlock);
+				originalPosition = e.GetPosition(textBlock);
 				originalValue = Value;
-				mTextBlock.CaptureMouse();
+				textBlock.CaptureMouse();
 				mouseMoved = false;
 			};
-
-			mTextBlock.MouseMove += (sender, e) =>
+			textBlock.MouseMove += (sender, e) =>
 			{
-				if (!mTextBlock.IsMouseCaptured)
+				if (!textBlock.IsMouseCaptured)
 				{
 					return;
 				}
 
 				mouseMoved = true;
 
-				var newPosition = e.GetPosition(mTextBlock);
+				var newPosition = e.GetPosition(textBlock);
 				Value = CoerceValue(originalValue + (newPosition.X - originalPosition.X) / 50.0);
 			};
-
-			mTextBlock.MouseUp += (sender, e) =>
+			textBlock.MouseUp += (sender, e) =>
 			{
-				if (mTextBlock.IsMouseCaptured)
+				if (textBlock.IsMouseCaptured)
 				{
-					mTextBlock.ReleaseMouseCapture();
+					textBlock.ReleaseMouseCapture();
 				}
 
 				if (!mouseMoved)
 				{
 					Mode = NumericTextBoxMode.TextBox;
-					mTextBox.SelectAll();
-					mTextBox.Focus();
+					textBox.SelectAll();
+					textBox.Focus();
 				}
 			};
-
-			mTextBox = (TextBox)Template.FindName("TextBox", this);
-			mTextBox.KeyUp += (sender, e) =>
+			textBox.KeyUp += (sender, e) =>
 			{
 				if (e.Key == Key.Escape || e.Key == Key.Enter)
 				{
 					Mode = NumericTextBoxMode.Normal;
 				}
 			};
-			mTextBox.LostFocus += (sender, e) => Mode = NumericTextBoxMode.Normal;
+			textBox.LostFocus += (sender, e) => Mode = NumericTextBoxMode.Normal;
 
 			base.OnApplyTemplate();
 		}

@@ -6,11 +6,11 @@ namespace KSoft.WPF.ViewModels
 		: ObjectModel.BasicViewModel
 	{
 		#region Title
-		string mTitle;
-		public string Title
+		string? mTitle;
+		public string? Title
 		{
 			get { return mTitle; }
-			set { SetFieldObj(ref mTitle, value); }
+			set { SetField(ref mTitle, value); }
 		}
 		#endregion
 
@@ -33,7 +33,7 @@ namespace KSoft.WPF.ViewModels
 		#endregion
 
 		#region CloseCommand
-		ICommand mCloseCommand;
+		ICommand? mCloseCommand;
 		public ICommand CloseCommand { get {
 			if (mCloseCommand == null)
 			{

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -13,9 +14,9 @@ namespace KSoft.WPF.ViewModels
 		, IEnumerable<DockWindowViewModel>
 	{
 		#region Documents
-		ObservableCollection<DockWindowViewModel> mDocuments;
+		ObservableCollection<DockWindowViewModel>? mDocuments;
 		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public ObservableCollection<DockWindowViewModel> Documents
+		public ObservableCollection<DockWindowViewModel>? Documents
 		{
 			get { return mDocuments; }
 			set { SetField(ref mDocuments, value, overrideChecks: true); }
@@ -23,9 +24,9 @@ namespace KSoft.WPF.ViewModels
 		#endregion
 
 		#region Anchorables
-		ObservableCollection<object> mAnchorables;
+		ObservableCollection<object>? mAnchorables;
 		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public ObservableCollection<object> Anchorables
+		public ObservableCollection<object>? Anchorables
 		{
 			get { return mAnchorables; }
 			set { SetField(ref mAnchorables, value, overrideChecks: true); }
@@ -45,9 +46,12 @@ namespace KSoft.WPF.ViewModels
 			}
 		}
 
-		private void DockWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void DockWindowViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			DockWindowViewModel document = sender as DockWindowViewModel;
+			if (sender is not DockWindowViewModel document)
+			{
+				return;
+			}
 
 			if (e.PropertyName == nameof(DockWindowViewModel.IsClosed))
 			{
@@ -65,7 +69,7 @@ namespace KSoft.WPF.ViewModels
 		/// <summary>Add the window to this manager</summary>
 		/// <param name="doc"></param>
 		/// <returns>False if the document is null or wasn't also added to Documents because IsClosed</returns>
-		public bool AddDocument(DockWindowViewModel doc)
+		public bool AddDocument(DockWindowViewModel? doc)
 		{
 			if (doc == null)
 			{
@@ -91,7 +95,7 @@ namespace KSoft.WPF.ViewModels
 		/// <summary>Remove the window from this manager</summary>
 		/// <param name="doc"></param>
 		/// <returns>False if the document is null, or not in the manager</returns>
-		public bool RemoveDocument(DockWindowViewModel doc)
+		public bool RemoveDocument(DockWindowViewModel? doc)
 		{
 			if (doc == null)
 			{
@@ -109,22 +113,16 @@ namespace KSoft.WPF.ViewModels
 
 		private void OpenDocument(DockWindowViewModel doc)
 		{
-			if (doc == null)
-			{
-				return;
-			}
-
-			Documents.Add(doc);
+			var documents = Documents
+				?? throw new InvalidOperationException("Documents must be initialized before opening a document.");
+			documents.Add(doc);
 		}
 
 		private void CloseDocument(DockWindowViewModel doc)
 		{
-			if (doc == null)
-			{
-				return;
-			}
-
-			Documents.Remove(doc);
+			var documents = Documents
+				?? throw new InvalidOperationException("Documents must be initialized before closing a document.");
+			documents.Remove(doc);
 		}
 
 		public void Clear()
@@ -137,7 +135,7 @@ namespace KSoft.WPF.ViewModels
 			Documents.Clear();
 		}
 
-		public bool ContainsInstanceOf<TViewModel>(out TViewModel viewModel)
+		public bool ContainsInstanceOf<TViewModel>([NotNullWhen(true)] out TViewModel? viewModel)
 			where TViewModel : DockWindowViewModel
 		{
 			viewModel = null;

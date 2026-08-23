@@ -10,8 +10,8 @@ namespace KSoft.WPF
 		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		public sealed class BitUserInterfaceData
 		{
-			public string DisplayName;
-			public string Description;
+			public string? DisplayName;
+			public string? Description;
 			public bool Visible;
 
 			public bool CanNotBeRendered { get {
@@ -23,7 +23,7 @@ namespace KSoft.WPF
 				return false;
 			} }
 		};
-		public static bool CanNotBeRendered(BitUserInterfaceData data)
+		public static bool CanNotBeRendered(BitUserInterfaceData? data)
 		{
 			if (data == null)
 			{
@@ -33,7 +33,7 @@ namespace KSoft.WPF
 			return data.CanNotBeRendered;
 		}
 
-		private BitUserInterfaceData[] mBitInfo;
+		private BitUserInterfaceData?[]? mBitInfo;
 
 		public int NumberOfBits { get { return mBitInfo != null ? mBitInfo.Length : 0; } }
 
@@ -47,7 +47,7 @@ namespace KSoft.WPF
 		{
 			ValidateBitIndex(bitIndex);
 
-			var info = mBitInfo[bitIndex];
+			var info = mBitInfo![bitIndex];
 
 			return info?.DisplayName ?? bitIndex.ToString(KSoft.Util.InvariantCultureInfo);
 		}
@@ -56,7 +56,7 @@ namespace KSoft.WPF
 		{
 			ValidateBitIndex(bitIndex);
 
-			var info = mBitInfo[bitIndex];
+			var info = mBitInfo![bitIndex];
 
 			return info?.Description ?? string.Empty;
 		}
@@ -65,7 +65,7 @@ namespace KSoft.WPF
 		{
 			ValidateBitIndex(bitIndex);
 
-			var info = mBitInfo[bitIndex];
+			var info = mBitInfo![bitIndex];
 
 			return info != null && info.Visible;
 		}
@@ -83,7 +83,7 @@ namespace KSoft.WPF
 			}
 		}
 
-		private void SetInfoFromFactoryData(List<BitUserInterfaceData> bitInfos)
+		private void SetInfoFromFactoryData(List<BitUserInterfaceData?> bitInfos)
 		{
 			if (bitInfos.Count > 0 && !bitInfos.TrueForAll(CanNotBeRendered))
 			{
@@ -149,7 +149,7 @@ namespace KSoft.WPF
 			ValidateEnumFactoryArguments(enumType, explicitNumberOfBits);
 
 			var bit_field_infos = Reflection.Util.GetEnumFields(enumType);
-			var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
+			var bit_ui_infos = new List<BitUserInterfaceData?>(Bits.kInt64BitCount);
 
 			bool find_highest_index = explicitNumberOfBits.IsNone();
 			int highest_index = explicitNumberOfBits - 1;
@@ -205,7 +205,7 @@ namespace KSoft.WPF
 			ValidateEnumFactoryArguments(enumType, explicitNumberOfBits);
 
 			var bit_field_infos = Reflection.Util.GetEnumFields(enumType);
-			var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
+			var bit_ui_infos = new List<BitUserInterfaceData?>(Bits.kInt64BitCount);
 
 			bool find_highest_index = explicitNumberOfBits.IsNone();
 			int highest_index = explicitNumberOfBits - 1;
@@ -257,7 +257,7 @@ namespace KSoft.WPF
 			return info;
 		}
 
-		public static BitVectorUserInterfaceData ForExplicitData(IEnumerable<BitUserInterfaceData> bitInfos)
+		public static BitVectorUserInterfaceData ForExplicitData(IEnumerable<BitUserInterfaceData?>? bitInfos)
 		{
 			var info = new BitVectorUserInterfaceData();
 			if (bitInfos != null)
@@ -271,13 +271,13 @@ namespace KSoft.WPF
 			return info;
 		}
 
-		public static BitVectorUserInterfaceData ForStrings(IEnumerable<string> bitStrings)
+		public static BitVectorUserInterfaceData ForStrings(IEnumerable<string?>? bitStrings)
 		{
 			var info = new BitVectorUserInterfaceData();
 			if (bitStrings != null)
 			{
 				int bit_index = 0;
-				var bit_ui_infos = new List<BitUserInterfaceData>(Bits.kInt64BitCount);
+				var bit_ui_infos = new List<BitUserInterfaceData?>(Bits.kInt64BitCount);
 				foreach (var str in bitStrings)
 				{
 					var bit_ui_info = new BitUserInterfaceData

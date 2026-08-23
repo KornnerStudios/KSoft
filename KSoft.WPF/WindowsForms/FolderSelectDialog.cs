@@ -13,13 +13,13 @@ namespace KSoft.WPF.WindowsForms
 	{
 		internal const string kFoldersFilter = "Folders|\n";
 
-		string mInitialDirectory;
-		string mTitle;
-		string mFileName = "";
+		string? mInitialDirectory;
+		string? mTitle;
+		string? mFileName = "";
 
 		public string InitialDirectory
 		{
-			get { return string.IsNullOrEmpty(mInitialDirectory) ? Environment.CurrentDirectory : mInitialDirectory; }
+			get { return mInitialDirectory ?? Environment.CurrentDirectory; }
 			set { mInitialDirectory = value; }
 		}
 		public string Title
@@ -27,7 +27,7 @@ namespace KSoft.WPF.WindowsForms
 			get { return mTitle ?? "Select a folder"; }
 			set { mTitle = value; }
 		}
-		public string FileName { get { return mFileName; } }
+		public string? FileName { get { return mFileName; } }
 
 		public bool ShowDialog()
 		{
@@ -48,7 +48,7 @@ namespace KSoft.WPF.WindowsForms
 		struct ShowDialogResult
 		{
 			public bool Result { get; set; }
-			public string FileName { get; set; }
+			public string? FileName { get; set; }
 		};
 
 		static ShowDialogResult ShowXpDialog(IntPtr ownerHandle, string initialDirectory, string title)
@@ -89,12 +89,12 @@ namespace KSoft.WPF.WindowsForms
 			// .net9:
 			//	Assembly: System.Windows.Forms.Primitives
 			//	Class:Windows.Win32.UI.Shell.IFileDialog
-			readonly static Type gIFileDialogType = gWindowsFormsAssembly.GetType("System.Windows.Forms.FileDialogNative+IFileDialog");
+			readonly static Type? gIFileDialogType = gWindowsFormsAssembly.GetType("System.Windows.Forms.FileDialogNative+IFileDialog");
 			// .net9 this returns ComScope<IFileDialog>, which is a ref struct
-			readonly static MethodInfo gCreateVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("CreateVistaDialog", kBindingFlags);
-			readonly static MethodInfo gOnBeforeVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("OnBeforeVistaDialog", kBindingFlags);
-			readonly static MethodInfo gGetOptionsMethodInfo = typeof(FileDialog).GetMethod("GetOptions", kBindingFlags);
-			readonly static MethodInfo gSetOptionsMethodInfo = gIFileDialogType.GetMethod("SetOptions", kBindingFlags);
+			readonly static MethodInfo? gCreateVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("CreateVistaDialog", kBindingFlags);
+			readonly static MethodInfo? gOnBeforeVistaDialogMethodInfo = typeof(OpenFileDialog).GetMethod("OnBeforeVistaDialog", kBindingFlags);
+			readonly static MethodInfo? gGetOptionsMethodInfo = typeof(FileDialog).GetMethod("GetOptions", kBindingFlags);
+			readonly static MethodInfo? gSetOptionsMethodInfo = gIFileDialogType?.GetMethod("SetOptions", kBindingFlags);
 #if false
 			readonly static uint gFosPickFoldersBitFlag = (uint) gWindowsFormsAssembly
 				.GetType("System.Windows.Forms.FileDialogNative+FOS")
@@ -102,12 +102,19 @@ namespace KSoft.WPF.WindowsForms
 				.GetValue(null);
 #endif
 			const uint kOptionFlags = (uint)(FOS.FOS_PICKFOLDERS | FOS.FOS_PATHMUSTEXIST);
-			readonly static ConstructorInfo gVistaDialogEventsConstructorInfo = gWindowsFormsAssembly
+			readonly static ConstructorInfo? gVistaDialogEventsConstructorInfo = gWindowsFormsAssembly
 				.GetType("System.Windows.Forms.FileDialog+VistaDialogEvents")
-				.GetConstructor(kBindingFlags, null, [typeof(FileDialog)], null);
-			readonly static MethodInfo gAdviseMethodInfo = gIFileDialogType.GetMethod("Advise");
-			readonly static MethodInfo gUnAdviseMethodInfo = gIFileDialogType.GetMethod("Unadvise");
-			readonly static MethodInfo gShowMethodInfo = gIFileDialogType.GetMethod("Show");
+				?.GetConstructor(kBindingFlags, null, [typeof(FileDialog)], null);
+			readonly static MethodInfo? gAdviseMethodInfo = gIFileDialogType?.GetMethod("Advise");
+			readonly static MethodInfo? gUnAdviseMethodInfo = gIFileDialogType?.GetMethod("Unadvise");
+			readonly static MethodInfo? gShowMethodInfo = gIFileDialogType?.GetMethod("Show");
+
+			private static T GetRequiredReflectionMember<T>(T? member, string memberName)
+				where T : class
+			{
+				return member ?? throw new PlatformNotSupportedException(
+					$"The Windows Forms member '{memberName}' is unavailable on this runtime.");
+			}
 
 			public static ShowDialogResult Show(IntPtr ownerHandle, string initialDirectory, string title)
 			{
@@ -122,15 +129,29 @@ namespace KSoft.WPF.WindowsForms
 					Title = title
 				};
 
-				var iFileDialog = gCreateVistaDialogMethodInfo.Invoke(openFileDialog, Util.EmptyArray);
-				gOnBeforeVistaDialogMethodInfo.Invoke(openFileDialog, [iFileDialog]);
-				gSetOptionsMethodInfo.Invoke(iFileDialog, [(uint) gGetOptionsMethodInfo.Invoke(openFileDialog, Util.EmptyArray) | kOptionFlags]);
-				var adviseParametersWithOutputConnectionToken = new[] { gVistaDialogEventsConstructorInfo.Invoke([openFileDialog]), 0U };
-				gAdviseMethodInfo.Invoke(iFileDialog, adviseParametersWithOutputConnectionToken);
+				var createVistaDialog = GetRequiredReflectionMember(gCreateVistaDialogMethodInfo, nameof(gCreateVistaDialogMethodInfo));
+				var onBeforeVistaDialog = GetRequiredReflectionMember(gOnBeforeVistaDialogMethodInfo, nameof(gOnBeforeVistaDialogMethodInfo));
+				var getOptions = GetRequiredReflectionMember(gGetOptionsMethodInfo, nameof(gGetOptionsMethodInfo));
+				var setOptions = GetRequiredReflectionMember(gSetOptionsMethodInfo, nameof(gSetOptionsMethodInfo));
+				var createVistaDialogEvents = GetRequiredReflectionMember(gVistaDialogEventsConstructorInfo, nameof(gVistaDialogEventsConstructorInfo));
+				var advise = GetRequiredReflectionMember(gAdviseMethodInfo, nameof(gAdviseMethodInfo));
+				var unadvise = GetRequiredReflectionMember(gUnAdviseMethodInfo, nameof(gUnAdviseMethodInfo));
+				var show = GetRequiredReflectionMember(gShowMethodInfo, nameof(gShowMethodInfo));
+				var iFileDialog = createVistaDialog.Invoke(openFileDialog, Util.EmptyArray)
+					?? throw new PlatformNotSupportedException("The Windows Forms Vista dialog could not be created.");
+				onBeforeVistaDialog.Invoke(openFileDialog, [iFileDialog]);
+				var options = getOptions.Invoke(openFileDialog, Util.EmptyArray)
+					?? throw new PlatformNotSupportedException("The Windows Forms Vista dialog options could not be read.");
+				setOptions.Invoke(iFileDialog, [(uint)options | kOptionFlags]);
+				var dialogEvents = createVistaDialogEvents.Invoke([openFileDialog])
+					?? throw new PlatformNotSupportedException("The Windows Forms Vista dialog event handler could not be created.");
+				var adviseParametersWithOutputConnectionToken = new object[] { dialogEvents, 0U };
+				advise.Invoke(iFileDialog, adviseParametersWithOutputConnectionToken);
 
 				try
 				{
-					int retVal = (int) gShowMethodInfo.Invoke(iFileDialog, [ownerHandle]);
+					int retVal = (int)(show.Invoke(iFileDialog, [ownerHandle])
+						?? throw new PlatformNotSupportedException("The Windows Forms Vista dialog could not be shown."));
 					return new ShowDialogResult
 					{
 						Result = retVal == 0,
@@ -139,7 +160,7 @@ namespace KSoft.WPF.WindowsForms
 				}
 				finally
 				{
-					gUnAdviseMethodInfo.Invoke(iFileDialog, [adviseParametersWithOutputConnectionToken[1]]);
+					unadvise.Invoke(iFileDialog, [adviseParametersWithOutputConnectionToken[1]]);
 				}
 			}
 		};

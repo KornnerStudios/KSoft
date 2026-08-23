@@ -12,10 +12,10 @@ namespace KSoft.WPF.Controls
 		: Slider
 	{
 		[Category("Behavior")]
-		public event DragStartedEventHandler ThumbDragStarted;
+		public event DragStartedEventHandler? ThumbDragStarted;
 
 		[Category("Behavior")]
-		public event DragCompletedEventHandler ThumbDragCompleted;
+		public event DragCompletedEventHandler? ThumbDragCompleted;
 
 		protected override void OnThumbDragStarted(DragStartedEventArgs e)
 		{

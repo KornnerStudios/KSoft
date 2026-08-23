@@ -6,10 +6,10 @@ namespace KSoft.WPF
 	public class RelayCommand
 		: ICommand
 	{
-		private readonly Predicate<object> mCanExecute;
-		private readonly Action<object> mExecute;
+		private readonly Predicate<object?>? mCanExecute;
+		private readonly Action<object?>? mExecute;
 
-		public RelayCommand(Predicate<object> canExecute, Action<object> execute)
+		public RelayCommand(Predicate<object?>? canExecute, Action<object?>? execute)
 		{
 			this.mCanExecute = canExecute;
 			this.mExecute = execute;
@@ -17,18 +17,18 @@ namespace KSoft.WPF
 
 		/// <summary>Create a command that can always execute</summary>
 		/// <param name="execute"></param>
-		public RelayCommand(Action<object> execute)
+		public RelayCommand(Action<object?> execute)
 			: this(null, execute)
 		{
 		}
 
-		public event EventHandler CanExecuteChanged
+		public event EventHandler? CanExecuteChanged
 		{
 			add { CommandManager.RequerySuggested += value; }
 			remove { CommandManager.RequerySuggested -= value; }
 		}
 
-		public bool CanExecute(object parameter)
+		public bool CanExecute(object? parameter)
 		{
 			if (mCanExecute == null)
 			{
@@ -38,7 +38,7 @@ namespace KSoft.WPF
 			return mCanExecute(parameter);
 		}
 
-		public void Execute(object parameter)
+		public void Execute(object? parameter)
 		{
 			if (mExecute != null)
 			{

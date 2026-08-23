@@ -5,33 +5,32 @@ namespace KSoft.WPF.Converters
 {
 	public sealed class TrueOrFalseString
 	{
-		public string TrueString { get; set; }
-		public string FalseString { get; set; }
+		public string? TrueString { get; set; }
+		public string? FalseString { get; set; }
 	};
 
 	[ValueConversion(typeof(bool), typeof(string))]
 	public class BooleanToTrueOrFalseStringConverter
 		: IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object? Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			if (value is bool valueAsBool && parameter is TrueOrFalseString)
+			if (value is bool valueAsBool && parameter is TrueOrFalseString strings)
 			{
-				var str = parameter as TrueOrFalseString;
 				if (valueAsBool)
 				{
-					return str.TrueString;
+					return strings.TrueString;
 				}
 				else
 				{
-					return str.FalseString;
+					return strings.FalseString;
 				}
 			}
 
 			throw new InvalidOperationException("The value must be a boolean and parameter must be a " + nameof(TrueOrFalseString));
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			throw new NotImplementedException();
 		}

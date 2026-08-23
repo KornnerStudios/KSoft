@@ -11,7 +11,7 @@ namespace KSoft.WPF.Converters
 		: IValueConverter
 	{
 		#region EqualsZero
-		private static IntegerEqualityTraitsTestToBooleanConverter gEqualsZero;
+		private static IntegerEqualityTraitsTestToBooleanConverter? gEqualsZero;
 		public static IntegerEqualityTraitsTestToBooleanConverter EqualsZero { get {
 			if (gEqualsZero == null)
 			{
@@ -23,7 +23,7 @@ namespace KSoft.WPF.Converters
 		#endregion
 
 		#region GreaterThanZero
-		private static IntegerEqualityTraitsTestToBooleanConverter gGreaterThanZero;
+		private static IntegerEqualityTraitsTestToBooleanConverter? gGreaterThanZero;
 		public static IntegerEqualityTraitsTestToBooleanConverter GreaterThanZero
 		{
 			get

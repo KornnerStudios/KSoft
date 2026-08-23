@@ -7,7 +7,7 @@ namespace KSoft.WPF.Converters
 	public sealed class InverseBooleanConverter
 		: IValueConverter
 	{
-		private static InverseBooleanConverter gInstance;
+		private static InverseBooleanConverter? gInstance;
 		public static InverseBooleanConverter Instance { get {
 			if (gInstance == null)
 			{

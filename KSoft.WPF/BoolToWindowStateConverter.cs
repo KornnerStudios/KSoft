@@ -7,7 +7,7 @@ namespace KSoft.WPF
 	[ValueConversion(typeof(bool), typeof(WindowState))]
 	public sealed class BoolToWindowStateConverter : IValueConverter
 	{
-		private static BoolToWindowStateConverter gNormalOrMaximized;
+		private static BoolToWindowStateConverter? gNormalOrMaximized;
 		public static BoolToWindowStateConverter NormalOrMaximized { get {
 			if (gNormalOrMaximized == null)
 			{
@@ -18,7 +18,7 @@ namespace KSoft.WPF
 
 			return gNormalOrMaximized;
 		} }
-		private static BoolToWindowStateConverter gNormalOrMaximizedInverted;
+		private static BoolToWindowStateConverter? gNormalOrMaximizedInverted;
 		public static BoolToWindowStateConverter NormalOrMaximizedInverted { get {
 			if (gNormalOrMaximizedInverted == null)
 			{
@@ -31,7 +31,7 @@ namespace KSoft.WPF
 			return gNormalOrMaximizedInverted;
 		} }
 
-		private static BoolToWindowStateConverter gNormalOrMinimized;
+		private static BoolToWindowStateConverter? gNormalOrMinimized;
 		public static BoolToWindowStateConverter NormalOrMinimized { get {
 			if (gNormalOrMinimized == null)
 			{
@@ -43,7 +43,7 @@ namespace KSoft.WPF
 
 			return gNormalOrMinimized;
 		} }
-		private static BoolToWindowStateConverter gNormalOrMinimizedInverted;
+		private static BoolToWindowStateConverter? gNormalOrMinimizedInverted;
 		public static BoolToWindowStateConverter NormalOrMinimizedInverted { get {
 			if (gNormalOrMinimizedInverted == null)
 			{
