@@ -15,3 +15,6 @@ using System.Runtime.InteropServices;
 	Justification = "Explicit guard clauses validate public inputs where needed")]
 [assembly: SuppressMessage("Microsoft.Design",
 	"CA1303:DoNotPassLiteralsAsLocalizedParameters")]
+[assembly: SuppressMessage("Design",
+	"CA1033:Interface methods should be callable by child types",
+	Justification = "Explicit interface implementations intentionally preserve stream serialization contracts")]

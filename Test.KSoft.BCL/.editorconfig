@@ -1,7 +1,0 @@
-[*.cs]
-	# CA1806 "Do not ignore method results": constructor and parse calls inside assertion delegates
-	# intentionally validate exception and invalid-input contracts without consuming a successful result.
-	dotnet_diagnostic.CA1806.severity = none
-	# CA1861 "Avoid constant arrays as arguments": inline arrays keep test expectations local and avoid
-	# shared mutable static data.
-	dotnet_diagnostic.CA1861.severity = none

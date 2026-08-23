@@ -1,4 +1,0 @@
-[*.cs]
-	# CA1861 "Avoid constant arrays as arguments": inline arrays keep generator test expectations local
-	# and avoid shared mutable static data.
-	dotnet_diagnostic.CA1861.severity = none

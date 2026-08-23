@@ -16,3 +16,9 @@ using System.Runtime.InteropServices;
 [assembly: SuppressMessage("Microsoft.Design",
 	"CA1707:IdentifiersShouldNotContainUnderscores",
 	Justification="Because I do this all over the place in unit tests")]
+[assembly: SuppressMessage("Performance",
+	"CA1806:Do not ignore method results",
+	Justification = "Tests intentionally invoke constructors and parsers through assertion delegates")]
+[assembly: SuppressMessage("Performance",
+	"CA1861:Avoid constant arrays as arguments",
+	Justification = "Tests intentionally keep expectation arrays local to each test")]
