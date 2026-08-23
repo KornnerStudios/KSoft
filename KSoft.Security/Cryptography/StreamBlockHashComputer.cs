@@ -57,14 +57,8 @@ namespace KSoft.Security.Cryptography
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 			if (!offset.IsNone())
 			{
-				if (offset > InputStream.Length)
-				{
-					throw new ArgumentOutOfRangeException(nameof(offset));
-				}
-				if (count > InputStream.Length - offset)
-				{
-					throw new ArgumentOutOfRangeException(nameof(count));
-				}
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, InputStream.Length);
+				ArgumentOutOfRangeException.ThrowIfGreaterThan(count, InputStream.Length - offset);
 			}
 
 			mStartOffset = offset;

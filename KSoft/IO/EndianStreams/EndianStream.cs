@@ -426,10 +426,7 @@ namespace KSoft.IO
 				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			if (count > value.Length - index)
-			{
-				throw new ArgumentOutOfRangeException(nameof(count));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length - index);
 		}
 
 		public EndianStream Stream(byte[] value, int index, int count)

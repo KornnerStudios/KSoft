@@ -483,10 +483,7 @@ namespace KSoft.Values
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
-			if (index > buffer.Length - kSizeOf)
-			{
-				throw new ArgumentOutOfRangeException(nameof(index));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(index, buffer.Length - kSizeOf);
 
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData1(mData)); index += sizeof(int);
 			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData2(mData)); index += sizeof(short);

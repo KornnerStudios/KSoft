@@ -92,10 +92,7 @@ namespace KSoft.LowLevel.Util
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			if (startIndex > buffer.Length - kSizeOf)
-			{
-				throw new ArgumentOutOfRangeException(nameof(startIndex));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, buffer.Length - kSizeOf);
 		}
 	};
 }
