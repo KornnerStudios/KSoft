@@ -7,6 +7,7 @@ namespace Bench.KSoft.BCL.Text;
 
 [MemoryDiagnoser]
 [BenchmarkCategory("Text", "Hex")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "CountingTextWriter owns no resources, and BenchmarkDotNet controls benchmark instance lifecycle.")]
 public class UtilitiesBytesBenchmarks
 {
 	private byte[] mData = [];
