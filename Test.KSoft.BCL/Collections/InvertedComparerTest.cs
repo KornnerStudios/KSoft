@@ -18,8 +18,8 @@ public sealed class InvertedComparerTest : BaseTestClass
 	[TestMethod]
 	public void InvertedComparer_NullComparer_ThrowsArgumentNullException()
 	{
-		AssertThrowsArgumentNull("comparer", () => new InvertedComparer(null));
-		AssertThrowsArgumentNull("comparer", () => new InvertedComparer<int>(null));
+		AssertThrowsArgumentNull("comparer", () => new InvertedComparer(null!));
+		AssertThrowsArgumentNull("comparer", () => new InvertedComparer<int>(null!));
 	}
 
 	[TestMethod]

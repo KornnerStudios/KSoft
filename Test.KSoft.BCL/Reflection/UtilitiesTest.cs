@@ -30,7 +30,7 @@ namespace KSoft.Reflection.Test
 
 		class GenericTypeDefinition<T>
 		{
-			public T Value { get; set; }
+			public T Value { get; set; } = default!;
 		};
 		class MemberAccessTarget
 		{
@@ -399,8 +399,8 @@ namespace KSoft.Reflection.Test
 		class MemberSetterTestClass
 		{
 #pragma warning disable 649
-			private readonly string mValueReadonly;
-			private static readonly string mStaticValueReadonly;
+			private readonly string mValueReadonly = null!;
+			private static readonly string mStaticValueReadonly = null!;
 #pragma warning restore 649
 
 			private string ValueNoSetter { get { return mValueReadonly; } }
@@ -505,7 +505,7 @@ namespace KSoft.Reflection.Test
 		internal class TestGenerateConstructorFuncSubClass : TestGenerateConstructorFuncClass
 		{
 			public TestGenerateConstructorFuncSubClass()
-				: base(null, 0.0)
+				: base(null!, 0.0)
 			{
 			}
 		};
@@ -529,7 +529,7 @@ namespace KSoft.Reflection.Test
 
 			Assert.IsNotNull(ctor_priv());
 			Assert.IsNotNull(ctor_internal(1234));
-			Assert.IsNotNull(ctor_public(null, 1234.0));
+			Assert.IsNotNull(ctor_public(null!, 1234.0));
 		}
 		#endregion
 	};

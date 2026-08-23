@@ -120,7 +120,7 @@ namespace BKSystem.IO
 			/// <remarks>
 			///		.
 			/// </remarks>
-			static ResourceManager _resman;
+			static ResourceManager _resman = null!;
 			/// <summary>
 			///		An <see cref="Object"/> used to lock access to
 			///		<see cref="BitStream"/> resources while the current
@@ -129,7 +129,7 @@ namespace BKSystem.IO
 			/// <remarks>
 			///		.
 			/// </remarks>
-			static object _oResManLock;
+			static object _oResManLock = null!;
 			/// <summary>
 			///		A <see cref="Boolean"/> value specifying whether a resource is
 			///		currently being loaded.
@@ -190,7 +190,7 @@ namespace BKSystem.IO
 						return ("The resource manager was unable to load the resource: " + name);
 
 					_blnLoadingResource = true;
-					str = _resman.GetString(name, null);
+					str = _resman!.GetString(name, null)!;
 					_blnLoadingResource = false;
 				}
 				return str;
@@ -369,7 +369,7 @@ namespace BKSystem.IO
 		uint _uiBitBuffer_BitIndex;
 		#endregion
 
-		public object UserData { get; set; }
+		public object? UserData { get; set; }
 
 		#region Properties [20051116]
 		/// <summary>
@@ -5773,7 +5773,6 @@ namespace BKSystem.IO
 				Buffer.BlockCopy(buffer, 0, auiNewBuffer, 0, (int)(newLength << 2));
 
 			// Free the previously allocated buffer
-			buffer = null;
 
 			return auiNewBuffer;
 		}
@@ -5868,7 +5867,7 @@ namespace BKSystem.IO
 		/// </returns>
 		/// <seealso cref="BitStream"/>
 		/// <seealso cref="IAsyncResult"/>
-		public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+		public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
 		{
 			throw new NotSupportedException(BitStreamResources.GetString("NotSupported_AsyncOps"));
 		}
@@ -5906,7 +5905,7 @@ namespace BKSystem.IO
 		/// </returns>
 		/// <seealso cref="BitStream"/>
 		/// <seealso cref="IAsyncResult"/>
-		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
 		{
 			throw new NotSupportedException(BitStreamResources.GetString("NotSupported_AsyncOps"));
 		}

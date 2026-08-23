@@ -105,7 +105,7 @@ namespace KSoft.Text.Test
 
 				if (k_output_ms)
 				{
-					string output_ms_path = System.IO.Path.Combine(TestContext.TestRunResultsDirectory, "StringStorageEncodingTestWrite.bin");
+					string output_ms_path = System.IO.Path.Combine(TestContext!.TestRunResultsDirectory!, "StringStorageEncodingTestWrite.bin");
 					Console.WriteLine("Writing to: {0}", output_ms_path);
 
 					using (var fs = new System.IO.FileStream(output_ms_path,

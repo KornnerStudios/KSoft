@@ -478,8 +478,8 @@ namespace KSoft.IO.Test
 			var writeValues = new byte[] { 1, 2, 3 };
 			byte[] bytes = WriteWithBitStream(bs => bs.StreamArray(ref writeValues, 3, 2));
 
-			byte[] readValues = null;
-			ReadWithBitStream(bytes, bs => bs.StreamArray(ref readValues, 3, 2));
+			byte[]? readValues = null;
+			ReadWithBitStream(bytes, bs => bs.StreamArray(ref readValues!, 3, 2));
 
 			CollectionAssert.AreEqual(writeValues, readValues);
 		}

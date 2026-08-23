@@ -80,11 +80,11 @@ public sealed class EnumUtilTest : BaseTestClass
 	public void EnumUtils_AssertHelpers_InvalidArgumentsThrow()
 	{
 		AssertThrowsArgumentNull("kEnumType", () =>
-			KSoft.Reflection.EnumUtils.AssertUnderlyingTypeIsSupported(null, null));
+			KSoft.Reflection.EnumUtils.AssertUnderlyingTypeIsSupported(null!, null!));
 		AssertThrowsArgumentNull("theType", () =>
-			KSoft.Reflection.EnumUtils.AssertTypeIsEnum(null));
+			KSoft.Reflection.EnumUtils.AssertTypeIsEnum(null!));
 		AssertThrowsArgumentNull("theType", () =>
-			KSoft.Reflection.EnumUtils.AssertTypeIsFlagsEnum(null));
+			KSoft.Reflection.EnumUtils.AssertTypeIsFlagsEnum(null!));
 
 		Assert.ThrowsExactly<NotSupportedException>(() =>
 			KSoft.Reflection.EnumUtils.AssertTypeIsEnum(typeof(string)));
@@ -100,7 +100,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	public void EnumUtils_GetEnumFields_ReturnsEnumFields()
 	{
 		AssertThrowsArgumentNull("enumType", () =>
-			KSoft.Reflection.EnumUtils.GetEnumFields(null));
+			KSoft.Reflection.EnumUtils.GetEnumFields(null!));
 		AssertThrowsArgument("enumType", () =>
 			KSoft.Reflection.EnumUtils.GetEnumFields(typeof(string)));
 

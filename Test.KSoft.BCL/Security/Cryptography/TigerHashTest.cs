@@ -65,7 +65,7 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Create_InvalidAlgorithmName_ThrowsArgumentException()
 		{
-			AssertThrowsArgumentNull("algName", () => TigerHashBase.Create(null));
+			AssertThrowsArgumentNull("algName", () => TigerHashBase.Create(null!));
 			AssertThrowsArgument("algName", () => TigerHashBase.Create("not-a-tiger-hash"));
 			AssertThrowsArgument("algName", () => TigerHash.Create(TigerHash2.kAlgorithmName));
 			AssertThrowsArgument("algName", () => TigerHash2.Create(TigerHash.kAlgorithmName));

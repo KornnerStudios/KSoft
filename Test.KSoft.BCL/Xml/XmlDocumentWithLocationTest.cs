@@ -27,7 +27,7 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 	public void GetFileLocationString_NullNode_ThrowsArgumentNullException()
 	{
 		var document = CreateDocument();
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(() => document.GetFileLocationString(null));
+		var exception = Assert.ThrowsExactly<ArgumentNullException>(() => document.GetFileLocationString(null!));
 
 		Assert.AreEqual("node", exception.ParamName);
 	}
@@ -66,9 +66,9 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 	{
 		var document = CreateDocument();
 
-		Assert.AreEqual("test.xml (1, 2)", document.GetFileLocationString(document.DocumentElement));
+		Assert.AreEqual("test.xml (1, 2)", document.GetFileLocationString(document.DocumentElement!));
 		StringAssert.StartsWith(
-			document.GetFileLocationString(document.DocumentElement.GetAttributeNode("attr")),
+			document.GetFileLocationString(document.DocumentElement!.GetAttributeNode("attr")!),
 			"test.xml (1, ");
 	}
 
@@ -77,7 +77,7 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 	{
 		using var streamReader = CreateStreamReader();
 		var exception = Assert.ThrowsExactly<ArgumentNullException>(
-			() => XmlReaderStreamOffsetCalculator.GetPosition(null, streamReader));
+			() => XmlReaderStreamOffsetCalculator.GetPosition(null!, streamReader));
 
 		Assert.AreEqual("xmlReader", exception.ParamName);
 	}
@@ -87,7 +87,7 @@ public sealed class XmlDocumentWithLocationTest : BaseTestClass
 	{
 		using XmlReader xmlReader = XmlReader.Create(new StringReader("<root />"));
 		var exception = Assert.ThrowsExactly<ArgumentNullException>(
-			() => xmlReader.GetPosition(null));
+			() => xmlReader.GetPosition(null!));
 
 		Assert.AreEqual("underlyingStreamReader", exception.ParamName);
 	}

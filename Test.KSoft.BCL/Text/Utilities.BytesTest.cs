@@ -31,7 +31,7 @@ namespace KSoft.Text.Test
 
 			public override Encoding Encoding => Encoding.UTF8;
 
-			public override void Write(string value) => mStringBuilder.Append(value);
+			public override void Write(string? value) => mStringBuilder.Append(value);
 
 			public override string ToString() => mStringBuilder.ToString();
 		}

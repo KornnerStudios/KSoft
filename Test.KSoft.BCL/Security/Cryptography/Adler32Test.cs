@@ -49,8 +49,8 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Compute_NullBuffer_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull("buffer", () => Adler32.Compute(null));
-			AssertThrowsArgumentNull("buffer", () => Adler32.Compute(null, 0, 0));
+			AssertThrowsArgumentNull("buffer", () => Adler32.Compute(null!));
+			AssertThrowsArgumentNull("buffer", () => Adler32.Compute(null!, 0, 0));
 		}
 
 		[TestMethod]
@@ -66,7 +66,7 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Compute_InvalidStreamArguments_Throw()
 		{
-			AssertThrowsArgumentNull("stream", () => Adler32.Compute(null, 0));
+			AssertThrowsArgumentNull("stream", () => Adler32.Compute(null!, 0));
 			AssertThrowsArgumentOutOfRange("length", () =>
 				Adler32.Compute(new MemoryStream(kWikipediaBytes), -1));
 			Assert.ThrowsExactly<InvalidOperationException>(() =>
@@ -80,7 +80,7 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			var computer = Adler32.BitComputer.New;
 
-			AssertThrowsArgumentNull("buffer", () => computer.Compute(null, 0, 0));
+			AssertThrowsArgumentNull("buffer", () => computer.Compute(null!, 0, 0));
 			AssertThrowsArgumentOutOfRange("offset", () => computer.Compute(kWikipediaBytes, -1, 0));
 			AssertThrowsArgumentOutOfRange("length", () => computer.Compute(kWikipediaBytes, 0, -1));
 			AssertThrowsArgumentOutOfRange("offset", () =>

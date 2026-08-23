@@ -75,9 +75,9 @@ namespace KSoft.Security.Cryptography.Test
 		public void StreamHashComputer_InvalidConstructorArguments_Throw()
 		{
 			AssertThrowsArgumentNull("algo", () =>
-				new StreamHashComputer<SHA256>(null, new MemoryStream(kInputBytes)));
+				new StreamHashComputer<SHA256>(null!, new MemoryStream(kInputBytes)));
 			AssertThrowsArgumentNull("inputStream", () =>
-				new StreamHashComputer<SHA256>(SHA256.Create(), null));
+				new StreamHashComputer<SHA256>(SHA256.Create(), null!));
 			AssertThrowsArgument("inputStream", () =>
 				new StreamHashComputer<SHA256>(SHA256.Create(), new NonSeekableStream(kInputBytes)));
 			AssertThrowsArgument("preallocatedBuffer", () =>
@@ -88,9 +88,9 @@ namespace KSoft.Security.Cryptography.Test
 		public void StreamBlockHashComputer_InvalidConstructorArguments_Throw()
 		{
 			AssertThrowsArgumentNull("algo", () =>
-				new StreamBlockHashComputer<TigerHash>(null, new MemoryStream(kInputBytes)));
+				new StreamBlockHashComputer<TigerHash>(null!, new MemoryStream(kInputBytes)));
 			AssertThrowsArgumentNull("inputStream", () =>
-				new StreamBlockHashComputer<TigerHash>(new TigerHash(), null));
+				new StreamBlockHashComputer<TigerHash>(new TigerHash(), null!));
 			AssertThrowsArgument("inputStream", () =>
 				new StreamBlockHashComputer<TigerHash>(new TigerHash(), new NonSeekableStream(kInputBytes)));
 		}

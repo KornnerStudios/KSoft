@@ -50,7 +50,7 @@ namespace KSoft.Test
 		{
 			public int Value { get; set; }
 
-			public bool Equals(EquatableDefault other) => other != null && Value == other.Value;
+			public bool Equals(EquatableDefault? other) => other != null && Value == other.Value;
 		}
 
 		[TestMethod]
@@ -76,7 +76,6 @@ namespace KSoft.Test
 			Assert.AreEqual(now_clamped, converted);
 		}
 
-		#nullable enable
 
 		[TestMethod]
 		public void Util_GenericReferenceEqualsTest()
@@ -134,7 +133,6 @@ namespace KSoft.Test
 			Assert.IsNull(Util.Trim(nullArray));
 		}
 
-		#nullable restore
 
 		[TestMethod]
 		public void Util_ThrowIfNullTest()
@@ -219,7 +217,7 @@ namespace KSoft.Test
 		[TestMethod]
 		public void TypeExtensions_FromEncodingNull_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.FromEncoding(null), "enc");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.FromEncoding(null!), "enc");
 		}
 
 		[TestMethod]
@@ -535,7 +533,7 @@ namespace KSoft.Test
 		{
 			AssertThrowsArgumentNull(() => TypeExtensions.AddRange<int>(null!, [1]), "list");
 			AssertThrowsArgumentNull(() => new ObservableCollection<int>().AddRange(null!), "collection");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.BinarySearch<int>(null!, 1, null), "list");
+			AssertThrowsArgumentNull(() => _ = TypeExtensions.BinarySearch<int>(null!, 1, null!), "list");
 			AssertThrowsArgumentNull(() => TypeExtensions.Sort<int>(null!), "list");
 			AssertThrowsArgumentNull(() =>
 				TypeExtensions.Sort<int>(null!, Comparer<int>.Default), "list");

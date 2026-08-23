@@ -58,7 +58,6 @@ public sealed class StringSegmentTest : BaseTestClass
 		Assert.AreEqual('b', segment[0]);
 	}
 
-	#nullable enable
 
 	[TestMethod]
 	public void Equality_NullAndMatchingSegments_HaveExpectedResults()
@@ -74,5 +73,4 @@ public sealed class StringSegmentTest : BaseTestClass
 		Assert.IsFalse(lhs != rhs);
 	}
 
-	#nullable restore
 }

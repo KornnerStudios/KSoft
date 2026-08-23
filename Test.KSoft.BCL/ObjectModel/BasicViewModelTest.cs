@@ -1,5 +1,4 @@
-﻿#nullable enable
-
+﻿
 using System.ComponentModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -386,7 +386,7 @@ namespace KSoft.Bitwise.Test
 		[TestMethod]
 		public void BufferOffsetValidationTest()
 		{
-			AssertThrows<ArgumentNullException>(() => ByteSwap.SwapUInt16(null, 0));
+			AssertThrows<ArgumentNullException>(() => ByteSwap.SwapUInt16(null!, 0));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 1));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 2));
@@ -396,7 +396,7 @@ namespace KSoft.Bitwise.Test
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(new byte[5], 1));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt64(new byte[8], 1));
 
-			AssertThrows<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null, 0, 0x1234U));
+			AssertThrows<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null!, 0, 0x1234U));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], -1, 0x1234U));
 			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], 1, 0x12345678U));
 			AssertThrows<ArgumentOutOfRangeException>(

@@ -10,16 +10,15 @@ namespace KSoft.IO.Test
 		[TestMethod]
 		public void IO_JsonNodeGetRangesTest()
 		{
-			Dictionary<string, object> jsonData;
 			int min, max;
 			bool success;
 
 			const string kJson1 = "{\"gold\":[10,50]}";
 			{
-				jsonData = MiniJSON.Json.Deserialize(kJson1) as Dictionary<string, object>;
+				var jsonData = MiniJSON.Json.Deserialize(kJson1) as Dictionary<string, object>;
 				Assert.IsNotNull(jsonData);
 
-				var jsonNode = new JsonNode(jsonData);
+				var jsonNode = new JsonNode(jsonData!);
 
 				min = 0; max = 0;
 				success = jsonNode.GetRangeValues("gold", ref min, ref max);
@@ -31,10 +30,10 @@ namespace KSoft.IO.Test
 
 			const string kJson2 = "{\"gold\":[10]}";
 			{
-				jsonData = MiniJSON.Json.Deserialize(kJson2) as Dictionary<string, object>;
+				var jsonData = MiniJSON.Json.Deserialize(kJson2) as Dictionary<string, object>;
 				Assert.IsNotNull(jsonData);
 
-				var jsonNode = new JsonNode(jsonData);
+				var jsonNode = new JsonNode(jsonData!);
 
 				min = 0; max = 0;
 				success = jsonNode.GetRangeValues("gold", ref min, ref max);
@@ -46,10 +45,10 @@ namespace KSoft.IO.Test
 
 			const string kJson3 = "{\"gold\":50}";
 			{
-				jsonData = MiniJSON.Json.Deserialize(kJson3) as Dictionary<string, object>;
+				var jsonData = MiniJSON.Json.Deserialize(kJson3) as Dictionary<string, object>;
 				Assert.IsNotNull(jsonData);
 
-				var jsonNode = new JsonNode(jsonData);
+				var jsonNode = new JsonNode(jsonData!);
 
 				min = 0; max = 0;
 				success = jsonNode.GetRangeValues("gold", ref min, ref max);

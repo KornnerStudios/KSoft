@@ -81,10 +81,10 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void CrcConstructors_NullDefinition_ThrowArgumentNullException()
 		{
-			AssertThrowsArgumentNull("definition", () => new CrcHash16(null));
-			AssertThrowsArgumentNull("definition", () => new CrcHash32(null));
-			AssertThrowsArgumentNull("definition", () => new Crc16.BitComputer(null));
-			AssertThrowsArgumentNull("definition", () => new Crc32.BitComputer(null));
+			AssertThrowsArgumentNull("definition", () => new CrcHash16(null!));
+			AssertThrowsArgumentNull("definition", () => new CrcHash32(null!));
+			AssertThrowsArgumentNull("definition", () => new Crc16.BitComputer(null!));
+			AssertThrowsArgumentNull("definition", () => new Crc32.BitComputer(null!));
 		}
 
 		[TestMethod]
@@ -92,7 +92,7 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			var computer = new Crc16.BitComputer(new Crc16.Definition());
 
-			AssertThrowsArgumentNull("buffer", () => computer.Compute(null, 0, 0));
+			AssertThrowsArgumentNull("buffer", () => computer.Compute(null!, 0, 0));
 			AssertThrowsArgumentOutOfRange("offset", () => computer.Compute(kStandardBytes, -1, 0));
 			AssertThrowsArgumentOutOfRange("length", () => computer.Compute(kStandardBytes, 0, -1));
 			AssertThrowsArgumentOutOfRange("offset", () =>
@@ -105,7 +105,7 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			var computer = new Crc32.BitComputer(new Crc32.Definition());
 
-			AssertThrowsArgumentNull("buffer", () => computer.Compute(null, 0, 0));
+			AssertThrowsArgumentNull("buffer", () => computer.Compute(null!, 0, 0));
 			AssertThrowsArgumentOutOfRange("offset", () => computer.Compute(kStandardBytes, -1, 0));
 			AssertThrowsArgumentOutOfRange("length", () => computer.Compute(kStandardBytes, 0, -1));
 			AssertThrowsArgumentOutOfRange("offset", () =>

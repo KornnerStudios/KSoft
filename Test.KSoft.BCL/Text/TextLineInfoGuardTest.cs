@@ -46,13 +46,13 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 		var sameLineInfo = new TextLineInfo(4, 5);
 		var laterColumn = new TextLineInfo(4, 6);
 		var laterLine = new TextLineInfo(5, 1);
-		ITextLineInfo nullLineInfo = null;
+		ITextLineInfo? nullLineInfo = null;
 
 		Assert.IsTrue(lineInfo.Equals(sameLineInfo));
 		Assert.IsFalse(lineInfo.Equals(laterColumn));
 		Assert.IsTrue(lineInfo.Equals((object)sameLineInfo));
 		Assert.IsFalse(lineInfo.Equals((object)laterColumn));
-		Assert.IsFalse(lineInfo.Equals((object)null));
+		Assert.IsFalse(lineInfo.Equals((object)null!));
 		Assert.AreEqual(0, lineInfo.CompareTo(sameLineInfo));
 		Assert.AreEqual(-1, lineInfo.CompareTo(laterColumn));
 		Assert.AreEqual(-1, lineInfo.CompareTo(laterLine));

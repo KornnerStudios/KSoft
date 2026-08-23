@@ -21,13 +21,13 @@ namespace KSoft.Text.Test
 				Console.WriteLine(encoded);
 			}
 
-			byte[] decoded = encoding.Decode(encoded);
+			byte[]? decoded = encoding.Decode(encoded);
 			if (writeToConsole)
 			{
-				Console.WriteLine(Util.ByteArrayToString(decoded));
+				Console.WriteLine(Util.ByteArrayToString(decoded!));
 			}
 
-			return bytes.EqualsArray(decoded);
+			return bytes.EqualsArray(decoded!);
 		}
 
 		[TestMethod]

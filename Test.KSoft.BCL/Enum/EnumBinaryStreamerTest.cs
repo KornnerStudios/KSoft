@@ -97,15 +97,15 @@ namespace KSoft.IO.Test
 			IEnumBinaryStreamer<System.TypeCode> binaryStreamer = TypeCodeStreamer32.Instance;
 			IEnumEndianStreamer<System.TypeCode> endianStreamer = TypeCodeStreamer32.Instance;
 
-			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null));
-			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null, out value));
-			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Write(null, value));
-			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Stream(null, ref value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null!));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Read(null!, out value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Write(null!, value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => TypeCodeStreamer32.Stream(null!, ref value));
 
-			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Read(null));
-			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Read(null, out value));
-			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Write(null, value));
-			Assert.ThrowsExactly<ArgumentNullException>(() => endianStreamer.Stream(null, ref value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Read(null!));
+			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Read(null!, out value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => binaryStreamer.Write(null!, value));
+			Assert.ThrowsExactly<ArgumentNullException>(() => endianStreamer.Stream(null!, ref value));
 		}
 
 		[TestMethod]

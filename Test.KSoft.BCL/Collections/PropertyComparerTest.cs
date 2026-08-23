@@ -24,7 +24,7 @@ public sealed class PropertyComparerTest : BaseTestClass
 	public void Constructor_NullPropertyInfo_ThrowsArgumentNullException()
 	{
 		AssertThrowsArgumentNull("property", () =>
-			new PropertyComparer<Item>((System.Reflection.PropertyInfo)null));
+			new PropertyComparer<Item>((System.Reflection.PropertyInfo)null!));
 	}
 
 	[TestMethod]

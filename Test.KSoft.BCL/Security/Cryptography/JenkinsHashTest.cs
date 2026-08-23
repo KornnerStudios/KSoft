@@ -63,21 +63,21 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void Hash_InvalidBuffers_ThrowArgumentException()
 		{
-			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((byte[])null));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((char[])null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((byte[])null!));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((char[])null!));
 			AssertThrowsArgumentException("buffer", () => JenkinsHash.Hash(""));
 		}
 
 		[TestMethod]
 		public void LookupHashes_NullBuffers_ThrowArgumentNullException()
 		{
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((byte[])null));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((char[])null));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((string)null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((byte[])null!));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((char[])null!));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((string)null!));
 
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((byte[])null));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((char[])null));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((string)null));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((byte[])null!));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((char[])null!));
+			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((string)null!));
 		}
 	};
 }

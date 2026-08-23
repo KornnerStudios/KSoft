@@ -21,7 +21,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 
 	sealed class NullableStringProperty
 	{
-		public string Value { get; set; }
+		public string? Value { get; set; }
 	}
 
 	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
@@ -126,7 +126,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 			$"""<guidElement>{kGuidText}</guidElement><empty /></root>""";
 		using var stream = CreateReadStream(xml);
 
-		string title = null;
+		string? title = null;
 		char letter = default;
 		int count = default;
 		float ratio = default;
@@ -136,7 +136,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		var guidAttribute = default(Values.KGuid);
 		var guidElement = default(Values.KGuid);
 
-		stream.ReadElement("title", ref title);
+		stream.ReadElement("title", ref title!);
 		stream.ReadElement("letter", ref letter);
 		stream.ReadElement("count", ref count);
 		stream.ReadElement("ratio", ref ratio);
@@ -161,9 +161,9 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	public void XmlElementStream_ReadOptionalGeneratedSurfaces_PreservesMissingValueSemanticsTest()
 	{
 		using var stream = CreateReadStream("<root present=\"123\"><empty /></root>");
-		string missingString = "keep";
+		string? missingString = "keep";
 		int missingInt = 123;
-		string emptyString = "keep";
+		string? emptyString = "keep";
 		int present = 0;
 
 		Assert.IsFalse(stream.ReadElementOpt("missing", ref missingString));
@@ -311,7 +311,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		};
 		document.LoadXml(xml);
 
-		return new XmlElementStream(document, document.DocumentElement, FileAccess.Read);
+		return new XmlElementStream(document, document.DocumentElement!, FileAccess.Read);
 	}
 	static XmlElementStream CreateReadWriteStream(string xml)
 	{
@@ -321,6 +321,6 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		};
 		document.LoadXml(xml);
 
-		return new XmlElementStream(document, document.DocumentElement);
+		return new XmlElementStream(document, document.DocumentElement!);
 	}
 }

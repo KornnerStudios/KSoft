@@ -554,7 +554,7 @@ public class EndianStreamsTest : BaseTestClass
 		using var writerStream = new MemoryStream();
 		using var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
 
-		Assert.Throws<ArgumentNullException>(() => writer.WriteFixedArray((ushort[])null, 0, 0));
+		Assert.Throws<ArgumentNullException>(() => writer.WriteFixedArray((ushort[])null!, 0, 0));
 		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], -1, 1));
 		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], 0, -1));
 
@@ -562,7 +562,7 @@ public class EndianStreamsTest : BaseTestClass
 			new MemoryStream(new byte[] { 0x12, 0x34 }),
 			Shell.EndianFormat.Big);
 
-		Assert.Throws<ArgumentNullException>(() => reader.ReadFixedArray((ushort[])null, 0, 0));
+		Assert.Throws<ArgumentNullException>(() => reader.ReadFixedArray((ushort[])null!, 0, 0));
 		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], -1, 1));
 		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], 0, -1));
 	}

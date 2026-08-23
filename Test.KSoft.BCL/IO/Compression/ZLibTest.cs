@@ -110,13 +110,13 @@ namespace KSoft.IO.Compression.Test
 		[TestMethod]
 		public void BufferFromStream_NullStream_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull("ms", () => ZLib.BufferFromStream(null));
+			AssertThrowsArgumentNull("ms", () => ZLib.BufferFromStream(null!));
 		}
 
 		[TestMethod]
 		public void BufferFromBytes_NullBytes_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull("bytes", () => ZLib.BufferFromBytes(null));
+			AssertThrowsArgumentNull("bytes", () => ZLib.BufferFromBytes(null!));
 		}
 
 		[TestMethod]
@@ -125,21 +125,21 @@ namespace KSoft.IO.Compression.Test
 			byte[] scratch = new byte[32];
 
 			AssertThrowsArgumentNull("bytes", () =>
-				ZLib.LowLevelCompress(null, ZLib.kBestCompression, out uint _, scratch));
+				ZLib.LowLevelCompress(null!, ZLib.kBestCompression, out uint _, scratch));
 		}
 
 		[TestMethod]
 		public void LowLevelCompress_NullCompressedBytes_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull("compressedBytes", () =>
-				ZLib.LowLevelCompress(kSampleData, ZLib.kBestCompression, out uint _, null));
+				ZLib.LowLevelCompress(kSampleData, ZLib.kBestCompression, out uint _, null!));
 		}
 
 		[TestMethod]
 		public void LowLevelDecompress_NullCompressedBytes_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull("compressedBytes", () =>
-				ZLib.LowLevelDecompress(null, new byte[kSampleData.Length]));
+				ZLib.LowLevelDecompress(null!, new byte[kSampleData.Length]));
 		}
 
 		[TestMethod]
@@ -149,20 +149,20 @@ namespace KSoft.IO.Compression.Test
 				noZlibHeaderOrFooter: true, out uint _);
 
 			AssertThrowsArgumentNull("uncompressedBytes", () =>
-				ZLib.LowLevelDecompress(compressed, null));
+				ZLib.LowLevelDecompress(compressed, null!));
 		}
 
 		[TestMethod]
 		public void LowLevelCompressWithSizeHeader_NullBytes_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull("bytes", () =>
-				ZLib.LowLevelCompress(null, Shell.EndianFormat.Little));
+				ZLib.LowLevelCompress(null!, Shell.EndianFormat.Little));
 		}
 
 		[TestMethod]
 		public void LowLevelDecompressWithSizeHeader_NullBytes_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull("bytes", () => ZLib.LowLevelDecompress(null, 0));
+			AssertThrowsArgumentNull("bytes", () => ZLib.LowLevelDecompress(null!, 0));
 		}
 
 		[TestMethod]

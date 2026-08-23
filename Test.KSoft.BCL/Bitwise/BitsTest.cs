@@ -628,7 +628,7 @@ namespace KSoft.Bitwise.Test
 
 		class TestUnionData1
 		{
-			public string Str;
+			public string Str = string.Empty;
 			public bool Bool = false;
 		};
 		class TestUnionData2
@@ -653,7 +653,7 @@ namespace KSoft.Bitwise.Test
 					Str = ""
 				}
 			};
-			Console.WriteLine(t.Data2.Index);
+			Console.WriteLine(t.Data2!.Index);
 
 			var t2 = new TestUnion
 			{

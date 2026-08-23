@@ -506,7 +506,6 @@ namespace KSoft.Test
 			Assert.AreEqual(0x12345UL, payload);
 		}
 
-		#nullable enable
 
 		[TestMethod]
 		public void Enum_HandleBitEncoderEqualityTest()
@@ -524,7 +523,6 @@ namespace KSoft.Test
 			Assert.IsFalse(lhs != rhs);
 		}
 
-		#nullable restore
 
 		[TestMethod]
 		public void Enum_HandleBitEncoderNoneableTest()
