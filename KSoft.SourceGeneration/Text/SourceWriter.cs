@@ -4,8 +4,8 @@ namespace KSoft.SourceGeneration.Text;
 
 internal sealed class SourceWriter
 {
-	public const string IndentText = "\t";
-	public const string NewLine = "\n";
+	public const char IndentText = '\t';
+	public const char NewLine = '\n';
 
 	private readonly StringBuilder mBuilder = new();
 
