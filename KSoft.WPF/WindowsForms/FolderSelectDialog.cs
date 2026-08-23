@@ -19,7 +19,7 @@ namespace KSoft.WPF.WindowsForms
 
 		public string InitialDirectory
 		{
-			get { return mInitialDirectory ?? Environment.CurrentDirectory; }
+			get { return string.IsNullOrEmpty(mInitialDirectory) ? Environment.CurrentDirectory : mInitialDirectory; }
 			set { mInitialDirectory = value; }
 		}
 		public string Title
