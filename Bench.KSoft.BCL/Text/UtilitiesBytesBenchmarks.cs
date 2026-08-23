@@ -53,7 +53,7 @@ public class UtilitiesBytesBenchmarks
 		public override void Write(ReadOnlySpan<char> buffer) =>
 			CharsWritten += buffer.Length;
 
-		public override void Write(string value) =>
+		public override void Write(string? value) =>
 			CharsWritten += value?.Length ?? 0;
 	}
 }

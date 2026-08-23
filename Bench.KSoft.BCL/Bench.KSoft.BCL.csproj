@@ -5,6 +5,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bench.KSoft.BCL</RootNamespace>
     <AssemblyName>Bench.KSoft.BCL</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">

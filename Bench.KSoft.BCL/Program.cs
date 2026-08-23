@@ -15,13 +15,13 @@ BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
 
 static string FindVitaRootDir()
 {
-	string currentRoot = TryFindVitaRootDir(Directory.GetCurrentDirectory());
+	string? currentRoot = TryFindVitaRootDir(Directory.GetCurrentDirectory());
 	if (currentRoot != null)
 	{
 		return currentRoot;
 	}
 
-	string outputRoot = TryFindVitaRootDir(AppContext.BaseDirectory);
+	string? outputRoot = TryFindVitaRootDir(AppContext.BaseDirectory);
 	if (outputRoot != null)
 	{
 		return outputRoot;
@@ -30,9 +30,9 @@ static string FindVitaRootDir()
 	throw new InvalidOperationException("Unable to locate Vita.sln for benchmark MSBuild configuration.");
 }
 
-static string TryFindVitaRootDir(string startDirectory)
+static string? TryFindVitaRootDir(string startDirectory)
 {
-	DirectoryInfo directory = new DirectoryInfo(startDirectory);
+	DirectoryInfo? directory = new DirectoryInfo(startDirectory);
 	while (directory != null)
 	{
 		if (File.Exists(Path.Combine(directory.FullName, "Vita.sln")) &&
