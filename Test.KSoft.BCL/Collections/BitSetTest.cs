@@ -50,12 +50,12 @@ namespace KSoft.Collections.Test
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(-1));
 			AssertThrowsArgumentNull("bytes", () => new BitSet((byte[])null!, 0, 1));
 			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new byte[1], -1, 1));
-			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new byte[0], 0, 0));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(Array.Empty<byte>(), 0, 0));
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new byte[1], 0, -1));
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new byte[2], 1, 2));
 			AssertThrowsArgumentNull("values", () => new BitSet((bool[])null!, 0, 1));
 			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new bool[1], -1, 1));
-			AssertThrowsArgumentOutOfRange("index", () => new BitSet(new bool[0], 0, 0));
+			AssertThrowsArgumentOutOfRange("index", () => new BitSet(Array.Empty<bool>(), 0, 0));
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new bool[1], 0, -1));
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(new bool[2], 1, 2));
 			AssertThrowsArgumentNull("set", () => new BitSet((BitSet)null!));

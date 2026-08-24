@@ -136,7 +136,7 @@ namespace KSoft.Text.Test
 			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteStringToArray(new byte[1], "00", 0, 4));
 			AssertThrowsArgument("count", () => _ = Util.ByteStringToArray(new byte[1], "000", 0, 3));
 			AssertThrowsArgumentNull("bytes", () => _ = Util.ByteStringToArray(null!, "00", 0, 2));
-			AssertThrowsArgument("bytes", () => _ = Util.ByteStringToArray(new byte[0], "00", 0, 2));
+			AssertThrowsArgument("bytes", () => _ = Util.ByteStringToArray(Array.Empty<byte>(), "00", 0, 2));
 			AssertThrowsArgumentNull("data", () => _ = Util.ByteStringToArray(new byte[1], null!));
 			AssertThrowsArgument("data", () => _ = Util.ByteStringToArray(new byte[1], ""));
 			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteStringToArray(new byte[1], "00", 2));

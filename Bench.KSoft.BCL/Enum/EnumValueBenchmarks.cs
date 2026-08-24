@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
 
-namespace Bench.KSoft.BCL.Enum;
+namespace Bench.KSoft.BCL.Enums;
 
 /// <summary>
 /// Measures the hot path after <see cref="global::KSoft.Reflection.EnumValue{TEnum}"/> has paid its static setup cost.

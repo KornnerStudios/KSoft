@@ -5,6 +5,7 @@ namespace KSoft.IO
 {
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	[SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
+	[SuppressMessage("Performance", "CA1863:Cache a CompositeFormat for repeated use in this formatting operation", Justification = "Formatting occurs only while constructing a failure exception.")]
 	public partial class VersionMismatchException
 		: Exception
 	{
@@ -30,6 +31,7 @@ namespace KSoft.IO
 
 	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	[SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
+	[SuppressMessage("Performance", "CA1863:Cache a CompositeFormat for repeated use in this formatting operation", Justification = "Formatting occurs only while constructing a failure exception.")]
 	public partial class VersionOutOfRangeException
 		: Exception
 	{

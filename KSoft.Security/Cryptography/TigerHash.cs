@@ -11,6 +11,7 @@ namespace KSoft.Security.Cryptography
 	// http://www.codeproject.com/Articles/149061/A-Tiger-Hash-Implementation-for-C
 	// http://www.cs.technion.ac.il/~biham/Reports/Tiger/tiger/tiger.html
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "Values select mutually exclusive Tiger hash padding versions.")]
 	public enum TigerHashVersion : byte
 	{
 		V1 = 0x01, // Versions are implemented via the padding byte used in each version

@@ -3,6 +3,7 @@ namespace KSoft
 {
 	/// <summary>Valid numerical bases (radix) that can be used in this library suite</summary>
 	[EnumBitEncoderDisable]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "Values represent mutually exclusive numerical bases.")]
 	public enum NumeralBase : byte
 	{
 		Binary	= 2,

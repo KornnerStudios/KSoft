@@ -37,6 +37,7 @@ namespace KSoft.Collections
 		/// <summary>Get the value of a specific bit</summary>
 		/// <param name="bitIndex">Position of the bit</param>
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1716:Identifiers should not conflict with keywords", Justification = "Established public bitset access API retained for source compatibility.")]
 		bool Get(int bitIndex);
 
 		int NextBitIndex(int startBitIndex, bool stateFilter);

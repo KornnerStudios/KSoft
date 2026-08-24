@@ -3,6 +3,7 @@
 namespace KSoft.Memory.Strings
 {
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1813:Avoid unsealed attributes", Justification = "Base attribute is intentionally extended by specialized storage markup attributes.")]
 	public class StringStorageMarkupAttribute : Attribute
 	{
 		public StringStorage Storage { get; private set; }

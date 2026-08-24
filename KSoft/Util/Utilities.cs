@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace KSoft
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1724:Type names should not match namespaces", Justification = "Established public utility API retained for source compatibility.")]
 	public static partial class Util
 	{
 		// Based on http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx

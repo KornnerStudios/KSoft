@@ -115,6 +115,7 @@ namespace KSoft.Values
 	/// collection lookup
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1813:Avoid unsealed attributes", Justification = "Protected constructor supports intentional extension for specialized group-tag containers.")]
 	public class GroupTagContainer32Attribute : GroupTagContainerAttribute
 	{
 		/// <summary>Initialize the attribute with a type containing a <see cref="GroupTag32Collection"/></summary>

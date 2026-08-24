@@ -46,7 +46,7 @@ namespace KSoft.Test
 			}
 			catch (Exception ex)
 			{
-				Assert.IsInstanceOfType(ex.InnerException, typeof(NotSupportedException));
+				Assert.IsInstanceOfType<NotSupportedException>(ex.InnerException);
 			}
 		}
 

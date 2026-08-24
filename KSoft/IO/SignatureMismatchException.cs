@@ -5,6 +5,7 @@ namespace KSoft.IO
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2237:MarkISerializableTypesWithSerializable")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1863:Cache a CompositeFormat for repeated use in this formatting operation", Justification = "Formatting occurs only while constructing a failure exception.")]
 	public partial class SignatureMismatchException : System.Exception
 	{
 		const string kFormat = "Invalid signature! @{0} Expected '{1}', got '{2}'";

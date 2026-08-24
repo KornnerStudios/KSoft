@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 namespace KSoft.Verify;
 
 /// <summary>Provides argument verification helpers for array buffer contracts.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1724:Type names should not match namespaces", Justification = "Established verification API retained for source compatibility.")]
 public static class Buffers
 {
 	/// <summary>Verifies that a counted buffer argument is non-null and that the count fits within its length.</summary>

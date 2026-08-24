@@ -5,6 +5,7 @@ using Exprs = System.Linq.Expressions;
 
 namespace KSoft.ObjectModel
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1724:Type names should not match namespaces", Justification = "Established public object-model utility API retained for source compatibility.")]
 	public static class Util
 	{
 		// based on System.Windows.Data.Binding.IndexerName in PresentationFramework.dll

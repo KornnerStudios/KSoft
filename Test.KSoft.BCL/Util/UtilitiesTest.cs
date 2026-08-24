@@ -237,7 +237,7 @@ namespace KSoft.Test
 		public void LowLevel_UnmanagedGuards_ThrowArgumentNullException()
 		{
 			AssertThrowsArgumentNull(() =>
-				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(IntPtr.Zero, typeof(int)), "nativePtr");
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero), "nativePtr");
 			AssertThrowsArgumentNull(() =>
 				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(new IntPtr(1), null!), "t");
 			AssertThrowsArgumentNull(() =>

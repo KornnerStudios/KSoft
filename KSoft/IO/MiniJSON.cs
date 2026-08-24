@@ -89,6 +89,7 @@ namespace MiniJSON {
     /// JSON uses Arrays and Objects. These correspond here to the datatypes IList and IDictionary.
     /// All numbers are parsed to doubles.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1724:Type names should not match namespaces", Justification = "Established JSON helper API retained for source compatibility.")]
     public static class Json {
         // KM00 start
         public static string PrettyPrintSpace { get; set; } = "\t";
