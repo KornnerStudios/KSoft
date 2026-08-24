@@ -1367,7 +1367,8 @@ namespace KSoft.Debug
 			}
 			throw new Exception("ApplicationLog_FreeSpaceError");
 		}
-		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+		[DllImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
 			out long lpFreeBytesAvailable,
