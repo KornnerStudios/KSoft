@@ -51,6 +51,8 @@ namespace KSoft.Test
 			public int Value { get; set; }
 
 			public bool Equals(EquatableDefault? other) => other != null && Value == other.Value;
+			public override bool Equals(object? obj) => obj is EquatableDefault other && Equals(other);
+			public override int GetHashCode() => Value.GetHashCode();
 		}
 
 		[TestMethod]

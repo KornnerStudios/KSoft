@@ -34,6 +34,7 @@ namespace KSoft
 
 	static class TestExtentions
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Test helper randomness does not require cryptographic security.")]
 		public static bool NextBoolean(this Random rand)
 		{
 			return rand.Next(1) == 1;

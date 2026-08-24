@@ -14,6 +14,7 @@ namespace KSoft.Text
 		: ITextLineInfo
 		, IComparable<ITextLineInfo>
 		, IEquatable<ITextLineInfo>
+		, IEquatable<TextLineInfo>
 	{
 		public static readonly TextLineInfo Empty = new();
 
@@ -53,6 +54,10 @@ namespace KSoft.Text
 
 		public bool Equals(ITextLineInfo? other) =>
 			LineNumber == other!.LineNumber &&
+			LinePosition == other.LinePosition;
+
+		public bool Equals(TextLineInfo other) =>
+			LineNumber == other.LineNumber &&
 			LinePosition == other.LinePosition;
 
 		public override bool Equals(object? obj) =>

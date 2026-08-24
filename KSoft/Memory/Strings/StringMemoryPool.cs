@@ -199,6 +199,7 @@ namespace KSoft.Memory.Strings
 		/// <remarks>
 		/// Code contracts will cause an assert if the address doesn't start a new string
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "Pointer handles are the established domain lookup key.")]
 		public string this[Values.PtrHandle address]	{ get { return Get(address); } }
 		#endregion
 

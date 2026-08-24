@@ -63,6 +63,7 @@ namespace KSoft.Values
 		#region Indexers
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "Group-tag character codes are the established domain lookup key.")]
 		public string this[char[] tag] { get {
 			Verify.GroupTags.ExactLength(tag, NullGroupTag.Tag.Length, nameof(tag));
 

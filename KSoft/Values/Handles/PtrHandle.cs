@@ -290,7 +290,8 @@ namespace KSoft.Values
 		/// <summary>Explicit cast to a <see cref="Boolean"/>, returning whether <paramref name="value"/> is null or not</summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>Whether <paramref name="value"/> is null or not</returns>
-		public static explicit operator bool(PtrHandle value)	=> value.u64 == 0;
+		public readonly bool ToBoolean() => u64 == 0;
+		public static explicit operator bool(PtrHandle value)	=> value.ToBoolean();
 
 		public readonly uint ToUInt32()									=> u32;
 		/// <summary>Explicit cast to a <see cref="UInt32"/></summary>
@@ -313,7 +314,8 @@ namespace KSoft.Values
 		/// <summary>Explicit cast to a <see cref="Shell.ProcessorSize"/></summary>
 		/// <param name="value">Address being casted</param>
 		/// <returns>The address size of <paramref name="value"/></returns>
-		public static explicit operator Shell.ProcessorSize(PtrHandle value)	{ return value.Size; }
+		public readonly Shell.ProcessorSize ToProcessorSize() => Size;
+		public static explicit operator Shell.ProcessorSize(PtrHandle value)	=> value.ToProcessorSize();
 
 		/// <summary>Convert this address to a <see cref="UIntPtr"/></summary>
 		/// <returns></returns>

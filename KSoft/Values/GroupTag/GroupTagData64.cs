@@ -100,11 +100,12 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in integer form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		public TagWord ToUInt64() => mID;
 		public static explicit operator TagWord(GroupTagData64 value)
 		{
 			ArgumentNullException.ThrowIfNull(value);
 
-			return value.mID;
+			return value.ToUInt64();
 		}
 		#endregion
 

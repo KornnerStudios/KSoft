@@ -447,6 +447,7 @@ namespace KSoft.Collections.Test
 			#endregion
 		}
 		[TestMethod]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Randomized test input does not require cryptographic randomness.")]
 		public void Collections_BitSetValidateWithBitArrayTest()
 		{
 			const int k_max_random_length = 10000;

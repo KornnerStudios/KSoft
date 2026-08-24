@@ -18,6 +18,7 @@ public class UtilitiesBytesBenchmarks
 	public int Length { get; set; }
 
 	[GlobalSetup]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Benchmark input data does not require cryptographic randomness.")]
 	public void GlobalSetup()
 	{
 		byte[] data = new byte[Length];

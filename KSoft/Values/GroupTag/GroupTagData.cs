@@ -153,11 +153,15 @@ namespace KSoft.Values
 		/// <summary>Returns the group tag in char[] form</summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		public char[] ToCharArray()
+		{
+			return mTag;
+		}
 		public static explicit operator char[](GroupTagData value)
 		{
 			ArgumentNullException.ThrowIfNull(value);
 
-			return value.mTag;
+			return value.ToCharArray();
 		}
 		#endregion
 
