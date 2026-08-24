@@ -50,6 +50,7 @@ namespace KSoft.Values
 		/// <summary>GUID; Microsoft Component Object Model backward compatibility</summary>
 		Microsoft,
 		/// <summary>Reserved for future definition</summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1700:Do not name enum values 'Reserved'", Justification = "Represents the RFC UUID variant reserved for future definition.")]
 		Reserved,
 
 		/// <remarks>3 bits</remarks>

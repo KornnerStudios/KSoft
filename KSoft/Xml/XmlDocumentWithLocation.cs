@@ -3,6 +3,7 @@ using System.Xml;
 
 namespace KSoft.Xml
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1010:Generic interface should also be implemented", Justification = "XmlDocument compatibility intentionally preserves the legacy DOM enumeration surface.")]
 	public class XmlDocumentWithLocation : XmlDocument
 	{
 		IXmlLineInfo? mLoadReader;

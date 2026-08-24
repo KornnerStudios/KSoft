@@ -1221,6 +1221,8 @@ namespace KSoft.Debug
 			{
 				this.CloseCurrentStream();
 			}
+
+			base.Dispose(disposing);
 		}
 
 		private void EnsureStreamIsOpen()
