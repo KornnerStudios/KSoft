@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -398,7 +399,7 @@ namespace KSoft
 		#region String
 		public static string Format(this string format, params object[] args)
 		{
-			return string.Format(format, args);
+			return string.Format(CultureInfo.CurrentCulture, format, args);
 		}
 		public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
 		{
@@ -520,7 +521,19 @@ namespace KSoft
 		{
 			if (collection != null && !collection.IsReadOnly)
 			{
-				string value = string.Format(format, args);
+				string value = string.Format(CultureInfo.CurrentCulture, format, args);
+				collection.Add(value);
+				return value;
+			}
+			return null;
+		}
+		public static string? AddFormatWith(this ICollection<string>? collection, IFormatProvider provider, string format, params object[] args)
+		{
+			ArgumentNullException.ThrowIfNull(provider);
+
+			if (collection != null && !collection.IsReadOnly)
+			{
+				string value = string.Format(provider, format, args);
 				collection.Add(value);
 				return value;
 			}

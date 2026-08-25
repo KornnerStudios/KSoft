@@ -611,11 +611,12 @@ namespace KSoft.Bitwise.Test
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail(string.Format("Expected {0}, got {1}: {2}",
-					typeof(TException).Name, ex.GetType().Name, ex.Message));
+				Assert.Fail(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected {typeof(TException).Name}, got {ex.GetType().Name}: {ex.Message}"));
 			}
 
-			Assert.Fail(string.Format("Expected {0}, but no exception was thrown.", typeof(TException).Name));
+			Assert.Fail(string.Create(KSoft.Util.InvariantCultureInfo,
+				$"Expected {typeof(TException).Name}, but no exception was thrown."));
 		}
 
 		private void AssertBytesAreEqual(int bitCount, ulong expectedValue, byte[] buffer, ref int bufferIndex)

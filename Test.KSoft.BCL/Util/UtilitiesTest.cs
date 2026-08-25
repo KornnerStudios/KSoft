@@ -445,7 +445,8 @@ namespace KSoft.Test
 			var values = new List<string>();
 			Assert.AreEqual("value", values.AddFormat("value"));
 			Assert.AreEqual("formatted 7", values.AddFormat("formatted {0}", 7));
-			CollectionAssert.AreEqual(new[] { "value", "formatted 7" }, values);
+			Assert.AreEqual("formatted 7.5", values.AddFormatWith(System.Globalization.CultureInfo.InvariantCulture, "formatted {0}", 7.5));
+			CollectionAssert.AreEqual(new[] { "value", "formatted 7", "formatted 7.5" }, values);
 			Assert.IsNull(((ICollection<string>)new ReadOnlyCollection<string>(values)).AddFormat("ignored"));
 
 			Assert.AreEqual(string.Empty, TypeExtensions.ArrayToConcatString(null));
