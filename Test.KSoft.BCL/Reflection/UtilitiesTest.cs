@@ -463,6 +463,7 @@ namespace KSoft.Reflection.Test
 		#endregion
 
 		#region GenerateObjectMethodProxy
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1852:Seal internal types", Justification = "Reflection proxy target used to test private method binding.")]
 		internal class TestGenerateObjectMethodProxyClass
 		{
 			private bool PrivateFunc(int value)
