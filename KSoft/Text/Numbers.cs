@@ -125,9 +125,7 @@ namespace KSoft
 
 				int count = 1;
 
-				// using StringSegment and its Enumerator won't allocate any reference types
-				var sseg = new Collections.StringSegment(values);
-				foreach (char c in sseg)
+				foreach (char c in values.AsSpan())
 				{
 					if (c == Separator)
 					{

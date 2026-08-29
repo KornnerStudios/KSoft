@@ -98,6 +98,17 @@ namespace KSoft.Text.Test
 			VerifyTryParseInt32List(results);
 		}
 		[TestMethod]
+		public void Text_NumbersStringListPredictedCountStopsAtTerminatorTest()
+		{
+			var desc = Numbers.StringListDesc.Default;
+
+			Assert.AreEqual(1, desc.PredictedCount(string.Empty));
+			Assert.AreEqual(3, desc.PredictedCount("1,2,3"));
+			Assert.AreEqual(3, desc.PredictedCount("1,2,"));
+			Assert.AreEqual(3, desc.PredictedCount(",1,2;ignored,more"));
+			Assert.AreEqual(1, desc.PredictedCount(";1,2,3"));
+		}
+		[TestMethod]
 		public void Text_NumbersToStringListWithTerminatorTest()
 		{
 			var desc = Numbers.StringListDesc.Default;

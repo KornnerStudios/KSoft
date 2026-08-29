@@ -40,8 +40,6 @@
     <Compile Include="Collections\IReadOnlyBitSet.cs" />
     <Compile Include="Collections\IReadOnlyBitSet.Enumerators.cs" />
     <Compile Include="Collections\PropertyComparer.cs" />
-    <Compile Include="Collections\StringSegment.cs" />
-    <Compile Include="Collections\StringSegment.Enumerator.cs" />
     <Compile Include="Debug\ArgumentNoneException.cs" />
     <Compile Include="Debug\AssemblyTraceSourcesCollector.cs" />
     <Compile Include="Debug\KSoftFileLogTraceListener.cs" />
