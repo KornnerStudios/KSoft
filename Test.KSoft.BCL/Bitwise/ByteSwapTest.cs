@@ -598,6 +598,8 @@ namespace KSoft.Bitwise.Test
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types",
+			Justification = "Test helper intentionally captures any unexpected exception to report the expected exception type.")]
 		private static void AssertThrows<TException>(Action action)
 			where TException : Exception
 		{
