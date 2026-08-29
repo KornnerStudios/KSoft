@@ -152,17 +152,22 @@ namespace KSoft.Values
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag1.Length, kExpectedTagLength, nameof(tag1));
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag2.Length, kExpectedTagLength, nameof(tag2));
 
-			if (tag1[0] == tag2[0] &&
+			return Test(tag1.AsSpan(), tag2.AsSpan());
+		}
+		/// <summary>Takes two four character codes and performs a check on them to see if they are completely equal</summary>
+		/// <param name="tag1"></param>
+		/// <param name="tag2"></param>
+		/// <returns>True if equal</returns>
+		public static bool Test(ReadOnlySpan<char> tag1, ReadOnlySpan<char> tag2)
+		{
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag1.Length, kExpectedTagLength, nameof(tag1));
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag2.Length, kExpectedTagLength, nameof(tag2));
+
+			return tag1[0] == tag2[0] &&
 				tag1[1] == tag2[1] &&
 				tag1[2] == tag2[2] &&
-				tag1[3] == tag2[3])
-			{
-				return true;
-			}
-
-			return false;
+				tag1[3] == tag2[3];
 		}
-
 		#region UInt
 		/// <summary>Takes a four-cc and converts it into its (unsigned) integer value</summary>
 		/// <param name="tag"></param>
@@ -173,28 +178,14 @@ namespace KSoft.Values
 			ArgumentNullException.ThrowIfNull(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
-			var value = (TagWord)(
-					((byte)tag[0] << 24) |
-					((byte)tag[1] << 16) |
-					((byte)tag[2] << 8) |
-					((byte)tag[3])
-				);
-
-			if (!System.BitConverter.IsLittleEndian)
-			{
-				Bitwise.ByteSwap.Swap(ref value);
-			}
-
-			return value;
+			return ToUInt(tag.AsSpan());
 		}
-
 		/// <summary>Takes a four-cc and converts it into its (unsigned) integer value</summary>
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
-		public static TagWord ToUInt(string tag)
+		public static TagWord ToUInt(ReadOnlySpan<char> tag)
 		{
-			ArgumentException.ThrowIfNullOrEmpty(tag);
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
 			var value = (TagWord)(
@@ -211,7 +202,17 @@ namespace KSoft.Values
 
 			return value;
 		}
+		/// <summary>Takes a four-cc and converts it into its (unsigned) integer value</summary>
+		/// <param name="tag"></param>
+		/// <returns></returns>
+		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
+		public static TagWord ToUInt(string tag)
+		{
+			ArgumentException.ThrowIfNullOrEmpty(tag);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
+			return ToUInt(tag.AsSpan());
+		}
 		/// <summary>Takes a (unsigned) integer and converts it into its four-cc value</summary>
 		/// <param name="groupTag"></param>
 		/// <param name="tag">optional result buffer</param>
@@ -229,6 +230,19 @@ namespace KSoft.Values
 				tag = new char[4];
 			}
 
+			FromUInt(groupTag, tag.AsSpan(), isBigEndian);
+
+			return tag;
+		}
+		/// <summary>Takes a (unsigned) integer and writes its four-cc value to a destination</summary>
+		/// <param name="groupTag"></param>
+		/// <param name="tag">Destination buffer</param>
+		/// <param name="isBigEndian">endian order override</param>
+		/// <remarks>Writes a big-endian ordered four-cc if <paramref name="isBigEndian"/> is true, little-endian if false</remarks>
+		public static void FromUInt(TagWord groupTag, Span<char> tag, bool isBigEndian = true)
+		{
+			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
+
 			if (isBigEndian)
 			{
 				tag[0] = (char)((groupTag & 0xFF000000) >> 24);
@@ -243,8 +257,6 @@ namespace KSoft.Values
 				tag[1] = (char)((groupTag & 0x0000FF00) >>  8);
 				tag[0] = (char) (groupTag & 0x000000FF)       ;
 			}
-
-			return tag;
 		}
 		#endregion
 		#endregion

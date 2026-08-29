@@ -88,6 +88,58 @@ public sealed class GroupTagTest : BaseTestClass
 		Assert.AreEqual(parameterName, exception.ParamName);
 	}
 
+	static void GroupTagData32_TestWithUndersizedFirstSpan()
+	{
+		ReadOnlySpan<char> tag1 = stackalloc char[3];
+		ReadOnlySpan<char> tag2 = "ABCD";
+		_ = GroupTagData32.Test(tag1, tag2);
+	}
+
+	static void GroupTagData32_TestWithUndersizedSecondSpan()
+	{
+		ReadOnlySpan<char> tag1 = "ABCD";
+		ReadOnlySpan<char> tag2 = stackalloc char[3];
+		_ = GroupTagData32.Test(tag1, tag2);
+	}
+
+	static void GroupTagData32_ToUIntWithUndersizedSpan()
+	{
+		ReadOnlySpan<char> tag = stackalloc char[3];
+		_ = GroupTagData32.ToUInt(tag);
+	}
+
+	static void GroupTagData32_FromUIntWithUndersizedSpan()
+	{
+		Span<char> tag = stackalloc char[3];
+		GroupTagData32.FromUInt(0, tag);
+	}
+
+	static void GroupTagData64_TestWithUndersizedFirstSpan()
+	{
+		ReadOnlySpan<char> tag1 = stackalloc char[7];
+		ReadOnlySpan<char> tag2 = "ABCDEFGH";
+		_ = GroupTagData64.Test(tag1, tag2);
+	}
+
+	static void GroupTagData64_TestWithUndersizedSecondSpan()
+	{
+		ReadOnlySpan<char> tag1 = "ABCDEFGH";
+		ReadOnlySpan<char> tag2 = stackalloc char[7];
+		_ = GroupTagData64.Test(tag1, tag2);
+	}
+
+	static void GroupTagData64_ToULongWithUndersizedSpan()
+	{
+		ReadOnlySpan<char> tag = stackalloc char[7];
+		_ = GroupTagData64.ToULong(tag);
+	}
+
+	static void GroupTagData64_FromULongWithUndersizedSpan()
+	{
+		Span<char> tag = stackalloc char[7];
+		GroupTagData64.FromULong(0, tag);
+	}
+
 	[TestMethod]
 	public void GroupTagData_ReservedNullGroupName_ThrowsArgumentException()
 	{
@@ -181,6 +233,97 @@ public sealed class GroupTagTest : BaseTestClass
 		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((char[])null!));
 		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((string)null!));
 		AssertThrowsArgument("tag", () => _ = GroupTagData64.ToULong(string.Empty));
+	}
+
+	[TestMethod]
+	public void GroupTagData_SpanOverloads_UseStackDestinationsAndPreserveEndianLayouts()
+	{
+		const uint tag32Value = 0x41424344;
+		const ulong tag64Value = 0x4142434445464748;
+		const uint expectedTag32Value = 0x41424344;
+		const ulong expectedTag64Value = 0x4142434445464748;
+
+		Span<char> tag32 = stackalloc char[5];
+		tag32.Fill('_');
+		GroupTagData32.FromUInt(tag32Value, tag32);
+		Assert.AreEqual("ABCD", new string(tag32.Slice(0, 4)));
+		Assert.AreEqual('_', tag32[4]);
+		Assert.AreEqual(System.BitConverter.IsLittleEndian ? expectedTag32Value : 0x44434241u, GroupTagData32.ToUInt(tag32));
+		Assert.IsTrue(GroupTagData32.Test(tag32, "ABCD".AsSpan()));
+		GroupTagData32.FromUInt(tag32Value, tag32, isBigEndian: false);
+		Assert.AreEqual("DCBA", new string(tag32.Slice(0, 4)));
+
+		Span<char> tag64 = stackalloc char[9];
+		tag64.Fill('_');
+		GroupTagData64.FromULong(tag64Value, tag64);
+		Assert.AreEqual("EFGHABCD", new string(tag64.Slice(0, 8)));
+		Assert.AreEqual('_', tag64[8]);
+		Assert.AreEqual(System.BitConverter.IsLittleEndian ? expectedTag64Value : 0x4847464544434241ul,
+			GroupTagData64.ToULong("ABCDEFGH".AsSpan()));
+		Assert.IsTrue(GroupTagData64.Test(tag64, "EFGHABCD".AsSpan()));
+		GroupTagData64.FromULong(tag64Value, tag64, isBigEndian: false);
+		Assert.AreEqual("HGFEDCBA", new string(tag64.Slice(0, 8)));
+	}
+
+	[TestMethod]
+	public void GroupTagData_SpanOverloads_RejectUndersizedBuffersWithLegacyParameterNames()
+	{
+		AssertThrowsArgumentOutOfRange("tag1", GroupTagData32_TestWithUndersizedFirstSpan);
+		AssertThrowsArgumentOutOfRange("tag2", GroupTagData32_TestWithUndersizedSecondSpan);
+		AssertThrowsArgumentOutOfRange("tag", GroupTagData32_ToUIntWithUndersizedSpan);
+		AssertThrowsArgumentOutOfRange("tag", GroupTagData32_FromUIntWithUndersizedSpan);
+		AssertThrowsArgumentOutOfRange("tag1", GroupTagData64_TestWithUndersizedFirstSpan);
+		AssertThrowsArgumentOutOfRange("tag2", GroupTagData64_TestWithUndersizedSecondSpan);
+		AssertThrowsArgumentOutOfRange("tag", GroupTagData64_ToULongWithUndersizedSpan);
+		AssertThrowsArgumentOutOfRange("tag", GroupTagData64_FromULongWithUndersizedSpan);
+	}
+
+	[TestMethod]
+	public void GroupTagData_ArrayCompatibilityOverloads_PreserveAllocationAndIdentity()
+	{
+		var destination32 = new[] { '_', '_', '_', '_', '_' };
+		var destination64 = new[] { '_', '_', '_', '_', '_', '_', '_', '_', '_' };
+
+		Assert.AreSame(destination32, GroupTagData32.FromUInt(0x41424344, destination32));
+		Assert.AreEqual("ABCD_", new string(destination32));
+		Assert.AreSame(destination64, GroupTagData64.FromULong(0x4142434445464748, destination64));
+		Assert.AreEqual("EFGHABCD_", new string(destination64));
+		Assert.AreEqual(4, GroupTagData32.FromUInt(0x41424344).Length);
+		Assert.AreEqual(8, GroupTagData64.FromULong(0x4142434445464748).Length);
+
+		Assert.IsTrue(GroupTagData32.Test("ABCD_".ToCharArray(), "ABCD!".ToCharArray()));
+		Assert.IsTrue(GroupTagData64.Test("ABCDEFGH_".ToCharArray(), "ABCDEFGH!".ToCharArray()));
+		Assert.AreEqual(GroupTagData32.ToUInt("ABCD"), GroupTagData32.ToUInt("ABCD_"));
+		Assert.AreEqual(GroupTagData64.ToULong("ABCDEFGH"), GroupTagData64.ToULong("ABCDEFGH_"));
+	}
+
+	[TestMethod]
+	public void GroupTagData32_SpanSeam_StreamTagBigEndianUsesFourCharacterScratchSpan()
+	{
+		const uint tagValue = 0x41424344;
+
+		foreach (var (byteOrder, expectedBytes) in new[]
+		{
+			(KSoft.Shell.EndianFormat.Big, new byte[] { 0x41, 0x42, 0x43, 0x44 }),
+			(KSoft.Shell.EndianFormat.Little, new byte[] { 0x44, 0x43, 0x42, 0x41 }),
+		})
+		{
+			using var bytes = new System.IO.MemoryStream();
+			using (var writer = new KSoft.IO.EndianWriter(bytes, byteOrder) { BaseStreamOwner = false })
+			using (var stream = KSoft.IO.EndianStream.UsingWriter(writer))
+			{
+				uint value = tagValue;
+				stream.StreamTagBigEndian(ref value);
+			}
+
+			CollectionAssert.AreEqual(expectedBytes, bytes.ToArray());
+
+			using var reader = new KSoft.IO.EndianReader(new System.IO.MemoryStream(expectedBytes), byteOrder);
+			using var streamReader = KSoft.IO.EndianStream.UsingReader(reader);
+			uint readValue = 0;
+			streamReader.StreamTagBigEndian(ref readValue);
+			Assert.AreEqual(tagValue, readValue);
+		}
 	}
 
 	[TestMethod]

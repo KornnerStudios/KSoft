@@ -498,15 +498,17 @@ namespace KSoft.IO
 		// Tag always appears in big-endian order in the stream
 		public EndianStream StreamTagBigEndian(ref uint value)
 		{
+			var tag = mTagScratchBuffer.AsSpan(0, sizeof(uint));
+
 			if (IsReading)
 			{
-				Reader.ReadTag32(mTagScratchBuffer);
-				value = Values.GroupTagData32.ToUInt(mTagScratchBuffer);
+				Reader.ReadTag32(tag);
+				value = Values.GroupTagData32.ToUInt(tag);
 			}
 			else if (IsWriting)
 			{
-				Values.GroupTagData32.FromUInt(value, mTagScratchBuffer);
-				Writer.WriteTag32(mTagScratchBuffer.AsSpan(0, sizeof(uint)));
+				Values.GroupTagData32.FromUInt(value, tag);
+				Writer.WriteTag32(tag);
 			}
 
 			return this;
