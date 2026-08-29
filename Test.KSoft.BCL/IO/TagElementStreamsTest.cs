@@ -52,7 +52,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	[TestMethod]
 	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShapeTest()
 	{
-		var stream = XmlElementStream.CreateForWrite("root");
+		using var stream = XmlElementStream.CreateForWrite("root");
 		var guid = new Values.KGuid(kGuidText);
 
 		stream.WriteAttribute("name", "Vita");

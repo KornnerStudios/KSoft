@@ -59,8 +59,9 @@ namespace KSoft.Security.Cryptography.Test
 			stream.Position = 8;
 			using var expectedAlgorithm = new TigerHash();
 			byte[] expected = expectedAlgorithm.ComputeHash(kInputBytes, 3, 6);
+			using var algorithm = new TigerHash();
 			var computer = new StreamBlockHashComputer<TigerHash>(
-				new TigerHash(),
+				algorithm,
 				stream,
 				restorePosition: true);
 
@@ -111,7 +112,8 @@ namespace KSoft.Security.Cryptography.Test
 		[TestMethod]
 		public void StreamBlockHashComputer_InvalidRangeArguments_Throw()
 		{
-			var computer = new StreamBlockHashComputer<TigerHash>(new TigerHash(), new MemoryStream(kInputBytes));
+			using var algorithm = new TigerHash();
+			var computer = new StreamBlockHashComputer<TigerHash>(algorithm, new MemoryStream(kInputBytes));
 
 			AssertThrowsArgumentOutOfRange("count", () => computer.SetRangeAtCurrentOffset(-1));
 			AssertThrowsArgumentOutOfRange("offset", () => computer.SetRangeAndOffset(-2, 0));
@@ -125,7 +127,8 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			using var algorithm = SHA256.Create();
 			var streamComputer = new StreamHashComputer<SHA256>(algorithm, new MemoryStream(kInputBytes));
-			var blockComputer = new StreamBlockHashComputer<TigerHash>(new TigerHash(), new MemoryStream(kInputBytes));
+			using var blockAlgorithm = new TigerHash();
+			var blockComputer = new StreamBlockHashComputer<TigerHash>(blockAlgorithm, new MemoryStream(kInputBytes));
 
 			Assert.ThrowsExactly<InvalidOperationException>(() => streamComputer.Compute());
 			Assert.ThrowsExactly<InvalidOperationException>(() => blockComputer.Compute());

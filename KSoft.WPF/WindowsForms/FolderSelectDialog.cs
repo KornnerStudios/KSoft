@@ -118,7 +118,7 @@ namespace KSoft.WPF.WindowsForms
 
 			public static ShowDialogResult Show(IntPtr ownerHandle, string initialDirectory, string title)
 			{
-				var openFileDialog = new OpenFileDialog
+				using var openFileDialog = new OpenFileDialog
 				{
 					AddExtension = false,
 					CheckFileExists = false,

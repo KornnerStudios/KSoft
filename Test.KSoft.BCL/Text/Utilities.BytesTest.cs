@@ -86,26 +86,34 @@ namespace KSoft.Text.Test
 		[TestMethod]
 		public void Text_ByteArrayToStreamTest()
 		{
-			StringWriter writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
-			Util.ByteArrayToStream(StringConstants.kDataBytes, writer);
-			Assert.AreEqual(StringConstants.kDataString, writer.ToString());
+			using (var writer = new StringWriter(KSoft.Util.InvariantCultureInfo))
+			{
+				Util.ByteArrayToStream(StringConstants.kDataBytes, writer);
+				Assert.AreEqual(StringConstants.kDataString, writer.ToString());
+			}
 
-			writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
-			Util.ByteArrayToStream(StringConstants.kDataBytes, writer, 1, 2);
-			Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), writer.ToString());
+			using (var writer = new StringWriter(KSoft.Util.InvariantCultureInfo))
+			{
+				Util.ByteArrayToStream(StringConstants.kDataBytes, writer, 1, 2);
+				Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), writer.ToString());
+			}
 
 			byte[] chunkedData = new byte[513];
 			for (int x = 0; x < chunkedData.Length; x++)
 			{
 				chunkedData[x] = (byte)x;
 			}
-			writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
-			Util.ByteArrayToStream(chunkedData, writer);
-			Assert.AreEqual(Convert.ToHexString(chunkedData), writer.ToString());
+			using (var writer = new StringWriter(KSoft.Util.InvariantCultureInfo))
+			{
+				Util.ByteArrayToStream(chunkedData, writer);
+				Assert.AreEqual(Convert.ToHexString(chunkedData), writer.ToString());
+			}
 
-			StringOnlyTextWriter stringOnlyWriter = new StringOnlyTextWriter();
-			Util.ByteArrayToStream(StringConstants.kDataBytes, stringOnlyWriter);
-			Assert.AreEqual(StringConstants.kDataString, stringOnlyWriter.ToString());
+			using (var stringOnlyWriter = new StringOnlyTextWriter())
+			{
+				Util.ByteArrayToStream(StringConstants.kDataBytes, stringOnlyWriter);
+				Assert.AreEqual(StringConstants.kDataString, stringOnlyWriter.ToString());
+			}
 		}
 
 		[TestMethod]
