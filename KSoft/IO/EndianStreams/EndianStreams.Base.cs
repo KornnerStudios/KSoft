@@ -24,10 +24,10 @@ namespace KSoft.IO
 		{
 			if (disposing)
 			{
-				// If we're not the owner, don't let BinaryReader dispose it
-				if (!BaseStreamOwner)
+				// BinaryReader is configured to leave its base stream open.
+				if (BaseStreamOwner)
 				{
-					kSetBaseStream(this, null!);
+					BaseStream.Dispose();
 				}
 			}
 

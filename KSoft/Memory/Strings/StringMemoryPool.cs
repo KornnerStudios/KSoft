@@ -155,19 +155,21 @@ namespace KSoft.Memory.Strings
 		/// </remarks>
 		public Values.PtrHandle GetAddress(string value)
 		{
-			int index;
-			if (UseStringToIndex)
+			if (UseStringToIndex &&
+				mStringToIndex.TryGetValue(value, out int index) &&
+				index >= 0 && index < mReferences.Count)
 			{
-				mStringToIndex.TryGetValue(value, out index);
-			}
-			else
-			{
-				index = mPool.IndexOf(value);
+				return mReferences[index];
 			}
 
-			if (index.IsNone())
+			if (!UseStringToIndex)
 			{
-				return Settings.BaseAddress + mReferences[index];
+				int duplicateIndex = mPool.IndexOf(value);
+
+				if (duplicateIndex >= 0 && duplicateIndex < mReferences.Count)
+				{
+					return mReferences[duplicateIndex];
+				}
 			}
 
 			return kInvalidReference;
@@ -226,9 +228,10 @@ namespace KSoft.Memory.Strings
 			Size = s.ReadUInt32();
 
 			InitializeCollections(count);
-			for (int x = 0; x < mReferences.Count; x++)
+			for (int x = 0; x < count; x++)
 			{
-				mReferences[x] = new Values.PtrHandle(Settings.AddressSize);
+				mPool.Add(string.Empty);
+				mReferences.Add(new Values.PtrHandle(Settings.AddressSize));
 			}
 		}
 		/// <summary>
@@ -293,7 +296,9 @@ namespace KSoft.Memory.Strings
 
 			for (int x = 0; x < mReferences.Count; x++)
 			{
-				mReferences[x].Read(s);
+				var reference = mReferences[x];
+				reference.Read(s);
+				mReferences[x] = reference;
 			}
 		}
 		/// <summary>Write the string addresses to a stream</summary>

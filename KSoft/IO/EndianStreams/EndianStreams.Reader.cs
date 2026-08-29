@@ -11,12 +11,6 @@ namespace KSoft.IO
 	/// <remarks>For stream character encoding, when no explicit encoding is provided, <see cref="System.Text.UTF8Encoding"/> is assumed</remarks>
 	public sealed partial class EndianReader : BinaryReader, IKSoftBinaryStream, IKSoftEndianStream
 	{
-		#region BinaryReader Accessors
-		static readonly Reflection.Util.ReferenceTypeMemberSetterDelegate<BinaryReader, Stream> kSetBaseStream =
-			Reflection.Util.GenerateReferenceTypeMemberSetter<BinaryReader, Stream>("m_stream");
-		#endregion
-
-		// #REVIEW: .NET 4.5: BinaryReader has 'bool leaveOpen' ctor
 		#region Ctor
 		/// <summary>Create a new binary reader which respects the endian format of the underlying stream's bytes</summary>
 		/// <param name="input">Base stream to use as input</param>
@@ -26,7 +20,7 @@ namespace KSoft.IO
 		/// <param name="name">Special name to associate with this stream</param>
 		public EndianReader(Stream input, Encoding encoding,
 			Shell.EndianFormat byteOrder, object? streamOwner = null, string? name = null)
-			: base(Util.ThrowIfNull(input), Util.ThrowIfNull(encoding))
+			: base(Util.ThrowIfNull(input), Util.ThrowIfNull(encoding), leaveOpen: true)
 		{
 			BaseStreamOwner = true;
 			BaseAddress = Values.PtrHandle.Null32;
