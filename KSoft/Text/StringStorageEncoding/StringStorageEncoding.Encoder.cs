@@ -122,6 +122,10 @@ namespace KSoft.Text
 			int charIndex,
 			int charCount, byte[] bytes, int byteIndex)
 		{
+			return EncodeStringStorageTypePrefixData(charCount, bytes, byteIndex);
+		}
+		int EncodeStringStorageTypePrefixData(int charCount, byte[] bytes, int byteIndex)
+		{
 			return mStorage.Type switch
 			{
 				// No prefix for CString
@@ -162,6 +166,10 @@ namespace KSoft.Text
 			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 			int charCount,
 			byte[] bytes, int byteIndex)
+		{
+			return EncodeStringStorageTypePostfixData(bytes, byteIndex);
+		}
+		int EncodeStringStorageTypePostfixData(byte[] bytes, int byteIndex)
 		{
 			return mStorage.Type switch
 			{
@@ -231,6 +239,21 @@ namespace KSoft.Text
 		};
 
 		#region WriteString
+		byte[] EncodeString(ReadOnlySpan<char> chars)
+		{
+			int char_count = chars.Length;
+			ClampCharCount(ref char_count);
+			chars = chars[..char_count];
+
+			int base_byte_count = mBaseEncoding.GetByteCount(chars);
+			byte[] bytes = new byte[CalculateByteCount(base_byte_count)];
+			int bytes_written = EncodeStringStorageTypePrefixData(chars.Length, bytes, 0);
+
+			bytes_written += mBaseEncoding.GetBytes(chars, bytes.AsSpan(bytes_written));
+			EncodeStringStorageTypePostfixData(bytes, bytes_written);
+
+			return bytes;
+		}
 		internal void WriteString(IO.BitStream s, string value, int maxLength = -1, int prefixBitLength = -1)
 		{
 			if (prefixBitLength > 0)
@@ -244,8 +267,7 @@ namespace KSoft.Text
 				length = System.Math.Min(maxLength, length);
 			}
 
-			char[] chars = value.ToCharArray(0, length);
-			byte[] bytes = GetBytes(chars);
+			byte[] bytes = EncodeString(value.AsSpan(0, length));
 			s.Write(bytes);
 		}
 		#endregion

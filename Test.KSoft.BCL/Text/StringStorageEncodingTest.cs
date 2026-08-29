@@ -27,6 +27,21 @@ namespace KSoft.Text.Test
 
 			Assert.AreEqual(paramName, exception.ParamName);
 		}
+		static byte[] WriteWithBitStream(string value, MS.StringStorage storage, int maxLength = -1)
+		{
+			using var stream = new System.IO.MemoryStream();
+			using (var bitStream = new IO.BitStream(stream, System.IO.FileAccess.Write))
+			{
+				bitStream.StreamMode = System.IO.FileAccess.Write;
+				bitStream.Write(value, storage, maxLength);
+			}
+
+			return stream.ToArray();
+		}
+		static void AssertBitStreamWriteBytes(byte[] expected, string value, MS.StringStorage storage, int maxLength = -1)
+		{
+			CollectionAssert.AreEqual(expected, WriteWithBitStream(value, storage, maxLength));
+		}
 
 		[TestMethod]
 		public void StringStorage_InvalidFixedLengthArguments_ThrowExpectedExceptions()
@@ -72,6 +87,60 @@ namespace KSoft.Text.Test
 			wrappedBytes[0] = 0xEE;
 			Array.Copy(bytes, 0, wrappedBytes, 1, bytes.Length);
 			Assert.AreEqual(text, encoding.GetString(wrappedBytes, 1, bytes.Length));
+		}
+
+		[TestMethod]
+		public void StringStorageEncoding_BitStreamWritesExactStorageBytes()
+		{
+			AssertBitStreamWriteBytes(
+				[0x41, 0x42, 0x43],
+				"ABC",
+				new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CharArray));
+			AssertBitStreamWriteBytes(
+				[0xC3, 0xA9, 0x00],
+				"\u00E9",
+				MS.StringStorage.CStringUtf8);
+			AssertBitStreamWriteBytes(
+				[0xC3, 0xA9, 0x00],
+				"\u00E9X",
+				MS.StringStorage.CStringUtf8,
+				maxLength: 1);
+			AssertBitStreamWriteBytes(
+				[0x41, 0x00, 0x00, 0x00],
+				"A",
+				MS.StringStorage.CStringUnicode);
+			AssertBitStreamWriteBytes(
+				[0x00, 0x41, 0x00, 0x00],
+				"A",
+				MS.StringStorage.CStringUnicodeBigEndian);
+
+			const string pascalText = "A\u00E9";
+			AssertBitStreamWriteBytes(
+				[0x02, 0x41, 0xC3, 0xA9],
+				pascalText,
+				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int7));
+			AssertBitStreamWriteBytes(
+				[0x02, 0x41, 0xC3, 0xA9],
+				pascalText,
+				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int8));
+			AssertBitStreamWriteBytes(
+				[0x00, 0x02, 0x41, 0xC3, 0xA9],
+				pascalText,
+				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int16));
+			AssertBitStreamWriteBytes(
+				[0x00, 0x00, 0x00, 0x02, 0x41, 0xC3, 0xA9],
+				pascalText,
+				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int32));
+
+			var fixedCString = new MS.StringStorage(MS.StringStorageWidthType.Ascii,
+				MS.StringStorageType.CString, fixedLength: 5);
+			AssertBitStreamWriteBytes([0x41, 0x00, 0x00, 0x00, 0x00], "A", fixedCString);
+			AssertBitStreamWriteBytes([0x41, 0x42, 0x43, 0x44, 0x00], "ABCDE", fixedCString);
+			AssertBitStreamWriteBytes([0x41, 0x42, 0x00, 0x00, 0x00], "ABCDE", fixedCString, maxLength: 2);
+			AssertBitStreamWriteBytes(
+				[0x41, 0x42, 0x00, 0x00],
+				"AB",
+				new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CharArray, fixedLength: 4));
 		}
 
 		[TestMethod]
