@@ -239,7 +239,7 @@ namespace KSoft.Text
 		};
 
 		#region WriteString
-		byte[] EncodeString(ReadOnlySpan<char> chars)
+		internal byte[] EncodeString(ReadOnlySpan<char> chars)
 		{
 			int char_count = chars.Length;
 			ClampCharCount(ref char_count);

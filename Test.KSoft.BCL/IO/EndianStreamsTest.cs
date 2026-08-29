@@ -172,10 +172,33 @@ public class EndianStreamsTest : BaseTestClass
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
 		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
+		AssertThrowsArgumentNull(() => writer.Write("test".AsSpan(), (Text.StringStorageEncoding)null!), "encoding");
 		Assert.ThrowsExactly<InvalidDataException>(() =>
 			reader.ReadString(Memory.Strings.StringStorage.AsciiString, TypeExtensions.kNone));
 		AssertThrowsArgumentNull(() => _ = reader.Read<TestEnum>(null!), "implementation");
 		AssertThrowsArgumentNull(() => writer.Write(TestEnum.None, null!), "implementation");
+	}
+
+	[TestMethod]
+	public void WriterStringStorageSpans_WriteExactBoundedStorageBytes()
+	{
+		using var stream = new MemoryStream();
+		using var writer = new EndianWriter(stream);
+
+		writer.Write(".ABC!".AsSpan(1, 3),
+			new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii,
+				Memory.Strings.StringStorageType.CharArray));
+		writer.Write(".\u00E9!".AsSpan(1, 1), Memory.Strings.StringStorage.CStringUtf8);
+		writer.Write(".A\u00E9!".AsSpan(1, 2),
+			new Text.StringStorageEncoding(new Memory.Strings.StringStorage(
+				Memory.Strings.StringStorageWidthType.UTF8, Memory.Strings.StringStorageLengthPrefix.Int16)));
+		writer.Write(".ABCDE!".AsSpan(1, 5),
+			new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii,
+				Memory.Strings.StringStorageType.CString, fixedLength: 4));
+
+		CollectionAssert.AreEqual(
+			new byte[] { 0x41, 0x42, 0x43, 0xC3, 0xA9, 0x00, 0x00, 0x02, 0x41, 0xC3, 0xA9, 0x41, 0x42, 0x43, 0x00 },
+			stream.ToArray());
 	}
 
 	[TestMethod]

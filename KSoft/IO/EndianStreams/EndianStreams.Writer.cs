@@ -213,9 +213,15 @@ namespace KSoft.IO
 		/// <param name="storage">Definition for how we're streaming the string</param>
 		public void Write(string value, Memory.Strings.StringStorage storage)
 		{
+			Write((value ?? string.Empty).AsSpan(), storage);
+		}
+		/// <summary>Writes a bounded character sequence based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
+		/// <param name="value">Character sequence to write</param>
+		/// <param name="storage">Definition for how we're streaming the string</param>
+		public void Write(ReadOnlySpan<char> value, Memory.Strings.StringStorage storage)
+		{
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
-			byte[] bytes = sse.GetBytes(value ?? string.Empty);
-			base.Write(bytes);
+			base.Write(sse.EncodeString(value));
 		}
 
 		/// <summary>Writes string using a <see cref="Text.StringStorageEncoding"/></summary>
@@ -223,10 +229,16 @@ namespace KSoft.IO
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		public void Write(string value, Text.StringStorageEncoding encoding)
 		{
+			Write((value ?? string.Empty).AsSpan(), encoding);
+		}
+		/// <summary>Writes a bounded character sequence using a <see cref="Text.StringStorageEncoding"/></summary>
+		/// <param name="value">Character sequence to write</param>
+		/// <param name="encoding">Encoding to use for character streaming</param>
+		public void Write(ReadOnlySpan<char> value, Text.StringStorageEncoding encoding)
+		{
 			ArgumentNullException.ThrowIfNull(encoding);
 
-			byte[] bytes = encoding.GetBytes(value ?? string.Empty);
-			base.Write(bytes);
+			base.Write(encoding.EncodeString(value));
 		}
 		#endregion
 
