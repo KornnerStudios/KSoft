@@ -761,7 +761,7 @@ namespace KSoft.Collections
 		/// <returns></returns>
 		bool BitwiseEquals(BitSet other, int bitsCount)
 		{
-			if (object.ReferenceEquals(other, this))
+			if (bitsCount == 0 || object.ReferenceEquals(other, this))
 			{
 				return true;
 			}
@@ -781,9 +781,10 @@ namespace KSoft.Collections
 
 			var last_word_mask = GetCabooseRetainedBitsMask(bitsCount);
 
-			return
-				( this.mArray[word_index] & last_word_mask) ==
-				(other.mArray[word_index] & last_word_mask);
+			return last_word_mask == 0
+				? this.mArray[word_index] == other.mArray[word_index]
+				: (this.mArray[word_index] & last_word_mask) ==
+					(other.mArray[word_index] & last_word_mask);
 		}
 		#region ISet-like interfaces
 		/// <summary>This set is included in other</summary>
@@ -964,7 +965,31 @@ namespace KSoft.Collections
 		#endregion
 
 		public override int GetHashCode()
-			=> HashCode.Combine(Length, Cardinality);
+		{
+			var hash = new HashCode();
+			hash.Add(Length);
+
+			int word_count = LengthInWords;
+			for (int x = 0; x < word_count; x++)
+			{
+				var word = mArray[x];
+				if (x == word_count - 1)
+				{
+					var retained_bits_mask = GetCabooseRetainedBitsMask(Length);
+					if (retained_bits_mask != 0)
+					{
+						word &= retained_bits_mask;
+					}
+				}
+
+				hash.Add(word);
+			}
+
+			return hash.ToHashCode();
+		}
+
+		public override bool Equals(object? obj)
+			=> obj is IReadOnlyBitSet other && this.Equals(other);
 
 		#region IComparable<IReadOnlyBitSet> Members
 		public int CompareTo(IReadOnlyBitSet? other)
@@ -980,8 +1005,25 @@ namespace KSoft.Collections
 		#region IEquatable<IReadOnlyBitSet> Members
 		public bool Equals(IReadOnlyBitSet? other)
 		{
-			// #TODO: this also needs to check BitwiseEquals
-			return Length == other!.Length && Cardinality == other.Cardinality;
+			if (Length != other!.Length || Cardinality != other.Cardinality)
+			{
+				return false;
+			}
+
+			if (other is BitSet other_bit_set)
+			{
+				return BitwiseEquals(other_bit_set, Length);
+			}
+
+			for (int x = 0; x < Length; x++)
+			{
+				if (this[x] != other[x])
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 		#endregion
 

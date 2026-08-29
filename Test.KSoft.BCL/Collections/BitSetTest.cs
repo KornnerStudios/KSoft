@@ -394,6 +394,74 @@ namespace KSoft.Collections.Test
 			Assert.IsFalse(clear_bs.TestBits(k_range_start, k_range_count));
 		}
 
+		[TestMethod]
+		public void Collections_BitSetEqualityDistinguishesAlignedFinalWordBitsTest()
+		{
+			var first = new BitSet(32);
+			var second = new BitSet(32);
+			first[0] = true;
+			second[31] = true;
+
+			Assert.IsFalse(first.Equals(second));
+			Assert.IsFalse(second.Equals(first));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetSubsetAndSupersetDistinguishAlignedFinalWordBitsTest()
+		{
+			var first = new BitSet(32);
+			var second = new BitSet(32);
+			first[0] = true;
+			second[31] = true;
+
+			Assert.IsFalse(first.IsSubsetOf(second));
+			Assert.IsFalse(first.IsSupersetOf(second));
+			Assert.IsFalse(second.IsSubsetOf(first));
+			Assert.IsFalse(second.IsSupersetOf(first));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetEqualityMasksOnlyUnaddressableCabooseBitsTest()
+		{
+			var first = new BitSet(33);
+			var second = new BitSet(33);
+			first[0] = true;
+			second[32] = true;
+
+			Assert.IsFalse(first.Equals(second));
+			Assert.IsFalse(second.Equals(first));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetEqualValuesHaveEqualHashesTest()
+		{
+			var first = new BitSet(33);
+			var second = new BitSet(33);
+			first[0] = second[0] = true;
+			first[32] = second[32] = true;
+
+			Assert.IsTrue(first.Equals(second));
+			Assert.IsTrue(object.Equals(first, second));
+			Assert.AreEqual(first.GetHashCode(), second.GetHashCode());
+		}
+
+		[TestMethod]
+		public void Collections_EnumBitSetEqualityAndHashCodeReflectSetBitsTest()
+		{
+			var first = new EnumBitSet<SampleEnumBit>();
+			var different = new EnumBitSet<SampleEnumBit>();
+			var equal = new EnumBitSet<SampleEnumBit>();
+			first.Add(SampleEnumBit.First);
+			different.Add(SampleEnumBit.Second);
+			equal.Add(SampleEnumBit.First);
+
+			Assert.IsFalse(first.Equals(different));
+			Assert.IsFalse(first.Equals((object)different));
+			Assert.IsTrue(first.Equals(equal));
+			Assert.IsTrue(first.Equals((object)equal));
+			Assert.AreEqual(first.GetHashCode(), equal.GetHashCode());
+		}
+
 		static KeyValuePair<BitArray, BitSet> NewBitSetAndArray(Random rand, int length)
 		{
 			var bitarray = new BitArray(length);
