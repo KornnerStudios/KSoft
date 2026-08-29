@@ -48,72 +48,75 @@ namespace KSoft.Security.Cryptography
 				c ^= b; c -= rot(b, 24);
 			}
 
-			void Fill(byte[] data, ref int i)
+			void Fill(ReadOnlySpan<byte> data, ref int i)
 			{
 				JenkinsHashLookup.Fill(ref a, ref b, ref c, data, ref i);
 			}
 
-			void Fill(char[] data, ref int i)
+			void Fill(ReadOnlySpan<char> data, ref int i)
 			{
 				JenkinsHashLookup.Fill(ref a, ref b, ref c, data, ref i);
 			}
 
-			void Fill(string data, ref int i)
-			{
-				JenkinsHashLookup.Fill(ref a, ref b, ref c, data, ref i);
-			}
-
-			void FinalFill(byte[] data, ref int i, int length)
+			void FinalFill(ReadOnlySpan<byte> data, ref int i, int length)
 			{
 				JenkinsHashLookup.FinalFill(ref a, ref b, ref c, data, ref i, length);
 			}
 
-			void FinalFill(char[] data, ref int i, int length)
+			void FinalFill(ReadOnlySpan<char> data, ref int i, int length)
 			{
 				JenkinsHashLookup.FinalFill(ref a, ref b, ref c, data, ref i, length);
 			}
 
-			void FinalFill(string data, ref int i, int length)
-			{
-				JenkinsHashLookup.FinalFill(ref a, ref b, ref c, data, ref i, length);
-			}
-
-			public void ProcessBlock(byte[] buffer, ref int index)
+			public void ProcessBlock(ReadOnlySpan<byte> buffer, ref int index)
 			{
 				Fill(buffer, ref index);
 				Mix();
 			}
 
-			public void ProcessBlock(char[] buffer, ref int index)
+			public void ProcessBlock(ReadOnlySpan<char> buffer, ref int index)
 			{
 				Fill(buffer, ref index);
 				Mix();
 			}
 
-			public void ProcessBlock(string buffer, ref int index)
-			{
-				Fill(buffer, ref index);
-				Mix();
-			}
-
-			public void ProcessFinalBlock(byte[] buffer, ref int index, int length)
+			public void ProcessFinalBlock(ReadOnlySpan<byte> buffer, ref int index, int length)
 			{
 				FinalFill(buffer, ref index, length);
 				if (length > 0) { FinalMix(); }
 			}
 
-			public void ProcessFinalBlock(char[] buffer, ref int index, int length)
-			{
-				FinalFill(buffer, ref index, length);
-				if (length > 0) { FinalMix(); }
-			}
-
-			public void ProcessFinalBlock(string buffer, ref int index, int length)
+			public void ProcessFinalBlock(ReadOnlySpan<char> buffer, ref int index, int length)
 			{
 				FinalFill(buffer, ref index, length);
 				if (length > 0) { FinalMix(); }
 			}
 		};
+
+		static uint HashCore(ReadOnlySpan<byte> buffer, uint seed, int index, int length)
+		{
+			var state = new HashState(length, seed);
+			for (; index + kBlockSize <= length; )
+			{
+				state.ProcessBlock(buffer, ref index);
+			}
+
+			state.ProcessFinalBlock(buffer, ref index, length);
+
+			return state.Result;
+		}
+		static uint HashCore(ReadOnlySpan<char> buffer, uint seed, int index, int length)
+		{
+			var state = new HashState(length, seed);
+			for (; index + kBlockSize <= length; )
+			{
+				state.ProcessBlock(buffer, ref index);
+			}
+
+			state.ProcessFinalBlock(buffer, ref index, length);
+
+			return state.Result;
+		}
 
 		public static uint Hash(byte[] buffer, uint seed = 0, int index = 0, int length = -1)
 		{
@@ -124,15 +127,7 @@ namespace KSoft.Security.Cryptography
 				length = buffer.Length - index;
 			}
 
-			var state = new HashState(length, seed);
-			for (; index + kBlockSize <= length; )
-			{
-				state.ProcessBlock(buffer, ref index);
-			}
-
-			state.ProcessFinalBlock(buffer, ref index, length);
-
-			return state.Result;
+			return HashCore(buffer.AsSpan(), seed, index, length);
 		}
 
 		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
@@ -145,15 +140,7 @@ namespace KSoft.Security.Cryptography
 				length = buffer.Length - index;
 			}
 
-			var state = new HashState(length, seed);
-			for (; index + kBlockSize <= length; )
-			{
-				state.ProcessBlock(buffer, ref index);
-			}
-
-			state.ProcessFinalBlock(buffer, ref index, length);
-
-			return state.Result;
+			return HashCore(buffer.AsSpan(), seed, index, length);
 		}
 
 		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
@@ -161,18 +148,7 @@ namespace KSoft.Security.Cryptography
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
 
-			int length = buffer.Length;
-			int index = 0;
-
-			var state = new HashState(length, seed);
-			for (; index + kBlockSize <= length; )
-			{
-				state.ProcessBlock(buffer, ref index);
-			}
-
-			state.ProcessFinalBlock(buffer, ref index, length);
-
-			return state.Result;
+			return HashCore(buffer.AsSpan(), seed, 0, buffer.Length);
 		}
 	};
 }
