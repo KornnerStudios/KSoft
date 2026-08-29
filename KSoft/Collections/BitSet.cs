@@ -786,6 +786,34 @@ namespace KSoft.Collections
 				: (this.mArray[word_index] & last_word_mask) ==
 					(other.mArray[word_index] & last_word_mask);
 		}
+
+		/// <summary>Determine whether this set contains the set bits of another</summary>
+		bool BitwiseContains(BitSet other, int bitsCount)
+		{
+			if (bitsCount == 0 || object.ReferenceEquals(other, this))
+			{
+				return true;
+			}
+
+			int word_index = 0;
+			int word_count = kVectorLengthInT(bitsCount) - 1;
+			System.Diagnostics.Debug.Assert((word_index+word_count) <= this.LengthInWords);
+			System.Diagnostics.Debug.Assert((word_index+word_count) <= other.LengthInWords);
+
+			for (; word_index < word_count; word_index++, bitsCount -= kWordBitCount)
+			{
+				if ((~mArray[word_index] & other.mArray[word_index]) != 0)
+				{
+					return false;
+				}
+			}
+
+			var last_word_mask = GetCabooseRetainedBitsMask(bitsCount);
+
+			return last_word_mask == 0
+				? (~this.mArray[word_index] & other.mArray[word_index]) == 0
+				: (~this.mArray[word_index] & other.mArray[word_index] & last_word_mask) == 0;
+		}
 		#region ISet-like interfaces
 		/// <summary>This set is included in other</summary>
 		/// <param name="other"></param>
@@ -802,7 +830,7 @@ namespace KSoft.Collections
 			// If THIS is larger, then OTHER couldn't contain the bits of THIS
 			return Length <= other.Length &&
 				// verify all our bits exist in OTHER
-				other_bit_set.BitwiseEquals(this, this.Length);
+				other_bit_set.BitwiseContains(this, this.Length);
 		}
 		/// <summary>This set includes all of other</summary>
 		/// <param name="other"></param>
@@ -819,7 +847,7 @@ namespace KSoft.Collections
 			// If THIS is shorter, then THIS couldn't contain the bits of OTHER
 			return Length >= other.Length &&
 				// verify all of OTHER's bits exist in THIS
-				this.BitwiseEquals(other_bit_set, other.Length);
+				this.BitwiseContains(other_bit_set, other.Length);
 		}
 		/// <summary>This set's bits match 1+ bits in other</summary>
 		/// <param name="other"></param>

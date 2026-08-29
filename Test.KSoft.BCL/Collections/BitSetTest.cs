@@ -421,6 +421,21 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
+		public void Collections_BitSetSubsetAndSupersetAllowStrictAlignedFinalWordContainmentTest()
+		{
+			var subset = new BitSet(32);
+			var superset = new BitSet(32);
+			subset[0] = true;
+			superset[0] = true;
+			superset[1] = true;
+
+			Assert.IsTrue(subset.IsSubsetOf(superset));
+			Assert.IsTrue(superset.IsSupersetOf(subset));
+			Assert.IsFalse(superset.IsSubsetOf(subset));
+			Assert.IsFalse(subset.IsSupersetOf(superset));
+		}
+
+		[TestMethod]
 		public void Collections_BitSetEqualityMasksOnlyUnaddressableCabooseBitsTest()
 		{
 			var first = new BitSet(33);
@@ -430,6 +445,21 @@ namespace KSoft.Collections.Test
 
 			Assert.IsFalse(first.Equals(second));
 			Assert.IsFalse(second.Equals(first));
+		}
+
+		[TestMethod]
+		public void Collections_BitSetSubsetAndSupersetAllowStrictCabooseContainmentTest()
+		{
+			var subset = new BitSet(33);
+			var superset = new BitSet(33);
+			subset[32] = true;
+			superset[0] = true;
+			superset[32] = true;
+
+			Assert.IsTrue(subset.IsSubsetOf(superset));
+			Assert.IsTrue(superset.IsSupersetOf(subset));
+			Assert.IsFalse(superset.IsSubsetOf(subset));
+			Assert.IsFalse(subset.IsSupersetOf(superset));
 		}
 
 		[TestMethod]

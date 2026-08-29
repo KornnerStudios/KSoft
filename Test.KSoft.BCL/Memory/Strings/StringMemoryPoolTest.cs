@@ -98,4 +98,32 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 		Assert.AreEqual("first", roundTripped.Get(firstAddress));
 		Assert.AreEqual("second", roundTripped.Get(secondAddress));
 	}
+
+	[TestMethod]
+	public void WriteAndRead_RestoresExplicitNullReference()
+	{
+		var settings = new StringMemoryPoolSettings(
+			StringStorage.CStringAscii, false, new KSoft.Values.PtrHandle(0x4000U));
+		var pool = new StringMemoryPool(settings);
+		var nullAddress = pool.Add("");
+		_ = pool.Add("value");
+
+		using var stream = new MemoryStream();
+		using (var writer = new KSoft.IO.EndianWriter(stream) { BaseStreamOwner = false })
+		{
+			pool.Write(writer);
+		}
+
+		stream.Position = 0;
+		var roundTripped = new StringMemoryPool(settings);
+		using (var reader = new KSoft.IO.EndianReader(stream) { BaseStreamOwner = false })
+		{
+			roundTripped.Read(reader);
+		}
+
+		Assert.AreEqual(nullAddress, roundTripped.GetNull());
+		Assert.AreEqual(nullAddress, roundTripped.GetAddress(""));
+		Assert.AreEqual(nullAddress, roundTripped.Add(""));
+		Assert.AreEqual(2, roundTripped.Count);
+	}
 }

@@ -100,7 +100,7 @@ namespace KSoft.Memory.Strings
 				{
 					index = Count;
 					this.AddInternal("");
-					mNullReference = Settings.BaseAddress + mReferences[index];
+					mNullReference = mReferences[index];
 				}
 				return mNullReference;
 			}
@@ -136,6 +136,10 @@ namespace KSoft.Memory.Strings
 			}
 
 			mPool[index] = value;
+			if (!Settings.ImplicitNull && value.Length == 0 && mNullReference == kInvalidReference)
+			{
+				mNullReference = mReferences[index];
+			}
 		}
 		#endregion
 
@@ -227,6 +231,8 @@ namespace KSoft.Memory.Strings
 			int count = s.ReadInt32();
 			Size = s.ReadUInt32();
 
+			ioStringLengths = null;
+			mNullReference = kInvalidReference;
 			InitializeCollections(count);
 			for (int x = 0; x < count; x++)
 			{
