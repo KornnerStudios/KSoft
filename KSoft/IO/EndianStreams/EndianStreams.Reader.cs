@@ -161,6 +161,15 @@ namespace KSoft.IO
 		public char[] ReadTag32(char[] tag)
 		{
 			ArgumentNullException.ThrowIfNull(tag);
+
+			ReadTag32(tag.AsSpan());
+
+			return tag;
+		}
+		/// <summary>Reads a tag id (four character code)</summary>
+		/// <param name="tag">Destination to populate</param>
+		public void ReadTag32(Span<char> tag)
+		{
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 4, nameof(tag));
 
 			tag[0] = (char)base.ReadByte();
@@ -172,11 +181,8 @@ namespace KSoft.IO
 			// a character array and not a primitive integer
 			if (ByteOrder == Shell.EndianFormat.Little)
 			{
-				Array.Reverse(tag, 0, 4);
-				return tag;
+				tag.Slice(0, 4).Reverse();
 			}
-
-			return tag;
 		}
 		/// <summary>Reads a tag id (four character code)</summary>
 		/// <returns>Big-endian ordered tag id</returns>
@@ -191,6 +197,15 @@ namespace KSoft.IO
 		public char[] ReadTag64(char[] tag)
 		{
 			ArgumentNullException.ThrowIfNull(tag);
+
+			ReadTag64(tag.AsSpan());
+
+			return tag;
+		}
+		/// <summary>Reads a tag id (eight character code)</summary>
+		/// <param name="tag">Destination to populate</param>
+		public void ReadTag64(Span<char> tag)
+		{
 			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, 8, nameof(tag));
 
 			tag[0] = (char)base.ReadByte();
@@ -206,11 +221,9 @@ namespace KSoft.IO
 			// a character array and not a primitive integer
 			if (ByteOrder == Shell.EndianFormat.Little)
 			{
-				Array.Reverse(tag, 0, 4);
-				Array.Reverse(tag, 4, 4);
+				tag.Slice(0, 4).Reverse();
+				tag.Slice(4, 4).Reverse();
 			}
-
-			return tag;
 		}
 		/// <summary>Reads a tag id (eight character code)</summary>
 		/// <returns>Big-endian ordered tag id</returns>

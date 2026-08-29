@@ -71,6 +71,24 @@ public class EndianStreamsTest : BaseTestClass
 		Assert.AreEqual(paramName, exception.ParamName);
 	}
 
+	static void ReadTag32WithUndersizedSpan(EndianReader reader)
+	{
+		Span<char> tag = stackalloc char[3];
+		reader.ReadTag32(tag);
+	}
+
+	static void ReadTag64WithUndersizedSpan(EndianReader reader)
+	{
+		Span<char> tag = stackalloc char[7];
+		reader.ReadTag64(tag);
+	}
+
+	static void WriteTag32WithUndersizedSpan(EndianWriter writer)
+	{
+		ReadOnlySpan<char> tag = "ABC";
+		writer.WriteTag32(tag);
+	}
+
 	static EndianStream UnusedStreamArrayValue(ref TestStructSerializable value)
 	{
 		throw new InvalidOperationException("The zero-count test path should not invoke the stream delegate.");
@@ -198,6 +216,94 @@ public class EndianStreamsTest : BaseTestClass
 			var values = new bool[2];
 			Assert.AreSame(values, reader.ReadFixedArray(values));
 			CollectionAssert.AreEqual(new[] { true, false }, values);
+		}
+	}
+
+	[TestMethod]
+	public void TagSpanOverloads_PreserveEndianOrderingAndDestinationBounds()
+	{
+		Span<char> tag32 = stackalloc char[5];
+		Span<char> tag64 = stackalloc char[9];
+
+		foreach (var (byteOrder, bytes) in new[]
+		{
+			(Shell.EndianFormat.Big, Encoding.ASCII.GetBytes("ABCDEFGHIJKL")),
+			(Shell.EndianFormat.Little, Encoding.ASCII.GetBytes("DCBAHGFELKJI")),
+		})
+		{
+			using var reader = new EndianReader(new MemoryStream(bytes), byteOrder);
+			tag32[4] = '\0';
+			tag64[8] = '\0';
+
+			reader.ReadTag32(tag32);
+			reader.ReadTag64(tag64);
+
+			Assert.AreEqual("ABCD", new string(tag32.Slice(0, 4)));
+			Assert.AreEqual('\0', tag32[4]);
+			Assert.AreEqual("EFGHIJKL", new string(tag64.Slice(0, 8)));
+			Assert.AreEqual('\0', tag64[8]);
+		}
+	}
+
+	[TestMethod]
+	public void TagSpanOverloads_PreserveWriterEndianOrdering()
+	{
+		foreach (var (byteOrder, expectedBytes) in new[]
+		{
+			(Shell.EndianFormat.Big, Encoding.ASCII.GetBytes("ABCD")),
+			(Shell.EndianFormat.Little, Encoding.ASCII.GetBytes("DCBA")),
+		})
+		{
+			using var stream = new MemoryStream();
+			using var writer = new EndianWriter(stream, byteOrder) { BaseStreamOwner = false };
+
+			writer.WriteTag32("ABCD".AsSpan());
+
+			CollectionAssert.AreEqual(expectedBytes, stream.ToArray());
+		}
+	}
+
+	[TestMethod]
+	public void TagSpanOverloads_RejectUndersizedBuffers()
+	{
+		using var readStream = new MemoryStream(new byte[16]);
+		using var reader = new EndianReader(readStream);
+		using var writeStream = new MemoryStream();
+		using var writer = new EndianWriter(writeStream);
+
+		AssertThrowsArgumentOutOfRange(() => ReadTag32WithUndersizedSpan(reader), "tag");
+		AssertThrowsArgumentOutOfRange(() => ReadTag64WithUndersizedSpan(reader), "tag");
+		AssertThrowsArgumentOutOfRange(() => WriteTag32WithUndersizedSpan(writer), "tag");
+	}
+
+	[TestMethod]
+	public void StreamTagBigEndian_PreservesReusableScratchBufferPath()
+	{
+		const uint k_tag = 0x41424344;
+
+		foreach (var (byteOrder, expectedBytes) in new[]
+		{
+			(Shell.EndianFormat.Big, Encoding.ASCII.GetBytes("ABCD")),
+			(Shell.EndianFormat.Little, Encoding.ASCII.GetBytes("DCBA")),
+		})
+		{
+			using var writeStream = new MemoryStream();
+			using (var writer = new EndianWriter(writeStream, byteOrder) { BaseStreamOwner = false })
+			using (var endianStream = EndianStream.UsingWriter(writer))
+			{
+				uint value = k_tag;
+				endianStream.StreamTagBigEndian(ref value);
+			}
+
+			CollectionAssert.AreEqual(expectedBytes, writeStream.ToArray());
+
+			using var reader = new EndianReader(new MemoryStream(expectedBytes), byteOrder);
+			using var readEndianStream = EndianStream.UsingReader(reader);
+			uint readValue = 0;
+
+			readEndianStream.StreamTagBigEndian(ref readValue);
+
+			Assert.AreEqual(k_tag, readValue);
 		}
 	}
 

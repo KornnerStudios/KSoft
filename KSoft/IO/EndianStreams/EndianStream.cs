@@ -506,7 +506,7 @@ namespace KSoft.IO
 			else if (IsWriting)
 			{
 				Values.GroupTagData32.FromUInt(value, mTagScratchBuffer);
-				Writer.WriteTag32(mTagScratchBuffer);
+				Writer.WriteTag32(mTagScratchBuffer.AsSpan(0, sizeof(uint)));
 			}
 
 			return this;
