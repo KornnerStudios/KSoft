@@ -64,8 +64,8 @@ namespace KSoft.Values
 		/// <summary>Get the full name of a group tag based on its character code</summary>
 		/// <remarks>If <paramref name="tag"/> is not found, "unknown" is returned</remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "Group-tag character codes are the established domain lookup key.")]
-		public string this[char[] tag] { get {
-			Verify.GroupTags.ExactLength(tag, NullGroupTag.Tag.Length, nameof(tag));
+		public string this[ReadOnlySpan<char> tag] { get {
+			ArgumentOutOfRangeException.ThrowIfNotEqual(tag.Length, NullGroupTag.TagString.Length, nameof(tag));
 
 			foreach (GroupTagData t in BaseGroupTags)
 			{
@@ -83,18 +83,26 @@ namespace KSoft.Values
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
-		public int FindGroupIndexByTag(char[] groupTag)
+		public int FindGroupIndexByTag(ReadOnlySpan<char> groupTag)
 		{
-			Verify.GroupTags.ExactLength(groupTag, NullGroupTag.Tag.Length, nameof(groupTag));
+			ArgumentOutOfRangeException.ThrowIfNotEqual(groupTag.Length, NullGroupTag.TagString.Length, nameof(groupTag));
 
-			return BaseGroupTags.FindIndex(gt => gt.Test(groupTag));
+			for (int index = 0; index < BaseGroupTags.Length; index++)
+			{
+				if (BaseGroupTags[index].Test(groupTag))
+				{
+					return index;
+				}
+			}
+
+			return TypeExtensions.kNone;
 		}
 		/// <summary>Finds the index of a <see cref="GroupTagData"/></summary>
 		/// <param name="tagString">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Index of <paramref name="tagString"/> or <b>-1</b> if not found</returns>
 		public int FindGroupIndexByTag(string tagString)
 		{
-			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
+			Verify.GroupTags.ExactLength(tagString, NullGroupTag.TagString.Length, nameof(tagString));
 
 			return BaseGroupTags.FindIndex(gt => gt.TagString == tagString);
 		}
@@ -122,10 +130,8 @@ namespace KSoft.Values
 		/// <summary>Finds a <see cref="GroupTagData"/> of this collection based on its group tag</summary>
 		/// <param name="groupTag">The <see cref="GroupTagData"/>'s 'tag' to search for</param>
 		/// <returns>Null if <paramref name="groupTag"/> isn't a part of this collection</returns>
-		public GroupTagData? FindGroup(char[] groupTag)
+		public GroupTagData? FindGroup(ReadOnlySpan<char> groupTag)
 		{
-			ArgumentNullException.ThrowIfNull(groupTag);
-
 			int index = FindGroupIndexByTag(groupTag);
 			if (index.IsNone())
 			{
@@ -139,7 +145,7 @@ namespace KSoft.Values
 		/// <returns>Null if <paramref name="tagString"/> isn't a part of this collection</returns>
 		public GroupTagData? FindGroupByTag(string tagString)
 		{
-			Verify.GroupTags.ExactLength(tagString, NullGroupTag.Tag.Length, nameof(tagString));
+			Verify.GroupTags.ExactLength(tagString, NullGroupTag.TagString.Length, nameof(tagString));
 
 			int index = FindGroupIndexByTag(tagString);
 			if (index.IsNone())

@@ -32,9 +32,9 @@ namespace KSoft.Values
 		/// <param name="name">Name of this group tag</param>
 		public GroupTagData64(string groupTag, string name) : base(groupTag, name, kExpectedTagLength)
 		{
-			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(TagString.Length == kExpectedTagLength);
 
-			mID = ToULong(Tag);
+			mID = ToULong(TagString.AsSpan());
 		}
 		/// <summary>Initialize a 64-bit group tag with a <see cref="Guid"/></summary>
 		/// <param name="groupTag">Eight character code string</param>
@@ -42,9 +42,9 @@ namespace KSoft.Values
 		/// <param name="uuid">Guid for this group tag</param>
 		public GroupTagData64(string groupTag, string name, KGuid uuid) : base(groupTag, name, uuid, kExpectedTagLength)
 		{
-			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(TagString.Length == kExpectedTagLength);
 
-			mID = ToULong(Tag);
+			mID = ToULong(TagString.AsSpan());
 		}
 		/// <summary>Specialized ctor for initialing from two <see cref="GroupTagData32"/> instances</summary>
 		/// <param name="maj">First four-character code</param>
@@ -53,9 +53,9 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name) : base(maj, min, name)
 		{
-			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(TagString.Length == kExpectedTagLength);
 
-			mID = ToULong(Tag);
+			mID = ToULong(TagString.AsSpan());
 		}
 		/// <summary>Specialized ctor for initialing from two <see cref="GroupTagData32"/> instances along with a <see cref="Guid"/></summary>
 		/// <param name="maj">First four-character code</param>
@@ -65,9 +65,9 @@ namespace KSoft.Values
 		/// <remarks>Constructs a group tag in the form of '<paramref name="maj"/>' + '<paramref name="min"/>'</remarks>
 		public GroupTagData64(GroupTagData32 maj, GroupTagData32 min, string name, KGuid uuid) : base(maj, min, name, uuid)
 		{
-			System.Diagnostics.Debug.Assert(Tag.Length == kExpectedTagLength);
+			System.Diagnostics.Debug.Assert(TagString.Length == kExpectedTagLength);
 
-			mID = ToULong(Tag);
+			mID = ToULong(TagString.AsSpan());
 		}
 		#endregion
 
@@ -113,11 +113,11 @@ namespace KSoft.Values
 		/// Takes another eight character code and performs a check on it against this object's tag to see if they are completely equal</summary>
 		/// <param name="other"></param>
 		/// <returns>True if equal to this</returns>
-		public override bool Test(char[] other)
+		public override bool Test(ReadOnlySpan<char> other)
 		{
 			ValidateTestArgument(other);
 
-			return GroupTagData64.Test(Tag, other);
+			return GroupTagData64.Test(TagString.AsSpan(), other);
 		}
 		/// <summary>Is this <see cref="GroupTagData64"/> equal to the "null" equivalent value?</summary>
 		public override bool IsNull	=> object.ReferenceEquals(this, Null);
@@ -149,43 +149,7 @@ namespace KSoft.Values
 
 
 		#region Util
-		/// <summary>Takes a eight character code and performs a qword byte swap on it, storing the result in a new four character code</summary>
-		/// <param name="tag">value to be byte swapped</param>
-		/// <returns>qword byte swapped eight character code</returns>
-		public static char[] Swap(char[] tag)
-		{
-			ArgumentNullException.ThrowIfNull(tag);
-			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
 
-#pragma warning disable IDE0300 // Simplify collection initialization
-			char[] swap = new char[8];
-#pragma warning restore IDE0300 // Simplify collection initialization
-			swap[0] = tag[3];
-			swap[1] = tag[2];
-			swap[2] = tag[1];
-			swap[3] = tag[0];
-
-			swap[4 + 0] = tag[4 + 3];
-			swap[4 + 1] = tag[4 + 2];
-			swap[4 + 2] = tag[4 + 1];
-			swap[4 + 3] = tag[4 + 0];
-
-			return swap;
-		}
-
-		/// <summary>Takes two four character codes and performs a check on them to see if they are completely equal</summary>
-		/// <param name="tag1"></param>
-		/// <param name="tag2"></param>
-		/// <returns>True if both are equal</returns>
-		public static bool Test(char[] tag1, char[] tag2)
-		{
-			ArgumentNullException.ThrowIfNull(tag1);
-			ArgumentNullException.ThrowIfNull(tag2);
-			ArgumentOutOfRangeException.ThrowIfLessThan(tag1.Length, kExpectedTagLength, nameof(tag1));
-			ArgumentOutOfRangeException.ThrowIfLessThan(tag2.Length, kExpectedTagLength, nameof(tag2));
-
-			return Test(tag1.AsSpan(), tag2.AsSpan());
-		}
 		/// <summary>Takes two eight character codes and performs a check on them to see if they are completely equal</summary>
 		/// <param name="tag1"></param>
 		/// <param name="tag2"></param>
@@ -205,17 +169,6 @@ namespace KSoft.Values
 				tag1[4 + 3] == tag2[4 + 3];
 		}
 		#region ULong
-		/// <summary>Takes a eight-cc and converts it into its (unsigned) integer value</summary>
-		/// <param name="tag"></param>
-		/// <returns></returns>
-		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
-		public static TagWord ToULong(char[] tag)
-		{
-			ArgumentNullException.ThrowIfNull(tag);
-			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
-
-			return ToULong(tag.AsSpan());
-		}
 		/// <summary>Takes a eight-cc and converts it into its (unsigned) integer value</summary>
 		/// <param name="tag"></param>
 		/// <returns></returns>
@@ -246,38 +199,6 @@ namespace KSoft.Values
 			}
 
 			return value;
-		}
-		/// <summary>Takes a eight-cc and converts it into its (unsigned) integer value</summary>
-		/// <param name="tag"></param>
-		/// <returns></returns>
-		/// <remarks>assumes <paramref name="tag"/> is in big-endian order, though in most cases order doesn't matter</remarks>
-		public static TagWord ToULong(string tag)
-		{
-			ArgumentException.ThrowIfNullOrEmpty(tag);
-			ArgumentOutOfRangeException.ThrowIfLessThan(tag.Length, kExpectedTagLength, nameof(tag));
-
-			return ToULong(tag.AsSpan());
-		}
-		/// <summary>Takes a (unsigned) integer and converts it into its eight-cc value</summary>
-		/// <param name="groupTag"></param>
-		/// <param name="tag">optional result buffer</param>
-		/// <param name="isBigEndian">endian order override</param>
-		/// <returns>big-endian ordered eight-cc if <paramref name="isBigEndian"/> is true, little-endian if false</returns>
-		public static char[] FromULong(TagWord groupTag, char[]? tag = null, bool isBigEndian = true)
-		{
-			if (tag != null && tag.Length < kExpectedTagLength)
-			{
-				throw new ArgumentOutOfRangeException(nameof(tag));
-			}
-
-			if (tag == null)
-			{
-				tag = new char[kExpectedTagLength];
-			}
-
-			FromULong(groupTag, tag.AsSpan(), isBigEndian);
-
-			return tag;
 		}
 		/// <summary>Takes a (unsigned) integer and writes its eight-cc value to a destination</summary>
 		/// <param name="groupTag"></param>

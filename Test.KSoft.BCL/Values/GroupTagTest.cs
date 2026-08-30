@@ -140,6 +140,30 @@ public sealed class GroupTagTest : BaseTestClass
 		GroupTagData64.FromULong(0, tag);
 	}
 
+	static void GroupTagData_TestWithSizedSpan(GroupTagData groupTag, int length)
+	{
+		Span<char> other = stackalloc char[length];
+		_ = groupTag.Test(other);
+	}
+
+	static void GroupTagCollection_IndexWithSizedSpan(GroupTagCollection collection, int length)
+	{
+		Span<char> tag = stackalloc char[length];
+		_ = collection[tag];
+	}
+
+	static void GroupTagCollection_FindIndexWithSizedSpan(GroupTagCollection collection, int length)
+	{
+		Span<char> groupTag = stackalloc char[length];
+		_ = collection.FindGroupIndexByTag(groupTag);
+	}
+
+	static void GroupTagCollection_FindGroupWithSizedSpan(GroupTagCollection collection, int length)
+	{
+		Span<char> groupTag = stackalloc char[length];
+		_ = collection.FindGroup(groupTag);
+	}
+
 	[TestMethod]
 	public void GroupTagData_ReservedNullGroupName_ThrowsArgumentException()
 	{
@@ -185,54 +209,9 @@ public sealed class GroupTagTest : BaseTestClass
 		var groupTag = new GroupTagData32("test", "Test");
 
 		AssertThrowsArgumentNull("value", () => _ = (string)(GroupTagData)null!);
-		AssertThrowsArgumentNull("value", () => _ = (char[])(GroupTagData)null!);
 		AssertThrowsArgumentNull("other", () => _ = groupTag.CompareId(null!));
 		AssertThrowsArgumentNull("value", () => _ = (uint)(GroupTagData32)null!);
 		AssertThrowsArgumentNull("value", () => _ = (ulong)(GroupTagData64)null!);
-	}
-
-	[TestMethod]
-	public void GroupTagData32_ShortTags_ThrowArgumentOutOfRangeException()
-	{
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.Swap(new char[3]));
-		AssertThrowsArgumentOutOfRange("tag1", () => _ = GroupTagData32.Test(new char[3], new char[4]));
-		AssertThrowsArgumentOutOfRange("tag2", () => _ = GroupTagData32.Test(new char[4], new char[3]));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.ToUInt(new char[3]));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.ToUInt("abc"));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData32.FromUInt(0, new char[3]));
-	}
-
-	[TestMethod]
-	public void GroupTagData32_NullTags_ThrowArgumentNullException()
-	{
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.Swap(null!));
-		AssertThrowsArgumentNull("tag1", () => _ = GroupTagData32.Test(null!, new char[4]));
-		AssertThrowsArgumentNull("tag2", () => _ = GroupTagData32.Test(new char[4], null!));
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.ToUInt((char[])null!));
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData32.ToUInt((string)null!));
-		AssertThrowsArgument("tag", () => _ = GroupTagData32.ToUInt(string.Empty));
-	}
-
-	[TestMethod]
-	public void GroupTagData64_ShortTags_ThrowArgumentOutOfRangeException()
-	{
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.Swap(new char[7]));
-		AssertThrowsArgumentOutOfRange("tag1", () => _ = GroupTagData64.Test(new char[7], new char[8]));
-		AssertThrowsArgumentOutOfRange("tag2", () => _ = GroupTagData64.Test(new char[8], new char[7]));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.ToULong(new char[7]));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.ToULong("tag7chr"));
-		AssertThrowsArgumentOutOfRange("tag", () => _ = GroupTagData64.FromULong(0, new char[7]));
-	}
-
-	[TestMethod]
-	public void GroupTagData64_NullTags_ThrowArgumentNullException()
-	{
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.Swap(null!));
-		AssertThrowsArgumentNull("tag1", () => _ = GroupTagData64.Test(null!, new char[8]));
-		AssertThrowsArgumentNull("tag2", () => _ = GroupTagData64.Test(new char[8], null!));
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((char[])null!));
-		AssertThrowsArgumentNull("tag", () => _ = GroupTagData64.ToULong((string)null!));
-		AssertThrowsArgument("tag", () => _ = GroupTagData64.ToULong(string.Empty));
 	}
 
 	[TestMethod]
@@ -266,7 +245,7 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void GroupTagData_SpanOverloads_RejectUndersizedBuffersWithLegacyParameterNames()
+	public void GroupTagData_SpanOverloads_RejectUndersizedBuffersWithExpectedParameterNames()
 	{
 		AssertThrowsArgumentOutOfRange("tag1", GroupTagData32_TestWithUndersizedFirstSpan);
 		AssertThrowsArgumentOutOfRange("tag2", GroupTagData32_TestWithUndersizedSecondSpan);
@@ -279,22 +258,12 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void GroupTagData_ArrayCompatibilityOverloads_PreserveAllocationAndIdentity()
+	public void GroupTagData_StaticSpanOperations_ProcessRequiredPrefixes()
 	{
-		var destination32 = new[] { '_', '_', '_', '_', '_' };
-		var destination64 = new[] { '_', '_', '_', '_', '_', '_', '_', '_', '_' };
-
-		Assert.AreSame(destination32, GroupTagData32.FromUInt(0x41424344, destination32));
-		Assert.AreEqual("ABCD_", new string(destination32));
-		Assert.AreSame(destination64, GroupTagData64.FromULong(0x4142434445464748, destination64));
-		Assert.AreEqual("EFGHABCD_", new string(destination64));
-		Assert.AreEqual(4, GroupTagData32.FromUInt(0x41424344).Length);
-		Assert.AreEqual(8, GroupTagData64.FromULong(0x4142434445464748).Length);
-
-		Assert.IsTrue(GroupTagData32.Test("ABCD_".ToCharArray(), "ABCD!".ToCharArray()));
-		Assert.IsTrue(GroupTagData64.Test("ABCDEFGH_".ToCharArray(), "ABCDEFGH!".ToCharArray()));
-		Assert.AreEqual(GroupTagData32.ToUInt("ABCD"), GroupTagData32.ToUInt("ABCD_"));
-		Assert.AreEqual(GroupTagData64.ToULong("ABCDEFGH"), GroupTagData64.ToULong("ABCDEFGH_"));
+		Assert.IsTrue(GroupTagData32.Test("ABCD_".AsSpan(), "ABCD!".AsSpan()));
+		Assert.IsTrue(GroupTagData64.Test("ABCDEFGH_".AsSpan(), "ABCDEFGH!".AsSpan()));
+		Assert.AreEqual(GroupTagData32.ToUInt("ABCD".AsSpan()), GroupTagData32.ToUInt("ABCD_".AsSpan()));
+		Assert.AreEqual(GroupTagData64.ToULong("ABCDEFGH".AsSpan()), GroupTagData64.ToULong("ABCDEFGH_".AsSpan()));
 	}
 
 	[TestMethod]
@@ -327,20 +296,18 @@ public sealed class GroupTagTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void GroupTagData_TestGuards_ThrowExpectedExceptions()
+	public void GroupTagData_InstanceTests_RequireExactWidth()
 	{
 		var groupTag32 = new GroupTagData32("test", "Test");
 		var groupTag64 = new GroupTagData64("testtag8", "Test");
 
-		AssertThrowsArgumentNull("other", () => _ = groupTag32.Test(null!));
-		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag32.Test(new char[3]));
-		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag32.Test(new char[5]));
-		Assert.IsTrue(groupTag32.Test("test".ToCharArray()));
+		AssertThrowsArgumentOutOfRange("other", () => GroupTagData_TestWithSizedSpan(groupTag32, 3));
+		AssertThrowsArgumentOutOfRange("other", () => GroupTagData_TestWithSizedSpan(groupTag32, 5));
+		Assert.IsTrue(groupTag32.Test("test".AsSpan()));
 
-		AssertThrowsArgumentNull("other", () => _ = groupTag64.Test(null!));
-		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag64.Test(new char[7]));
-		AssertThrowsArgumentOutOfRange("other", () => _ = groupTag64.Test(new char[9]));
-		Assert.IsTrue(groupTag64.Test("testtag8".ToCharArray()));
+		AssertThrowsArgumentOutOfRange("other", () => GroupTagData_TestWithSizedSpan(groupTag64, 7));
+		AssertThrowsArgumentOutOfRange("other", () => GroupTagData_TestWithSizedSpan(groupTag64, 9));
+		Assert.IsTrue(groupTag64.Test("testtag8".AsSpan()));
 	}
 
 	[TestMethod]
@@ -380,21 +347,26 @@ public sealed class GroupTagTest : BaseTestClass
 		var groupTag = new GroupTagData32("test", "Test");
 		var collection = new GroupTag32Collection(groupTag);
 
-		AssertThrowsArgumentNull("tag", () => _ = collection[(char[])null!]);
-		AssertThrowsArgumentOutOfRange("tag", () => _ = collection["abc".ToCharArray()]);
-		AssertThrowsArgumentNull("groupTag", () => _ = collection.FindGroupIndexByTag((char[])null!));
-		AssertThrowsArgumentOutOfRange("groupTag", () => _ = collection.FindGroupIndexByTag("abc".ToCharArray()));
+		AssertThrowsArgumentOutOfRange("tag", () => GroupTagCollection_IndexWithSizedSpan(collection, 3));
+		AssertThrowsArgumentOutOfRange("tag", () => GroupTagCollection_IndexWithSizedSpan(collection, 5));
+		AssertThrowsArgumentOutOfRange("groupTag", () => GroupTagCollection_FindIndexWithSizedSpan(collection, 3));
+		AssertThrowsArgumentOutOfRange("groupTag", () => GroupTagCollection_FindIndexWithSizedSpan(collection, 5));
 		AssertThrowsArgumentNull("tagString", () => _ = collection.FindGroupIndexByTag((string)null!));
 		AssertThrowsArgument("tagString", () => _ = collection.FindGroupIndexByTag(string.Empty));
 		AssertThrowsArgumentOutOfRange("tagString", () => _ = collection.FindGroupIndexByTag("abc"));
+		AssertThrowsArgumentOutOfRange("tagString", () => _ = collection.FindGroupIndexByTag("abcde"));
 		AssertThrowsArgumentNull("groupName", () => _ = collection.FindGroupIndex((string)null!));
 		AssertThrowsArgument("groupName", () => _ = collection.FindGroupIndex(string.Empty));
 		AssertThrowsArgumentNull("group", () => _ = collection.FindGroupIndex((GroupTagData)null!));
-		AssertThrowsArgumentNull("groupTag", () => _ = collection.FindGroup((char[])null!));
+		AssertThrowsArgumentOutOfRange("groupTag", () => GroupTagCollection_FindGroupWithSizedSpan(collection, 3));
+		AssertThrowsArgumentOutOfRange("groupTag", () => GroupTagCollection_FindGroupWithSizedSpan(collection, 5));
 		AssertThrowsArgumentNull("tagString", () => _ = collection.FindGroupByTag((string)null!));
 		AssertThrowsArgumentNull("groupName", () => _ = collection.FindGroup((string)null!));
 
-		Assert.AreEqual("Test", collection["test".ToCharArray()]);
+		Assert.AreEqual("Test", collection["test".AsSpan()]);
+		Assert.AreEqual(collection.NullGroupTag.Name, collection["miss".AsSpan()]);
+		Assert.AreEqual(0, collection.FindGroupIndexByTag("test".AsSpan()));
+		Assert.AreSame(groupTag, collection.FindGroup("test".AsSpan()));
 		Assert.AreSame(groupTag, collection.FindGroupByTag("test"));
 		Assert.IsNull(collection.FindGroup("Missing"));
 	}
@@ -411,14 +383,14 @@ public sealed class GroupTagTest : BaseTestClass
 
 		Assert.IsNull(collection32.FindGroup("Missing"));
 		Assert.IsNull(collection32.FindGroupByTag("miss"));
-		Assert.IsNull(collection32.FindGroup("miss".ToCharArray()));
+		Assert.IsNull(collection32.FindGroup("miss".AsSpan()));
 		Assert.IsNull(collection32.FindGroupByTag(0));
 		collection32.Sort();
 		Assert.AreEqual("Alpha", collection32.GroupTags[0].Name);
 
 		Assert.IsNull(collection64.FindGroup("Missing"));
 		Assert.IsNull(collection64.FindGroupByTag("missing!"));
-		Assert.IsNull(collection64.FindGroup("missing!".ToCharArray()));
+		Assert.IsNull(collection64.FindGroup("missing!".AsSpan()));
 		Assert.IsNull(collection64.FindGroupByTag(0));
 		collection64.Sort();
 		Assert.AreEqual("Alpha", collection64.GroupTags[0].Name);

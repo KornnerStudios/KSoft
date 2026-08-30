@@ -31,10 +31,6 @@ namespace KSoft.Values
 
 		#region Tag
 		readonly string mTagAsString;
-		readonly char[] mTag;
-		/// <summary>The character code of this group</summary>
-		[System.ComponentModel.Browsable(false)]
-		public char[] Tag { get => mTag; }
 		/// <summary>Get the character code of this group as a string</summary>
 		public string TagString { get => mTagAsString; }
 		#endregion
@@ -54,13 +50,7 @@ namespace KSoft.Values
 
 			mName = kNullGroupName;
 
-			mTag = new char[expectedLength];
-			for (int x = 0; x < mTag.Length; x++)
-			{
-				mTag[x] = (char)0xFF;
-			}
-
-			mTagAsString = new string(mTag);
+			mTagAsString = new string((char)0xFF, expectedLength);
 		}
 		/// <summary>Initialize a group tag from a character code and name</summary>
 		/// <param name="groupTag">Character code string</param>
@@ -76,7 +66,6 @@ namespace KSoft.Values
 
 			mName = name;
 			mTagAsString = groupTag;
-			mTag = groupTag.ToCharArray();
 		}
 		/// <summary>Initialize a group tag from a character code, name and <see cref="Guid"/></summary>
 		/// <param name="groupTag">Character code string</param>
@@ -103,7 +92,6 @@ namespace KSoft.Values
 			mName = name;
 			mTagAsString = string.Format(Util.InvariantCultureInfo,
 				"{0}{1}", maj.mTagAsString, min.mTagAsString);
-			mTag = mTagAsString.ToCharArray();
 		}
 		/// <summary>Specialized ctor for <see cref="GroupTagData64"/> built from two <see cref="GroupTagData32"/></summary>
 		/// <param name="maj">First four-character code</param>
@@ -150,19 +138,6 @@ namespace KSoft.Values
 			return value.mName;
 		}
 
-		/// <summary>Returns the group tag in char[] form</summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public char[] ToCharArray()
-		{
-			return mTag;
-		}
-		public static explicit operator char[](GroupTagData value)
-		{
-			ArgumentNullException.ThrowIfNull(value);
-
-			return value.ToCharArray();
-		}
 		#endregion
 
 		/// <summary>
@@ -171,13 +146,12 @@ namespace KSoft.Values
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns>True if equal to this</returns>
-		public abstract bool Test(char[] other);
+		public abstract bool Test(ReadOnlySpan<char> other);
 		/// <summary>Validate input for concrete <see cref="Test"/> implementations.</summary>
 		/// <param name="other">Character code to compare against this group tag.</param>
-		protected void ValidateTestArgument(char[] other)
+		protected void ValidateTestArgument(ReadOnlySpan<char> other)
 		{
-			ArgumentNullException.ThrowIfNull(other);
-			ArgumentOutOfRangeException.ThrowIfNotEqual(other.Length, Tag.Length, nameof(other));
+			ArgumentOutOfRangeException.ThrowIfNotEqual(other.Length, TagString.Length, nameof(other));
 		}
 		/// <summary>Is this Group Tag equal to the "null" equivalent value?</summary>
 		public abstract bool IsNull { get; }
