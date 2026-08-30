@@ -156,17 +156,6 @@ namespace KSoft.IO
 		#region Read group tag
 		// #VITA_KEEP: tag helpers preserve KSoft character/group-tag ordering semantics.
 		/// <summary>Reads a tag id (four character code)</summary>
-		/// <param name="tag">Array to populate</param>
-		/// <returns>Big-endian ordered tag id</returns>
-		public char[] ReadTag32(char[] tag)
-		{
-			ArgumentNullException.ThrowIfNull(tag);
-
-			ReadTag32(tag.AsSpan());
-
-			return tag;
-		}
-		/// <summary>Reads a tag id (four character code)</summary>
 		/// <param name="tag">Destination to populate</param>
 		public void ReadTag32(Span<char> tag)
 		{
@@ -184,24 +173,7 @@ namespace KSoft.IO
 				tag.Slice(0, 4).Reverse();
 			}
 		}
-		/// <summary>Reads a tag id (four character code)</summary>
-		/// <returns>Big-endian ordered tag id</returns>
-		public char[] ReadTag32()
-		{
-			return ReadTag32(new char[4]);
-		}
 
-		/// <summary>Reads a tag id (eight character code)</summary>
-		/// <param name="tag">Array to populate</param>
-		/// <returns>Big-endian ordered tag id</returns>
-		public char[] ReadTag64(char[] tag)
-		{
-			ArgumentNullException.ThrowIfNull(tag);
-
-			ReadTag64(tag.AsSpan());
-
-			return tag;
-		}
 		/// <summary>Reads a tag id (eight character code)</summary>
 		/// <param name="tag">Destination to populate</param>
 		public void ReadTag64(Span<char> tag)
@@ -224,12 +196,6 @@ namespace KSoft.IO
 				tag.Slice(0, 4).Reverse();
 				tag.Slice(4, 4).Reverse();
 			}
-		}
-		/// <summary>Reads a tag id (eight character code)</summary>
-		/// <returns>Big-endian ordered tag id</returns>
-		public char[] ReadTag64()
-		{
-			return ReadTag64(new char[8]);
 		}
 
 		/// <summary>Reads a tag id (four character code)</summary>

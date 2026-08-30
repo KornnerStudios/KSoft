@@ -121,14 +121,6 @@ namespace KSoft.IO
 		// #VITA_KEEP: tag helpers preserve KSoft character/group-tag ordering semantics.
 		/// <summary>Writes a tag id (four character code)</summary>
 		/// <param name="tag">Big-endian ordered tag id</param>
-		public void WriteTag32(char[] tag)
-		{
-			ArgumentNullException.ThrowIfNull(tag);
-
-			WriteTag32(tag.AsSpan());
-		}
-		/// <summary>Writes a tag id (four character code)</summary>
-		/// <param name="tag">Big-endian ordered tag id</param>
 		public void WriteTag32(ReadOnlySpan<char> tag)
 		{
 			if (tag.Length != 4)

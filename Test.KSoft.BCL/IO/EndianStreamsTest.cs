@@ -89,6 +89,12 @@ public class EndianStreamsTest : BaseTestClass
 		writer.WriteTag32(tag);
 	}
 
+	static void WriteTag32WithOversizedSpan(EndianWriter writer)
+	{
+		ReadOnlySpan<char> tag = "ABCDE";
+		writer.WriteTag32(tag);
+	}
+
 	static EndianStream UnusedStreamArrayValue(ref TestStructSerializable value)
 	{
 		throw new InvalidOperationException("The zero-count test path should not invoke the stream delegate.");
@@ -161,14 +167,6 @@ public class EndianStreamsTest : BaseTestClass
 		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], -1), "count");
 		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], 2), "count");
 
-		AssertThrowsArgumentNull(() => _ = reader.ReadTag32(null!), "tag");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.ReadTag32(new char[3]), "tag");
-		AssertThrowsArgumentNull(() => _ = reader.ReadTag64(null!), "tag");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.ReadTag64(new char[7]), "tag");
-		AssertThrowsArgumentNull(() => writer.WriteTag32(null!), "tag");
-		AssertThrowsArgumentOutOfRange(() => writer.WriteTag32(new char[3]), "tag");
-		AssertThrowsArgumentOutOfRange(() => writer.WriteTag32(new char[5]), "tag");
-
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
 		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
@@ -202,7 +200,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void ReaderDirectArrayAndTagHelpers_ReturnExpectedBuffers()
+	public void ReaderDirectArrayAndTagSpanHelpers_PopulateExpectedBuffers()
 	{
 		using (var reader = new EndianReader(new MemoryStream(new byte[] { 1, 2, 3, 4 }), Shell.EndianFormat.Big))
 		{
@@ -221,16 +219,18 @@ public class EndianStreamsTest : BaseTestClass
 		using (var reader = new EndianReader(new MemoryStream(Encoding.ASCII.GetBytes("ABCD1234")), Shell.EndianFormat.Big))
 		{
 			var tag32 = new char[5];
-			Assert.AreSame(tag32, reader.ReadTag32(tag32));
+			reader.ReadTag32(tag32.AsSpan());
 			CollectionAssert.AreEqual(new[] { 'A', 'B', 'C', 'D', '\0' }, tag32);
 
-			Assert.AreEqual("1234", new string(reader.ReadTag32()));
+			Span<char> secondTag32 = stackalloc char[4];
+			reader.ReadTag32(secondTag32);
+			Assert.AreEqual("1234", new string(secondTag32));
 		}
 
 		using (var reader = new EndianReader(new MemoryStream(Encoding.ASCII.GetBytes("ABCDEFGH")), Shell.EndianFormat.Big))
 		{
-			var tag64 = reader.ReadTag64();
-			Assert.AreEqual(8, tag64.Length);
+			Span<char> tag64 = stackalloc char[8];
+			reader.ReadTag64(tag64);
 			Assert.AreEqual("ABCDEFGH", new string(tag64));
 		}
 
@@ -259,7 +259,9 @@ public class EndianStreamsTest : BaseTestClass
 			tag64[8] = '\0';
 
 			reader.ReadTag32(tag32);
+			Assert.AreEqual(4L, reader.BaseStream.Position);
 			reader.ReadTag64(tag64);
+			Assert.AreEqual(12L, reader.BaseStream.Position);
 
 			Assert.AreEqual("ABCD", new string(tag32.Slice(0, 4)));
 			Assert.AreEqual('\0', tag32[4]);
@@ -282,12 +284,14 @@ public class EndianStreamsTest : BaseTestClass
 
 			writer.WriteTag32("ABCD".AsSpan());
 
+			Assert.AreEqual(4L, stream.Position);
+			Assert.AreEqual(4L, stream.Length);
 			CollectionAssert.AreEqual(expectedBytes, stream.ToArray());
 		}
 	}
 
 	[TestMethod]
-	public void TagSpanOverloads_RejectUndersizedBuffers()
+	public void TagSpanOverloads_RejectInvalidWidthsWithoutAdvancingStreams()
 	{
 		using var readStream = new MemoryStream(new byte[16]);
 		using var reader = new EndianReader(readStream);
@@ -296,7 +300,12 @@ public class EndianStreamsTest : BaseTestClass
 
 		AssertThrowsArgumentOutOfRange(() => ReadTag32WithUndersizedSpan(reader), "tag");
 		AssertThrowsArgumentOutOfRange(() => ReadTag64WithUndersizedSpan(reader), "tag");
+		Assert.AreEqual(0L, readStream.Position);
+
 		AssertThrowsArgumentOutOfRange(() => WriteTag32WithUndersizedSpan(writer), "tag");
+		AssertThrowsArgumentOutOfRange(() => WriteTag32WithOversizedSpan(writer), "tag");
+		Assert.AreEqual(0L, writeStream.Position);
+		Assert.AreEqual(0L, writeStream.Length);
 	}
 
 	[TestMethod]
