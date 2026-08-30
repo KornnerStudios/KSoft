@@ -83,72 +83,42 @@ namespace KSoft.Security.Cryptography
 			}
 		};
 
-		static uint HashCore(ReadOnlySpan<byte> buffer, uint seed, int index, int length)
+		static uint HashCore(ReadOnlySpan<byte> buffer, uint seed)
 		{
 			var state = new HashState(seed);
-			for (; index + kBlockSize <= length; )
+			int index = 0;
+			for (; index + kBlockSize <= buffer.Length; )
 			{
 				state.ProcessBlock(buffer, ref index);
 			}
 
-			state.ProcessFinalBlock(buffer, ref index, length);
+			state.ProcessFinalBlock(buffer, ref index, buffer.Length);
 
 			return state.Result;
 		}
-		static uint HashCore(ReadOnlySpan<char> buffer, uint seed, int index, int length)
+		static uint HashCore(ReadOnlySpan<char> buffer, uint seed)
 		{
 			var state = new HashState(seed);
-			for (; index + kBlockSize <= length; )
+			int index = 0;
+			for (; index + kBlockSize <= buffer.Length; )
 			{
 				state.ProcessBlock(buffer, ref index);
 			}
 
-			state.ProcessFinalBlock(buffer, ref index, length);
+			state.ProcessFinalBlock(buffer, ref index, buffer.Length);
 
 			return state.Result;
 		}
 
 		public static uint Hash(ReadOnlySpan<byte> buffer, uint seed = 0)
 		{
-			return HashCore(buffer, seed, 0, buffer.Length);
+			return HashCore(buffer, seed);
 		}
 
 		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
 		public static uint Hash(ReadOnlySpan<char> buffer, uint seed = 0)
 		{
-			return HashCore(buffer, seed, 0, buffer.Length);
-		}
-		public static uint Hash(byte[] buffer, uint seed = 0, int index = 0, int length = -1)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			if (length.IsNone())
-			{
-				length = buffer.Length - index;
-			}
-
-			return HashCore(buffer.AsSpan(), seed, index, length);
-		}
-
-		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
-		public static uint Hash(char[] buffer, uint seed = 0, int index = 0, int length = -1)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			if (length.IsNone())
-			{
-				length = buffer.Length - index;
-			}
-
-			return HashCore(buffer.AsSpan(), seed, index, length);
-		}
-
-		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
-		public static uint Hash(string buffer, uint seed = 0)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			return HashCore(buffer.AsSpan(), seed, 0, buffer.Length);
+			return HashCore(buffer, seed);
 		}
 	};
 }

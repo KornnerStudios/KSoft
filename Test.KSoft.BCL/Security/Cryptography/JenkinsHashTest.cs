@@ -7,27 +7,13 @@ namespace KSoft.Security.Cryptography.Test
 	[TestClass]
 	public sealed class JenkinsHashTest : BaseTestClass
 	{
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentException(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		[TestMethod]
 		public void Cryptography_JenkinsHashTest()
 		{
 			const string k_input = "SET_TIME_ONE_DAY_FORWARD";
 			const uint k_expected_output = /*0x2E5B068F*/0xBB56C2E5;
 
-			uint ouptut = Security.Cryptography.JenkinsHash.Hash(k_input);
+			uint ouptut = Security.Cryptography.JenkinsHash.Hash(k_input.AsSpan());
 			Assert.IsTrue(k_expected_output == ouptut);
 		}
 
@@ -36,13 +22,13 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			const string k_input = "Four score and seven years ago";
 
-			Assert.AreEqual(0x50F2424Bu, JenkinsHashLookup2.Hash(k_input));
-			Assert.AreEqual(0x89DEAE7Eu, JenkinsHashLookup2.Hash(k_input, 1));
+			Assert.AreEqual(0x50F2424Bu, JenkinsHashLookup2.Hash(k_input.AsSpan()));
+			Assert.AreEqual(0x89DEAE7Eu, JenkinsHashLookup2.Hash(k_input.AsSpan(), 1));
 		}
 
 		void TestLookup3(string input, uint expected_output, uint seed = 0)
 		{
-			uint output = JenkinsHashLookup3.Hash(input, seed);
+			uint output = JenkinsHashLookup3.Hash(input.AsSpan(), seed);
 			Assert.AreEqual(expected_output, output);
 		}
 		[TestMethod]
@@ -65,23 +51,26 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
-		public void Hash_AsciiByteCharAndStringInputs_AreEquivalent()
+		public void Hash_AsciiByteAndCharacterSpans_AreEquivalent()
 		{
 			const string k_text = "ABCDEFGHIJKLMN";
 			byte[] bytes = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78];
 			char[] chars = k_text.ToCharArray();
+			ReadOnlySpan<byte> byteSpan = bytes.AsSpan();
+			ReadOnlySpan<char> charSpan = chars.AsSpan();
+			ReadOnlySpan<char> stringSpan = k_text.AsSpan();
 
-			Assert.AreEqual(0xE625C1FCu, JenkinsHash.Hash(bytes));
-			Assert.AreEqual(JenkinsHash.Hash(bytes), JenkinsHash.Hash(chars));
-			Assert.AreEqual(JenkinsHash.Hash(bytes), JenkinsHash.Hash(k_text));
+			Assert.AreEqual(0xE625C1FCu, JenkinsHash.Hash(byteSpan));
+			Assert.AreEqual(JenkinsHash.Hash(byteSpan), JenkinsHash.Hash(charSpan));
+			Assert.AreEqual(JenkinsHash.Hash(byteSpan), JenkinsHash.Hash(stringSpan));
 
-			Assert.AreEqual(0xBDE38428u, JenkinsHashLookup2.Hash(bytes));
-			Assert.AreEqual(JenkinsHashLookup2.Hash(bytes), JenkinsHashLookup2.Hash(chars));
-			Assert.AreEqual(JenkinsHashLookup2.Hash(bytes), JenkinsHashLookup2.Hash(k_text));
+			Assert.AreEqual(0xBDE38428u, JenkinsHashLookup2.Hash(byteSpan));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(byteSpan), JenkinsHashLookup2.Hash(charSpan));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(byteSpan), JenkinsHashLookup2.Hash(stringSpan));
 
-			Assert.AreEqual(0x2AAB409Bu, JenkinsHashLookup3.Hash(bytes));
-			Assert.AreEqual(JenkinsHashLookup3.Hash(bytes), JenkinsHashLookup3.Hash(chars));
-			Assert.AreEqual(JenkinsHashLookup3.Hash(bytes), JenkinsHashLookup3.Hash(k_text));
+			Assert.AreEqual(0x2AAB409Bu, JenkinsHashLookup3.Hash(byteSpan));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSpan), JenkinsHashLookup3.Hash(charSpan));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSpan), JenkinsHashLookup3.Hash(stringSpan));
 		}
 
 		[TestMethod]
@@ -90,42 +79,49 @@ namespace KSoft.Security.Cryptography.Test
 			const string k_text = "ABCDEFGHIJKLMN";
 			byte[] bytes = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78];
 			char[] chars = k_text.ToCharArray();
+			ReadOnlySpan<byte> byteSpan = bytes.AsSpan();
+			ReadOnlySpan<char> charSpan = chars.AsSpan();
+			ReadOnlySpan<char> stringSpan = k_text.AsSpan();
 			uint[] jenkinsExpected = [0x00000002, 0xCA2E9442, 0x45E61E58, 0xED131F5B, 0xCD8B6206, 0xB98559FC, 0x0161526F, 0x4AC70178, 0x44D2D3E1, 0xC8B4CA7D, 0x7031289D, 0x37A218BA, 0x605B0340, 0x6D99F6DC];
 			uint[] lookup2Expected = [0xBD49D10D, 0xA1614B4D, 0xB0A9479A, 0x3E36495D, 0x1C31FD95, 0xFD4870C0, 0xE019DD73, 0x2BB00418, 0x77FC8C38, 0x92952498, 0xEBF300C1, 0x98AB491F, 0xEA9C4F7A, 0xC9A8AD4D];
 			uint[] lookup3Expected = [0xDEADBEEF, 0x01014BA1, 0xA9793993, 0x3F4B48AF, 0x470042B2, 0x6D82E3FE, 0x87706061, 0xA6841E06, 0xBF2B6C4E, 0x1F3B3DF9, 0x8BF94160, 0x5E41949E, 0x6E05006B, 0xEF91ECEC];
 
 			for (int length = 0; length <= 13; length++)
 			{
-				Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(bytes, length: length));
-				Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(chars, length: length));
-				if (length > 0)
-				{
-					Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(k_text.Substring(0, length)));
-				}
+				ReadOnlySpan<byte> byteSlice = byteSpan.Slice(0, length);
+				ReadOnlySpan<char> charSlice = charSpan.Slice(0, length);
+				ReadOnlySpan<char> stringSlice = stringSpan.Slice(0, length);
 
-				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(bytes, length: length));
-				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(chars, length: length));
-				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(k_text.Substring(0, length)));
+				Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(byteSlice));
+				Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(charSlice));
+				Assert.AreEqual(jenkinsExpected[length], JenkinsHash.Hash(stringSlice));
 
-				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(bytes, length: length));
-				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(chars, length: length));
-				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(k_text.Substring(0, length)));
+				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(byteSlice));
+				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(charSlice));
+				Assert.AreEqual(lookup2Expected[length], JenkinsHashLookup2.Hash(stringSlice));
+
+				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(byteSlice));
+				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(charSlice));
+				Assert.AreEqual(lookup3Expected[length], JenkinsHashLookup3.Hash(stringSlice));
 			}
 		}
 
 		[TestMethod]
-		public void Hash_OffsetAndDefaultLength_PreserveLegacyBehavior()
+		public void Hash_SlicedSpans_UseConventionalRangeSemantics()
 		{
 			byte[] bytes = [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84];
+			ReadOnlySpan<byte> byteSpan = bytes.AsSpan();
+			ReadOnlySpan<byte> middleSlice = byteSpan.Slice(2, 13);
+			ReadOnlySpan<byte> tailSlice = byteSpan.Slice(2);
 
-			Assert.AreEqual(0xAB919056u, JenkinsHash.Hash(bytes, index: 2, length: 13));
-			Assert.AreEqual(0x023EB72Eu, JenkinsHash.Hash(bytes, index: 2));
+			Assert.AreEqual(0xAB919056u, JenkinsHash.Hash(middleSlice));
+			Assert.AreEqual(0x023EB72Eu, JenkinsHash.Hash(tailSlice));
 
-			Assert.AreEqual(0x8D8DE35Fu, JenkinsHashLookup2.Hash(bytes, index: 2, length: 13));
-			Assert.AreEqual(0x8721504Cu, JenkinsHashLookup2.Hash(bytes, index: 2));
+			Assert.AreEqual(0xE3DC647Du, JenkinsHashLookup2.Hash(middleSlice));
+			Assert.AreEqual(0x75F54345u, JenkinsHashLookup2.Hash(tailSlice));
 
-			Assert.AreEqual(0xDD22D384u, JenkinsHashLookup3.Hash(bytes, index: 2, length: 13));
-			Assert.AreEqual(0x3A687C77u, JenkinsHashLookup3.Hash(bytes, index: 2));
+			Assert.AreEqual(0xDA106A3Bu, JenkinsHashLookup3.Hash(middleSlice));
+			Assert.AreEqual(0x122C23D9u, JenkinsHashLookup3.Hash(tailSlice));
 		}
 
 		[TestMethod]
@@ -134,10 +130,10 @@ namespace KSoft.Security.Cryptography.Test
 			char[] nonAsciiChars = [(char)0x00C4, (char)0x03A9, '\\'];
 			const string k_normalizedPath = "a/b/c";
 
-			Assert.AreEqual(0x3CC57CC2u, JenkinsHash.Hash(nonAsciiChars));
-			Assert.AreEqual(JenkinsHash.Hash(nonAsciiChars), JenkinsHash.Hash(new string(nonAsciiChars)));
-			Assert.AreEqual(0x729D786Du, JenkinsHash.Hash("A\\B/C"));
-			Assert.AreEqual(JenkinsHash.Hash(k_normalizedPath), JenkinsHash.Hash("A\\B/C"));
+			Assert.AreEqual(0x3CC57CC2u, JenkinsHash.Hash(nonAsciiChars.AsSpan()));
+			Assert.AreEqual(JenkinsHash.Hash(nonAsciiChars.AsSpan()), JenkinsHash.Hash(new string(nonAsciiChars).AsSpan()));
+			Assert.AreEqual(0x729D786Du, JenkinsHash.Hash("A\\B/C".AsSpan()));
+			Assert.AreEqual(JenkinsHash.Hash(k_normalizedPath.AsSpan()), JenkinsHash.Hash("A\\B/C".AsSpan()));
 		}
 
 		[TestMethod]
@@ -145,11 +141,11 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			char[] nonAsciiChars = [(char)0x00C4, (char)0x03A9, '\\'];
 
-			Assert.AreEqual(0xA8F395ABu, JenkinsHashLookup2.Hash(nonAsciiChars));
-			Assert.AreEqual(JenkinsHashLookup2.Hash(nonAsciiChars), JenkinsHashLookup2.Hash(new string(nonAsciiChars)));
+			Assert.AreEqual(0xA8F395ABu, JenkinsHashLookup2.Hash(nonAsciiChars.AsSpan()));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(nonAsciiChars.AsSpan()), JenkinsHashLookup2.Hash(new string(nonAsciiChars).AsSpan()));
 
-			Assert.AreEqual(0x157CF8B2u, JenkinsHashLookup3.Hash(nonAsciiChars));
-			Assert.AreEqual(JenkinsHashLookup3.Hash(nonAsciiChars), JenkinsHashLookup3.Hash(new string(nonAsciiChars)));
+			Assert.AreEqual(0x157CF8B2u, JenkinsHashLookup3.Hash(nonAsciiChars.AsSpan()));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(nonAsciiChars.AsSpan()), JenkinsHashLookup3.Hash(new string(nonAsciiChars).AsSpan()));
 		}
 
 		[TestMethod]
@@ -194,23 +190,16 @@ namespace KSoft.Security.Cryptography.Test
 			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSpan, 1), JenkinsHashLookup3.Hash(charSpan, 1));
 		}
 		[TestMethod]
-		public void Hash_InvalidBuffers_ThrowArgumentException()
+		public void Hash_EmptySpans_ReturnExpectedValues()
 		{
-			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((byte[])null!));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHash.Hash((char[])null!));
-			AssertThrowsArgumentException("buffer", () => JenkinsHash.Hash(""));
-		}
+			Assert.AreEqual(0x00000002u, JenkinsHash.Hash(ReadOnlySpan<byte>.Empty));
+			Assert.AreEqual(0x00000002u, JenkinsHash.Hash(ReadOnlySpan<char>.Empty));
 
-		[TestMethod]
-		public void LookupHashes_NullBuffers_ThrowArgumentNullException()
-		{
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((byte[])null!));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((char[])null!));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup2.Hash((string)null!));
+			Assert.AreEqual(0xBD49D10Du, JenkinsHashLookup2.Hash(ReadOnlySpan<byte>.Empty));
+			Assert.AreEqual(0xBD49D10Du, JenkinsHashLookup2.Hash(ReadOnlySpan<char>.Empty));
 
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((byte[])null!));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((char[])null!));
-			AssertThrowsArgumentNull("buffer", () => JenkinsHashLookup3.Hash((string)null!));
+			Assert.AreEqual(0xDEADBEEFu, JenkinsHashLookup3.Hash(ReadOnlySpan<byte>.Empty));
+			Assert.AreEqual(0xDEADBEEFu, JenkinsHashLookup3.Hash(ReadOnlySpan<char>.Empty));
 		}
 	};
 }

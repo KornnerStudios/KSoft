@@ -34,24 +34,24 @@ namespace KSoft.Security.Cryptography
 			return hash;
 		}
 
-		static uint HashCore(ReadOnlySpan<byte> buffer, int index, int length)
+		static uint HashCore(ReadOnlySpan<byte> buffer)
 		{
 			uint hash = 0;
 
-			for (int x = 0; x < length; x++)
+			for (int x = 0; x < buffer.Length; x++)
 			{
-				hash = HashChar(hash, (char)buffer[index + x]);
+				hash = HashChar(hash, (char)buffer[x]);
 			}
 
 			return HashEnd(hash);
 		}
-		static uint HashCore(ReadOnlySpan<char> buffer, int index, int length)
+		static uint HashCore(ReadOnlySpan<char> buffer)
 		{
 			uint hash = 0;
 
-			for (int x = 0; x < length; x++)
+			for (int x = 0; x < buffer.Length; x++)
 			{
-				hash = HashChar(hash, buffer[index + x]);
+				hash = HashChar(hash, buffer[x]);
 			}
 
 			return HashEnd(hash);
@@ -59,42 +59,12 @@ namespace KSoft.Security.Cryptography
 
 		public static uint Hash(ReadOnlySpan<byte> buffer)
 		{
-			return HashCore(buffer, 0, buffer.Length);
+			return HashCore(buffer);
 		}
 
 		public static uint Hash(ReadOnlySpan<char> buffer)
 		{
-			return HashCore(buffer, 0, buffer.Length);
-		}
-		public static uint Hash(byte[] buffer, int index = 0, int length = -1)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			if (length == -1)
-			{
-				length = buffer.Length - index;
-			}
-
-			return HashCore(buffer.AsSpan(), index, length);
-		}
-
-		public static uint Hash(char[] buffer, int index = 0, int length = -1)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			if (length == -1)
-			{
-				length = buffer.Length - index;
-			}
-
-			return HashCore(buffer.AsSpan(), index, length);
-		}
-
-		public static uint Hash(string buffer)
-		{
-			ArgumentException.ThrowIfNullOrEmpty(buffer);
-
-			return HashCore(buffer.AsSpan(), 0, buffer.Length);
+			return HashCore(buffer);
 		}
 	};
 }

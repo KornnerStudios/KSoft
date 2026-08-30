@@ -4,18 +4,6 @@ namespace KSoft.Security.Cryptography
 {
 	public abstract class JenkinsHashLookup
 	{
-		protected static void Fill(ref uint a, ref uint b, ref uint c, byte[] data, ref int i)
-		{
-			Fill(ref a, ref b, ref c, data.AsSpan(), ref i);
-		}
-		protected static void Fill(ref uint a, ref uint b, ref uint c, char[] data, ref int i)
-		{
-			Fill(ref a, ref b, ref c, data.AsSpan(), ref i);
-		}
-		protected static void Fill(ref uint a, ref uint b, ref uint c, string data, ref int i)
-		{
-			Fill(ref a, ref b, ref c, data.AsSpan(), ref i);
-		}
 		internal static void Fill(ref uint a, ref uint b, ref uint c, ReadOnlySpan<byte> data, ref int i)
 		{
 			a += (uint)data[i++] |
@@ -47,18 +35,6 @@ namespace KSoft.Security.Cryptography
 				((uint)data[i++] << 24);
 		}
 
-		protected static void FinalFill(ref uint a, ref uint b, ref uint c, byte[] data, ref int i, int length)
-		{
-			FinalFill(ref a, ref b, ref c, data.AsSpan(), ref i, length);
-		}
-		protected static void FinalFill(ref uint a, ref uint b, ref uint c, char[] data, ref int i, int length)
-		{
-			FinalFill(ref a, ref b, ref c, data.AsSpan(), ref i, length);
-		}
-		protected static void FinalFill(ref uint a, ref uint b, ref uint c, string data, ref int i, int length)
-		{
-			FinalFill(ref a, ref b, ref c, data.AsSpan(), ref i, length);
-		}
 		internal static void FinalFill(ref uint a, ref uint b, ref uint c, ReadOnlySpan<byte> data, ref int i, int length)
 		{
 			if (i < length) { a += data[i++]; }
