@@ -57,6 +57,15 @@ namespace KSoft.Security.Cryptography
 			return HashEnd(hash);
 		}
 
+		public static uint Hash(ReadOnlySpan<byte> buffer)
+		{
+			return HashCore(buffer, 0, buffer.Length);
+		}
+
+		public static uint Hash(ReadOnlySpan<char> buffer)
+		{
+			return HashCore(buffer, 0, buffer.Length);
+		}
 		public static uint Hash(byte[] buffer, int index = 0, int length = -1)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);

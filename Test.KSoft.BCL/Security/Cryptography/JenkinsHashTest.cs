@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Security.Cryptography.Test
@@ -151,6 +152,47 @@ namespace KSoft.Security.Cryptography.Test
 			Assert.AreEqual(JenkinsHashLookup3.Hash(nonAsciiChars), JenkinsHashLookup3.Hash(new string(nonAsciiChars)));
 		}
 
+		[TestMethod]
+		public void Hash_PublicSpanInputs_HashTheProvidedSlices()
+		{
+			const string k_text = "ABCDEFGHIJKLMN";
+			byte[] bytes = Encoding.ASCII.GetBytes($".{k_text}.");
+			char[] chars = ".ABCDEFGHIJKLMN.".ToCharArray();
+			ReadOnlySpan<byte> byteSlice = bytes.AsSpan(1, k_text.Length);
+			ReadOnlySpan<char> charSlice = chars.AsSpan(1, k_text.Length);
+			ReadOnlySpan<char> stringSpan = k_text.AsSpan();
+
+			Assert.AreEqual(0xE625C1FCu, JenkinsHash.Hash(byteSlice));
+			Assert.AreEqual(JenkinsHash.Hash(byteSlice), JenkinsHash.Hash(charSlice));
+			Assert.AreEqual(JenkinsHash.Hash(charSlice), JenkinsHash.Hash(stringSpan));
+
+			Assert.AreEqual(0xBDE38428u, JenkinsHashLookup2.Hash(byteSlice));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(byteSlice), JenkinsHashLookup2.Hash(charSlice));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(charSlice), JenkinsHashLookup2.Hash(stringSpan));
+
+			Assert.AreEqual(0x2AAB409Bu, JenkinsHashLookup3.Hash(byteSlice));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSlice), JenkinsHashLookup3.Hash(charSlice));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(charSlice), JenkinsHashLookup3.Hash(stringSpan));
+		}
+
+		[TestMethod]
+		public void LookupHashes_PublicSpanInputs_PreserveSeeds()
+		{
+			const string k_text = "Four score and seven years ago";
+			byte[] bytes = Encoding.ASCII.GetBytes(k_text);
+			ReadOnlySpan<byte> byteSpan = bytes.AsSpan();
+			ReadOnlySpan<char> charSpan = k_text.AsSpan();
+
+			Assert.AreEqual(0x50F2424Bu, JenkinsHashLookup2.Hash(byteSpan));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(byteSpan), JenkinsHashLookup2.Hash(charSpan));
+			Assert.AreEqual(0x89DEAE7Eu, JenkinsHashLookup2.Hash(byteSpan, 1));
+			Assert.AreEqual(JenkinsHashLookup2.Hash(byteSpan, 1), JenkinsHashLookup2.Hash(charSpan, 1));
+
+			Assert.AreEqual(0x17770551u, JenkinsHashLookup3.Hash(byteSpan));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSpan), JenkinsHashLookup3.Hash(charSpan));
+			Assert.AreEqual(0xCD628161u, JenkinsHashLookup3.Hash(byteSpan, 1));
+			Assert.AreEqual(JenkinsHashLookup3.Hash(byteSpan, 1), JenkinsHashLookup3.Hash(charSpan, 1));
+		}
 		[TestMethod]
 		public void Hash_InvalidBuffers_ThrowArgumentException()
 		{

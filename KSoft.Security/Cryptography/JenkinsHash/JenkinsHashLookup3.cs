@@ -118,6 +118,16 @@ namespace KSoft.Security.Cryptography
 			return state.Result;
 		}
 
+		public static uint Hash(ReadOnlySpan<byte> buffer, uint seed = 0)
+		{
+			return HashCore(buffer, seed, 0, buffer.Length);
+		}
+
+		/// <remarks>Assumes all characters are ASCII bytes (ie, &lt;=0xFF)</remarks>
+		public static uint Hash(ReadOnlySpan<char> buffer, uint seed = 0)
+		{
+			return HashCore(buffer, seed, 0, buffer.Length);
+		}
 		public static uint Hash(byte[] buffer, uint seed = 0, int index = 0, int length = -1)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
