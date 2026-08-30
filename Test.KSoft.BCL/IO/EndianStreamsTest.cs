@@ -169,7 +169,6 @@ public class EndianStreamsTest : BaseTestClass
 
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
 		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
-		AssertThrowsArgumentNull(() => writer.Write("test", (Text.StringStorageEncoding)null!), "encoding");
 		AssertThrowsArgumentNull(() => writer.Write("test".AsSpan(), (Text.StringStorageEncoding)null!), "encoding");
 		Assert.ThrowsExactly<InvalidDataException>(() =>
 			reader.ReadString(Memory.Strings.StringStorage.AsciiString, TypeExtensions.kNone));
@@ -197,6 +196,24 @@ public class EndianStreamsTest : BaseTestClass
 		CollectionAssert.AreEqual(
 			new byte[] { 0x41, 0x42, 0x43, 0xC3, 0xA9, 0x00, 0x00, 0x02, 0x41, 0xC3, 0xA9, 0x41, 0x42, 0x43, 0x00 },
 			stream.ToArray());
+	}
+
+	[TestMethod]
+	public void EndianStreamStringStorageWriteBranches_NullValuesWriteEmptyStrings()
+	{
+		using var stream = new MemoryStream();
+		using var writer = new EndianWriter(stream) { BaseStreamOwner = false };
+		using var endianStream = EndianStream.UsingWriter(writer);
+		string value = null!;
+		var storage = Memory.Strings.StringStorage.CStringAscii;
+		var encoding = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
+
+		endianStream.Stream(ref value, storage);
+		endianStream.Stream(ref value, storage, length: 32);
+		endianStream.Stream(ref value, encoding);
+		endianStream.Stream(ref value, encoding, length: 32);
+
+		CollectionAssert.AreEqual(new byte[4], stream.ToArray());
 	}
 
 	[TestMethod]

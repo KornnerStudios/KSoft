@@ -200,13 +200,6 @@ namespace KSoft.IO
 		#endregion
 
 		#region Write string
-		/// <summary>Writes a string based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
-		/// <param name="value">String value to write. Null defaults to an empty string</param>
-		/// <param name="storage">Definition for how we're streaming the string</param>
-		public void Write(string value, Memory.Strings.StringStorage storage)
-		{
-			Write((value ?? string.Empty).AsSpan(), storage);
-		}
 		/// <summary>Writes a bounded character sequence based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
@@ -216,13 +209,6 @@ namespace KSoft.IO
 			base.Write(sse.EncodeString(value));
 		}
 
-		/// <summary>Writes string using a <see cref="Text.StringStorageEncoding"/></summary>
-		/// <param name="value">String value to write. Null defaults to an empty string</param>
-		/// <param name="encoding">Encoding to use for character streaming</param>
-		public void Write(string value, Text.StringStorageEncoding encoding)
-		{
-			Write((value ?? string.Empty).AsSpan(), encoding);
-		}
 		/// <summary>Writes a bounded character sequence using a <see cref="Text.StringStorageEncoding"/></summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>

@@ -350,7 +350,7 @@ namespace KSoft.Memory.Strings
 
 			foreach (string str in mPool)
 			{
-				s.Write(str, mEncoding);
+				s.Write((str ?? string.Empty).AsSpan(), mEncoding);
 			}
 		}
 

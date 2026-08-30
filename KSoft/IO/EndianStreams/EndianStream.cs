@@ -560,14 +560,14 @@ namespace KSoft.IO
 		public EndianStream Stream(ref string value, Memory.Strings.StringStorage storage)
 		{
 				 if (IsReading) value = Reader.ReadString(storage);
-			else if (IsWriting) Writer.Write(value, storage);
+			else if (IsWriting) Writer.Write((value ?? string.Empty).AsSpan(), storage);
 
 			return this;
 		}
 		public EndianStream Stream(ref string value, Memory.Strings.StringStorage storage, int length)
 		{
 				 if (IsReading) value = Reader.ReadString(storage, length);
-			else if (IsWriting) Writer.Write(value, storage);
+			else if (IsWriting) Writer.Write((value ?? string.Empty).AsSpan(), storage);
 
 			return this;
 		}
@@ -577,7 +577,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) value = Reader.ReadString(encoding);
-			else if (IsWriting) Writer.Write(value, encoding);
+			else if (IsWriting) Writer.Write((value ?? string.Empty).AsSpan(), encoding);
 
 			return this;
 		}
@@ -586,7 +586,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) value = Reader.ReadString(encoding, length);
-			else if (IsWriting) Writer.Write(value, encoding);
+			else if (IsWriting) Writer.Write((value ?? string.Empty).AsSpan(), encoding);
 
 			return this;
 		}
@@ -1011,7 +1011,7 @@ namespace KSoft.IO
 			ArgumentException.ThrowIfNullOrEmpty(signature);
 
 				 if (IsReading) SignatureMismatchException.Assert(Reader, signature, storage);
-			else if (IsWriting) Writer.Write(signature, storage);
+			else if (IsWriting) Writer.Write(signature.AsSpan(), storage);
 
 			return this;
 		}
@@ -1021,7 +1021,7 @@ namespace KSoft.IO
 			ArgumentNullException.ThrowIfNull(encoding);
 
 				 if (IsReading) SignatureMismatchException.Assert(Reader, signature, encoding);
-			else if (IsWriting) Writer.Write(signature, encoding);
+			else if (IsWriting) Writer.Write(signature.AsSpan(), encoding);
 
 			return this;
 		}

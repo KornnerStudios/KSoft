@@ -188,11 +188,11 @@ namespace KSoft
 		public static void Read(this IO.EndianReader s, out string value, Memory.Strings.StringStorage storage, int length)	{ value = s.ReadString(storage, length); }
 		// no Write(length) override
 		public static void Read(this IO.EndianReader s, out string value, Memory.Strings.StringStorage storage)				{ value = s.ReadString(storage); }
-		public static void Write(this string value, IO.EndianWriter s, Memory.Strings.StringStorage storage)				{ s.Write(value, storage); }
+		public static void Write(this string value, IO.EndianWriter s, Memory.Strings.StringStorage storage)				{ s.Write((value ?? string.Empty).AsSpan(), storage); }
 		public static void Read(this IO.EndianReader s, out string value, Text.StringStorageEncoding encoding, int length)	{ value = s.ReadString(encoding, length); }
 		// no Write(length) override
 		public static void Read(this IO.EndianReader s, out string value, Text.StringStorageEncoding encoding)				{ value = s.ReadString(encoding); }
-		public static void Write(this string value, IO.EndianWriter s, Text.StringStorageEncoding encoding)					{ s.Write(value, encoding); }
+		public static void Write(this string value, IO.EndianWriter s, Text.StringStorageEncoding encoding)					{ s.Write((value ?? string.Empty).AsSpan(), encoding); }
 
 		public static void Read(this IO.EndianReader s, out Guid value, bool respectEndian = true)
 		{

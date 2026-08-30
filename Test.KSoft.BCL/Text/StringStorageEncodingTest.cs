@@ -166,11 +166,11 @@ namespace KSoft.Text.Test
 				sb.Append('1', storage.FixedLength);
 				string test5 = sb.ToString();
 
-				io.Writer.Write(test1, encoding);
-				io.Writer.Write(test2, encoding);
-				io.Writer.Write(test3, encoding);
-				io.Writer.Write(test4, encoding);
-				io.Writer.Write(test5, encoding);
+				io.Writer.Write(test1.AsSpan(), encoding);
+				io.Writer.Write(test2.AsSpan(), encoding);
+				io.Writer.Write(test3.AsSpan(), encoding);
+				io.Writer.Write(test4.AsSpan(), encoding);
+				io.Writer.Write(test5.AsSpan(), encoding);
 
 				if (k_output_ms)
 				{
