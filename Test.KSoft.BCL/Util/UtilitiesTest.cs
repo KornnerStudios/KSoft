@@ -56,7 +56,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_UnixTimeTest()
+		public void UnixTimeTest()
 		{
 			{
 				long test = 0x4B71FD5B;
@@ -80,7 +80,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void Util_GenericReferenceEqualsTest()
+		public void GenericReferenceEqualsTest()
 		{
 			string? x = "x", y = "y";
 
@@ -95,7 +95,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_NullPreservingHelpers_RetainExistingBehavior()
+		public void NullPreservingHelpers_RetainExistingBehavior()
 		{
 			var nullExceptionFactory = Util.GetNullException;
 			Assert.IsNull(nullExceptionFactory());
@@ -137,7 +137,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void Util_ThrowIfNullTest()
+		public void ThrowIfNullTest()
 		{
 			var value = new object();
 
@@ -223,14 +223,14 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_UnixTimeGuards_ThrowArgumentOutOfRangeException()
+		public void UnixTimeGuards_ThrowArgumentOutOfRangeException()
 		{
 			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeFromUnixTime(-1), "time_t");
 			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeToUnixTime(Util.UnixTimeEpoch.AddTicks(-1)), "value");
 		}
 
 		[TestMethod]
-		public void Util_CreateComparerGuard_ThrowsArgumentNullException()
+		public void CreateComparerGuard_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull(() => _ = Util.CreateComparer<string>(null!), "comparer");
 		}
@@ -280,7 +280,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_MinMaxChoiceReferenceGuards_ThrowArgumentNullException()
+		public void MinMaxChoiceReferenceGuards_ThrowArgumentNullException()
 		{
 			static int GetLength(string value) => value.Length;
 
@@ -295,7 +295,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_GetRelativePathGuards_ThrowArgumentNullException()
+		public void GetRelativePathGuards_ThrowArgumentNullException()
 		{
 			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(null!, "C:\\"), "fromPath");
 			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(string.Empty, "C:\\"), "fromPath");
@@ -304,7 +304,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Util_PathHelpers_PreserveNullEmptyAndNormalizeSeparators()
+		public void PathHelpers_PreserveNullEmptyAndNormalizeSeparators()
 		{
 			string nullPath = null!;
 			string separator = Path.DirectorySeparatorChar.ToString();

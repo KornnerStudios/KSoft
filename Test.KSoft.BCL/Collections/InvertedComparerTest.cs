@@ -16,14 +16,14 @@ public sealed class InvertedComparerTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void InvertedComparer_NullComparer_ThrowsArgumentNullException()
+	public void NullComparer_ThrowsArgumentNullException()
 	{
 		AssertThrowsArgumentNull("comparer", () => new InvertedComparer(null!));
 		AssertThrowsArgumentNull("comparer", () => new InvertedComparer<int>(null!));
 	}
 
 	[TestMethod]
-	public void InvertedComparer_Compare_InvertsNonGenericComparer()
+	public void Compare_InvertsNonGenericComparer()
 	{
 		var comparer = new InvertedComparer(Comparer.DefaultInvariant);
 
@@ -33,7 +33,7 @@ public sealed class InvertedComparerTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void InvertedComparer_Compare_InvertsGenericComparer()
+	public void Compare_InvertsGenericComparer()
 	{
 		var comparer = new InvertedComparer<int>(Comparer<int>.Default);
 

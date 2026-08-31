@@ -21,7 +21,7 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
-		public void Cryptography_TigerHashVersionOneTest()
+		public void VersionOneTest()
 		{
 			TestTiger(TigerHash.kAlgorithmName,
 				"",
@@ -35,7 +35,7 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
-		public void Cryptography_TigerHashVersionTwoTest()
+		public void VersionTwoTest()
 		{
 			TestTiger(TigerHash2.kAlgorithmName,
 				"",

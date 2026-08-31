@@ -38,7 +38,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void Enum_UtilMetadataMatchesGenericBclApis()
+	public void UtilMetadataMatchesGenericBclApis()
 	{
 		string[] expectedNames =
 		{
@@ -69,7 +69,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void Enum_UtilMetadataPropertiesKeepCachedArrayInstances()
+	public void UtilMetadataPropertiesKeepCachedArrayInstances()
 	{
 		// Existing callers can observe the arrays directly, so the shim must keep returning cached instances.
 		Assert.AreSame(EnumUtil<MetadataEnum>.Names, EnumUtil<MetadataEnum>.Names);
@@ -77,7 +77,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void EnumUtils_AssertHelpers_InvalidArgumentsThrow()
+	public void AssertHelpers_InvalidArgumentsThrow()
 	{
 		AssertThrowsArgumentNull("kEnumType", () =>
 			KSoft.Reflection.EnumUtils.AssertUnderlyingTypeIsSupported(null!, null!));
@@ -97,7 +97,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void EnumUtils_GetEnumFields_ReturnsEnumFields()
+	public void GetEnumFields_ReturnsEnumFields()
 	{
 		AssertThrowsArgumentNull("enumType", () =>
 			KSoft.Reflection.EnumUtils.GetEnumFields(null!));

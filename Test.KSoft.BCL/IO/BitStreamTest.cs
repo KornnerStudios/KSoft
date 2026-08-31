@@ -51,7 +51,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void IO_BitStreamLogicTest()
+		public void BitStreamLogicTest()
 		{
 			var values = new KeyValuePair<uint, int>[] {
 				new(10, 7),

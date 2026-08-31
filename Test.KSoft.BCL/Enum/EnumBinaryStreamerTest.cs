@@ -82,7 +82,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BinaryStreamerFactoriesReturnInstancesTest()
+		public void FactoriesReturnInstancesTest()
 		{
 			Assert.IsNotNull(EnumBinaryStreamer.ForBinary<System.TypeCode>());
 			Assert.IsNotNull(EnumBinaryStreamer.ForBinary<System.TypeCode, int>());
@@ -91,7 +91,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BinaryStreamerNullStreamsThrowArgumentNullExceptionTest()
+		public void NullStreamsThrowArgumentNullExceptionTest()
 		{
 			var value = System.TypeCode.String;
 			IEnumBinaryStreamer<System.TypeCode> binaryStreamer = TypeCodeStreamer32.Instance;
@@ -109,7 +109,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BinaryStreamerUnderlyingTypesWriteExpectedBytesTest()
+		public void UnderlyingTypesWriteExpectedBytesTest()
 		{
 			AssertUnderlyingBinaryRoundTrip(ByteEnum.Value, new byte[] { 0xAB });
 			AssertUnderlyingBinaryRoundTrip(SByteEnum.Value, new byte[] { 0xFE });
@@ -122,7 +122,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BinaryStreamerSignedUnsignedConversionsRoundTripTest()
+		public void SignedUnsignedConversionsRoundTripTest()
 		{
 			AssertBinaryConversionRoundTrip<SByteEnum, byte>(SByteEnum.Value, new byte[] { 0xFE });
 			AssertBinaryConversionRoundTrip<UInt32Enum, sbyte>(UInt32Enum.AllBitsExceptOne, new byte[] { 0xFE });
@@ -130,7 +130,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that don't require a conversion</summary>
 		[TestMethod]
-		public void Enum_BinaryStreamerTest()
+		public void Test()
 		{
 			using (var ms = new System.IO.MemoryStream())
 			using (var br = new IO.EndianReader(ms))
@@ -160,7 +160,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require a down-cast conversion</summary>
 		[TestMethod]
-		public void Enum_BinaryStreamerDownCastTest()
+		public void DownCastTest()
 		{
 			using (var ms = new System.IO.MemoryStream())
 			using (var br = new IO.EndianReader(ms))
@@ -190,7 +190,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require an up-cast conversion</summary>
 		[TestMethod]
-		public void Enum_BinaryStreamerUpCastTest()
+		public void UpCastTest()
 		{
 			using (var ms = new System.IO.MemoryStream())
 			using (var br = new IO.EndianReader(ms))
@@ -226,7 +226,7 @@ namespace KSoft.IO.Test
 		};
 		/// <summary>Test the ability to implicitly use the underlying type</summary>
 		[TestMethod]
-		public void Enum_BinaryStreamerUsingUnderlyingTypeTest()
+		public void UsingUnderlyingTypeTest()
 		{
 			using (var ms = new System.IO.MemoryStream())
 			using (var br = new IO.EndianReader(ms))

@@ -28,7 +28,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitVectorsBitIndicesEnumeratorTest()
+		public void BitIndicesEnumeratorTest()
 		{
 			var oddBits32 = (uint)MakeBitPatern(kMaskOddBits, Bits.kInt32BitCount);
 			var oddBits64 =       MakeBitPatern(kMaskOddBits, Bits.kInt64BitCount);
@@ -80,15 +80,15 @@ namespace KSoft.Collections.Test
 			#endregion
 		}
 
-		#region BitVectorsOperationsTest
-		// Based on Collections_BitSetOperationsTest
+		#region OperationsTest
+		// Based on BitSetTest.OperationsTest
 		[TestMethod]
-		public void Collections_BitVectorsOperationsTest()
+		public void OperationsTest()
 		{
-			BitVectorsOperationsTest32();
-			BitVectorsOperationsTest64();
+			OperationsTest32();
+			OperationsTest64();
 		}
-		private void BitVectorsOperationsTest32()
+		private void OperationsTest32()
 		{
 			const int k_bit_count = Bits.kInt32BitCount;
 
@@ -139,7 +139,7 @@ namespace KSoft.Collections.Test
 			Assert.IsTrue (lhs_bs[2]);
 			Assert.IsFalse(lhs_bs[3]);
 		}
-		private void BitVectorsOperationsTest64()
+		private void OperationsTest64()
 		{
 			const int k_bit_count = Bits.kInt64BitCount;
 
@@ -193,7 +193,7 @@ namespace KSoft.Collections.Test
 		#endregion
 
 		[TestMethod]
-		public void Collections_BitVectorsRangeOperationsTest()
+		public void RangeOperationsTest()
 		{
 			const int k_initial_size = Bits.kInt32BitCount;
 			uint bits = (uint)((1UL << k_initial_size) - 1);

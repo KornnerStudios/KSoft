@@ -8,7 +8,7 @@ namespace KSoft.Security.Cryptography.Test
 	public sealed class JenkinsHashTest : BaseTestClass
 	{
 		[TestMethod]
-		public void Cryptography_JenkinsHashTest()
+		public void HashTest()
 		{
 			const string k_input = "SET_TIME_ONE_DAY_FORWARD";
 			const uint k_expected_output = /*0x2E5B068F*/0xBB56C2E5;
@@ -18,7 +18,7 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
-		public void Cryptography_JenkinsHashLookup2Test()
+		public void HashLookup2Test()
 		{
 			const string k_input = "Four score and seven years ago";
 
@@ -32,7 +32,7 @@ namespace KSoft.Security.Cryptography.Test
 			Assert.AreEqual(expected_output, output);
 		}
 		[TestMethod]
-		public void Cryptography_JenkinsHashLookup3Test()
+		public void HashLookup3Test()
 		{
 			string[] k_inputs = [
 				"",

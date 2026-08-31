@@ -211,7 +211,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitEncoder32Test()
+		public void BitEncoder32Test()
 		{
 			Test32Helper<EnumTest, EnumTestInformal>(EnumTest.Member3);
 			Test32Helper<FlagsTest, FlagsTestInformal>(FlagsTest.Member3 | FlagsTest.Member4);
@@ -219,7 +219,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitEncoder32InvalidBitIndexThrowsExpectedExceptions()
+		public void BitEncoder32InvalidBitIndexThrowsExpectedExceptions()
 		{
 			var encoder = new EnumBitEncoder32<EnumTest>();
 			int overflowIndex = Bits.kInt64BitCount - EnumBitEncoder32<EnumTest>.kBitCount;
@@ -353,7 +353,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitEncoder64Test()
+		public void BitEncoder64Test()
 		{
 			Test64Helper<EnumTest, EnumTestInformal>(EnumTest.Member3);
 			Test64Helper<FlagsTest, FlagsTestInformal>(FlagsTest.Member3 | FlagsTest.Member4);
@@ -362,7 +362,7 @@ namespace KSoft.Test
 		#endregion
 
 		[TestMethod]
-		public void Enum_BitEncoder32EndianStreamingUsesUnderlyingTypeTest()
+		public void BitEncoder32EndianStreamingUsesUnderlyingTypeTest()
 		{
 			using var ms = new MemoryStream();
 			using (var writer = new IO.EndianWriter(ms, Shell.EndianFormat.Big) { BaseStreamOwner = false })
@@ -405,7 +405,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitEncoder64EndianStreamingUsesUnderlyingTypeTest()
+		public void BitEncoder64EndianStreamingUsesUnderlyingTypeTest()
 		{
 			using var ms = new MemoryStream();
 			using (var writer = new IO.EndianWriter(ms, Shell.EndianFormat.Little) { BaseStreamOwner = false })
@@ -435,7 +435,7 @@ namespace KSoft.Test
 		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
 			Justification ="Pretty sure this is a CA bug",
 			Scope = "method", Target = "BitEncode")]
-		public void Enum_BitEncoderHashCode32Test()
+		public void BitEncoderHashCode32Test()
 		{
 			var ss = new Memory.Strings.StringStorage(
 				Memory.Strings.StringStorageWidthType.UTF32,
@@ -463,7 +463,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_HandleBitEncoder32Test()
+		public void HandleBitEncoder32Test()
 		{
 			var ss = new Memory.Strings.StringStorage(
 				Memory.Strings.StringStorageWidthType.UTF32,
@@ -489,7 +489,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_HandleBitEncoder64Test()
+		public void HandleBitEncoder64Test()
 		{
 			var enumEncoder = new EnumBitEncoder64<EnumTest>();
 			var payloadTraits = new Bitwise.BitFieldTraits(20);
@@ -508,7 +508,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void Enum_HandleBitEncoderEqualityTest()
+		public void HandleBitEncoderEqualityTest()
 		{
 			var lhs = new Bitwise.HandleBitEncoder();
 			var rhs = new Bitwise.HandleBitEncoder();
@@ -525,7 +525,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void Enum_HandleBitEncoderNoneableTest()
+		public void HandleBitEncoderNoneableTest()
 		{
 			var encoder = new Bitwise.HandleBitEncoder();
 
@@ -547,7 +547,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void Enum_HandleBitEncoderInvalidArgumentsThrowExpectedExceptions()
+		public void HandleBitEncoderInvalidArgumentsThrowExpectedExceptions()
 		{
 			var handle = new Bitwise.HandleBitEncoder();
 			var emptyTraits = default(Bitwise.BitFieldTraits);

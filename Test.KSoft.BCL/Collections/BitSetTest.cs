@@ -45,7 +45,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetConstructorGuardsTest()
+		public void ConstructorGuardsTest()
 		{
 			AssertThrowsArgumentOutOfRange("length", () => new BitSet(-1));
 			AssertThrowsArgumentNull("bytes", () => new BitSet((byte[])null!, 0, 1));
@@ -62,7 +62,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetLengthSetterGuardsTest()
+		public void LengthSetterGuardsTest()
 		{
 			var fixedLength = new BitSet(1);
 			var growable = new BitSet(1, fixedLength: false);
@@ -72,7 +72,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetAccessGuardsTest()
+		public void AccessGuardsTest()
 		{
 			var bs = new BitSet(4);
 
@@ -95,7 +95,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetRangeGuardTest()
+		public void RangeGuardTest()
 		{
 			var bs = new BitSet(4, true);
 
@@ -114,7 +114,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetEnumeratorGuardsTest()
+		public void EnumeratorGuardsTest()
 		{
 			AssertThrowsArgumentNull("bitset", () => new IReadOnlyBitSetEnumerators.StateEnumerator(null!));
 			AssertThrowsArgumentNull("bitset", () => new IReadOnlyBitSetEnumerators.StateFilterEnumerator(null!, true));
@@ -131,7 +131,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetBitOperationGuardsTest()
+		public void BitOperationGuardsTest()
 		{
 			var bs = new BitSet(1);
 
@@ -146,7 +146,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_EnumBitSetGuardTest()
+		public void EnumBitSetGuardTest()
 		{
 			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleFlagsBit>());
 			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleNoneEnumBit>());
@@ -160,7 +160,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetBitIndicesEnumeratorTest()
+		public void BitIndicesEnumeratorTest()
 		{
 			var bits = new bool[] { false, true, false, true, false, true, };
 			var bs = new BitSet(bits);
@@ -184,7 +184,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetLengthPropertiesTest()
+		public void LengthPropertiesTest()
 		{
 			const int k_initial_length = 96;
 			const int k_smaller_length = 80;
@@ -212,7 +212,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetOperationsTest()
+		public void OperationsTest()
 		{
 			var lhs_bits = new bool[] { false, false, true, };
 			var lhs_bs = new BitSet(lhs_bits);
@@ -260,7 +260,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetOperationsWithEmptyInputTest()
+		public void OperationsWithEmptyInputTest()
 		{
 			var bs_empty = new BitSet();
 			var bits = new bool[] { false, false, true, };
@@ -288,7 +288,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetOverlapsTest()
+		public void OverlapsTest()
 		{
 			var empty_bs = new BitSet();
 			var lhs_bits = new bool[] { false, false, };
@@ -303,7 +303,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetSuperAndSubsetTest()
+		public void SuperAndSubsetTest()
 		{
 			// the initial superset
 			var lhs_bits = new bool[] { false, true, false, true, false, true, true };
@@ -331,7 +331,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetRangeOperationsTest()
+		public void RangeOperationsTest()
 		{
 			const int k_initial_size = 33;
 			var bs = new BitSet(k_initial_size, true);
@@ -366,7 +366,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetRangeOperationsAcrossMiddleWordsTest()
+		public void RangeOperationsAcrossMiddleWordsTest()
 		{
 			const int k_length = 100;
 			const int k_range_start = 1;
@@ -395,7 +395,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetEqualityDistinguishesAlignedFinalWordBitsTest()
+		public void EqualityDistinguishesAlignedFinalWordBitsTest()
 		{
 			var first = new BitSet(32);
 			var second = new BitSet(32);
@@ -407,7 +407,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetSubsetAndSupersetDistinguishAlignedFinalWordBitsTest()
+		public void SubsetAndSupersetDistinguishAlignedFinalWordBitsTest()
 		{
 			var first = new BitSet(32);
 			var second = new BitSet(32);
@@ -421,7 +421,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetSubsetAndSupersetAllowStrictAlignedFinalWordContainmentTest()
+		public void SubsetAndSupersetAllowStrictAlignedFinalWordContainmentTest()
 		{
 			var subset = new BitSet(32);
 			var superset = new BitSet(32);
@@ -436,7 +436,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetEqualityMasksOnlyUnaddressableCabooseBitsTest()
+		public void EqualityMasksOnlyUnaddressableCabooseBitsTest()
 		{
 			var first = new BitSet(33);
 			var second = new BitSet(33);
@@ -448,7 +448,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetSubsetAndSupersetAllowStrictCabooseContainmentTest()
+		public void SubsetAndSupersetAllowStrictCabooseContainmentTest()
 		{
 			var subset = new BitSet(33);
 			var superset = new BitSet(33);
@@ -463,7 +463,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_BitSetEqualValuesHaveEqualHashesTest()
+		public void EqualValuesHaveEqualHashesTest()
 		{
 			var first = new BitSet(33);
 			var second = new BitSet(33);
@@ -476,7 +476,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_EnumBitSetEqualityAndHashCodeReflectSetBitsTest()
+		public void EnumBitSetEqualityAndHashCodeReflectSetBitsTest()
 		{
 			var first = new EnumBitSet<SampleEnumBit>();
 			var different = new EnumBitSet<SampleEnumBit>();
@@ -546,7 +546,7 @@ namespace KSoft.Collections.Test
 		}
 		[TestMethod]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Randomized test input does not require cryptographic randomness.")]
-		public void Collections_BitSetValidateWithBitArrayTest()
+		public void ValidateWithBitArrayTest()
 		{
 			const int k_max_random_length = 10000;
 

@@ -23,7 +23,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_ClrDictionaryInspectorIntTest()
+		public void IntTest()
 		{
 			const int k_initial_capacity = 16; // will result in a dictionary initially sized to 17 (prime) buckets
 
@@ -52,13 +52,13 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_ClrDictionaryInspectorConstructorNull_ThrowsArgumentNullException()
+		public void ConstructorNull_ThrowsArgumentNullException()
 		{
 			AssertThrowsArgumentNull(() => _ = new ClrDictionaryInspector<int, int>(null!), "dic");
 		}
 
 		[TestMethod]
-		public void Collections_ClrDictionaryInspectorDicEntryGetNextGuards_ThrowExpectedExceptions()
+		public void DicEntryGetNextGuards_ThrowExpectedExceptions()
 		{
 			var last = new ClrDictionaryInspector<int, int>.DicEntry { NextEntryIndex = TypeExtensions.kNone };
 			var inspector = new ClrDictionaryInspector<int, int>(new Dictionary<int, int>());
@@ -68,7 +68,7 @@ namespace KSoft.Collections.Test
 		}
 
 		[TestMethod]
-		public void Collections_ClrDictionaryInspectorGetEntriesInBucketGuards_ThrowArgumentOutOfRangeException()
+		public void GetEntriesInBucketGuards_ThrowArgumentOutOfRangeException()
 		{
 			var inspector = new ClrDictionaryInspector<int, int>(new Dictionary<int, int>());
 

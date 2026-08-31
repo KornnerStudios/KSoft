@@ -41,7 +41,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void Text_RadixEncodingTest()
+		public void Test()
 		{
 			const string k_base36_digits = "abcdefghijklmnopqrstuvwxyz0123456789";
 			var base36 = new RadixEncoding(k_base36_digits, Shell.EndianFormat.Little, true);

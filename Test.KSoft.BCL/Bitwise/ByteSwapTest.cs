@@ -53,7 +53,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ByteSwap_SwapIntegersTest()
+		public void SwapIntegersTest()
 		{
 			ulong value_before = kBeforeValue;
 			ulong value_after = kAfterValue;
@@ -241,7 +241,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ByteSwap_ReplaceBytesTest()
+		public void ReplaceBytesTest()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
 			byte[] buffer_bc;
@@ -309,9 +309,9 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(0xCC, buffer[19]);
 		}
 
-		// NOTE: ByteSwap_ReplaceBytesTest should be tested before SwapBufferTest (see OrderedTests_ByteSwap)
+		// NOTE: ReplaceBytesTest should be tested before SwapBufferTest (see OrderedTests_ByteSwap)
 		[TestMethod]
-		public void ByteSwap_SwapBufferTest()
+		public void SwapBufferTest()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
 			byte[] buffer_bc;
@@ -467,7 +467,7 @@ namespace KSoft.Bitwise.Test
 
 		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken
 		[TestMethod]
-		public void ByteSwap_SwapDataIntegersTest()
+		public void SwapDataIntegersTest()
 		{
 			var buffer = new byte[sizeof(ulong) + sizeof(uint) + sizeof(ushort)];
 			int buffer_index;
@@ -498,7 +498,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ByteSwap_SwapDataNestedArraysTest()
+		public void SwapDataNestedArraysTest()
 		{
 			var bs_codes = new short[]
 			{

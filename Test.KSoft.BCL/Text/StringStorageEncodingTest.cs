@@ -144,7 +144,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void Text_StringStorageEncodingWriteTest()
+		public void StringStorageEncodingWriteTest()
 		{
 			const bool k_output_ms = true;
 

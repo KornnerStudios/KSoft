@@ -20,27 +20,27 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void TextLineInfo_NonPositiveLineNumber_ThrowsArgumentOutOfRangeException()
+	public void NonPositiveLineNumber_ThrowsArgumentOutOfRangeException()
 	{
 		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(0, 1), "lineNumber");
 		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(-1, 1), "lineNumber");
 	}
 
 	[TestMethod]
-	public void TextLineInfo_NonPositiveLinePosition_ThrowsArgumentOutOfRangeException()
+	public void NonPositiveLinePosition_ThrowsArgumentOutOfRangeException()
 	{
 		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, 0), "linePosition");
 		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, -1), "linePosition");
 	}
 
 	[TestMethod]
-	public void TextLineInfo_NullCopySource_ThrowsArgumentNullException()
+	public void NullCopySource_ThrowsArgumentNullException()
 	{
 		AssertThrowsArgumentNull(() => _ = new TextLineInfo((ITextLineInfo)null!), "otherLineInfo");
 	}
 
 	[TestMethod]
-	public void TextLineInfo_EqualityAndComparison_PreserveNullContractBehavior()
+	public void EqualityAndComparison_PreserveNullContractBehavior()
 	{
 		var lineInfo = new TextLineInfo(4, 5);
 		var sameLineInfo = new TextLineInfo(4, 5);

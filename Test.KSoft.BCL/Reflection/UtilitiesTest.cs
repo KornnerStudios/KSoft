@@ -63,14 +63,14 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_GetEnumFieldsGuards_ThrowExpectedExceptions()
+		public void GetEnumFieldsGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("enumType", () => _ = Util.GetEnumFields(null!));
 			AssertThrowsArgument("enumType", () => _ = Util.GetEnumFields(typeof(string)));
 		}
 
 		[TestMethod]
-		public void Reflection_GetDelegateForFunctionPointerGuards_ThrowExpectedExceptions()
+		public void GetDelegateForFunctionPointerGuards_ThrowExpectedExceptions()
 		{
 			const System.Runtime.InteropServices.CallingConvention kWinapi =
 				System.Runtime.InteropServices.CallingConvention.Winapi;
@@ -88,7 +88,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_MemberGetterGuards_ThrowExpectedExceptions()
+		public void MemberGetterGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("memberName", () =>
 				_ = Util.GenerateMemberGetter<PropertySetPrivateClass, string>(null!));
@@ -110,7 +110,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_MemberSetterGuards_ThrowExpectedExceptions()
+		public void MemberSetterGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("memberName", () =>
 				_ = Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>(null!));
@@ -137,7 +137,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_MemberAccessorFactories_ReturnUsableDelegates()
+		public void MemberAccessorFactories_ReturnUsableDelegates()
 		{
 			var target = new MemberAccessTarget { Field = 3, Value = 5 };
 			MemberAccessTarget.StaticField = 7;
@@ -181,7 +181,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_PropertyNameFromExprGuards_ThrowExpectedExceptions()
+		public void PropertyNameFromExprGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("expr", () =>
 				_ = Util.PropertyNameFromExpr<int>(null!));
@@ -194,7 +194,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_MemberFromExprGuards_ThrowExpectedExceptions()
+		public void MemberFromExprGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("expr", () =>
 				_ = Util.MemberFromExpr<TestPropertyNameFromExprClass, int>(null!));
@@ -215,7 +215,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_DynamicDelegateTypeGuards_ThrowExpectedExceptions()
+		public void DynamicDelegateTypeGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("parameters", () =>
 				_ = Util.GenerateDynamicDelegateType(typeof(void), null!));
@@ -226,7 +226,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_ObjectMethodProxyGuards_ThrowExpectedExceptions()
+		public void ObjectMethodProxyGuards_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("methodName", () =>
 				_ = Util.GenerateObjectMethodProxy<
@@ -255,7 +255,7 @@ namespace KSoft.Reflection.Test
 		}
 
 		[TestMethod]
-		public void Reflection_ConstructorFuncGuards_ThrowExpectedExceptions()
+		public void ConstructorFuncGuards_ThrowExpectedExceptions()
 		{
 			const Reflect.BindingFlags kNonPublicCtorBindingFlags =
 				Reflect.BindingFlags.Instance | Reflect.BindingFlags.NonPublic;
@@ -314,7 +314,7 @@ namespace KSoft.Reflection.Test
 			}
 		};
 		[TestMethod]
-		public void Reflection_PropertySetPrivateViaLinqTest()
+		public void PropertySetPrivateViaLinqTest()
 		{
 			var c = new PropertySetPrivateClass();
 			var value_setter = Util.GenerateReferenceTypeMemberSetter<PropertySetPrivateClass, string>("Value");
@@ -323,7 +323,7 @@ namespace KSoft.Reflection.Test
 			Assert.AreEqual(PropertySetPrivateClass.kModifiedValue, c.Value);
 		}
 		[TestMethod]
-		public void Reflection_PropertySetPrivateViaReflectionTest()
+		public void PropertySetPrivateViaReflectionTest()
 		{
 			var c = new PropertySetPrivateClass();
 			var value_prop = Util.PropertyFromExpr(() => c.Value);
@@ -339,7 +339,7 @@ namespace KSoft.Reflection.Test
 			public int Property { get; set; }
 		};
 		[TestMethod]
-		public void Reflection_PropertyNameFromExprTest()
+		public void PropertyNameFromExprTest()
 		{
 			var value = new TestPropertyNameFromExprClass();
 			string name;
@@ -356,12 +356,14 @@ namespace KSoft.Reflection.Test
 		[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Inspected by the reflection literal-member getter test.")]
 		internal sealed class ClassContainingDefaultFileStreamBufferSizeLiteral
 		{
+#pragma warning disable CS0628 // New protected member declared in sealed type
 			protected const int DefaultFileStreamBufferSize = 4096;
+#pragma warning restore CS0628 // New protected member declared in sealed type
 		};
 		// .net9 update: apparently after .netframework, the IL for *private* const fields changed
 		// to no longer generate FieldInfos.
 		[TestMethod]
-		public void Reflection_GenerateLiteralMemberGetterTest()
+		public void GenerateLiteralMemberGetterTest()
 		{
 			// DefaultBufferSize is a property, at least in .NET 4.5+
 			// .net9 update: above is now a const, just like the below value.
@@ -412,7 +414,7 @@ namespace KSoft.Reflection.Test
 
 		[TestMethod]
 		[Description("Validate GenerateValueTypeMemberSetter fails on readonly field")]
-		public void Reflection_GenerateValueTypeMemberSetterFailTest1()
+		public void GenerateValueTypeMemberSetterFailTest1()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("mValueReadonly")
@@ -420,7 +422,7 @@ namespace KSoft.Reflection.Test
 		}
 		[TestMethod]
 		[Description("Validate GenerateValueTypeMemberSetter fails on a get-only property")]
-		public void Reflection_GenerateValueTypeMemberSetterFailTest2()
+		public void GenerateValueTypeMemberSetterFailTest2()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateValueTypeMemberSetter<MemberSetterTestStruct, string>("ValueNoSetter")
@@ -429,7 +431,7 @@ namespace KSoft.Reflection.Test
 
 		[TestMethod]
 		[Description("Validate GenerateReferenceTypeMemberSetter fails on readonly field")]
-		public void Reflection_GenerateReferenceTypeMemberSetterFailTest1()
+		public void GenerateReferenceTypeMemberSetterFailTest1()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("mValueReadonly")
@@ -437,7 +439,7 @@ namespace KSoft.Reflection.Test
 		}
 		[TestMethod]
 		[Description("Validate GenerateReferenceTypeMemberSetter fails on a get-only property")]
-		public void Reflection_GenerateReferenceTypeMemberSetterFailTest2()
+		public void GenerateReferenceTypeMemberSetterFailTest2()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateReferenceTypeMemberSetter<MemberSetterTestClass, string>("ValueNoSetter")
@@ -446,7 +448,7 @@ namespace KSoft.Reflection.Test
 
 		[TestMethod]
 		[Description("Validate GenerateStaticFieldSetter fails on readonly field")]
-		public void Reflection_GenerateStaticFieldSetterFailTest()
+		public void GenerateStaticFieldSetterFailTest()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateStaticFieldSetter<MemberSetterTestClass, string>("mStaticValueReadonly")
@@ -454,7 +456,7 @@ namespace KSoft.Reflection.Test
 		}
 		[TestMethod]
 		[Description("Validate GenerateStaticPropertySetter fails on a get-only property")]
-		public void Reflection_GenerateStaticPropertySetterFailTest()
+		public void GenerateStaticPropertySetterFailTest()
 		{
 			Assert.Throws<MemberAccessException>(() =>
 				Util.GenerateStaticPropertySetter<MemberSetterTestClass, string>("StaticValueNoSetter")
@@ -473,7 +475,7 @@ namespace KSoft.Reflection.Test
 			}
 		};
 		[TestMethod]
-		public void Reflection_GenerateObjectMethodProxyTest()
+		public void GenerateObjectMethodProxyTest()
 		{
 			var proxy_func =
 				Util.GenerateObjectMethodProxy<
@@ -514,7 +516,7 @@ namespace KSoft.Reflection.Test
 			}
 		};
 		[TestMethod]
-		public void Reflection_GenerateConstructorFuncTest()
+		public void GenerateConstructorFuncTest()
 		{
 			const Reflect.BindingFlags k_non_public_ctor_binding_flags =
 				Reflect.BindingFlags.Instance | Reflect.BindingFlags.NonPublic;

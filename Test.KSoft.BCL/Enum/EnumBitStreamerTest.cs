@@ -104,7 +104,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerNullStreamsThrowArgumentNullExceptionTest()
+		public void NullStreamsThrowArgumentNullExceptionTest()
 		{
 			var value = System.TypeCode.String;
 			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
@@ -121,7 +121,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerBitCountGuardsThrowArgumentOutOfRangeExceptionTest()
+		public void BitCountGuardsThrowArgumentOutOfRangeExceptionTest()
 		{
 			var value = System.TypeCode.String;
 			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
@@ -140,7 +140,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerUnderlyingTypesRoundTripTest()
+		public void UnderlyingTypesRoundTripTest()
 		{
 			AssertUnderlyingBitRoundTrip(ByteEnum.Value, 8);
 			AssertUnderlyingBitRoundTrip(SByteEnum.Value, 8);
@@ -153,7 +153,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerSignedUnsignedConversionsRoundTripTest()
+		public void SignedUnsignedConversionsRoundTripTest()
 		{
 			AssertBitConversionRoundTrip<SByteEnum, byte>(SByteEnum.Value, 8);
 			AssertBitConversionRoundTrip<EnumBinaryStreamerTest.UInt32Enum, sbyte>(
@@ -161,7 +161,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerBitSwapWritesSwappedBitsTest()
+		public void BitSwapWritesSwappedBitsTest()
 		{
 			byte[] bytes;
 			using (var ms = new System.IO.MemoryStream())
@@ -191,7 +191,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Enum_BitStreamerSignExtendOptionsPreserveNegativeValuesTest()
+		public void SignExtendOptionsPreserveNegativeValuesTest()
 		{
 			byte[] bytes;
 			using (var ms = new System.IO.MemoryStream())
@@ -223,7 +223,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that don't require a conversion</summary>
 		[TestMethod]
-		public void Enum_BitStreamerTest()
+		public void Test()
 		{
 			const int k_bit_count = 32;
 
@@ -258,7 +258,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require a down-cast conversion</summary>
 		[TestMethod]
-		public void Enum_BitStreamerDownCastTest()
+		public void DownCastTest()
 		{
 			const int k_bit_count = 8;
 
@@ -293,7 +293,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require an up-cast conversion</summary>
 		[TestMethod]
-		public void Enum_BitStreamerUpCastTest()
+		public void UpCastTest()
 		{
 			const int k_bit_count = 64;
 
@@ -328,7 +328,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test the ability to implicitly use the underlying type</summary>
 		[TestMethod]
-		public void Enum_BitStreamerUsingUnderlyingTypeTest()
+		public void UsingUnderlyingTypeTest()
 		{
 			const int k_bit_count = 32;
 
@@ -375,7 +375,7 @@ namespace KSoft.IO.Test
 		};
 
 		[TestMethod]
-		public void EnumBitStreamer_NoneSentinelWritesZeroForNoneTest()
+		public void NoneSentinelWritesZeroForNoneTest()
 		{
 			const int k_bit_count = 32;
 
@@ -394,7 +394,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test the ability to implicitly use the underlying type</summary>
 		[TestMethod]
-		public void EnumBitStreamer_TestNoneSentinelEncoding()
+		public void TestNoneSentinelEncoding()
 		{
 			const int k_bit_count = 32;
 

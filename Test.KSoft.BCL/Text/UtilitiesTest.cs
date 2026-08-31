@@ -8,7 +8,7 @@ namespace KSoft.Text.Test
 	public partial class UtilitiesTest : BaseTestClass
 	{
 		[TestMethod]
-		public void Text_Utilities_PreserveNullAndSingletonBehavior()
+		public void PreserveNullAndSingletonBehavior()
 		{
 			Assert.IsTrue(Util.ParseBooleanLazy("1"));
 			Assert.IsTrue(Util.ParseBooleanLazy("true"));
