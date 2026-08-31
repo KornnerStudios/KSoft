@@ -10,20 +10,6 @@ namespace KSoft.Security.Cryptography.Test
 	{
 		static readonly byte[] kWikipediaBytes = Encoding.ASCII.GetBytes("Wikipedia");
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		[TestMethod]
 		public void Compute_KnownBytes_ReturnsAdler32()
 		{

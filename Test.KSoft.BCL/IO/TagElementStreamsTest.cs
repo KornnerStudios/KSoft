@@ -24,31 +24,6 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		public string? Value { get; set; }
 	}
 
-	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-	static void AssertThrowsArgument(Action action, string paramName)
-	{
-		try
-		{
-			action();
-			Assert.Fail("Expected an ArgumentException.");
-		}
-		catch (ArgumentException exception)
-		{
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-	}
-	static void AssertThrowsInvalidStreamMode(Action action)
-	{
-		var exception = Assert.ThrowsExactly<InvalidOperationException>(action);
-
-		Assert.AreEqual("Stream doesn't support the requested access mode", exception.Message);
-	}
-
 	[TestMethod]
 	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShapeTest()
 	{
@@ -245,8 +220,8 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		readWriteStream.StreamMode = FileAccess.Read;
 		readWriteStream.StreamMode = FileAccess.Write;
 		readWriteStream.StreamMode = 0;
-		AssertThrowsArgumentOutOfRange(() => readWriteStream.StreamMode = FileAccess.ReadWrite, "value");
-		AssertThrowsArgumentOutOfRange(() => readWriteStream.StreamMode = (FileAccess)4, "value");
+		AssertThrowsArgumentOutOfRange("value", () => readWriteStream.StreamMode = FileAccess.ReadWrite);
+		AssertThrowsArgumentOutOfRange("value", () => readWriteStream.StreamMode = (FileAccess)4);
 		AssertThrowsInvalidStreamMode(() => readStream.StreamMode = FileAccess.Write);
 		AssertThrowsInvalidStreamMode(() => writeStream.StreamMode = FileAccess.Read);
 	}
@@ -256,10 +231,10 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	{
 		using var stream = CreateReadStream("<root><child /></root>");
 
-		AssertThrowsArgument(() => stream.ReadElementBegin(null!, out _), "name");
-		AssertThrowsArgument(() => stream.ReadElementBegin(string.Empty, out _), "name");
-		AssertThrowsArgument(() => stream.ElementsByName(null!).GetEnumerator().MoveNext(), "localName");
-		AssertThrowsArgument(() => stream.ElementsByName(string.Empty).GetEnumerator().MoveNext(), "localName");
+		AssertThrows<ArgumentException>("name", () => stream.ReadElementBegin(null!, out _));
+		AssertThrows<ArgumentException>("name", () => stream.ReadElementBegin(string.Empty, out _));
+		AssertThrows<ArgumentException>("localName", () => stream.ElementsByName(null!).GetEnumerator().MoveNext());
+		AssertThrows<ArgumentException>("localName", () => stream.ElementsByName(string.Empty).GetEnumerator().MoveNext());
 	}
 
 	[TestMethod]

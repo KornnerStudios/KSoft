@@ -15,26 +15,6 @@ namespace KSoft.Bitwise.Test
 		[SuppressMessage("Microsoft.Design", "CA1823:AvoidUnusedPrivateFields")]
 		const ulong kMiddleNybbles = 0x6666666666666666UL; // Bit pattern middle bits are set in a nybble
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-		static void AssertThrowsArgument(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		#region MemoryCopier
 		[TestMethod]
 		public void MemoryCopier_CopyWithOffsets_CopiesRequestedBytes()

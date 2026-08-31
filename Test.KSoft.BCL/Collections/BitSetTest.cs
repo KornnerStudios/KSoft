@@ -30,20 +30,6 @@ namespace KSoft.Collections.Test
 			First = 0,
 		}
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		[TestMethod]
 		public void ConstructorGuardsTest()
 		{

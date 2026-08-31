@@ -23,20 +23,6 @@ public sealed class EnumUtilTest : BaseTestClass
 		Two = 2,
 	};
 
-	static void AssertThrowsArgumentNull(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgument(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
-
 	[TestMethod]
 	public void UtilMetadataMatchesGenericBclApis()
 	{

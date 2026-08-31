@@ -9,27 +9,6 @@ namespace KSoft.Security.Cryptography.Test
 	{
 		static readonly byte[] kStandardBytes = Encoding.ASCII.GetBytes("123456789");
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentException(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		[TestMethod]
 		public void Crc16_StandardVector_ReturnsExpectedValue()
 		{
@@ -72,9 +51,9 @@ namespace KSoft.Security.Cryptography.Test
 			Assert.AreEqual(Crc16.kCrcTableSize, new Crc16.Definition(crcTable: null).CrcTable.Length);
 			Assert.AreEqual(Crc32.kCrcTableSize, new Crc32.Definition(crcTable: null).CrcTable.Length);
 
-			AssertThrowsArgumentException("crcTable", () =>
+			AssertThrowsArgument("crcTable", () =>
 				new Crc16.Definition(crcTable: new ushort[] { 1 }));
-			AssertThrowsArgumentException("crcTable", () =>
+			AssertThrowsArgument("crcTable", () =>
 				new Crc32.Definition(crcTable: new uint[] { 1 }));
 		}
 

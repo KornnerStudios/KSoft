@@ -6,19 +6,6 @@ namespace KSoft.Test;
 [TestClass]
 public class BuffersTest : BaseTestClass
 {
-	static void AssertThrowsArgumentNull(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
 
 	[TestMethod]
 	public void CountWithinLength_ThrowsExpectedExceptions()
@@ -29,10 +16,10 @@ public class BuffersTest : BaseTestClass
 		int negativeCount = -1;
 		int tooLargeCount = 2;
 
-		AssertThrowsArgumentNull(() => Verify.Buffers.CountWithinLength(buffer, 0), nameof(buffer));
-		AssertThrowsArgumentNull(() => Verify.Buffers.CountWithinLength(value, 0), nameof(value));
-		AssertThrowsArgumentOutOfRange(() => Verify.Buffers.CountWithinLength(valid, negativeCount), nameof(negativeCount));
-		AssertThrowsArgumentOutOfRange(() => Verify.Buffers.CountWithinLength(valid, tooLargeCount), nameof(tooLargeCount));
+		AssertThrowsArgumentNull(nameof(buffer), () => Verify.Buffers.CountWithinLength(buffer, 0));
+		AssertThrowsArgumentNull(nameof(value), () => Verify.Buffers.CountWithinLength(value, 0));
+		AssertThrowsArgumentOutOfRange(nameof(negativeCount), () => Verify.Buffers.CountWithinLength(valid, negativeCount));
+		AssertThrowsArgumentOutOfRange(nameof(tooLargeCount), () => Verify.Buffers.CountWithinLength(valid, tooLargeCount));
 
 		Verify.Buffers.CountWithinLength(valid, valid.Length);
 	}
@@ -45,11 +32,10 @@ public class BuffersTest : BaseTestClass
 		int startIndex = -1;
 		int tooLargeStartIndex = 2;
 
-		AssertThrowsArgumentNull(() => Verify.Buffers.StartIndexWithinLength(buffer, 0), nameof(buffer));
-		AssertThrowsArgumentOutOfRange(() => Verify.Buffers.StartIndexWithinLength(valid, startIndex), nameof(startIndex));
-		AssertThrowsArgumentOutOfRange(
-			() => Verify.Buffers.StartIndexWithinLength(valid, tooLargeStartIndex),
-			nameof(tooLargeStartIndex));
+		AssertThrowsArgumentNull(nameof(buffer), () => Verify.Buffers.StartIndexWithinLength(buffer, 0));
+		AssertThrowsArgumentOutOfRange(nameof(startIndex), () => Verify.Buffers.StartIndexWithinLength(valid, startIndex));
+		AssertThrowsArgumentOutOfRange(nameof(tooLargeStartIndex),
+			() => Verify.Buffers.StartIndexWithinLength(valid, tooLargeStartIndex));
 
 		Verify.Buffers.StartIndexWithinLength(valid, valid.Length);
 	}
@@ -64,19 +50,15 @@ public class BuffersTest : BaseTestClass
 		int tooLargeOffset = 2;
 		int tooLargeLength = 2;
 
-		AssertThrowsArgumentNull(() => Verify.Buffers.OffsetAndLengthWithinLength(buffer, 0, 0), nameof(buffer));
-		AssertThrowsArgumentOutOfRange(
-			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, offset, 0),
-			nameof(offset));
-		AssertThrowsArgumentOutOfRange(
-			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, length),
-			nameof(length));
-		AssertThrowsArgumentOutOfRange(
-			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, tooLargeOffset, 0),
-			nameof(tooLargeOffset));
-		AssertThrowsArgumentOutOfRange(
-			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, tooLargeLength),
-			nameof(tooLargeLength));
+		AssertThrowsArgumentNull(nameof(buffer), () => Verify.Buffers.OffsetAndLengthWithinLength(buffer, 0, 0));
+		AssertThrowsArgumentOutOfRange(nameof(offset),
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, offset, 0));
+		AssertThrowsArgumentOutOfRange(nameof(length),
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, length));
+		AssertThrowsArgumentOutOfRange(nameof(tooLargeOffset),
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, tooLargeOffset, 0));
+		AssertThrowsArgumentOutOfRange(nameof(tooLargeLength),
+			() => Verify.Buffers.OffsetAndLengthWithinLength(valid, 0, tooLargeLength));
 
 		Verify.Buffers.OffsetAndLengthWithinLength(valid, valid.Length, 0);
 	}

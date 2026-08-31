@@ -12,20 +12,6 @@ namespace KSoft.Text.Test
 			-516,517,519,520,521,522,523,-1258,
 		];
 
-		static void AssertArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-		static void AssertArgumentException<TException>(string parameterName, Action action)
-			where TException : ArgumentException
-		{
-			var exception = Assert.ThrowsExactly<TException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		#region StringListDesc related
 		void VerifyTryParseInt32List(System.Collections.Generic.IEnumerable<int?> results)
 		{
@@ -42,13 +28,13 @@ namespace KSoft.Text.Test
 		[TestMethod]
 		public void StringListDescInvalidArgumentsThrowExpectedExceptions()
 		{
-			AssertArgumentException<ArgumentNullException>("digits",
+			AssertThrowsExactly<ArgumentNullException>("digits",
 				() => _ = new Numbers.StringListDesc(',', digits: null!));
-			AssertArgumentException<ArgumentException>("digits",
+			AssertThrowsExactly<ArgumentException>("digits",
 				() => _ = new Numbers.StringListDesc(',', digits: string.Empty));
-			AssertArgumentException<ArgumentException>("digits",
+			AssertThrowsExactly<ArgumentException>("digits",
 				() => _ = new Numbers.StringListDesc(',', radix: NumbersRadix.Hex, digits: "0123456789ABCDE"));
-			AssertArgumentOutOfRange("radix",
+			AssertThrowsArgumentOutOfRange("radix",
 				() => _ = new Numbers.StringListDesc(',', radix: (NumbersRadix)1, digits: "01"));
 		}
 
@@ -140,13 +126,13 @@ namespace KSoft.Text.Test
 		[TestMethod]
 		public void TryParseInvalidRangesThrowExpectedExceptions()
 		{
-			AssertArgumentOutOfRange("startIndex",
+			AssertThrowsArgumentOutOfRange("startIndex",
 				() => Numbers.TryParse("123", out int _, Numbers.kBase10, -1));
-			AssertArgumentOutOfRange("startIndex",
+			AssertThrowsArgumentOutOfRange("startIndex",
 				() => Numbers.TryParse("123", out int _, NumeralBase.Decimal, -1));
-			AssertArgumentOutOfRange("startIndex",
+			AssertThrowsArgumentOutOfRange("startIndex",
 				() => Numbers.TryParseRange("123", out int _, -1, 1));
-			AssertArgumentOutOfRange("length",
+			AssertThrowsArgumentOutOfRange("length",
 				() => Numbers.TryParseRange("123", out int _, 0, -1));
 		}
 

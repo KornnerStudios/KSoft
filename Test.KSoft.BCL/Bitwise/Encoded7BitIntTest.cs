@@ -6,26 +6,6 @@ namespace KSoft.Bitwise.Test;
 [TestClass]
 public sealed class Encoded7BitIntTest : BaseTestClass
 {
-	static void AssertThrowsArgumentNull(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgument(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
 
 	static void AssertRead(byte[] buffer, int startIndex, int maxCount, int expectedValue, int expectedEndingIndex)
 	{

@@ -46,22 +46,6 @@ namespace KSoft.Reflection.Test
 			public int Value { get; set; }
 		};
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static ArgumentException AssertThrowsArgument(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-
-			return exception;
-		}
-
 		[TestMethod]
 		public void GetEnumFieldsGuards_ThrowExpectedExceptions()
 		{

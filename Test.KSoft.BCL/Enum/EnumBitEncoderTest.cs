@@ -97,27 +97,6 @@ namespace KSoft.Test
 		};
 		#endregion
 
-		static void AssertArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertArgument(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		#region 32-bit tests
 		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
 			Justification = "Pretty sure this is a CA bug",
@@ -224,35 +203,35 @@ namespace KSoft.Test
 			var encoder = new EnumBitEncoder32<EnumTest>();
 			int overflowIndex = Bits.kInt64BitCount - EnumBitEncoder32<EnumTest>.kBitCount;
 
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				ulong bits = 0;
 				int bitIndex = -1;
 				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
 			});
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				ulong bits = 0;
 				int bitIndex = Bits.kInt64BitCount;
 				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
 			});
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				ulong bits = 0;
 				int bitIndex = overflowIndex;
 				encoder.BitEncode(EnumTest.Member0, ref bits, ref bitIndex);
 			});
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				int bitIndex = -1;
 				_ = encoder.BitDecode(0UL, ref bitIndex);
 			});
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				int bitIndex = Bits.kInt64BitCount;
 				_ = encoder.BitDecode(0UL, ref bitIndex);
 			});
-			AssertArgumentOutOfRange("bitIndex", () =>
+			AssertThrowsArgumentOutOfRange("bitIndex", () =>
 			{
 				int bitIndex = overflowIndex;
 				_ = encoder.BitDecode(0UL, ref bitIndex);
@@ -552,35 +531,35 @@ namespace KSoft.Test
 			var handle = new Bitwise.HandleBitEncoder();
 			var emptyTraits = default(Bitwise.BitFieldTraits);
 
-			AssertArgumentNull("encoder",
+			AssertThrowsArgumentNull("encoder",
 				() => handle.Encode32(EnumTest.Member0, (EnumBitEncoder32<EnumTest>)null!));
-			AssertArgumentNull("encoder",
+			AssertThrowsArgumentNull("encoder",
 				() => handle.Encode64(EnumTest.Member0, (EnumBitEncoder64<EnumTest>)null!));
-			AssertArgumentNull("decoder",
+			AssertThrowsArgumentNull("decoder",
 				() => handle.Decode32(out EnumTest _, (EnumBitEncoder32<EnumTest>)null!));
-			AssertArgumentNull("decoder",
+			AssertThrowsArgumentNull("decoder",
 				() => handle.Decode64(out EnumTest _, (EnumBitEncoder64<EnumTest>)null!));
 
-			AssertArgumentOutOfRange("bitMask", () => handle.Encode32(1U, 0U));
-			AssertArgumentOutOfRange("bitMask", () => handle.EncodeNoneable32(-1, 0U));
-			AssertArgumentOutOfRange("bitMask", () => handle.Decode32(out uint _, 0U));
-			AssertArgumentOutOfRange("bitMask", () => handle.DecodeNoneable32(out int _, 0U));
-			AssertArgumentOutOfRange("bitMask", () => handle.Encode64(1UL, 0UL));
-			AssertArgumentOutOfRange("bitMask", () => handle.EncodeNoneable64(-1L, 0UL));
-			AssertArgumentOutOfRange("bitMask", () => handle.Decode64(out ulong _, 0UL));
-			AssertArgumentOutOfRange("bitMask", () => handle.DecodeNoneable64(out long _, 0UL));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.Encode32(1U, 0U));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.EncodeNoneable32(-1, 0U));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.Decode32(out uint _, 0U));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.DecodeNoneable32(out int _, 0U));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.Encode64(1UL, 0UL));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.EncodeNoneable64(-1L, 0UL));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.Decode64(out ulong _, 0UL));
+			AssertThrowsArgumentOutOfRange("bitMask", () => handle.DecodeNoneable64(out long _, 0UL));
 
-			AssertArgumentOutOfRange("value", () => handle.EncodeNoneable32(-2, 1U));
-			AssertArgumentOutOfRange("value", () => handle.EncodeNoneable64(-2L, 1UL));
+			AssertThrowsArgumentOutOfRange("value", () => handle.EncodeNoneable32(-2, 1U));
+			AssertThrowsArgumentOutOfRange("value", () => handle.EncodeNoneable64(-2L, 1UL));
 
-			AssertArgument("traits", () => handle.Encode32(1U, emptyTraits));
-			AssertArgument("traits", () => handle.EncodeNoneable32(-1, emptyTraits));
-			AssertArgument("traits", () => handle.Decode32(out uint _, emptyTraits));
-			AssertArgument("traits", () => handle.DecodeNoneable32(out int _, emptyTraits));
-			AssertArgument("traits", () => handle.Encode64(1UL, emptyTraits));
-			AssertArgument("traits", () => handle.EncodeNoneable64(-1L, emptyTraits));
-			AssertArgument("traits", () => handle.Decode64(out ulong _, emptyTraits));
-			AssertArgument("traits", () => handle.DecodeNoneable64(out long _, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.Encode32(1U, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.EncodeNoneable32(-1, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.Decode32(out uint _, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.DecodeNoneable32(out int _, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.Encode64(1UL, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.EncodeNoneable64(-1L, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.Decode64(out ulong _, emptyTraits));
+			AssertThrowsArgument("traits", () => handle.DecodeNoneable64(out long _, emptyTraits));
 		}
 	};
 }

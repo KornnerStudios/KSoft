@@ -13,20 +13,6 @@ public sealed class UtilitiesTest : BaseTestClass
 		public int Count { get; set; }
 	}
 
-	static void AssertArgumentNull(Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual("propertyExpr", exception.ParamName);
-	}
-
-	static void AssertArgument(Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-		Assert.AreEqual("propertyExpr", exception.ParamName);
-	}
-
 	[TestMethod]
 	public void CreatePropertyChangedEventArgs_PropertyExpressionsReturnPropertyName()
 	{
@@ -40,9 +26,9 @@ public sealed class UtilitiesTest : BaseTestClass
 	[TestMethod]
 	public void CreatePropertyChangedEventArgs_InvalidExpressionsThrowExpectedExceptions()
 	{
-		AssertArgumentNull(() => Util.CreatePropertyChangedEventArgs<SampleModel>(null!));
-		AssertArgumentNull(() => Util.CreatePropertyChangedEventArgs<SampleModel, int>(null!));
-		AssertArgument(() => Util.CreatePropertyChangedEventArgs<SampleModel>(model => new object()));
-		AssertArgument(() => Util.CreatePropertyChangedEventArgs<SampleModel, int>(model => model.Count + 1));
+		AssertThrowsArgumentNull("propertyExpr", () => Util.CreatePropertyChangedEventArgs<SampleModel>(null!));
+		AssertThrowsArgumentNull("propertyExpr", () => Util.CreatePropertyChangedEventArgs<SampleModel, int>(null!));
+		AssertThrowsArgument("propertyExpr", () => Util.CreatePropertyChangedEventArgs<SampleModel>(model => new object()));
+		AssertThrowsArgument("propertyExpr", () => Util.CreatePropertyChangedEventArgs<SampleModel, int>(model => model.Count + 1));
 	}
 }

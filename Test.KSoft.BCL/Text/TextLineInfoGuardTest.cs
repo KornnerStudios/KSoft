@@ -6,37 +6,25 @@ namespace KSoft.Text.Test;
 [TestClass]
 public sealed class TextLineInfoGuardTest : BaseTestClass
 {
-	static void AssertThrowsArgumentNull(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
 
 	[TestMethod]
 	public void NonPositiveLineNumber_ThrowsArgumentOutOfRangeException()
 	{
-		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(0, 1), "lineNumber");
-		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(-1, 1), "lineNumber");
+		AssertThrowsArgumentOutOfRange("lineNumber", () => _ = new TextLineInfo(0, 1));
+		AssertThrowsArgumentOutOfRange("lineNumber", () => _ = new TextLineInfo(-1, 1));
 	}
 
 	[TestMethod]
 	public void NonPositiveLinePosition_ThrowsArgumentOutOfRangeException()
 	{
-		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, 0), "linePosition");
-		AssertThrowsArgumentOutOfRange(() => _ = new TextLineInfo(1, -1), "linePosition");
+		AssertThrowsArgumentOutOfRange("linePosition", () => _ = new TextLineInfo(1, 0));
+		AssertThrowsArgumentOutOfRange("linePosition", () => _ = new TextLineInfo(1, -1));
 	}
 
 	[TestMethod]
 	public void NullCopySource_ThrowsArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new TextLineInfo((ITextLineInfo)null!), "otherLineInfo");
+		AssertThrowsArgumentNull("otherLineInfo", () => _ = new TextLineInfo((ITextLineInfo)null!));
 	}
 
 	[TestMethod]
@@ -63,16 +51,15 @@ public sealed class TextLineInfoGuardTest : BaseTestClass
 	[TestMethod]
 	public void TextLineInfoException_NullLineInfo_ThrowsArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new TextLineInfoException((ITextLineInfo)null!), "lineInfo");
-		AssertThrowsArgumentNull(
-			() => _ = new TextLineInfoException(new InvalidOperationException(), null!),
-			"lineInfo");
+		AssertThrowsArgumentNull("lineInfo", () => _ = new TextLineInfoException((ITextLineInfo)null!));
+		AssertThrowsArgumentNull("lineInfo",
+			() => _ = new TextLineInfoException(new InvalidOperationException(), null!));
 	}
 
 	[TestMethod]
 	public void TextStreamReadErrorState_NullStream_ThrowsArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new IO.TextStreamReadErrorState(null!), "textStream");
+		AssertThrowsArgumentNull("textStream", () => _ = new IO.TextStreamReadErrorState(null!));
 	}
 
 	[TestMethod]

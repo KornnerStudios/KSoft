@@ -16,29 +16,22 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 		return new StringMemoryPool(settings);
 	}
 
-	static void AssertThrowsArgumentNull(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
 	[TestMethod]
 	public void StreamMethods_NullStreams_ThrowArgumentNullException()
 	{
 		var pool = CreatePool();
 
-		AssertThrowsArgumentNull(() => pool.ReadHeader(null!), "s");
-		AssertThrowsArgumentNull(() => pool.WriteHeader(null!), "s");
-		AssertThrowsArgumentNull(() => pool.ReadStringCharacterLengths(null!), "s");
-		AssertThrowsArgumentNull(() => pool.WriteStringCharacterLengths(null!), "s");
-		AssertThrowsArgumentNull(() => pool.WriteStringByteLengths(null!), "s");
-		AssertThrowsArgumentNull(() => pool.ReadReferences(null!), "s");
-		AssertThrowsArgumentNull(() => pool.WriteReferences(null!), "s");
-		AssertThrowsArgumentNull(() => pool.ReadStrings(null!), "s");
-		AssertThrowsArgumentNull(() => pool.WriteStrings(null!), "s");
-		AssertThrowsArgumentNull(() => pool.Read(null!), "s");
-		AssertThrowsArgumentNull(() => pool.Write(null!), "s");
+		AssertThrowsArgumentNull("s", () => pool.ReadHeader(null!));
+		AssertThrowsArgumentNull("s", () => pool.WriteHeader(null!));
+		AssertThrowsArgumentNull("s", () => pool.ReadStringCharacterLengths(null!));
+		AssertThrowsArgumentNull("s", () => pool.WriteStringCharacterLengths(null!));
+		AssertThrowsArgumentNull("s", () => pool.WriteStringByteLengths(null!));
+		AssertThrowsArgumentNull("s", () => pool.ReadReferences(null!));
+		AssertThrowsArgumentNull("s", () => pool.WriteReferences(null!));
+		AssertThrowsArgumentNull("s", () => pool.ReadStrings(null!));
+		AssertThrowsArgumentNull("s", () => pool.WriteStrings(null!));
+		AssertThrowsArgumentNull("s", () => pool.Read(null!));
+		AssertThrowsArgumentNull("s", () => pool.Write(null!));
 	}
 
 	[TestMethod]

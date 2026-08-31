@@ -9,24 +9,7 @@ namespace KSoft.Text.Test
 	[TestClass]
 	public class StringStorageEncodingTest : BaseTestClass
 	{
-		static void AssertThrowsArgumentNull(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
 
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-		static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-		static void AssertThrowsArgument(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
 		static byte[] WriteWithBitStream(string value, MS.StringStorage storage, int maxLength = -1)
 		{
 			using var stream = new System.IO.MemoryStream();
@@ -46,19 +29,15 @@ namespace KSoft.Text.Test
 		[TestMethod]
 		public void StringStorage_InvalidFixedLengthArguments_ThrowExpectedExceptions()
 		{
-			AssertThrowsArgument(
-				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.Pascal),
-				"type");
-			AssertThrowsArgumentOutOfRange(
-				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, -1),
-				"fixedLength");
-			AssertThrowsArgument(
-				() => _ = new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageType.CString, 1),
-				"fixedLength");
-			AssertThrowsArgumentOutOfRange(
+			AssertThrowsArgument("type",
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.Pascal));
+			AssertThrowsArgumentOutOfRange("fixedLength",
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, -1));
+			AssertThrowsArgument("fixedLength",
+				() => _ = new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageType.CString, 1));
+			AssertThrowsArgumentOutOfRange("fixedLength",
 				() => _ = new MS.StringStorageMarkupAttribute(MS.StringStorageWidthType.Ascii,
-					MS.StringStorageType.CString, -1),
-				"fixedLength");
+					MS.StringStorageType.CString, -1));
 		}
 
 		[TestMethod]
@@ -66,8 +45,8 @@ namespace KSoft.Text.Test
 		{
 			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(MS.StringStorage.CStringAscii);
 
-			AssertThrowsArgumentNull(() => _ = encoding.ReadString((IO.EndianReader)null!, 0), "s");
-			AssertThrowsArgumentNull(() => _ = encoding.ReadString((IO.BitStream)null!, 0), "s");
+			AssertThrowsArgumentNull("s", () => _ = encoding.ReadString((IO.EndianReader)null!, 0));
+			AssertThrowsArgumentNull("s", () => _ = encoding.ReadString((IO.BitStream)null!, 0));
 		}
 
 		[TestMethod]

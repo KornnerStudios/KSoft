@@ -6,12 +6,6 @@ namespace KSoft.Test;
 [TestClass]
 public sealed class IntegerMathTest : BaseTestClass
 {
-	static void AssertArgumentOutOfRange(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
 
 	[TestMethod]
 	public void Align_ValueIsNotAligned_ReturnsNextAlignedValue()
@@ -54,10 +48,10 @@ public sealed class IntegerMathTest : BaseTestClass
 	{
 		const int invalidAlignmentBit = IntegerMath.kMaxAlignmentBit + 1;
 
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0U));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0UL));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0L));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0U));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0UL));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.Align(invalidAlignmentBit, 0L));
 	}
 
 	[TestMethod]
@@ -65,24 +59,24 @@ public sealed class IntegerMathTest : BaseTestClass
 	{
 		const int invalidAlignmentBit = IntegerMath.kMaxAlignmentBit + 1;
 
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0U));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0UL));
-		AssertArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0L));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0U));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0UL));
+		AssertThrowsArgumentOutOfRange("alignmentBit", () => IntegerMath.PaddingRequired(invalidAlignmentBit, 0L));
 	}
 
 	[TestMethod]
 	public void Align_SignedValueIsNegative_ThrowsArgumentOutOfRangeException()
 	{
-		AssertArgumentOutOfRange("value", () => IntegerMath.Align(3, -1));
-		AssertArgumentOutOfRange("value", () => IntegerMath.Align(3, -1L));
+		AssertThrowsArgumentOutOfRange("value", () => IntegerMath.Align(3, -1));
+		AssertThrowsArgumentOutOfRange("value", () => IntegerMath.Align(3, -1L));
 	}
 
 	[TestMethod]
 	public void PaddingRequired_SignedValueIsNegative_ThrowsArgumentOutOfRangeException()
 	{
-		AssertArgumentOutOfRange("value", () => IntegerMath.PaddingRequired(3, -1));
-		AssertArgumentOutOfRange("value", () => IntegerMath.PaddingRequired(3, -1L));
+		AssertThrowsArgumentOutOfRange("value", () => IntegerMath.PaddingRequired(3, -1));
+		AssertThrowsArgumentOutOfRange("value", () => IntegerMath.PaddingRequired(3, -1L));
 	}
 
 	[TestMethod]

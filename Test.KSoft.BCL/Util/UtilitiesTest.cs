@@ -11,31 +11,6 @@ namespace KSoft.Test
 	[TestClass]
 	public partial class UtilitiesTest : BaseTestClass
 	{
-		static void AssertThrowsArgumentNull(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgument(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
-
-		static void AssertThrowsInvalidOperation(Action action)
-		{
-			Assert.ThrowsExactly<InvalidOperationException>(action);
-		}
 
 		sealed class NonSeekableStream : MemoryStream
 		{
@@ -154,29 +129,29 @@ namespace KSoft.Test
 		{
 			using var stream = new IO.EndianStream(new MemoryStream());
 
-			AssertThrowsArgumentOutOfRange(() => stream.EnterVirtualBuffer(0), "bufferLength");
-			AssertThrowsArgumentOutOfRange(() => stream.EnterVirtualBuffer(-1), "bufferLength");
-			AssertThrowsArgumentOutOfRange(() => stream.EnterVirtualBufferWithBookmark(0), "bufferLength");
-			AssertThrowsArgumentOutOfRange(() => stream.EnterVirtualBufferWithBookmark(-1), "bufferLength");
+			AssertThrowsArgumentOutOfRange("bufferLength", () => stream.EnterVirtualBuffer(0));
+			AssertThrowsArgumentOutOfRange("bufferLength", () => stream.EnterVirtualBuffer(-1));
+			AssertThrowsArgumentOutOfRange("bufferLength", () => stream.EnterVirtualBufferWithBookmark(0));
+			AssertThrowsArgumentOutOfRange("bufferLength", () => stream.EnterVirtualBufferWithBookmark(-1));
 		}
 
 		[TestMethod]
 		public void TypeExtensions_VirtualBufferNullStreamGuards_ThrowArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBuffer(null!, 1), "stream");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBuffer(null!), "stream");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBufferBookmark(null!), "stream");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterVirtualBufferWithBookmark(null!, 1), "stream");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(null!), "stream");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferBookmark(null!), "stream");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamWithVirtualBufferAndBookmark(null!, 1), "stream");
+			AssertThrowsArgumentNull("stream", () => _ = TypeExtensions.EnterVirtualBuffer(null!, 1));
+			AssertThrowsArgumentNull("stream", () => _ = TypeExtensions.EnterVirtualBuffer(null!));
+			AssertThrowsArgumentNull("stream", () => _ = TypeExtensions.EnterVirtualBufferBookmark(null!));
+			AssertThrowsArgumentNull("stream", () => _ = TypeExtensions.EnterVirtualBufferWithBookmark(null!, 1));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(null!));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamWithVirtualBufferBookmark(null!));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamWithVirtualBufferAndBookmark(null!, 1));
 		}
 
 		[TestMethod]
 		public void TypeExtensions_VirtualBufferBookmarks_RestoreAndCleanUpState()
 		{
 			using var stream = new IO.EndianStream(new MemoryStream(new byte[8]));
-			AssertThrowsArgument(() => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(stream), "stream");
+			AssertThrowsArgument("stream", () => _ = new IO.IKSoftStreamWithVirtualBufferCleanup(stream));
 
 			using (stream.EnterVirtualBuffer(3))
 			{
@@ -204,50 +179,54 @@ namespace KSoft.Test
 		{
 			using var stream = new IO.EndianStream(new MemoryStream());
 
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.NullOr<string, int>("value", null!), "func");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EnterStreamModeBookmark(null!, FileAccess.Read), "stream");
-			AssertThrowsInvalidOperation(() => _ = TypeExtensions.EnterStreamModeBookmark(stream, FileAccess.Read));
+			AssertThrowsArgumentNull("func", () => _ = TypeExtensions.NullOr<string, int>("value", null!));
+			AssertThrowsArgumentNull("stream", () => _ = TypeExtensions.EnterStreamModeBookmark(null!, FileAccess.Read));
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = TypeExtensions.EnterStreamModeBookmark(stream, FileAccess.Read));
 
 			stream.StreamMode = FileAccess.Read;
-			AssertThrowsArgument(() => _ = TypeExtensions.EnterStreamModeBookmark(stream, 0), "newMode");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamOwnerBookmark(null!, null), "stream");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamUserDataBookmark(null!, null), "stream");
-			AssertThrowsArgumentNull(() => _ = new IO.IKSoftStreamModeBookmark(null!, FileAccess.Read), "stream");
-			AssertThrowsArgument(() => _ = new IO.IKSoftStreamModeBookmark(stream, 0), "newMode");
+			AssertThrowsArgument("newMode", () => _ = TypeExtensions.EnterStreamModeBookmark(stream, 0));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamOwnerBookmark(null!, null));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamUserDataBookmark(null!, null));
+			AssertThrowsArgumentNull("stream", () => _ = new IO.IKSoftStreamModeBookmark(null!, FileAccess.Read));
+			AssertThrowsArgument("newMode", () => _ = new IO.IKSoftStreamModeBookmark(stream, 0));
 		}
 
 		[TestMethod]
 		public void TypeExtensions_FromEncodingNull_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.FromEncoding(null!), "enc");
+			AssertThrowsArgumentNull("enc", () => _ = TypeExtensions.FromEncoding(null!));
 		}
 
 		[TestMethod]
 		public void UnixTimeGuards_ThrowArgumentOutOfRangeException()
 		{
-			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeFromUnixTime(-1), "time_t");
-			AssertThrowsArgumentOutOfRange(() => _ = Util.ConvertDateTimeToUnixTime(Util.UnixTimeEpoch.AddTicks(-1)), "value");
+			AssertThrowsArgumentOutOfRange("time_t", () => _ = Util.ConvertDateTimeFromUnixTime(-1));
+			AssertThrowsArgumentOutOfRange("value", () => _ = Util.ConvertDateTimeToUnixTime(Util.UnixTimeEpoch.AddTicks(-1)));
 		}
 
 		[TestMethod]
 		public void CreateComparerGuard_ThrowsArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() => _ = Util.CreateComparer<string>(null!), "comparer");
+			AssertThrowsArgumentNull("comparer", () => _ = Util.CreateComparer<string>(null!));
 		}
 
 		[TestMethod]
 		public void LowLevel_UnmanagedGuards_ThrowArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() =>
-				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero), "nativePtr");
-			AssertThrowsArgumentNull(() =>
-				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(new IntPtr(1), null!), "t");
-			AssertThrowsArgumentNull(() =>
-				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero), "nativePtr");
-			AssertThrowsArgumentNull(() =>
-				LowLevel.Util.Unmanaged.StructureToPtr(1, IntPtr.Zero), "nativePtr");
-			AssertThrowsArgumentNull(() => _ = LowLevel.Util.Unmanaged.New(null!), "t");
-			AssertThrowsArgumentNull(() => LowLevel.Util.Unmanaged.Delete(IntPtr.Zero), "nativePtr");
+			AssertThrowsArgumentNull("nativePtr",
+				() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero));
+			AssertThrowsArgumentNull("t",
+				() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure(new IntPtr(1), null!));
+			AssertThrowsArgumentNull("nativePtr",
+				() =>
+				_ = LowLevel.Util.Unmanaged.IntPtrToStructure<int>(IntPtr.Zero));
+			AssertThrowsArgumentNull("nativePtr",
+				() =>
+				LowLevel.Util.Unmanaged.StructureToPtr(1, IntPtr.Zero));
+			AssertThrowsArgumentNull("t", () => _ = LowLevel.Util.Unmanaged.New(null!));
+			AssertThrowsArgumentNull("nativePtr", () => LowLevel.Util.Unmanaged.Delete(IntPtr.Zero));
 		}
 
 		[TestMethod]
@@ -269,14 +248,14 @@ namespace KSoft.Test
 		{
 			using var manager = new LowLevel.Util.StructBitManager<int>();
 
-			AssertThrowsArgumentNull(() => manager.FromBuffer(null!), "buffer");
-			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int)], -1), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int)], 1), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => manager.FromBuffer(new byte[sizeof(int) - 1]), "startIndex");
-			AssertThrowsArgumentNull(() => manager.ToBuffer(null!), "buffer");
-			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int)], -1), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int)], 1), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => manager.ToBuffer(new byte[sizeof(int) - 1]), "startIndex");
+			AssertThrowsArgumentNull("buffer", () => manager.FromBuffer(null!));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.FromBuffer(new byte[sizeof(int)], -1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.FromBuffer(new byte[sizeof(int)], 1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.FromBuffer(new byte[sizeof(int) - 1]));
+			AssertThrowsArgumentNull("buffer", () => manager.ToBuffer(null!));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.ToBuffer(new byte[sizeof(int)], -1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.ToBuffer(new byte[sizeof(int)], 1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => manager.ToBuffer(new byte[sizeof(int) - 1]));
 		}
 
 		[TestMethod]
@@ -284,23 +263,23 @@ namespace KSoft.Test
 		{
 			static int GetLength(string value) => value.Length;
 
-			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>(null!, "rhs", GetLength), "lhs");
-			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>("lhs", null!, GetLength), "rhs");
-			AssertThrowsArgumentNull(() => _ = Util.MinChoice<string>("lhs", "rhs", null!), "choiceProperty");
-			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>(null!, "rhs", GetLength), "lhs");
-			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>("lhs", null!, GetLength), "rhs");
-			AssertThrowsArgumentNull(() => _ = Util.MaxChoice<string>("lhs", "rhs", null!), "choiceProperty");
-			AssertThrowsArgumentNull(() => _ = Util.MinChoiceValue(1, 2, null!), "choiceProperty");
-			AssertThrowsArgumentNull(() => _ = Util.MaxChoiceValue(1, 2, null!), "choiceProperty");
+			AssertThrowsArgumentNull("lhs", () => _ = Util.MinChoice<string>(null!, "rhs", GetLength));
+			AssertThrowsArgumentNull("rhs", () => _ = Util.MinChoice<string>("lhs", null!, GetLength));
+			AssertThrowsArgumentNull("choiceProperty", () => _ = Util.MinChoice<string>("lhs", "rhs", null!));
+			AssertThrowsArgumentNull("lhs", () => _ = Util.MaxChoice<string>(null!, "rhs", GetLength));
+			AssertThrowsArgumentNull("rhs", () => _ = Util.MaxChoice<string>("lhs", null!, GetLength));
+			AssertThrowsArgumentNull("choiceProperty", () => _ = Util.MaxChoice<string>("lhs", "rhs", null!));
+			AssertThrowsArgumentNull("choiceProperty", () => _ = Util.MinChoiceValue(1, 2, null!));
+			AssertThrowsArgumentNull("choiceProperty", () => _ = Util.MaxChoiceValue(1, 2, null!));
 		}
 
 		[TestMethod]
 		public void GetRelativePathGuards_ThrowArgumentNullException()
 		{
-			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(null!, "C:\\"), "fromPath");
-			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath(string.Empty, "C:\\"), "fromPath");
-			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", null!), "toPath");
-			AssertThrowsArgumentNull(() => _ = Util.GetRelativePath("C:\\", string.Empty), "toPath");
+			AssertThrowsArgumentNull("fromPath", () => _ = Util.GetRelativePath(null!, "C:\\"));
+			AssertThrowsArgumentNull("fromPath", () => _ = Util.GetRelativePath(string.Empty, "C:\\"));
+			AssertThrowsArgumentNull("toPath", () => _ = Util.GetRelativePath("C:\\", null!));
+			AssertThrowsArgumentNull("toPath", () => _ = Util.GetRelativePath("C:\\", string.Empty));
 		}
 
 		[TestMethod]
@@ -354,82 +333,93 @@ namespace KSoft.Test
 		[TestMethod]
 		public void TypeExtensions_SystemUtilityGuards_ThrowExpectedExceptions()
 		{
-			AssertThrowsArgumentNull(() => _ = "{0}".FormatWith(null!, 1), "provider");
-			AssertThrowsArgumentOutOfRange(() => _ = "value".ToWideCharBuffer(-1), "maxBufferSize");
-			AssertThrowsArgumentOutOfRange(() => _ = "value".ToAsciiCharBuffer(-1), "maxBufferSize");
+			AssertThrowsArgumentNull("provider", () => _ = "{0}".FormatWith(null!, 1));
+			AssertThrowsArgumentOutOfRange("maxBufferSize", () => _ = "value".ToWideCharBuffer(-1));
+			AssertThrowsArgumentOutOfRange("maxBufferSize", () => _ = "value".ToAsciiCharBuffer(-1));
 			Assert.AreEqual(0, "value".ToWideCharBuffer(0).Length);
 			Assert.AreEqual(0, "value".ToAsciiCharBuffer(0).Length);
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.TransformToString(null!), "list");
-			AssertThrowsArgumentNull(() => _ = ((int[])null!).GetGenericEnumerator(), "array");
-			AssertThrowsArgumentNull(() => _ = ((int[])null!).EqualsZero(), "array");
-			AssertThrowsArgumentNull(() => _ = ((EquatableDefault[])null!).EqualsDefault(), "array");
-			AssertThrowsArgumentNull(() => _ = new List<int>().ConvertAllArray<int, int>(null!), "converter");
+			AssertThrowsArgumentNull("list", () => _ = TypeExtensions.TransformToString(null!));
+			AssertThrowsArgumentNull("array", () => _ = ((int[])null!).GetGenericEnumerator());
+			AssertThrowsArgumentNull("array", () => _ = ((int[])null!).EqualsZero());
+			AssertThrowsArgumentNull("array", () => _ = ((EquatableDefault[])null!).EqualsDefault());
+			AssertThrowsArgumentNull("converter", () => _ = new List<int>().ConvertAllArray<int, int>(null!));
 			Assert.IsNull(TypeExtensions.ConvertAllArray<int, int>(null!, value => value));
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsArray<int>(null!, [1]), "lhs");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsArray<int>([1], null!), "rhs");
-			AssertThrowsArgumentOutOfRange(() => _ = new[] { 1 }.EqualsArray([1], -1), "lhsOffset");
-			AssertThrowsArgumentOutOfRange(() => _ = new[] { 1 }.EqualsArray([1], 1), "lhsOffset");
+			AssertThrowsArgumentNull("lhs", () => _ = TypeExtensions.EqualsArray<int>(null!, [1]));
+			AssertThrowsArgumentNull("rhs", () => _ = TypeExtensions.EqualsArray<int>([1], null!));
+			AssertThrowsArgumentOutOfRange("lhsOffset", () => _ = new[] { 1 }.EqualsArray([1], -1));
+			AssertThrowsArgumentOutOfRange("lhsOffset", () => _ = new[] { 1 }.EqualsArray([1], 1));
 			Assert.IsTrue(new[] { 0, 1, 2 }.EqualsArray([1, 2], 1));
 			Assert.IsFalse(new[] { 0, 1, 2 }.EqualsArray([9, 2], 1));
 			Assert.IsFalse(new[] { 0, 1, 2 }.EqualsArray([1], 1));
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsList<int>(null!, [1]), "lhs");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.EqualsList<int>([1], null!), "rhs");
-			AssertThrowsArgumentOutOfRange(() => _ = new List<int> { 1 }.EqualsList([1], -1), "lhsOffset");
-			AssertThrowsArgumentOutOfRange(() => _ = new List<int> { 1 }.EqualsList([1], 1), "lhsOffset");
+			AssertThrowsArgumentNull("lhs", () => _ = TypeExtensions.EqualsList<int>(null!, [1]));
+			AssertThrowsArgumentNull("rhs", () => _ = TypeExtensions.EqualsList<int>([1], null!));
+			AssertThrowsArgumentOutOfRange("lhsOffset", () => _ = new List<int> { 1 }.EqualsList([1], -1));
+			AssertThrowsArgumentOutOfRange("lhsOffset", () => _ = new List<int> { 1 }.EqualsList([1], 1));
 			Assert.IsTrue(new List<int> { 0, 1, 2 }.EqualsList([1, 2], 1));
 			Assert.IsFalse(new List<int> { 0, 1, 2 }.EqualsList([9, 2], 1));
 			Assert.IsFalse(new List<int> { 0, 1, 2 }.EqualsList([1], 1));
 
-			AssertThrowsArgumentNull(() => _ = ((int[])null!).TrueForAny(_ => true), "array");
-			AssertThrowsArgumentNull(() => _ = new[] { 1 }.TrueForAny(null!), "match");
+			AssertThrowsArgumentNull("array", () => _ = ((int[])null!).TrueForAny(_ => true));
+			AssertThrowsArgumentNull("match", () => _ = new[] { 1 }.TrueForAny(null!));
 
 			IEnumerable<int> sequence = null!;
 			IReadOnlyList<int> list = new[] { 1 };
-			AssertThrowsArgumentNull(() => _ = sequence.FindIndex(_ => true), "seq");
-			AssertThrowsArgumentNull(() => _ = ((IEnumerable<int>)list).FindIndex(null!), "match");
-			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(0, 0, _ => true), "list");
-			AssertThrowsArgumentOutOfRange(() => _ = list.FindIndex(1, 0, _ => true), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => _ = list.FindIndex(0, 2, _ => true), "count");
-			AssertThrowsArgumentNull(() => _ = list.FindIndex(0, 1, null!), "match");
-			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(0, _ => true), "list");
-			AssertThrowsArgumentNull(() => _ = ((IReadOnlyList<int>)null!).FindIndex(_ => true), "list");
+			AssertThrowsArgumentNull("seq", () => _ = sequence.FindIndex(_ => true));
+			AssertThrowsArgumentNull("match", () => _ = ((IEnumerable<int>)list).FindIndex(null!));
+			AssertThrowsArgumentNull("list", () => _ = ((IReadOnlyList<int>)null!).FindIndex(0, 0, _ => true));
+			AssertThrowsArgumentOutOfRange("startIndex", () => _ = list.FindIndex(1, 0, _ => true));
+			AssertThrowsArgumentOutOfRange("count", () => _ = list.FindIndex(0, 2, _ => true));
+			AssertThrowsArgumentNull("match", () => _ = list.FindIndex(0, 1, null!));
+			AssertThrowsArgumentNull("list", () => _ = ((IReadOnlyList<int>)null!).FindIndex(0, _ => true));
+			AssertThrowsArgumentNull("list", () => _ = ((IReadOnlyList<int>)null!).FindIndex(_ => true));
 
-			AssertThrowsArgumentNull(() => ((ICollection<int>)null!).EnsureCount(1), "collection");
-			AssertThrowsInvalidOperation(() =>
+			AssertThrowsArgumentNull("collection", () => ((ICollection<int>)null!).EnsureCount(1));
+			Assert.ThrowsExactly<InvalidOperationException>(() =>
 				((ICollection<int>)new ReadOnlyCollection<int>(new List<int>())).EnsureCount(1));
-			AssertThrowsArgumentOutOfRange(() => new List<int>().EnsureCount(-1), "requiredCount");
+			AssertThrowsArgumentOutOfRange("requiredCount", () => new List<int>().EnsureCount(-1));
 
-			AssertThrowsArgumentNull(() =>
-				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttribute<ObsoleteAttribute>(), "provider");
-			AssertThrowsArgumentNull(() =>
-				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttributes<ObsoleteAttribute>(), "provider");
-			AssertThrowsArgumentNull(() => _ = ((Type)null!).ImplementsInterface(typeof(IDisposable)), "subject");
-			AssertThrowsArgumentNull(() => _ = typeof(MemoryStream).ImplementsInterface(null!), "interfaceType");
-			AssertThrowsArgument(() => _ = typeof(MemoryStream).ImplementsInterface(typeof(MemoryStream)), "interfaceType");
-			AssertThrowsArgumentNull(() =>
-				_ = ((Type)null!).IsCuriouslyRecurringTemplatePattern(typeof(IComparable<>)), "subject");
-			AssertThrowsArgumentNull(() =>
-				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(null!), "genericType");
-			AssertThrowsArgument(() =>
-				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(string)), "genericType");
-			AssertThrowsArgument(() =>
-				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(Dictionary<,>)), "genericType");
-			AssertThrowsArgumentNull(() =>
-				((Type)null!).ForceStaticCtorToRunViaProperty(nameof(Environment.TickCount)), "subject");
-			AssertThrowsArgumentNull(() => typeof(Environment).ForceStaticCtorToRunViaProperty(null!), "staticPropertyName");
-			AssertThrowsArgument(() => typeof(Environment).ForceStaticCtorToRunViaProperty(string.Empty), "staticPropertyName");
-			AssertThrowsArgumentNull(() => _ = ((IEnumerable<string>)null!).OrderBy(v => v, string.CompareOrdinal), "src");
-			AssertThrowsArgumentNull(() =>
-				_ = TypeExtensions.OrderBy<string, string>(["value"], null!, string.CompareOrdinal), "keySelector");
-			AssertThrowsArgumentNull(() =>
-				_ = TypeExtensions.OrderBy<string, string>(["value"], v => v, null!), "comparerFunc");
-			AssertThrowsArgumentNull(() =>
-				_ = ((IEnumerable<string>)null!).OrderByDescending(v => v, string.CompareOrdinal), "src");
-			AssertThrowsArgumentNull(() =>
-				_ = TypeExtensions.OrderByDescending<string, string>(["value"], null!, string.CompareOrdinal),
-				"keySelector");
-			AssertThrowsArgumentNull(() =>
-				_ = TypeExtensions.OrderByDescending<string, string>(["value"], v => v, null!), "comparerFunc");
+			AssertThrowsArgumentNull("provider",
+				() =>
+				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttribute<ObsoleteAttribute>());
+			AssertThrowsArgumentNull("provider",
+				() =>
+				_ = ((System.Reflection.ICustomAttributeProvider)null!).GetCustomAttributes<ObsoleteAttribute>());
+			AssertThrowsArgumentNull("subject", () => _ = ((Type)null!).ImplementsInterface(typeof(IDisposable)));
+			AssertThrowsArgumentNull("interfaceType", () => _ = typeof(MemoryStream).ImplementsInterface(null!));
+			AssertThrowsArgument("interfaceType", () => _ = typeof(MemoryStream).ImplementsInterface(typeof(MemoryStream)));
+			AssertThrowsArgumentNull("subject",
+				() =>
+				_ = ((Type)null!).IsCuriouslyRecurringTemplatePattern(typeof(IComparable<>)));
+			AssertThrowsArgumentNull("genericType",
+				() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(null!));
+			AssertThrowsArgument("genericType",
+				() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(string)));
+			AssertThrowsArgument("genericType",
+				() =>
+				_ = typeof(string).IsCuriouslyRecurringTemplatePattern(typeof(Dictionary<,>)));
+			AssertThrowsArgumentNull("subject",
+				() =>
+				((Type)null!).ForceStaticCtorToRunViaProperty(nameof(Environment.TickCount)));
+			AssertThrowsArgumentNull("staticPropertyName", () => typeof(Environment).ForceStaticCtorToRunViaProperty(null!));
+			AssertThrowsArgument("staticPropertyName", () => typeof(Environment).ForceStaticCtorToRunViaProperty(string.Empty));
+			AssertThrowsArgumentNull("src", () => _ = ((IEnumerable<string>)null!).OrderBy(v => v, string.CompareOrdinal));
+			AssertThrowsArgumentNull("keySelector",
+				() =>
+				_ = TypeExtensions.OrderBy<string, string>(["value"], null!, string.CompareOrdinal));
+			AssertThrowsArgumentNull("comparerFunc",
+				() =>
+				_ = TypeExtensions.OrderBy<string, string>(["value"], v => v, null!));
+			AssertThrowsArgumentNull("src",
+				() =>
+				_ = ((IEnumerable<string>)null!).OrderByDescending(v => v, string.CompareOrdinal));
+			AssertThrowsArgumentNull("keySelector",
+				() =>
+				_ = TypeExtensions.OrderByDescending<string, string>(["value"], null!, string.CompareOrdinal));
+			AssertThrowsArgumentNull("comparerFunc",
+				() =>
+				_ = TypeExtensions.OrderByDescending<string, string>(["value"], v => v, null!));
 		}
 
 		[TestMethod]
@@ -479,31 +469,33 @@ namespace KSoft.Test
 			using var tiger = new Security.Cryptography.TigerHash();
 
 			System.Diagnostics.TraceSource traceSource = null!;
-			AssertThrowsArgumentNull(() =>
-				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, new object[] { 1 }), "source");
-			AssertThrowsArgumentNull(() =>
-				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, (object)1), "source");
-			AssertThrowsArgumentNull(() => _ = ((Stream)null!).BytesRemaining(), "s");
-			AssertThrowsArgumentNull(() => _ = ((Stream)null!).BytesRemaining(0), "s");
-			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining());
-			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.BytesRemaining(1));
-			AssertThrowsArgumentOutOfRange(() => _ = seekableStream.BytesRemaining(4), "endPosition");
-			AssertThrowsArgumentNull(() => _ = ((Stream)null!).HasPermissions(FileAccess.Read), "s");
-			AssertThrowsInvalidOperation(() => _ = nonSeekableStream.HasPermissions(FileAccess.Read));
-			AssertThrowsArgumentNull(() => _ = ((BinaryReader)null!).PeekByte(), "r");
-			AssertThrowsArgumentOutOfRange(() => _ = (-1L).ToFilePositionHexString(), "filePos");
+			AssertThrowsArgumentNull("source",
+				() =>
+				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, new object[] { 1 }));
+			AssertThrowsArgumentNull("source",
+				() =>
+				traceSource.TraceDataSansId(System.Diagnostics.TraceEventType.Error, (object)1));
+			AssertThrowsArgumentNull("s", () => _ = ((Stream)null!).BytesRemaining());
+			AssertThrowsArgumentNull("s", () => _ = ((Stream)null!).BytesRemaining(0));
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = nonSeekableStream.BytesRemaining());
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = nonSeekableStream.BytesRemaining(1));
+			AssertThrowsArgumentOutOfRange("endPosition", () => _ = seekableStream.BytesRemaining(4));
+			AssertThrowsArgumentNull("s", () => _ = ((Stream)null!).HasPermissions(FileAccess.Read));
+			Assert.ThrowsExactly<InvalidOperationException>(() => _ = nonSeekableStream.HasPermissions(FileAccess.Read));
+			AssertThrowsArgumentNull("r", () => _ = ((BinaryReader)null!).PeekByte());
+			AssertThrowsArgumentOutOfRange("filePos", () => _ = (-1L).ToFilePositionHexString());
 
-			AssertThrowsArgumentNull(() => _ = sha256.ComputeHash((Stream)null!, 0, 1), "inputStream");
-			AssertThrowsArgument(() => _ = sha256.ComputeHash(nonSeekableStream, 0, 1), "inputStream");
-			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, -2, 1), "offset");
-			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, 0, -1), "count");
-			AssertThrowsArgumentOutOfRange(() => _ = sha256.ComputeHash(seekableStream, 1, 3), "count");
+			AssertThrowsArgumentNull("inputStream", () => _ = sha256.ComputeHash((Stream)null!, 0, 1));
+			AssertThrowsArgument("inputStream", () => _ = sha256.ComputeHash(nonSeekableStream, 0, 1));
+			AssertThrowsArgumentOutOfRange("offset", () => _ = sha256.ComputeHash(seekableStream, -2, 1));
+			AssertThrowsArgumentOutOfRange("count", () => _ = sha256.ComputeHash(seekableStream, 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => _ = sha256.ComputeHash(seekableStream, 1, 3));
 
-			AssertThrowsArgumentNull(() => _ = tiger.ComputeHash((Stream)null!, 0, 1), "inputStream");
-			AssertThrowsArgument(() => _ = tiger.ComputeHash(nonSeekableStream, 0, 1), "inputStream");
-			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, -2, 1), "offset");
-			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 0, -1), "count");
-			AssertThrowsArgumentOutOfRange(() => _ = tiger.ComputeHash(seekableStream, 1, 3), "count");
+			AssertThrowsArgumentNull("inputStream", () => _ = tiger.ComputeHash((Stream)null!, 0, 1));
+			AssertThrowsArgument("inputStream", () => _ = tiger.ComputeHash(nonSeekableStream, 0, 1));
+			AssertThrowsArgumentOutOfRange("offset", () => _ = tiger.ComputeHash(seekableStream, -2, 1));
+			AssertThrowsArgumentOutOfRange("count", () => _ = tiger.ComputeHash(seekableStream, 0, -1));
+			AssertThrowsArgumentOutOfRange("count", () => _ = tiger.ComputeHash(seekableStream, 1, 3));
 		}
 
 		[TestMethod]
@@ -517,32 +509,36 @@ namespace KSoft.Test
 			int notifications = 0;
 			System.ComponentModel.PropertyChangedEventHandler handler = (_, _) => notifications++;
 
-			AssertThrowsArgumentNull(() =>
-				handler.SafeNotify(this, (System.ComponentModel.PropertyChangedEventArgs[])null!), "argsList");
-			AssertThrowsArgumentOutOfRange(() => handler.SafeNotify(this, argsList, -1), "startIndex");
-			AssertThrowsArgumentOutOfRange(() => handler.SafeNotify(this, argsList, argsList.Length + 1), "startIndex");
+			AssertThrowsArgumentNull("argsList",
+				() =>
+				handler.SafeNotify(this, (System.ComponentModel.PropertyChangedEventArgs[])null!));
+			AssertThrowsArgumentOutOfRange("startIndex", () => handler.SafeNotify(this, argsList, -1));
+			AssertThrowsArgumentOutOfRange("startIndex", () => handler.SafeNotify(this, argsList, argsList.Length + 1));
 			handler.SafeNotify(this, argsList, 1);
 			Assert.AreEqual(1, notifications);
 			handler.SafeNotify(this, Array.Empty<System.ComponentModel.PropertyChangedEventArgs>());
 			Assert.AreEqual(1, notifications);
 
 			EventHandler<EventArgs> eventToTrigger = null!;
-			AssertThrowsArgumentNull(() =>
-				_ = eventToTrigger.SafeTrigger<EventArgs, int>(this, EventArgs.Empty, null!), "retrieveDataFunction");
+			AssertThrowsArgumentNull("retrieveDataFunction",
+				() =>
+				_ = eventToTrigger.SafeTrigger<EventArgs, int>(this, EventArgs.Empty, null!));
 		}
 
 		[TestMethod]
 		public void TypeExtensions_ObservableCollectionGuards_ThrowExpectedExceptions()
 		{
-			AssertThrowsArgumentNull(() => TypeExtensions.AddRange<int>(null!, [1]), "list");
-			AssertThrowsArgumentNull(() => new ObservableCollection<int>().AddRange(null!), "collection");
-			AssertThrowsArgumentNull(() => _ = TypeExtensions.BinarySearch<int>(null!, 1, null!), "list");
-			AssertThrowsArgumentNull(() => TypeExtensions.Sort<int>(null!), "list");
-			AssertThrowsArgumentNull(() =>
-				TypeExtensions.Sort<int>(null!, Comparer<int>.Default), "list");
-			AssertThrowsArgumentNull(() =>
-				TypeExtensions.Sort<int>(null!, (x, y) => x.CompareTo(y)), "list");
-			AssertThrowsArgumentNull(() => TypeExtensions.Reverse<int>(null!), "list");
+			AssertThrowsArgumentNull("list", () => TypeExtensions.AddRange<int>(null!, [1]));
+			AssertThrowsArgumentNull("collection", () => new ObservableCollection<int>().AddRange(null!));
+			AssertThrowsArgumentNull("list", () => _ = TypeExtensions.BinarySearch<int>(null!, 1, null!));
+			AssertThrowsArgumentNull("list", () => TypeExtensions.Sort<int>(null!));
+			AssertThrowsArgumentNull("list",
+				() =>
+				TypeExtensions.Sort<int>(null!, Comparer<int>.Default));
+			AssertThrowsArgumentNull("list",
+				() =>
+				TypeExtensions.Sort<int>(null!, (x, y) => x.CompareTo(y)));
+			AssertThrowsArgumentNull("list", () => TypeExtensions.Reverse<int>(null!));
 
 			var collection = new ObservableCollection<int> { 3, 1 };
 			collection.AddRange([2]);

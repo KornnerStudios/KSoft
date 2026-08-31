@@ -8,12 +8,6 @@ namespace KSoft.Collections.Test;
 [TestClass]
 public sealed class InvertedComparerTest : BaseTestClass
 {
-	static void AssertThrowsArgumentNull(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
 
 	[TestMethod]
 	public void NullComparer_ThrowsArgumentNullException()

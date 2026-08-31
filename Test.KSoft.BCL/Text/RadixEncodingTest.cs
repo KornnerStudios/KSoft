@@ -6,12 +6,6 @@ namespace KSoft.Text.Test
 	[TestClass]
 	public partial class RadixEncodingTest : BaseTestClass
 	{
-		static void AssertThrowsArgumentNull(Action action, string paramName)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(paramName, exception.ParamName);
-		}
 
 		static bool Validate(RadixEncoding encoding, byte[] bytes, bool writeToConsole = false)
 		{
@@ -35,9 +29,9 @@ namespace KSoft.Text.Test
 		{
 			var encoding = new RadixEncoding("01");
 
-			AssertThrowsArgumentNull(() => _ = new RadixEncoding(null!), "digits");
-			AssertThrowsArgumentNull(() => _ = encoding.Encode(null!), "bytes");
-			AssertThrowsArgumentNull(() => _ = encoding.Decode(null!), "radixChars");
+			AssertThrowsArgumentNull("digits", () => _ = new RadixEncoding(null!));
+			AssertThrowsArgumentNull("bytes", () => _ = encoding.Encode(null!));
+			AssertThrowsArgumentNull("radixChars", () => _ = encoding.Decode(null!));
 		}
 
 		[TestMethod]

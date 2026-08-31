@@ -13,13 +13,6 @@ public sealed class PropertyComparerTest : BaseTestClass
 		public string Name { get; set; } = string.Empty;
 	}
 
-	static void AssertThrowsArgumentNull(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
-
 	[TestMethod]
 	public void Constructor_NullPropertyInfo_ThrowsArgumentNullException()
 	{

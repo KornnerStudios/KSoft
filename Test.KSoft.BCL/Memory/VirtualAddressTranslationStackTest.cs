@@ -8,12 +8,6 @@ namespace KSoft.Memory.Test;
 [TestClass]
 public sealed class VirtualAddressTranslationStackTest : BaseTestClass
 {
-	static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(parameterName, exception.ParamName);
-	}
 
 	[TestMethod]
 	public void Constructor_InvalidProcessorSize_ThrowsArgumentOutOfRangeException()

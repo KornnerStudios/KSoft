@@ -50,27 +50,6 @@ public class EndianStreamsTest : BaseTestClass
 		}
 	}
 
-	static void AssertThrowsArgumentNull(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgument(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
-	static void AssertThrowsArgumentOutOfRange(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
 	static void ReadTag32WithUndersizedSpan(EndianReader reader)
 	{
 		Span<char> tag = stackalloc char[3];
@@ -103,39 +82,33 @@ public class EndianStreamsTest : BaseTestClass
 	[TestMethod]
 	public void Constructors_NullEndianReaderInputs_ThrowArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new EndianReader(null!), "input");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianReader(null!, Encoding.UTF8, Shell.EndianFormat.Big),
-			"input");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianReader(new MemoryStream(), null!, Shell.EndianFormat.Big),
-			"encoding");
+		AssertThrowsArgumentNull("input", () => _ = new EndianReader(null!));
+		AssertThrowsArgumentNull("input",
+			() => _ = new EndianReader(null!, Encoding.UTF8, Shell.EndianFormat.Big));
+		AssertThrowsArgumentNull("encoding",
+			() => _ = new EndianReader(new MemoryStream(), null!, Shell.EndianFormat.Big));
 	}
 
 	[TestMethod]
 	public void Constructors_NullEndianWriterInputs_ThrowArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new EndianWriter(null!), "output");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianWriter(null!, Encoding.UTF8, Shell.EndianFormat.Big),
-			"output");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianWriter(new MemoryStream(), null!, Shell.EndianFormat.Big),
-			"encoding");
+		AssertThrowsArgumentNull("output", () => _ = new EndianWriter(null!));
+		AssertThrowsArgumentNull("output",
+			() => _ = new EndianWriter(null!, Encoding.UTF8, Shell.EndianFormat.Big));
+		AssertThrowsArgumentNull("encoding",
+			() => _ = new EndianWriter(new MemoryStream(), null!, Shell.EndianFormat.Big));
 	}
 
 	[TestMethod]
 	public void Constructors_NullEndianStreamInputs_ThrowArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new EndianStream(null!), "baseStream");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianStream(null!, Encoding.UTF8, Shell.EndianFormat.Big),
-			"baseStream");
-		AssertThrowsArgumentNull(
-			() => _ = new EndianStream(new MemoryStream(), null!, Shell.EndianFormat.Big),
-			"encoding");
-		AssertThrowsArgumentNull(() => _ = EndianStream.UsingReader(null!), "reader");
-		AssertThrowsArgumentNull(() => _ = EndianStream.UsingWriter(null!), "writer");
+		AssertThrowsArgumentNull("baseStream", () => _ = new EndianStream(null!));
+		AssertThrowsArgumentNull("baseStream",
+			() => _ = new EndianStream(null!, Encoding.UTF8, Shell.EndianFormat.Big));
+		AssertThrowsArgumentNull("encoding",
+			() => _ = new EndianStream(new MemoryStream(), null!, Shell.EndianFormat.Big));
+		AssertThrowsArgumentNull("reader", () => _ = EndianStream.UsingReader(null!));
+		AssertThrowsArgumentNull("writer", () => _ = EndianStream.UsingWriter(null!));
 	}
 
 	[TestMethod]
@@ -146,34 +119,34 @@ public class EndianStreamsTest : BaseTestClass
 		using var writeStream = new MemoryStream();
 		using var writer = new EndianWriter(writeStream);
 
-		AssertThrowsArgumentOutOfRange(() => reader.Pad(0), "byteCount");
-		AssertThrowsArgumentOutOfRange(() => reader.Pad(-1), "byteCount");
-		AssertThrowsArgumentOutOfRange(() => writer.Pad(0), "byteCount");
-		AssertThrowsArgumentOutOfRange(() => writer.Pad(-1), "byteCount");
+		AssertThrowsArgumentOutOfRange("byteCount", () => reader.Pad(0));
+		AssertThrowsArgumentOutOfRange("byteCount", () => reader.Pad(-1));
+		AssertThrowsArgumentOutOfRange("byteCount", () => writer.Pad(0));
+		AssertThrowsArgumentOutOfRange("byteCount", () => writer.Pad(-1));
 
-		AssertThrowsArgumentNull(() => _ = reader.Read((byte[])null!, 0), "buffer");
-		AssertThrowsArgumentNull(() => _ = reader.Read((byte[])null!), "buffer");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new byte[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new byte[1], 2), "count");
-		AssertThrowsArgumentNull(() => _ = reader.Read((char[])null!, 0), "buffer");
-		AssertThrowsArgumentNull(() => _ = reader.Read((char[])null!), "buffer");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new char[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => _ = reader.Read(new char[1], 2), "count");
+		AssertThrowsArgumentNull("buffer", () => _ = reader.Read((byte[])null!, 0));
+		AssertThrowsArgumentNull("buffer", () => _ = reader.Read((byte[])null!));
+		AssertThrowsArgumentOutOfRange("count", () => _ = reader.Read(new byte[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => _ = reader.Read(new byte[1], 2));
+		AssertThrowsArgumentNull("buffer", () => _ = reader.Read((char[])null!, 0));
+		AssertThrowsArgumentNull("buffer", () => _ = reader.Read((char[])null!));
+		AssertThrowsArgumentOutOfRange("count", () => _ = reader.Read(new char[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => _ = reader.Read(new char[1], 2));
 
-		AssertThrowsArgumentNull(() => writer.Write((byte[])null!, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => writer.Write(new byte[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => writer.Write(new byte[1], 2), "count");
-		AssertThrowsArgumentNull(() => writer.Write((char[])null!, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => writer.Write(new char[1], 2), "count");
+		AssertThrowsArgumentNull("value", () => writer.Write((byte[])null!, 0));
+		AssertThrowsArgumentOutOfRange("count", () => writer.Write(new byte[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => writer.Write(new byte[1], 2));
+		AssertThrowsArgumentNull("value", () => writer.Write((char[])null!, 0));
+		AssertThrowsArgumentOutOfRange("count", () => writer.Write(new char[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => writer.Write(new char[1], 2));
 
-		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0), "encoding");
-		AssertThrowsArgumentNull(() => _ = reader.ReadString((Text.StringStorageEncoding)null!), "encoding");
-		AssertThrowsArgumentNull(() => writer.Write("test".AsSpan(), (Text.StringStorageEncoding)null!), "encoding");
+		AssertThrowsArgumentNull("encoding", () => _ = reader.ReadString((Text.StringStorageEncoding)null!, 0));
+		AssertThrowsArgumentNull("encoding", () => _ = reader.ReadString((Text.StringStorageEncoding)null!));
+		AssertThrowsArgumentNull("encoding", () => writer.Write("test".AsSpan(), (Text.StringStorageEncoding)null!));
 		Assert.ThrowsExactly<InvalidDataException>(() =>
 			reader.ReadString(Memory.Strings.StringStorage.AsciiString, TypeExtensions.kNone));
-		AssertThrowsArgumentNull(() => _ = reader.Read<TestEnum>(null!), "implementation");
-		AssertThrowsArgumentNull(() => writer.Write(TestEnum.None, null!), "implementation");
+		AssertThrowsArgumentNull("implementation", () => _ = reader.Read<TestEnum>(null!));
+		AssertThrowsArgumentNull("implementation", () => writer.Write(TestEnum.None, null!));
 	}
 
 	[TestMethod]
@@ -315,12 +288,12 @@ public class EndianStreamsTest : BaseTestClass
 		using var writeStream = new MemoryStream();
 		using var writer = new EndianWriter(writeStream);
 
-		AssertThrowsArgumentOutOfRange(() => ReadTag32WithUndersizedSpan(reader), "tag");
-		AssertThrowsArgumentOutOfRange(() => ReadTag64WithUndersizedSpan(reader), "tag");
+		AssertThrowsArgumentOutOfRange("tag", () => ReadTag32WithUndersizedSpan(reader));
+		AssertThrowsArgumentOutOfRange("tag", () => ReadTag64WithUndersizedSpan(reader));
 		Assert.AreEqual(0L, readStream.Position);
 
-		AssertThrowsArgumentOutOfRange(() => WriteTag32WithUndersizedSpan(writer), "tag");
-		AssertThrowsArgumentOutOfRange(() => WriteTag32WithOversizedSpan(writer), "tag");
+		AssertThrowsArgumentOutOfRange("tag", () => WriteTag32WithUndersizedSpan(writer));
+		AssertThrowsArgumentOutOfRange("tag", () => WriteTag32WithOversizedSpan(writer));
 		Assert.AreEqual(0L, writeStream.Position);
 		Assert.AreEqual(0L, writeStream.Length);
 	}
@@ -365,46 +338,42 @@ public class EndianStreamsTest : BaseTestClass
 		string text = string.Empty;
 		TestEnum enumValue = TestEnum.None;
 
-		AssertThrowsArgumentOutOfRange(() => endianStream.Pad(0), "byteCount");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Pad(-1), "byteCount");
+		AssertThrowsArgumentOutOfRange("byteCount", () => endianStream.Pad(0));
+		AssertThrowsArgumentOutOfRange("byteCount", () => endianStream.Pad(-1));
 
-		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!, 0, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], -1, 0), "index");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 1, 0), "index");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 0, -1), "count");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[2], 1, 2), "count");
-		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new byte[1], 2), "count");
-		AssertThrowsArgumentNull(() => endianStream.Stream((byte[])null!), "value");
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((byte[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("index", () => endianStream.Stream(new byte[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("index", () => endianStream.Stream(new byte[1], 1, 0));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new byte[1], 0, -1));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new byte[2], 1, 2));
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((byte[])null!, 0));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new byte[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new byte[1], 2));
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((byte[])null!));
 
-		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!, 0, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], -1, 0), "index");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 1, 0), "index");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 0, -1), "count");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[2], 1, 2), "count");
-		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!, 0), "value");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], -1), "count");
-		AssertThrowsArgumentOutOfRange(() => endianStream.Stream(new char[1], 2), "count");
-		AssertThrowsArgumentNull(() => endianStream.Stream((char[])null!), "value");
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((char[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("index", () => endianStream.Stream(new char[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("index", () => endianStream.Stream(new char[1], 1, 0));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new char[1], 0, -1));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new char[2], 1, 2));
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((char[])null!, 0));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new char[1], -1));
+		AssertThrowsArgumentOutOfRange("count", () => endianStream.Stream(new char[1], 2));
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((char[])null!));
 
-		AssertThrowsArgumentNull(() => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!), "encoding");
-		AssertThrowsArgumentNull(() => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!, 0), "encoding");
-		AssertThrowsArgumentNull(() => endianStream.Stream(ref enumValue, (IEnumEndianStreamer<TestEnum>)null!),
-			"implementation");
+		AssertThrowsArgumentNull("encoding", () => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!));
+		AssertThrowsArgumentNull("encoding", () => endianStream.Stream(ref text, (Text.StringStorageEncoding)null!, 0));
+		AssertThrowsArgumentNull("implementation",
+			() => endianStream.Stream(ref enumValue, (IEnumEndianStreamer<TestEnum>)null!));
 
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamSignature(null!, Memory.Strings.StringStorage.CStringAscii),
-			"signature");
-		AssertThrowsArgument(
-			() => endianStream.StreamSignature(string.Empty, Memory.Strings.StringStorage.CStringAscii),
-			"signature");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamSignature(null!, (Text.StringStorageEncoding)null!),
-			"signature");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamSignature("test", (Text.StringStorageEncoding)null!),
-			"encoding");
+		AssertThrowsArgumentNull("signature",
+			() => endianStream.StreamSignature(null!, Memory.Strings.StringStorage.CStringAscii));
+		AssertThrowsArgument("signature",
+			() => endianStream.StreamSignature(string.Empty, Memory.Strings.StringStorage.CStringAscii));
+		AssertThrowsArgumentNull("signature",
+			() => endianStream.StreamSignature(null!, (Text.StringStorageEncoding)null!));
+		AssertThrowsArgumentNull("encoding",
+			() => endianStream.StreamSignature("test", (Text.StringStorageEncoding)null!));
 	}
 
 	[TestMethod]
@@ -421,50 +390,37 @@ public class EndianStreamsTest : BaseTestClass
 		int intValue = 0;
 		var context = new object();
 
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamValue(ref structValue, (Func<TestStructStreamable>)null!),
-			"initializer");
-		AssertThrowsArgumentNull(() => endianStream.StreamObject((TestClassStreamable)null!), "value");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamObject(ref nullClassValue, () => new TestClassStreamable()),
-			"value");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamObject(ref classValue, (Func<TestClassStreamable>)null!),
-			"initializer");
-		AssertThrowsArgumentNull(() => endianStream.Stream((TestClassSerializable)null!), "value");
-		AssertThrowsArgumentNull(
-			() => endianStream.Stream(ref nullSerializableValue, () => new TestClassSerializable()),
-			"value");
-		AssertThrowsArgumentNull(
-			() => endianStream.Stream(ref serializableValue, (Func<TestClassSerializable>)null!),
-			"initializer");
+		AssertThrowsArgumentNull("initializer",
+			() => endianStream.StreamValue(ref structValue, (Func<TestStructStreamable>)null!));
+		AssertThrowsArgumentNull("value", () => endianStream.StreamObject((TestClassStreamable)null!));
+		AssertThrowsArgumentNull("value",
+			() => endianStream.StreamObject(ref nullClassValue, () => new TestClassStreamable()));
+		AssertThrowsArgumentNull("initializer",
+			() => endianStream.StreamObject(ref classValue, (Func<TestClassStreamable>)null!));
+		AssertThrowsArgumentNull("value", () => endianStream.Stream((TestClassSerializable)null!));
+		AssertThrowsArgumentNull("value",
+			() => endianStream.Stream(ref nullSerializableValue, () => new TestClassSerializable()));
+		AssertThrowsArgumentNull("initializer",
+			() => endianStream.Stream(ref serializableValue, (Func<TestClassSerializable>)null!));
 
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamValueMethods(ref intValue, null!, (w, value) => { }),
-			"read");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamValueMethods(ref intValue, (EndianReader r, out int value) => value = 0, null!),
-			"write");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamObjectMethods<object>(null!, (r, value) => { }, (w, value) => { }),
-			"theObj");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamObjectMethods(context, null!, (w, value) => { }),
-			"read");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamObjectMethods(context, (r, value) => { }, null!),
-			"write");
-		AssertThrowsArgumentNull(() => endianStream.StreamMethods(null!, w => { }), "read");
-		AssertThrowsArgumentNull(() => endianStream.StreamMethods(r => { }, null!), "write");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamMethods<object>(null!, (value, r) => { }, (value, w) => { }),
-			"context");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamMethods(context, null!, (value, w) => { }),
-			"read");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamMethods(context, (value, r) => { }, null!),
-			"write");
+		AssertThrowsArgumentNull("read",
+			() => endianStream.StreamValueMethods(ref intValue, null!, (w, value) => { }));
+		AssertThrowsArgumentNull("write",
+			() => endianStream.StreamValueMethods(ref intValue, (EndianReader r, out int value) => value = 0, null!));
+		AssertThrowsArgumentNull("theObj",
+			() => endianStream.StreamObjectMethods<object>(null!, (r, value) => { }, (w, value) => { }));
+		AssertThrowsArgumentNull("read",
+			() => endianStream.StreamObjectMethods(context, null!, (w, value) => { }));
+		AssertThrowsArgumentNull("write",
+			() => endianStream.StreamObjectMethods(context, (r, value) => { }, null!));
+		AssertThrowsArgumentNull("read", () => endianStream.StreamMethods(null!, w => { }));
+		AssertThrowsArgumentNull("write", () => endianStream.StreamMethods(r => { }, null!));
+		AssertThrowsArgumentNull("context",
+			() => endianStream.StreamMethods<object>(null!, (value, r) => { }, (value, w) => { }));
+		AssertThrowsArgumentNull("read",
+			() => endianStream.StreamMethods(context, null!, (value, w) => { }));
+		AssertThrowsArgumentNull("write",
+			() => endianStream.StreamMethods(context, (value, r) => { }, null!));
 
 		using var reader = new EndianReader(new MemoryStream());
 		using var readingEndianStream = EndianStream.UsingReader(reader);
@@ -495,61 +451,50 @@ public class EndianStreamsTest : BaseTestClass
 		EndianStream.WriteArrayDelegate<TestStructSerializable> writeArray = (EndianWriter w,
 			TestStructSerializable[] value) => { };
 
-		AssertThrowsArgumentNull(() => endianStream.StreamArray((TestStructSerializable[])null!), "values");
-		AssertThrowsArgumentNull(() => endianStream.StreamArrayInt32(ref nullStructValues), "values");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArrayInt32(ref nullStructValues, UnusedStreamArrayValue),
-			"values");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArrayInt32(ref structValues, nullStreamFunc),
-			"streamFunc");
+		AssertThrowsArgumentNull("values", () => endianStream.StreamArray((TestStructSerializable[])null!));
+		AssertThrowsArgumentNull("values", () => endianStream.StreamArrayInt32(ref nullStructValues));
+		AssertThrowsArgumentNull("values",
+			() => endianStream.StreamArrayInt32(ref nullStructValues, UnusedStreamArrayValue));
+		AssertThrowsArgumentNull("streamFunc",
+			() => endianStream.StreamArrayInt32(ref structValues, nullStreamFunc));
 		Assert.AreEqual(0L, writeStream.Length);
 
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArray((TestClassSerializable[])null!, () => new TestClassSerializable()),
-			"values");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArray(classValues, (Func<TestClassSerializable>)null!),
-			"initializer");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArrayInt32(ref nullClassValues, () => new TestClassSerializable()),
-			"values");
-		AssertThrowsArgumentNull(
-			() => endianStream.StreamArrayInt32(ref classValues, (Func<TestClassSerializable>)null!),
-			"initializer");
+		AssertThrowsArgumentNull("values",
+			() => endianStream.StreamArray((TestClassSerializable[])null!, () => new TestClassSerializable()));
+		AssertThrowsArgumentNull("initializer",
+			() => endianStream.StreamArray(classValues, (Func<TestClassSerializable>)null!));
+		AssertThrowsArgumentNull("values",
+			() => endianStream.StreamArrayInt32(ref nullClassValues, () => new TestClassSerializable()));
+		AssertThrowsArgumentNull("initializer",
+			() => endianStream.StreamArrayInt32(ref classValues, (Func<TestClassSerializable>)null!));
 		Assert.AreEqual(0L, writeStream.Length);
 
-		AssertThrowsArgumentNull(
+		AssertThrowsArgumentNull("array",
 			() => endianStream.StreamArrayMethods(
 				ref nullStructValues,
 				readArray,
-				writeArray),
-			"array");
-		AssertThrowsArgumentNull(
+				writeArray));
+		AssertThrowsArgumentNull("read",
 			() => endianStream.StreamArrayMethods(
 				ref structValues,
 				(EndianStream.ReadArrayDelegate<TestStructSerializable>)null!,
-				writeArray),
-			"read");
-		AssertThrowsArgumentNull(
+				writeArray));
+		AssertThrowsArgumentNull("write",
 			() => endianStream.StreamArrayMethods(
 				ref structValues,
 				readArray,
-				(EndianStream.WriteArrayDelegate<TestStructSerializable>)null!),
-			"write");
+				(EndianStream.WriteArrayDelegate<TestStructSerializable>)null!));
 
-		AssertThrowsArgumentNull(
+		AssertThrowsArgumentNull("values",
 			() => endianStream.StreamListElementsWithClear<TestClassSerializable>(
 				null!,
 				0,
-				() => new TestClassSerializable()),
-			"values");
-		AssertThrowsArgumentNull(
+				() => new TestClassSerializable()));
+		AssertThrowsArgumentNull("initializer",
 			() => endianStream.StreamListElementsWithClear(
 				listValues,
 				0,
-				(Func<TestClassSerializable>)null!),
-			"initializer");
+				(Func<TestClassSerializable>)null!));
 	}
 
 	[TestMethod]
@@ -752,25 +697,25 @@ public class EndianStreamsTest : BaseTestClass
 		using var reader = new EndianReader(new MemoryStream(new byte[2]), Shell.EndianFormat.Big);
 		using var readerEndianStream = EndianStream.UsingReader(reader);
 
-		AssertThrowsArgumentNull(() => writer.WriteFixedArray((bool[])null!, 0, 0), "array");
-		AssertThrowsArgumentOutOfRange(() => writer.WriteFixedArray(new bool[1], -1, 0), "startIndex");
-		AssertThrowsArgumentOutOfRange(() => writer.WriteFixedArray(new bool[1], 0, -1), "length");
-		AssertThrowsArgumentNull(() => writer.WriteFixedArray((bool[])null!), "array");
+		AssertThrowsArgumentNull("array", () => writer.WriteFixedArray((bool[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("startIndex", () => writer.WriteFixedArray(new bool[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("length", () => writer.WriteFixedArray(new bool[1], 0, -1));
+		AssertThrowsArgumentNull("array", () => writer.WriteFixedArray((bool[])null!));
 
-		AssertThrowsArgumentNull(() => reader.ReadFixedArray((bool[])null!, 0, 0), "array");
-		AssertThrowsArgumentOutOfRange(() => reader.ReadFixedArray(new bool[1], -1, 0), "startIndex");
-		AssertThrowsArgumentOutOfRange(() => reader.ReadFixedArray(new bool[1], 0, -1), "length");
-		AssertThrowsArgumentNull(() => reader.ReadFixedArray((bool[])null!), "array");
+		AssertThrowsArgumentNull("array", () => reader.ReadFixedArray((bool[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("startIndex", () => reader.ReadFixedArray(new bool[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("length", () => reader.ReadFixedArray(new bool[1], 0, -1));
+		AssertThrowsArgumentNull("array", () => reader.ReadFixedArray((bool[])null!));
 
-		AssertThrowsArgumentNull(() => writerEndianStream.StreamFixedArray((bool[])null!, 0, 0), "array");
-		AssertThrowsArgumentOutOfRange(() => writerEndianStream.StreamFixedArray(new bool[1], -1, 0), "startIndex");
-		AssertThrowsArgumentOutOfRange(() => writerEndianStream.StreamFixedArray(new bool[1], 0, -1), "length");
-		AssertThrowsArgumentNull(() => writerEndianStream.StreamFixedArray((bool[])null!), "array");
+		AssertThrowsArgumentNull("array", () => writerEndianStream.StreamFixedArray((bool[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("startIndex", () => writerEndianStream.StreamFixedArray(new bool[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("length", () => writerEndianStream.StreamFixedArray(new bool[1], 0, -1));
+		AssertThrowsArgumentNull("array", () => writerEndianStream.StreamFixedArray((bool[])null!));
 
-		AssertThrowsArgumentNull(() => readerEndianStream.StreamFixedArray((bool[])null!, 0, 0), "array");
-		AssertThrowsArgumentOutOfRange(() => readerEndianStream.StreamFixedArray(new bool[1], -1, 0), "startIndex");
-		AssertThrowsArgumentOutOfRange(() => readerEndianStream.StreamFixedArray(new bool[1], 0, -1), "length");
-		AssertThrowsArgumentNull(() => readerEndianStream.StreamFixedArray((bool[])null!), "array");
+		AssertThrowsArgumentNull("array", () => readerEndianStream.StreamFixedArray((bool[])null!, 0, 0));
+		AssertThrowsArgumentOutOfRange("startIndex", () => readerEndianStream.StreamFixedArray(new bool[1], -1, 0));
+		AssertThrowsArgumentOutOfRange("length", () => readerEndianStream.StreamFixedArray(new bool[1], 0, -1));
+		AssertThrowsArgumentNull("array", () => readerEndianStream.StreamFixedArray((bool[])null!));
 	}
 
 	[TestMethod]

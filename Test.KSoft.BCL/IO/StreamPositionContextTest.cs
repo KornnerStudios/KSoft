@@ -12,27 +12,20 @@ public sealed class StreamPositionContextTest : BaseTestClass
 		public override bool CanSeek => false;
 	}
 
-	static void AssertThrowsArgumentNull(Action action, string paramName)
-	{
-		var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-		Assert.AreEqual(paramName, exception.ParamName);
-	}
-
 	[TestMethod]
 	public void Constructor_InvalidStream_Throws()
 	{
-		AssertThrowsArgumentNull(() => _ = new StreamPositionContext((Stream)null!), "baseStream");
+		AssertThrowsArgumentNull("baseStream", () => _ = new StreamPositionContext((Stream)null!));
 		Assert.ThrowsExactly<InvalidOperationException>(() => _ = new StreamPositionContext(new NonSeekableMemoryStream()));
 	}
 
 	[TestMethod]
 	public void Constructor_NullWrappedStreams_ThrowArgumentNullException()
 	{
-		AssertThrowsArgumentNull(() => _ = new StreamPositionContext((BinaryReader)null!), "stream");
-		AssertThrowsArgumentNull(() => _ = new StreamPositionContext((BinaryWriter)null!), "stream");
-		AssertThrowsArgumentNull(() => _ = new StreamPositionContext((StreamReader)null!), "stream");
-		AssertThrowsArgumentNull(() => _ = new StreamPositionContext((StreamWriter)null!), "stream");
+		AssertThrowsArgumentNull("stream", () => _ = new StreamPositionContext((BinaryReader)null!));
+		AssertThrowsArgumentNull("stream", () => _ = new StreamPositionContext((BinaryWriter)null!));
+		AssertThrowsArgumentNull("stream", () => _ = new StreamPositionContext((StreamReader)null!));
+		AssertThrowsArgumentNull("stream", () => _ = new StreamPositionContext((StreamWriter)null!));
 	}
 
 	[TestMethod]

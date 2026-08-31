@@ -31,27 +31,6 @@ namespace KSoft.Bitwise.Test
 			(short)BsCode.ArrayEnd,
 		];
 
-		static void AssertThrowsArgumentNull(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentNullException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgumentOutOfRange(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
-		static void AssertThrowsArgument(string parameterName, Action action)
-		{
-			var exception = Assert.ThrowsExactly<ArgumentException>(action);
-
-			Assert.AreEqual(parameterName, exception.ParamName);
-		}
-
 		[TestMethod]
 		public void SwapIntegersTest()
 		{
@@ -386,24 +365,24 @@ namespace KSoft.Bitwise.Test
 		[TestMethod]
 		public void BufferOffsetValidationTest()
 		{
-			AssertThrows<ArgumentNullException>(() => ByteSwap.SwapUInt16(null!, 0));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 1));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 2));
+			Assert.Throws<ArgumentNullException>(() => ByteSwap.SwapUInt16(null!, 0));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 2));
 
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt24(new byte[3], 1));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt32(new byte[4], 1));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(new byte[5], 1));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt64(new byte[8], 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt24(new byte[3], 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt32(new byte[4], 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(new byte[5], 1));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt64(new byte[8], 1));
 
-			AssertThrows<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null!, 0, 0x1234U));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], -1, 0x1234U));
-			AssertThrows<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], 1, 0x12345678U));
-			AssertThrows<ArgumentOutOfRangeException>(
+			Assert.Throws<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null!, 0, 0x1234U));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], -1, 0x1234U));
+			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], 1, 0x12345678U));
+			Assert.Throws<ArgumentOutOfRangeException>(
 				() => ByteSwap.ReplaceBytesUInt24(new byte[3], 1, 0x123456));
-			AssertThrows<ArgumentOutOfRangeException>(
+			Assert.Throws<ArgumentOutOfRangeException>(
 				() => ByteSwap.ReplaceBytesUInt40(new byte[5], 1, 0x123456789AUL));
-			AssertThrows<ArgumentOutOfRangeException>(
+			Assert.Throws<ArgumentOutOfRangeException>(
 				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(uint) - 1]));
 		}
 
@@ -596,29 +575,6 @@ namespace KSoft.Bitwise.Test
 
 				Assert.AreEqual((byte)(value >> shift), buffer[offset + x]);
 			}
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types",
-			Justification = "Test helper intentionally captures any unexpected exception to report the expected exception type.")]
-		private static void AssertThrows<TException>(Action action)
-			where TException : Exception
-		{
-			try
-			{
-				action();
-			}
-			catch (TException)
-			{
-				return;
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(string.Create(KSoft.Util.InvariantCultureInfo,
-					$"Expected {typeof(TException).Name}, got {ex.GetType().Name}: {ex.Message}"));
-			}
-
-			Assert.Fail(string.Create(KSoft.Util.InvariantCultureInfo,
-				$"Expected {typeof(TException).Name}, but no exception was thrown."));
 		}
 
 		private void AssertBytesAreEqual(int bitCount, ulong expectedValue, byte[] buffer, ref int bufferIndex)
