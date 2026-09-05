@@ -239,7 +239,14 @@ namespace KSoft.Values
 
 		#region Ctor
 		public KGuid(Guid actualGuid)	{ mDataHi=mDataLo=0; mData = actualGuid; }
-		public KGuid(byte[] b)			{ mDataHi=mDataLo=0; mData = new Guid(b); }
+		public KGuid(ReadOnlySpan<byte> bytes)
+		{
+			if (bytes.Length != kSizeOf)
+				throw new ArgumentException("Byte span must be exactly 16 bytes long.", nameof(bytes));
+
+			mDataHi=mDataLo=0;
+			mData = new Guid(bytes);
+		}
 		public KGuid(string g)			{ mDataHi=mDataLo=0; mData = new Guid(g); }
 		public KGuid(long msb, long lsb)
 		{
@@ -248,10 +255,13 @@ namespace KSoft.Values
 			mDataLo = (ulong)lsb;
 		}
 
-		public KGuid(int a, short b, short c, byte[] d)
+		public KGuid(int a, short b, short c, ReadOnlySpan<byte> d)
 		{
+			if (d.Length != 8)
+				throw new ArgumentException("Byte span must be exactly 8 bytes long.", nameof(d));
+
 			mDataHi=mDataLo=0;
-			mData = new Guid(a,b,c,d);
+			mData = new Guid(a, b, c, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
 		}
 		public KGuid(int a, short b, short c, byte d, byte e, byte f, byte g, byte h, byte i, byte j, byte k)
 		{
@@ -481,19 +491,11 @@ namespace KSoft.Values
 		#region Byte Utils
 		public readonly byte[] ToByteArray() => mData.ToByteArray();
 
-		public readonly void ToByteBuffer(byte[] buffer, int index = 0)
+		public readonly void ToByteBuffer(Span<byte> buffer)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(index);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(index, buffer.Length - kSizeOf);
+			ArgumentOutOfRangeException.ThrowIfLessThan(buffer.Length, kSizeOf, nameof(buffer));
 
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData1(mData)); index += sizeof(int);
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData2(mData)); index += sizeof(short);
-			Bitwise.ByteSwap.ReplaceBytes(buffer, index, SysGuid.GetData3(mData)); index += sizeof(short);
-			for (int x = 0; x < 8; x++, index++)
-			{
-				buffer[index] = SysGuid.GetData4[x](mData);
-			}
+			mData.TryWriteBytes(buffer);
 		}
 		#endregion
 	};
