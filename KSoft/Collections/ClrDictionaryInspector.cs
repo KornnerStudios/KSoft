@@ -32,7 +32,10 @@ namespace KSoft.Collections
 
 		public struct DicEntry
 		{
-			public DicEntryHashCodeType HashCode; // only the lower 31 bits of the actual hash code
+			// The full, unmasked 32-bit hash code produced by the dictionary's comparer,
+			// reinterpreted as uint (matches Dictionary<TKey,TValue>.Entry.hashCode on
+			// net9.0/.NET Core 3.0+; no top-bit masking is performed by the BCL on these runtimes).
+			public DicEntryHashCodeType HashCode;
 			/// <summary>
 			/// 0-based index of next entry in chain: -1 means end of chain
 			/// also encodes whether this entry _itself_ is part of the free list by changing sign and subtracting 3,
@@ -187,39 +190,47 @@ namespace KSoft.Collections
 		public int FreeList { get => kGetDicFreeList(mDic); }
 		public int FreeCount { get => kGetDicFreeCount(mDic); }
 
-		public IEnumerable<int> BucketsInUse { get => Buckets.Where(b => b >= 0); }
+		public IEnumerable<int> BucketsInUse { get => Buckets.Where(b => b != 0); }
+
+		// Buckets[] stores a 1-based head index into Entries (0 means the bucket is empty);
+		// this converts that to the 0-based/-1-terminated chain that Entries[].NextEntryIndex uses.
+		IEnumerable<DicEntry> WalkChain(int oneBasedHeadOrZero)
+		{
+			for (int x = oneBasedHeadOrZero - 1; x >= 0; x = Entries[x].NextEntryIndex)
+			{
+				yield return Entries[x];
+			}
+		}
 
 		public IEnumerable<DicEntry> GetEntriesInBucket(int bucketIndex)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(bucketIndex);
 			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bucketIndex, Buckets.Count);
 
-			for (int x = Buckets[bucketIndex]; x >= 0; x = Entries[x].NextEntryIndex)
+			foreach (var e in WalkChain(Buckets[bucketIndex]))
 			{
-				yield return Entries[x];
+				yield return e;
 			}
 		}
 
 		public IEnumerable<DicEntry> EntryCollisions(TKey key)
 		{
-			//int hash_code = mDic.Comparer.GetHashCode(key) & 0x7FFFFFFF;
+			if (Buckets.Count == 0)
+				yield break; // never-populated dictionary: nothing to walk, and GetBucket would throw
+
 			DicEntryHashCodeType hash_code = (DicEntryHashCodeType)mDic.Comparer.GetHashCode(key);
-			int target_bucket = /*hash_code % Buckets.Count*/kCallDictGetBucket(mDic, hash_code);
+			// kCallDictGetBucket's delegate mirrors Dictionary<TKey,TValue>.GetBucket's `ref int`
+			// return, but assigning a ref-return into a plain `int` here implicitly dereferences it:
+			// the result is the *value already stored in* the target bucket slot (a 1-based
+			// chain-head index, or 0 if empty), not the bucket array's index. Don't re-index
+			// Buckets/GetEntriesInBucket with it; walk the chain directly from this value.
+			int bucket_head = kCallDictGetBucket(mDic, hash_code);
 
-#if false // result as entry indices
-			for (int x = Buckets[target_bucket]; x >= 0; x = Entries[x].NextEntryIndex)
+			foreach (var e in WalkChain(bucket_head))
 			{
-				if (Entries[x].HashCode == hash_code && mDic.Comparer.Equals(Entries[x].Key, key))
-					yield break;
-
-				yield return x;
+				if (e.HashCode == hash_code && !mDic.Comparer.Equals(e.Key, key))
+					yield return e;
 			}
-#endif
-
-			return
-				from e in GetEntriesInBucket(target_bucket)
-				where e.HashCode == hash_code && !mDic.Comparer.Equals(e.Key, key)
-				select e;
 		}
 	};
 }
