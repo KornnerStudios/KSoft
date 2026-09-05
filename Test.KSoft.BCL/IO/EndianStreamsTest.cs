@@ -498,7 +498,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void EndianStreamArrayInt32ReadAllowsNullArraysWithValidInitializersTest()
+	public void ReadArrayInt32_NullArrayWithInitializer_ReturnsInitializedValues()
 	{
 		static byte[] CreateZeroCountBytes()
 		{
@@ -540,21 +540,21 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void PrimitiveWritesUseDeclaredEndianByteOrderTest()
+	public void Write_PrimitiveValues_UsesDeclaredEndianByteOrder()
 	{
 		CollectionAssert.AreEqual(CreateBigEndianPrimitiveBytes(), WritePrimitives(Shell.EndianFormat.Big));
 		CollectionAssert.AreEqual(CreateLittleEndianPrimitiveBytes(), WritePrimitives(Shell.EndianFormat.Little));
 	}
 
 	[TestMethod]
-	public void PrimitiveReadsUseDeclaredEndianByteOrderTest()
+	public void Read_PrimitiveValues_UsesDeclaredEndianByteOrder()
 	{
 		AssertReadPrimitives(CreateBigEndianPrimitiveBytes(), Shell.EndianFormat.Big);
 		AssertReadPrimitives(CreateLittleEndianPrimitiveBytes(), Shell.EndianFormat.Little);
 	}
 
 	[TestMethod]
-	public void PrimitiveReadsKeepEndOfStreamBehaviorTest()
+	public void Read_PrimitivePastEnd_PreservesEndOfStreamBehavior()
 	{
 		using var reader = new EndianReader(new MemoryStream(new byte[] { 0x12, 0x34, 0x56 }), Shell.EndianFormat.Big);
 
@@ -563,7 +563,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void PrimitiveReadsAndWritesHonorEndianSwitchTest()
+	public void ReadWrite_EndianSwitch_HonorsCurrentByteOrder()
 	{
 		using var ms = new MemoryStream();
 		using (var writer = new EndianWriter(ms, Shell.EndianFormat.Big) { BaseStreamOwner = false })
@@ -590,7 +590,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void PrimitiveReadsAndWritesTreatUnknownByteOrderAsBigEndianTest()
+	public void ReadWrite_UnknownByteOrder_TreatsAsBigEndian()
 	{
 		const Shell.EndianFormat unknownByteOrder = (Shell.EndianFormat)2;
 
@@ -609,7 +609,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void FixedArrayWritesUseDeclaredEndianByteOrderAndRangeTest()
+	public void WriteFixedArray_DeclaredRange_UsesEndianByteOrder()
 	{
 		CollectionAssert.AreEqual(CreateBigEndianFixedArrayRangeBytes(),
 			WriteFixedArrayRange(Shell.EndianFormat.Big));
@@ -618,14 +618,14 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void FixedArrayReadsUseDeclaredEndianByteOrderAndRangeTest()
+	public void ReadFixedArray_DeclaredRange_UsesEndianByteOrder()
 	{
 		AssertReadFixedArrayRange(CreateBigEndianFixedArrayRangeBytes(), Shell.EndianFormat.Big);
 		AssertReadFixedArrayRange(CreateLittleEndianFixedArrayRangeBytes(), Shell.EndianFormat.Little);
 	}
 
 	[TestMethod]
-	public void EndianStreamStreamsScalarsUseDeclaredEndianByteOrderTest()
+	public void StreamScalar_RepresentativeValues_UsesDeclaredEndianByteOrder()
 	{
 		CollectionAssert.AreEqual(CreateBigEndianEndianStreamScalarBytes(),
 			WriteEndianStreamScalars(Shell.EndianFormat.Big));
@@ -637,7 +637,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void EndianStreamFixedArrayUsesDeclaredEndianByteOrderAndRangeTest()
+	public void StreamFixedArray_DeclaredRange_UsesEndianByteOrder()
 	{
 		CollectionAssert.AreEqual(CreateBigEndianFixedArrayRangeBytes(),
 			WriteEndianStreamFixedArrayRange(Shell.EndianFormat.Big));
@@ -649,7 +649,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void FixedArrayInvalidArgumentsThrowExplicitExceptionsTest()
+	public void FixedArray_InvalidArguments_ThrowsExplicitExceptions()
 	{
 		using var writerStream = new MemoryStream();
 		using var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
@@ -668,7 +668,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void FixedArrayOutOfRangePreservesPartialSideEffectsTest()
+	public void FixedArray_OutOfRangeWrite_PreservesPartialSideEffects()
 	{
 		using var writerStream = new MemoryStream();
 		using (var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
@@ -719,7 +719,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void BoolFixedArrayOutOfRangePreservesPartialSideEffectsTest()
+	public void BoolFixedArray_OutOfRangeWrite_PreservesPartialSideEffects()
 	{
 		using var writerStream = new MemoryStream();
 		using (var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
@@ -740,7 +740,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void BaseStateAndTypeExtensionsUseEndianStreamBehaviorTest()
+	public void BaseStateAndTypeExtensions_RepresentativeOperations_UseEndianStreamBehavior()
 	{
 		var owner = new object();
 		using var stream = new MemoryStream();
@@ -787,7 +787,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void VirtualAddressTranslationTranslatesRelativePointersTest()
+	public void VirtualAddressTranslation_RelativePointers_TranslatesExpectedAddresses()
 	{
 		using var stream = new MemoryStream();
 		using (var writer = new EndianWriter(stream, Shell.EndianFormat.Big) { BaseStreamOwner = false })

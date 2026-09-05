@@ -91,7 +91,7 @@ namespace KSoft.Bitwise.Test
 
 		#region BitCount
 		[TestMethod]
-		public void Bits_BitCountTest()
+		public void BitCount_RepresentativeValues_ReturnsExpectedCounts()
 		{
 			Assert.AreEqual(0, Bits.BitCount(byte.MinValue));
 			Assert.AreEqual(Bits.kByteBitCount / 2, Bits.BitCount( unchecked((byte)kEvenBits) ));
@@ -148,7 +148,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void BitCountToMask_Test()
+		public void BitCountToMask_RepresentativeCounts_ReturnsExpectedMasks()
 		{
 			{
 				uint u32;
@@ -215,7 +215,7 @@ namespace KSoft.Bitwise.Test
 
 		#region BitReverse
 		[TestMethod]
-		public void Bits_BitReverseTest()
+		public void BitReverse_RepresentativeValues_ReturnsExpectedReversals()
 		{
 			//////////////////////////////////////////////////////////////////////////
 			{// Int8
@@ -301,7 +301,7 @@ namespace KSoft.Bitwise.Test
 
 		#region Rotate
 		[TestMethod]
-		public void RotateMajorWidthsMatchBitOperationsTest()
+		public void Rotate_MajorIntegerWidths_MatchesBitOperations()
 		{
 			const uint kUInt32Value = 0x81234567U;
 			foreach (int shift in new[] { 0, 1, 7, 16, Bits.kInt32BitCount-1 })
@@ -323,7 +323,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void RotateNarrowWidthsStayWidthLimitedTest()
+		public void Rotate_NarrowIntegerWidths_StaysWithinWidth()
 		{
 			// BitOperations only exposes 32/64-bit rotates. These assertions catch accidental use for byte/ushort,
 			// where the high bit must wrap back into the narrow value rather than disappear after a cast.
@@ -348,7 +348,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void LeadingZerosCountNarrowWidthsStayWidthLimitedTest()
+		public void LeadingZerosCount_NarrowIntegerWidths_StaysWithinWidth()
 		{
 			Assert.AreEqual(Bits.kByteBitCount, (int)Bits.LeadingZerosCount(byte.MinValue));
 			Assert.AreEqual(0, (int)Bits.LeadingZerosCount(byte.MaxValue));
@@ -362,7 +362,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void TrailingZerosCountMatchesBitOperationsTest()
+		public void TrailingZerosCount_IntegerWidths_MatchesBitOperations()
 		{
 			foreach (uint value in new[] { 0U, 1U, 0x10U, 0x80000000U, 0xF0001000U, uint.MaxValue })
 			{
@@ -379,7 +379,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void Bits_LeadingZerosCountTest()
+		public void LeadingZerosCount_RepresentativeValues_ReturnsExpectedCounts()
 		{
 			Assert.AreEqual(Bits.kInt32BitCount, Bits.LeadingZerosCount(uint.MinValue));
 			for (uint x = 0, bits = uint.MaxValue; x < Bits.kInt32BitCount; x++, bits >>= 1)
@@ -395,7 +395,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void Bits_TrailingZerosCountTest()
+		public void TrailingZerosCount_RepresentativeValues_ReturnsExpectedCounts()
 		{
 			Assert.AreEqual(Bits.kInt32BitCount, Bits.TrailingZerosCount(uint.MinValue));
 			for (uint x = 0, bits = 1; x < Bits.kInt32BitCount; x++, bits <<= 1)
@@ -413,7 +413,7 @@ namespace KSoft.Bitwise.Test
 
 		#region GetBitmask
 		[TestMethod]
-		public void Bits_GetBitmaskTest()
+		public void GetBitmask_RepresentativeWidths_ReturnsExpectedMasks()
 		{
 			int i32;
 
@@ -448,7 +448,7 @@ namespace KSoft.Bitwise.Test
 		#endregion
 
 		[TestMethod]
-		public void Bits_SignExtendTest()
+		public void SignExtend_VariedWidths_ReturnsExpectedSignedValues()
 		{
 			int i32;
 
@@ -542,7 +542,7 @@ namespace KSoft.Bitwise.Test
 
 		#region NoneableEncodingTraits
 		[TestMethod]
-		public void Bits_NoneableEncodingTraitsTest()
+		public void NoneableEncodingTraits_RepresentativeMaxValues_ReturnExpectedTraits()
 		{
 			#region 32-bit
 			int i32_max_value;
@@ -590,7 +590,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void Bits_NoneableEncodingTraitsInputTooSmallTest()
+		public void NoneableEncodingTraits_InputBelowMinimum_ThrowsArgumentOutOfRangeException()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 				Bits.GetNoneableEncodingTraits(0, out int _)
@@ -598,7 +598,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void Bits_NoneableEncodingTraitsInputTooLargeTest()
+		public void NoneableEncodingTraits_InputAboveMaximum_ThrowsArgumentOutOfRangeException()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 				Bits.GetNoneableEncodingTraits(int.MaxValue, out int _)
@@ -624,7 +624,7 @@ namespace KSoft.Bitwise.Test
 			public TestUnionData2 Data2;
 		};
 		[TestMethod]
-		public void Union_Test()
+		public void Union_OverlaidFields_PreserveBitRepresentations()
 		{
 			var t = new TestUnion
 			{

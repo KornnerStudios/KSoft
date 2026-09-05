@@ -8,7 +8,7 @@ namespace KSoft.Security.Cryptography.Test
 	{
 
 		[TestMethod]
-		public void VersionOneTest()
+		public void Tiger1_KnownVectors_ReturnExpectedHashes()
 		{
 			TestTiger(TigerHash.kAlgorithmName,
 				"",
@@ -22,7 +22,7 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
-		public void VersionTwoTest()
+		public void Tiger2_KnownVectors_ReturnExpectedHashes()
 		{
 			TestTiger(TigerHash2.kAlgorithmName,
 				"",

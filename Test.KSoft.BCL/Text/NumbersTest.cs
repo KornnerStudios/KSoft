@@ -26,7 +26,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void StringListDescInvalidArgumentsThrowExpectedExceptions()
+		public void StringListDesc_InvalidArguments_ThrowExpectedExceptions()
 		{
 			AssertThrowsExactly<ArgumentNullException>("digits",
 				() => _ = new Numbers.StringListDesc(',', digits: null!));
@@ -39,7 +39,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void StringListParseTest()
+		public void TryParseInt32_DefaultDescriptor_ParsesExpectedValues()
 		{
 			var desc = Numbers.StringListDesc.Default;
 
@@ -56,7 +56,7 @@ namespace KSoft.Text.Test
 			VerifyTryParseInt32List(results);
 		}
 		[TestMethod]
-		public void ToStringListTest()
+		public void ToStringList_Int32Values_ReturnsExpectedString()
 		{
 			var desc = Numbers.StringListDesc.Default;
 
@@ -65,7 +65,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void StringListParseWithTerminatorTest()
+		public void TryParseInt32_TerminatedInput_StopsAtTerminator()
 		{
 			const string k_garbage_chars = "fsdfsdf";
 			var desc = Numbers.StringListDesc.Default;
@@ -84,7 +84,7 @@ namespace KSoft.Text.Test
 			VerifyTryParseInt32List(results);
 		}
 		[TestMethod]
-		public void StringListPredictedCountStopsAtTerminatorTest()
+		public void PredictedCount_TerminatedInput_StopsAtTerminator()
 		{
 			var desc = Numbers.StringListDesc.Default;
 
@@ -95,7 +95,7 @@ namespace KSoft.Text.Test
 			Assert.AreEqual(1, desc.PredictedCount(";1,2,3"));
 		}
 		[TestMethod]
-		public void ToStringListWithTerminatorTest()
+		public void ToStringList_TerminatorRequired_AppendsTerminator()
 		{
 			var desc = Numbers.StringListDesc.Default;
 			desc.RequiresTerminator = true;
@@ -105,7 +105,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ScalarToStringAndTryParseTest()
+		public void ScalarConversions_RepresentativeValues_ParseAndFormatCorrectly()
 		{
 			Assert.AreEqual("377", Numbers.ToString(byte.MaxValue, NumeralBase.Octal));
 			Assert.AreEqual("-101", Numbers.ToString((short)-5, NumeralBase.Binary));
@@ -124,7 +124,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void TryParseInvalidRangesThrowExpectedExceptions()
+		public void TryParse_InvalidRanges_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentOutOfRange("startIndex",
 				() => Numbers.TryParse("123", out int _, Numbers.kBase10, -1));
@@ -137,7 +137,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ParseStringPreservesNoThrowAndErrorBehaviorTest()
+		public void ParseString_NoThrowAndInvalidRange_PreservesErrorBehavior()
 		{
 			int value = 0;
 			Assert.IsTrue(Numbers.ParseString("123", ref value, noThrow: true));
@@ -150,7 +150,7 @@ namespace KSoft.Text.Test
 
 		[TestMethod]
 		[Description("dotTrace profiling method")]
-		public void StringListParseTestProfile()
+		public void TryParseInt32_RepeatedSyncAndAsyncInputs_ReturnExpectedValues()
 		{
 			var desc = Numbers.StringListDesc.Default;
 

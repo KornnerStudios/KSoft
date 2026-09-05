@@ -17,7 +17,7 @@ namespace KSoft.Bitwise.Test
 		];
 
 		[TestMethod]
-		public void TestConversions()
+		public void Conversions_KnownBitPatterns_RoundTrip()
 		{
 			for (int x = 0; x < kTestConversionsList.Length; x += 2)
 			{
@@ -35,7 +35,7 @@ namespace KSoft.Bitwise.Test
 
 		#region Halo Wars Definitive Edition tests
 		[TestMethod]
-		public void TestHaloWarsDefinitiveEditionValues()
+		public void Conversions_HaloWarsDefinitiveEditionValues_RoundTrip()
 		{
 			foreach (var kvp in kHaloWarsDefinitiveEditionValues)
 			{

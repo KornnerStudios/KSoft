@@ -8,7 +8,7 @@ namespace KSoft.IO.Test
 	public class JsonNodeTest : BaseTestClass
 	{
 		[TestMethod]
-		public void GetRangesTest()
+		public void GetRangeValues_ArrayAndScalarNodes_ReturnExpectedBounds()
 		{
 			int min, max;
 			bool success;

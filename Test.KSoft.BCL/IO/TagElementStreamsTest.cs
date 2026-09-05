@@ -25,7 +25,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShapeTest()
+	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShape()
 	{
 		using var stream = XmlElementStream.CreateForWrite("root");
 		var guid = new Values.KGuid(kGuidText);
@@ -57,7 +57,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_GeneratedCollectionSurfaces_StreamExpectedValuesTest()
+	public void XmlElementStream_GeneratedCollectionSurfaces_StreamExpectedValues()
 	{
 		using var writeStream = XmlElementStream.CreateForWrite("root");
 		var writeValues = new List<int> { 10, 11 };
@@ -92,7 +92,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_ReadGeneratedSurfaces_ParsesExpectedValuesTest()
+	public void XmlElementStream_ReadGeneratedSurfaces_ParsesExpectedValues()
 	{
 		// Keep this XML whitespace-free so traversal only sees the elements being characterized.
 		const string xml =
@@ -133,7 +133,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_ReadOptionalGeneratedSurfaces_PreservesMissingValueSemanticsTest()
+	public void XmlElementStream_ReadOptionalGeneratedSurfaces_PreservesMissingValueSemantics()
 	{
 		using var stream = CreateReadStream("<root present=\"123\"><empty /></root>");
 		string? missingString = "keep";
@@ -152,7 +152,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_GeneratedRequiredStringReadsEmptyElementsTest()
+	public void ReadRequiredString_EmptyGeneratedElements_ReturnEmptyStrings()
 	{
 		using var readStream = CreateReadStream("<root><description /></root>");
 		string description = "initial";
@@ -162,7 +162,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_GeneratedOptionalStringPropertyAllowsNullPredicateInputTest()
+	public void ReadOptionalStringProperty_NullPredicate_IsAllowed()
 	{
 		using var stream = XmlElementStream.CreateForWrite("root");
 		var value = new NullableStringProperty();
@@ -178,7 +178,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void TagElementStreamFactory_OpenUnsupportedFormats_ThrowsExpectedExceptionsTest()
+	public void TagElementStreamFactory_OpenUnsupportedFormats_ThrowsExpectedExceptions()
 	{
 		Assert.Throws<NotImplementedException>(() =>
 			TagElementStreamFactory.Open(new MemoryStream(), TagElementStreamFormat.Json, FileAccess.Read));
@@ -196,7 +196,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_StreamModeInitialization_SeparatesPermissionsFromModeTest()
+	public void XmlElementStream_StreamModeInitialization_SeparatesPermissionsFromMode()
 	{
 		using var readWriteStream = CreateReadWriteStream("<root />");
 		using var readStream = CreateReadStream("<root />");
@@ -211,7 +211,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_StreamModeSetterRejectsInvalidModesTest()
+	public void StreamModeSetter_InvalidModes_ThrowsExpectedExceptions()
 	{
 		using var readWriteStream = CreateReadWriteStream("<root />");
 		using var readStream = CreateReadStream("<root />");
@@ -227,7 +227,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_InvalidElementNames_ThrowExpectedExceptionsTest()
+	public void XmlElementStream_InvalidElementNames_ThrowExpectedExceptions()
 	{
 		using var stream = CreateReadStream("<root><child /></root>");
 
@@ -238,7 +238,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_LifecycleNullStates_AreExposedByContractsTest()
+	public void XmlElementStream_LifecycleNullStates_AreExposedByContracts()
 	{
 		using var stream = XmlElementStream.CreateForWrite("root");
 
@@ -268,7 +268,7 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void XmlElementStream_WriteAttributeWithoutCursor_ThrowsInvalidOperationTest()
+	public void XmlElementStream_WriteAttributeWithoutCursor_ThrowsInvalidOperation()
 	{
 		var stream = XmlElementStream.CreateForWrite("root");
 		stream.Dispose();

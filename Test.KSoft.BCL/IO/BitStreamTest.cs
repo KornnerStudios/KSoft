@@ -153,7 +153,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Constructor_InvalidArgumentsThrowExpectedExceptionsTest()
+		public void Constructor_InvalidArguments_ThrowExpectedExceptions()
 		{
 			AssertThrowsArgumentNull("baseStream", () => _ = new IO.BitStream(null!));
 			AssertThrowsArgumentOutOfRange("endPos", () => _ = new IO.BitStream(new MemoryStream(new byte[1]), endPos: 2));
@@ -164,7 +164,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void SeekToStart_NonSeekableStreamThrowsInvalidOperationExceptionTest()
+		public void SeekToStart_NonSeekableStream_ThrowsInvalidOperationException()
 		{
 			using var stream = new NonSeekableMemoryStream();
 			using var bitStream = new IO.BitStream(stream);
@@ -173,7 +173,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void ByteBufferMethods_InvalidArgumentsThrowExpectedExceptionsTest()
+		public void ByteBufferMethods_InvalidArguments_ThrowExpectedExceptions()
 		{
 			using var stream = new MemoryStream(new byte[] { 0xFF });
 			using var bitStream = new IO.BitStream(stream, FileAccess.ReadWrite);
@@ -205,7 +205,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void DateTimeAndStringMethods_InvalidArgumentsThrowExpectedExceptionsTest()
+		public void DateTimeAndStringMethods_InvalidArguments_ThrowExpectedExceptions()
 		{
 			using var stream = new MemoryStream(new byte[sizeof(long)]);
 			using var bitStream = new IO.BitStream(stream, FileAccess.ReadWrite);
@@ -239,7 +239,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void SerializationHelpers_InvalidArgumentsThrowExpectedExceptionsTest()
+		public void SerializationHelpers_InvalidArguments_ThrowExpectedExceptions()
 		{
 			using var stream = new MemoryStream();
 			using var bitStream = new IO.BitStream(stream, FileAccess.Write);
@@ -320,7 +320,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamObjectRead_AllowsNullReferenceWithInitializerTest()
+		public void StreamObjectRead_NullReferenceWithInitializer_AllowsNull()
 		{
 			using var stream = new MemoryStream(new byte[] { 0 });
 			using var bitStream = new IO.BitStream(stream, FileAccess.Read);
@@ -333,7 +333,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void WriteWord_CrossesCacheBoundary_WritesExpectedBytesTest()
+		public void WriteWord_CrossesCacheBoundary_WritesExpectedBytes()
 		{
 			byte[] bytes = WriteWithBitStream(bs =>
 			{
@@ -351,7 +351,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void ReadWord_CrossesCacheBoundary_ReadsExpectedValuesTest()
+		public void ReadWord_CrossesCacheBoundary_ReadsExpectedValues()
 		{
 			ReadWithBitStream(new byte[] { 0xAD, 0x5E, 0x6F, 0x70 }, bs =>
 			{
@@ -370,7 +370,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void ReadWriteUInt64_SplitWordCounts_RoundTripsTest()
+		public void ReadWriteUInt64_SplitWordCounts_RoundTrips()
 		{
 			byte[] bytes = WriteWithBitStream(bs =>
 			{
@@ -393,7 +393,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void ReadSigned_TruncatedValues_ControlsSignExtensionTest()
+		public void ReadSigned_TruncatedValues_ControlsSignExtension()
 		{
 			byte[] sbyteBytes = WriteWithBitStream(bs => bs.Write((sbyte)-3, 3));
 			ReadWithBitStream(sbyteBytes, bs => Assert.AreEqual(5, bs.ReadSByte(3)));
@@ -413,7 +413,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void Stream_ScalarDelegates_RoundTripsRepresentativeValuesTest()
+		public void Stream_ScalarDelegates_RoundTripsRepresentativeValues()
 		{
 			char writeChar = 'Z';
 			short writeShort = -17;
@@ -447,7 +447,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamFixedArray_SignedValues_RoundTripsWithSignExtensionTest()
+		public void StreamFixedArray_SignedValues_RoundTripsWithSignExtension()
 		{
 			var writeValues = new short[] { -3, 2, -1 };
 			byte[] bytes = WriteWithBitStream(bs => bs.StreamFixedArray(writeValues, 3, signExtend: true));
@@ -459,7 +459,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamArray_ByteValues_RoundTripsLengthAndElementsTest()
+		public void StreamArray_ByteValues_RoundTripsLengthAndElements()
 		{
 			var writeValues = new byte[] { 1, 2, 3 };
 			byte[] bytes = WriteWithBitStream(bs => bs.StreamArray(ref writeValues, 3, 2));
@@ -471,7 +471,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamElements_IntValues_RoundTripsCountAndElementsTest()
+		public void StreamElements_IntValues_RoundTripsCountAndElements()
 		{
 			var writeValues = new List<int> { -1, 3, -2 };
 			byte[] bytes = WriteWithBitStream(bs => bs.StreamElements(writeValues, 3, 3, signExtend: true));
@@ -483,7 +483,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamElements_SingleValues_RoundTripsBitPatternsTest()
+		public void StreamElements_SingleValues_RoundTripsBitPatterns()
 		{
 			var writeValues = new List<float> {
 				Bitwise.ByteSwap.SingleFromUInt32(0x3F800000U),
@@ -500,7 +500,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamDouble_CurrentBehavior_WritesLowerThirtyTwoBitsOnlyTest()
+		public void StreamDouble_CurrentBehavior_WritesLowerThirtyTwoBitsOnly()
 		{
 			const ulong kWriteBits = 0x3FF3C083126E978DUL;
 			double writeValue = BitConverter.Int64BitsToDouble(unchecked((long)kWriteBits));
@@ -517,7 +517,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void ReadWord_AfterShortInitialFill_ReadsZeroPaddedCacheBitsTest()
+		public void ReadWord_AfterShortInitialFill_ReadsZeroPaddedCacheBits()
 		{
 			using (var ms = new MemoryStream(new byte[] { 0xFF }))
 			using (var bs = new IO.BitStream(ms, FileAccess.Read))

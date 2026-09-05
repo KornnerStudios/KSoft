@@ -35,7 +35,7 @@ namespace KSoft.Test
 
 		[TestMethod]
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public void FlagsSansAttributeTest()
+		public void Test_EnumWithoutFlagsAttribute_ReturnsExpectedState()
 		{
 			try
 			{
@@ -51,7 +51,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void FlagsAddTest()
+		public void Add_SingleFlags_ReturnsCombinedValue()
 		{
 			const FlagsEnum kExpectedResult1 = FlagsEnum.Flag0 | FlagsEnum.Flag2;
 			FlagsEnum e1 = FlagsEnum.Flag0;
@@ -64,7 +64,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void FlagsRemoveTest()
+		public void Remove_SingleFlags_ReturnsReducedValue()
 		{
 			const FlagsEnum kExpectedResult1 = FlagsEnum.Flag0;
 			FlagsEnum e1 = FlagsEnum.Flag0 | FlagsEnum.Flag2;
@@ -77,7 +77,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void FlagsModifyTest()
+		public void Modify_AddAndRemoveFlags_ReturnsExpectedValue()
 		{
 			const FlagsEnum kExpectedResult1 = FlagsEnum.Flag0 | FlagsEnum.Flag2;
 			FlagsEnum e1 = FlagsEnum.Flag0;
@@ -90,7 +90,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void FlagsMutatesAllUnderlyingTypesTest()
+		public void Modify_AllUnderlyingTypes_MutatesExpectedFlags()
 		{
 			Verify(FlagsEnumByte.Flag0, FlagsEnumByte.Flag1, FlagsEnumByte.Flag7);
 			Verify(FlagsEnumSByte.Flag0, FlagsEnumSByte.Flag1, FlagsEnumSByte.Flag6);

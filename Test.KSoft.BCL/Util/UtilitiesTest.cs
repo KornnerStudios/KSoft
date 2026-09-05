@@ -31,7 +31,7 @@ namespace KSoft.Test
 		}
 
 		[TestMethod]
-		public void UnixTimeTest()
+		public void UnixTimeConversions_KnownAndCurrentValues_RoundTripToSeconds()
 		{
 			{
 				long test = 0x4B71FD5B;
@@ -55,7 +55,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void GenericReferenceEqualsTest()
+		public void GenericReferenceEquals_SameDifferentAndNullReferences_ReturnExpectedValues()
 		{
 			string? x = "x", y = "y";
 
@@ -112,7 +112,7 @@ namespace KSoft.Test
 
 
 		[TestMethod]
-		public void ThrowIfNullTest()
+		public void ThrowIfNull_NullAndNonNullValues_ThrowsOrReturnsValue()
 		{
 			var value = new object();
 

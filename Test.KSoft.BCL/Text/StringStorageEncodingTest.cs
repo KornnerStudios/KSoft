@@ -123,7 +123,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void StringStorageEncodingWriteTest()
+		public void ReadWrite_CStringValues_RoundTripAndTruncateAtFixedLength()
 		{
 			const bool k_output_ms = true;
 

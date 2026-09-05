@@ -17,7 +17,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void RawDeflateRoundTripsAndReturnsUncompressedAdlerTest()
+		public void RawDeflate_KnownPayload_RoundTripsAndReturnsAdler()
 		{
 			byte[] compressed = Compress(kSampleData, 5, noZlibHeaderOrFooter: true, out uint compressAdler);
 			var uncompressed = new byte[kSampleData.Length];
@@ -30,7 +30,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void FramedZLibRoundTripsAndReturnsUncompressedAdlerTest()
+		public void FramedZLib_KnownPayload_RoundTripsAndReturnsAdler()
 		{
 			byte[] compressed = Compress(kSampleData, ZLib.kBestCompression,
 				noZlibHeaderOrFooter: false, out uint compressAdler);
@@ -44,7 +44,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void TrimmedCompressCanGrowPastScratchBufferTest()
+		public void Compress_OutputExceedsScratchBuffer_GrowsDestination()
 		{
 			byte[] scratch = new byte[1];
 			byte[] compressed = ZLib.LowLevelCompress(kSampleData, ZLib.kNoCompression, out uint _,
@@ -58,7 +58,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void BigEndianSizeHeaderRoundTripsTest()
+		public void SizeHeader_BigEndianPayload_RoundTrips()
 		{
 			byte[] compressed = ZLib.LowLevelCompress(kSampleData, Shell.EndianFormat.Big);
 			byte[] expected_header = BitConverter.GetBytes(kSampleData.Length);
@@ -72,7 +72,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void CustomSkipHeaderLengthRoundTripsTest()
+		public void Compress_CustomSkipHeaderLength_RoundTrips()
 		{
 			byte[] compressed = Compress(kSampleData, ZLib.kBestCompression,
 				noZlibHeaderOrFooter: false, out uint _);
@@ -85,7 +85,7 @@ namespace KSoft.IO.Compression.Test
 		}
 
 		[TestMethod]
-		public void BufferFromBytesSkipsZLibHeaderTest()
+		public void BufferFromBytes_ZLibHeader_SkipsHeader()
 		{
 			byte[] compressed = Compress(kSampleData, ZLib.kBestCompression,
 				noZlibHeaderOrFooter: false, out uint _);

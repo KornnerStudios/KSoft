@@ -20,7 +20,7 @@ namespace KSoft.Reflection.Test
 		enum TestEnumUIn64 : ulong { };
 
 		[TestMethod]
-		public void ValueMethodCreationTest()
+		public void ConversionDelegates_AllUnderlyingTypes_InitializeWithoutException()
 		{
 			EnumValue<TestEnumInt8>.FromSByte.ToString();
 			EnumValue<TestEnumUInt8>.FromSByte.ToString();
@@ -49,7 +49,7 @@ namespace KSoft.Reflection.Test
 
 		// #REVIEW: SourceGenerator?
 		[TestMethod]
-		public void ValueMethodsTest()
+		public void IntegralConversions_AllSupportedWidths_PreserveEnumValues()
 		{
 			#region Int8
 			// Signed

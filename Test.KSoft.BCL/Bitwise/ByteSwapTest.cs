@@ -32,7 +32,7 @@ namespace KSoft.Bitwise.Test
 		];
 
 		[TestMethod]
-		public void SwapIntegersTest()
+		public void Swap_IntegerValues_ReversesByteOrder()
 		{
 			ulong value_before = kBeforeValue;
 			ulong value_after = kAfterValue;
@@ -67,7 +67,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapNaturalWidthsMatchesBinaryPrimitivesTest()
+		public void Swap_NaturalWidths_MatchesBinaryPrimitives()
 		{
 			ushort[] values16 =
 			[
@@ -119,7 +119,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapNaturalWidthByRefMatchesReturnValueTest()
+		public void Swap_ByReference_MatchesReturnedValue()
 		{
 			// The return-value and by-ref overloads are generated as separate bodies. Keep both covered so the
 			// natural-width BCL route cannot accidentally modernize only one overload family.
@@ -152,7 +152,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapSignedPartialWidthEdgeCasesTest()
+		public void Swap_SignedPartialWidths_PreservesExpectedBitPatterns()
 		{
 			Assert.AreEqual(0x00FFFFFF, ByteSwap.SwapInt24(-1));
 			Assert.AreEqual(0x00000080, ByteSwap.SwapInt24(unchecked((int)0xFF800000)));
@@ -180,7 +180,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapFloatingPointPreservesBitPayloadsTest()
+		public void Swap_FloatingPointValues_PreservesBitPayloads()
 		{
 			uint[] single_bits =
 			[
@@ -220,7 +220,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ReplaceBytesTest()
+		public void ReplaceBytes_AllIntegerWidths_WritesHostEndianBytes()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
 			byte[] buffer_bc;
@@ -261,7 +261,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ReplaceBytesWritesHostEndianAtOffsetsTest()
+		public void ReplaceBytes_NonzeroOffsets_WritesHostEndianBytes()
 		{
 			byte[] buffer = CreateSentinelBuffer(24);
 
@@ -288,9 +288,9 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(0xCC, buffer[19]);
 		}
 
-		// NOTE: ReplaceBytesTest should be tested before SwapBufferTest (see OrderedTests_ByteSwap)
+		// NOTE: ReplaceBytes_AllIntegerWidths_WritesHostEndianBytes should be tested before SwapBuffer_DefinedLayout_SwapsExpectedFields (see OrderedTests_ByteSwap)
 		[TestMethod]
-		public void SwapBufferTest()
+		public void SwapBuffer_DefinedLayout_SwapsExpectedFields()
 		{
 			byte[] buffer = new byte[sizeof(ulong)];
 			byte[] buffer_bc;
@@ -341,7 +341,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapBufferOverlappingWindowsTest()
+		public void SwapBuffer_OverlappingWindows_SwapsInPlace()
 		{
 			byte[] buffer =
 			[
@@ -363,7 +363,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void BufferOffsetValidationTest()
+		public void SwapAndReplace_InvalidOffsets_ThrowExpectedExceptions()
 		{
 			Assert.Throws<ArgumentNullException>(() => ByteSwap.SwapUInt16(null!, 0));
 			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
@@ -446,7 +446,7 @@ namespace KSoft.Bitwise.Test
 
 		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken
 		[TestMethod]
-		public void SwapDataIntegersTest()
+		public void SwapData_IntegerDefinition_SwapsExpectedBytes()
 		{
 			var buffer = new byte[sizeof(ulong) + sizeof(uint) + sizeof(ushort)];
 			int buffer_index;
@@ -477,7 +477,7 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void SwapDataNestedArraysTest()
+		public void SwapData_NestedArrayDefinition_SwapsExpectedBytes()
 		{
 			var bs_codes = new short[]
 			{
@@ -609,7 +609,7 @@ namespace KSoft.Bitwise.Test
 		#region Benchmark
 		[TestMethod]
 		[TestCategory("Benchmark")]
-		public void BenchmarkCurrentVsBinaryPrimitivesPrototype()
+		public void SwapImplementations_BenchmarkInputs_ProduceEqualResults()
 		{
 			WarmUpBenchmarkPrototype();
 

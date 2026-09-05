@@ -7,7 +7,7 @@ namespace KSoft.Shell.Test
 	public partial class PlatformTest : BaseTestClass
 	{
 		[TestMethod]
-		public void PlatformApiTest()
+		public void PlatformDefinitions_KnownValues_MatchExpectedLayout()
 		{
 			Assert.AreEqual(6, Processor.BitCount,
 				"Expected Processor bit count size has changed. Was this intentional?");

@@ -63,7 +63,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteArrayToStreamTest()
+		public void ByteArrayToStream_FullPartialAndChunkedInputs_WritesExpectedHexText()
 		{
 			using (var writer = new StringWriter(KSoft.Util.InvariantCultureInfo))
 			{
@@ -96,7 +96,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteUtilitiesInvalidArgumentsThrowExpectedExceptionsTest()
+		public void ByteUtilities_InvalidArguments_ThrowExpectedExceptions()
 		{
 			using var writer = new StringWriter(KSoft.Util.InvariantCultureInfo);
 
@@ -155,7 +155,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteStringToArrayTest()
+		public void ByteStringToArray_ValidRanges_ReturnExpectedBytes()
 		{
 			CollectionAssert.AreEqual(StringConstants.kDataBytes, Util.ByteStringToArray(StringConstants.kDataString));
 			CollectionAssert.AreEqual(new byte[] { 0x37, 0xBE }, Util.ByteStringToArray(StringConstants.kDataString, 2, 4));
@@ -164,7 +164,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteStringToArrayDestinationTest()
+		public void ByteStringToArray_DestinationBuffer_ReturnsAndPopulatesSameArray()
 		{
 			byte[] destination = [0xFF, 0xFF, 0xFF];
 			byte[] result = Util.ByteStringToArray(destination, "001337", 2, 4);
@@ -183,7 +183,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteStringToArrayLegacyInvalidDigitFallbackTest()
+		public void ByteStringToArray_InvalidHexDigit_UsesLegacyFallback()
 		{
 			// Legacy parsing accepts base-36 digit values before clamping the composed byte value.
 			CollectionAssert.AreEqual(new byte[] { 0x10 }, Util.ByteStringToArray("0G"));
@@ -193,7 +193,7 @@ namespace KSoft.Text.Test
 
 
 		[TestMethod]
-		public void ToAcceptableNumberBaseTest()
+		public void ToAcceptableNumberBase_ValidAndInvalidValues_ReturnExpectedEnum()
 		{
 			const NumeralBase k_invalid = 0;
 			const NumeralBase k_nonstandard_36 = (NumeralBase)36;
@@ -246,7 +246,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void CharAnyDigitTest()
+		public void AnyDigitHelpers_AsciiAlphanumericInput_ReturnExpectedValues()
 		{
 			const char k_numbers_start = '0';
 			const char k_numbers_end = '9';
@@ -265,7 +265,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void CharAnyDigitExtendedTest()
+		public void AnyDigitExtendedHelpers_AsciiAlphanumericInput_ReturnExpectedValues()
 		{
 			const char k_numbers_start = '0';
 			const char k_numbers_end = '9';
@@ -284,7 +284,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void CharDigitTest()
+		public void HexDigitHelpers_AsciiHexInput_ReturnExpectedValues()
 		{
 			const char k_numbers_start = '0';
 			const char k_numbers_end = '9';
@@ -304,7 +304,7 @@ namespace KSoft.Text.Test
 		#endregion
 
 		[TestMethod]
-		public void CharToIntTest()
+		public void CharToInt_VariedBasesAndPowers_ReturnsExpectedValue()
 		{
 			Assert.AreEqual(1, Util.CharToInt('1', NumeralBase.Binary, 0));
 			Assert.AreEqual(2, Util.CharToInt('1', NumeralBase.Binary, 1));
@@ -334,7 +334,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void CharsToByteTest()
+		public void CharsToByte_ArrayStringAndOffsets_ReturnsExpectedByte()
 		{
 			const int k_expected_0 = 51; // result expected when using chars starting at index 0
 			const int k_expected_1 = 63; // result expected when using chars starting at index 1

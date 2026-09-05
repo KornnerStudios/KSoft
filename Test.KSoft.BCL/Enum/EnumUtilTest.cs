@@ -24,7 +24,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	};
 
 	[TestMethod]
-	public void UtilMetadataMatchesGenericBclApis()
+	public void Metadata_GenericBclApis_MatchesEnumDefinition()
 	{
 		string[] expectedNames =
 		{
@@ -55,7 +55,7 @@ public sealed class EnumUtilTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void UtilMetadataPropertiesKeepCachedArrayInstances()
+	public void MetadataProperties_RepeatedAccess_ReturnsCachedArrays()
 	{
 		// Existing callers can observe the arrays directly, so the shim must keep returning cached instances.
 		Assert.AreSame(EnumUtil<MetadataEnum>.Names, EnumUtil<MetadataEnum>.Names);

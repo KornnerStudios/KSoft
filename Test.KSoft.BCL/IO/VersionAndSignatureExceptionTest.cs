@@ -9,7 +9,7 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 {
 
 	[TestMethod]
-	public void VersionMismatchAssertFormatsUnsignedStreamValuesTest()
+	public void VersionMismatchAssert_UnsignedStreamValues_FormatsMessage()
 	{
 		using var reader = CreateReader(0x56, 0x78);
 
@@ -21,7 +21,7 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void VersionOutOfRangeAssertReturnsValidValueAndFormatsInvalidStreamValueTest()
+	public void VersionOutOfRangeAssert_ValidAndInvalidValues_ReturnsOrFormats()
 	{
 		using var validReader = CreateReader(0x05);
 
@@ -37,7 +37,7 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SignatureMismatchAssertFormatsUnsignedStreamValuesTest()
+	public void SignatureMismatchAssert_UnsignedStreamValues_FormatsMessage()
 	{
 		using var reader = CreateReader(0xDE, 0xAD, 0xBE, 0xEF);
 
@@ -49,7 +49,7 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void SignatureMismatchInvalidArgumentsThrowExpectedExceptionsTest()
+	public void SignatureMismatchAssert_InvalidArguments_ThrowsExpectedExceptions()
 	{
 		AssertThrowsArgumentNull("dataDescription",
 			() => _ = new SignatureMismatchException((string)null!, "AB", "CD"));
@@ -73,7 +73,7 @@ public class VersionAndSignatureExceptionTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void VersionDescriptionConstructorsFormatSignedAndUnsignedValuesTest()
+	public void VersionDescriptionConstructors_SignedAndUnsignedValues_FormatMessages()
 	{
 		var unsignedException = new VersionMismatchException("cache", 2U, 1U);
 		var signedException = new VersionOutOfRangeException("cache", 1, 3, 4);

@@ -104,7 +104,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void NullStreamsThrowArgumentNullExceptionTest()
+		public void ReadWrite_NullStreams_ThrowArgumentNullException()
 		{
 			var value = System.TypeCode.String;
 			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
@@ -121,7 +121,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void BitCountGuardsThrowArgumentOutOfRangeExceptionTest()
+		public void ReadWrite_InvalidBitCounts_ThrowArgumentOutOfRangeException()
 		{
 			var value = System.TypeCode.String;
 			IEnumBitStreamer<System.TypeCode> streamer = TypeCodeStreamer32.Instance;
@@ -140,7 +140,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void UnderlyingTypesRoundTripTest()
+		public void ReadWrite_UnderlyingEnumTypes_RoundTrip()
 		{
 			AssertUnderlyingBitRoundTrip(ByteEnum.Value, 8);
 			AssertUnderlyingBitRoundTrip(SByteEnum.Value, 8);
@@ -153,7 +153,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void SignedUnsignedConversionsRoundTripTest()
+		public void ReadWrite_SignedUnsignedConversions_RoundTrip()
 		{
 			AssertBitConversionRoundTrip<SByteEnum, byte>(SByteEnum.Value, 8);
 			AssertBitConversionRoundTrip<EnumBinaryStreamerTest.UInt32Enum, sbyte>(
@@ -161,7 +161,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void BitSwapWritesSwappedBitsTest()
+		public void Write_BitSwapEnabled_WritesSwappedBits()
 		{
 			byte[] bytes;
 			using (var ms = new System.IO.MemoryStream())
@@ -191,7 +191,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void SignExtendOptionsPreserveNegativeValuesTest()
+		public void Read_SignExtendOptions_PreservesNegativeValues()
 		{
 			byte[] bytes;
 			using (var ms = new System.IO.MemoryStream())
@@ -223,7 +223,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that don't require a conversion</summary>
 		[TestMethod]
-		public void Test()
+		public void ReadWrite_TypeCode_RoundTripsStaticAndInstanceApis()
 		{
 			const int k_bit_count = 32;
 
@@ -258,7 +258,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require a down-cast conversion</summary>
 		[TestMethod]
-		public void DownCastTest()
+		public void ReadWrite_DownCastEnums_RoundTrip()
 		{
 			const int k_bit_count = 8;
 
@@ -293,7 +293,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test with conditions that require an up-cast conversion</summary>
 		[TestMethod]
-		public void UpCastTest()
+		public void ReadWrite_UpCastEnums_RoundTrip()
 		{
 			const int k_bit_count = 64;
 
@@ -328,7 +328,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test the ability to implicitly use the underlying type</summary>
 		[TestMethod]
-		public void UsingUnderlyingTypeTest()
+		public void ReadWrite_ExplicitUnderlyingType_RoundTrips()
 		{
 			const int k_bit_count = 32;
 
@@ -375,7 +375,7 @@ namespace KSoft.IO.Test
 		};
 
 		[TestMethod]
-		public void NoneSentinelWritesZeroForNoneTest()
+		public void Write_NoneSentinel_WritesZeroForNone()
 		{
 			const int k_bit_count = 32;
 
@@ -394,7 +394,7 @@ namespace KSoft.IO.Test
 
 		/// <summary>Test the ability to implicitly use the underlying type</summary>
 		[TestMethod]
-		public void TestNoneSentinelEncoding()
+		public void Stream_NoneSentinel_RoundTripsStaticAndInstanceApis()
 		{
 			const int k_bit_count = 32;
 

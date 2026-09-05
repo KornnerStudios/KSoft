@@ -9,7 +9,7 @@ namespace KSoft.IO.Test
 	{
 
 		[TestMethod]
-		public void VirtualBufferSettersRejectNegativeValuesTest()
+		public void VirtualBufferSetters_NegativeValues_ThrowArgumentOutOfRangeException()
 		{
 			using var stream = new EndianStream(new MemoryStream());
 
@@ -18,7 +18,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamModeableSettersRejectReadWriteModeTest()
+		public void StreamModeableSetters_ReadWriteMode_ThrowInvalidOperationException()
 		{
 			using var endianStream = new EndianStream(new MemoryStream());
 			using var bitStream = new BitStream(new MemoryStream());
@@ -30,7 +30,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void StreamModeableSettersRejectUnsupportedPermissionsTest()
+		public void StreamModeableSetters_UnsupportedPermissions_ThrowInvalidOperationException()
 		{
 			using var endianStream = new EndianStream(new MemoryStream(), FileAccess.Read);
 			using var bitStream = new BitStream(new MemoryStream(), FileAccess.Read);
