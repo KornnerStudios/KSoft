@@ -9,27 +9,6 @@ namespace KSoft.Security.Cryptography
 		const uint kAdlerMod = 65521;
 		const int kBlockMax = 5552;
 
-		[System.Obsolete(
-			"Use Compute(ReadOnlySpan<byte>, uint); pass buffer.AsSpan(offset, length).",
-			false,
-			DiagnosticId = "KSOFTSPAN001")]
-		public static uint Compute(byte[] buffer, int offset, int length, uint adler32 = 1)
-		{
-			Verify.Buffers.OffsetAndLengthWithinLength(buffer, offset, length);
-
-			return Compute(buffer.AsSpan(offset, length), adler32);
-		}
-		[System.Obsolete(
-			"Use Compute(ReadOnlySpan<byte>, uint).",
-			false,
-			DiagnosticId = "KSOFTSPAN001")]
-		public static uint Compute(byte[] buffer, uint adler32 = 1)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			return Compute(buffer.AsSpan(), adler32);
-		}
-
 		/// <summary>Computes the Adler-32 checksum of <paramref name="buffer"/>, treated as the complete input range.</summary>
 		/// <param name="buffer">The complete byte range to checksum.</param>
 		/// <param name="adler32">The initial Adler-32 seed. Defaults to 1.</param>

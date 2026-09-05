@@ -22,17 +22,6 @@ namespace KSoft.Security.Cryptography
 				return Adler32.ComputeFinish(s1, s2);
 			}
 
-			[System.Obsolete(
-				"Use Compute(ReadOnlySpan<byte>); pass buffer.AsSpan(offset, length).",
-				false,
-				DiagnosticId = "KSOFTSPAN001")]
-			public void Compute(byte[] buffer, int offset, int length)
-			{
-				Verify.Buffers.OffsetAndLengthWithinLength(buffer, offset, length);
-
-				Compute(buffer.AsSpan(offset, length));
-			}
-
 			/// <summary>Computes the Adler-32 checksum of <paramref name="buffer"/>, treated as the complete input range.</summary>
 			/// <param name="buffer">The complete byte range to checksum.</param>
 			public void Compute(ReadOnlySpan<byte> buffer)
