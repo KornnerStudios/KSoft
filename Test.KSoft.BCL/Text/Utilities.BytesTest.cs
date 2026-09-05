@@ -37,7 +37,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteArraysUtilTest()
+		public void ByteArrayToString_FullAndPartialRanges_ReturnExpectedHexText()
 		{
 			// Test case: Entire byte array
 			var test_value = Util.ByteArrayToString(StringConstants.kDataBytes);
@@ -48,16 +48,25 @@ namespace KSoft.Text.Test
 			// Test case: Partial byte array (explicit range)
 			test_value = Util.ByteArrayToString(StringConstants.kDataBytes, 1, 2);
 			Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), test_value);
-			// #TODO_UNITTEST: Test ByteArrayToStream
+		}
 
-
+		[TestMethod]
+		public void ByteStringToArray_RoundTripHexText_ReturnsOriginalBytes()
+		{
 			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(StringConstants.kDataStringLong);
-			if (true) // Test the byte converter for strings of hex digits
-			{
-				test_value = Util.ByteArrayToString(test_data);
-				test_data = Util.ByteStringToArray(test_value);
-			}
-			test_value = Util.ByteArrayToAlignedString(test_data);
+			// Test the byte converter for strings of hex digits
+			var test_value = Util.ByteArrayToString(test_data);
+			byte[] round_tripped_data = Util.ByteStringToArray(test_value);
+
+			CollectionAssert.AreEqual(test_data, round_tripped_data);
+		}
+
+		[TestMethod]
+		public void ByteArrayToAlignedString_AsciiHexBytes_ReturnExpectedAlignedText()
+		{
+			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(StringConstants.kDataStringLong);
+
+			var test_value = Util.ByteArrayToAlignedString(test_data);
 			Assert.AreEqual(StringConstants.kDataStringAsAlignedByteString, test_value);
 			// #TODO_UNITTEST: Test ByteArrayToAlignedOutput
 		}

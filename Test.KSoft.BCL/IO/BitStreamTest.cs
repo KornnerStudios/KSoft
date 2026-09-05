@@ -37,7 +37,7 @@ namespace KSoft.IO.Test
 		}
 
 		[TestMethod]
-		public void BitStreamLogicTest()
+		public void WriteWord_MixedWidths_IsReadableByLegacyBitStream()
 		{
 			var values = new KeyValuePair<uint, int>[] {
 				new(10, 7),
@@ -85,6 +85,29 @@ namespace KSoft.IO.Test
 					}
 				}
 			}
+		}
+
+		[TestMethod]
+		public void ReadWord_LegacyBitStreamOutput_ReturnsOriginalValues()
+		{
+			var values = new KeyValuePair<uint, int>[] {
+				new(10, 7),
+				new(0xBEEFBEEF, 32),
+				new(12, 7),
+				new(0x13371337, 32),
+				new(123, 7),
+				new(0xDEADC0DE, 32),
+				new(0, 7),
+				new(111, 7),
+
+				new(1, 1),
+				new(2, 2),
+				new(7, 3),
+				new(14, 4),
+				new(21, 5),
+				new(42, 6),
+				new(14406, 15),
+			};
 
 			using (var ms = new MemoryStream())
 			{
@@ -111,7 +134,11 @@ namespace KSoft.IO.Test
 					}
 				}
 			}
+		}
 
+		[TestMethod]
+		public void Read_MixedSignedAndBooleanValues_RoundTrips()
+		{
 			using (var ms = new MemoryStream())
 			{
 				using (var bs = new IO.BitStream(ms, FileAccess.Write))
@@ -127,25 +154,21 @@ namespace KSoft.IO.Test
 				System.Console.WriteLine();
 
 				ms.Position = 0;
-//				using (var bs_old = new BKSystem.IO.BitStream(ms))
 				using (var bs_old = new IO.BitStream(ms, FileAccess.Read))
 				{
 					bs_old.StreamMode = FileAccess.Read;
 
-					//bs_old.Read(out _int, 0, 15);
 					bs_old.Read(out int _int, 15);
 					Assert.AreEqual(1337, _int);
 
 					bs_old.Read(out long _long, 60, signExtend: true);
 					Assert.AreEqual(-21474836480L, _long);
-					//bs_old.Read(out _int, 0, 30);
 					bs_old.Read(out _int, 30, signExtend: true);
 					Assert.AreEqual(-1, _int);
 
 					bs_old.Read(out bool _bool);
 					Assert.AreEqual(false, _bool);
 
-					//bs_old.Read(out _int, 0, 27);
 					bs_old.Read(out _int, 27);
 					Assert.AreEqual((int)0xDEDEAD, _int);
 				}
