@@ -34,7 +34,7 @@ namespace KSoft.IO.Compression
 
 		static uint ComputeAdler32(byte[] bytes)
 		{
-			return Security.Cryptography.Adler32.Compute(bytes);
+			return Security.Cryptography.Adler32.Compute(bytes.AsSpan());
 		}
 
 		static byte[] BufferFromStream(DeflateStream dec, int offset, int length, bool skipHeader)

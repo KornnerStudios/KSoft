@@ -25,7 +25,7 @@ namespace KSoft.IO.Compression.Test
 			uint decompress_adler = ZLib.LowLevelDecompress(compressed, uncompressed, noHeader: true);
 
 			CollectionAssert.AreEqual(kSampleData, uncompressed);
-			Assert.AreEqual(Security.Cryptography.Adler32.Compute(kSampleData), compressAdler);
+			Assert.AreEqual(Security.Cryptography.Adler32.Compute(kSampleData.AsSpan()), compressAdler);
 			Assert.AreEqual(compressAdler, decompress_adler);
 		}
 
@@ -39,7 +39,7 @@ namespace KSoft.IO.Compression.Test
 			uint decompress_adler = ZLib.LowLevelDecompress(compressed, uncompressed, noHeader: false);
 
 			CollectionAssert.AreEqual(kSampleData, uncompressed);
-			Assert.AreEqual(Security.Cryptography.Adler32.Compute(kSampleData), compressAdler);
+			Assert.AreEqual(Security.Cryptography.Adler32.Compute(kSampleData.AsSpan()), compressAdler);
 			Assert.AreEqual(compressAdler, decompress_adler);
 		}
 

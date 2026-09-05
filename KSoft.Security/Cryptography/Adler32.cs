@@ -82,7 +82,7 @@ namespace KSoft.Security.Cryptography
 
 				if (num_bytes_read > 0)
 				{
-					computer.Compute(buffer, 0, num_bytes_read);
+					computer.Compute(buffer.AsSpan(0, num_bytes_read));
 				}
 				else
 				{
