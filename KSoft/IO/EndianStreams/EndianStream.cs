@@ -429,6 +429,10 @@ namespace KSoft.IO
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(count, value.Length - index);
 		}
 
+		[System.Obsolete(
+			"Use Stream(value.AsSpan(index, count)); the supplied Span is the complete range.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(byte[] value, int index, int count)
 		{
 			ValidateBufferRange(value, index, count);
@@ -438,6 +442,10 @@ namespace KSoft.IO
 
 			return this;
 		}
+		[System.Obsolete(
+			"Use Stream(value.AsSpan(0, count)).",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(byte[] value, int count)
 		{
 			Verify.Buffers.CountWithinLength(value, count);
@@ -447,6 +455,10 @@ namespace KSoft.IO
 
 			return this;
 		}
+		[System.Obsolete(
+			"Use Stream(value.AsSpan()); this still returns the same EndianStream for chaining.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(byte[] value)
 		{
 			ArgumentNullException.ThrowIfNull(value);
@@ -456,6 +468,10 @@ namespace KSoft.IO
 
 			return this;
 		}
+		[System.Obsolete(
+			"Use Stream(value.AsSpan(index, count)); the supplied Span is the complete range.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(char[] value, int index, int count)
 		{
 			ValidateBufferRange(value, index, count);
@@ -465,6 +481,10 @@ namespace KSoft.IO
 
 			return this;
 		}
+		[System.Obsolete(
+			"Use Stream(value.AsSpan(0, count)).",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(char[] value, int count)
 		{
 			Verify.Buffers.CountWithinLength(value, count);
@@ -474,12 +494,39 @@ namespace KSoft.IO
 
 			return this;
 		}
+		[System.Obsolete(
+			"Use Stream(value.AsSpan()); this still returns the same EndianStream for chaining.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public EndianStream Stream(char[] value)
 		{
 			ArgumentNullException.ThrowIfNull(value);
 
 				 if (IsReading) Reader.Read(value, value.Length);
 			else if (IsWriting) Writer.Write(value, value.Length);
+
+			return this;
+		}
+
+		/// <summary>Reads available data into, or writes the complete contents of, <paramref name="value"/>.</summary>
+		/// <remarks>Reads preserve <see cref="BinaryReader"/> partial-read behavior; the unread suffix remains unchanged.</remarks>
+		/// <param name="value">The byte destination when reading, or source when writing.</param>
+		/// <returns>This <see cref="EndianStream"/>, for chaining.</returns>
+		public EndianStream Stream(Span<byte> value)
+		{
+				 if (IsReading) Reader.Read(value);
+			else if (IsWriting) Writer.Write((ReadOnlySpan<byte>)value);
+
+			return this;
+		}
+		/// <summary>Reads available data into, or writes the complete contents of, <paramref name="value"/>.</summary>
+		/// <remarks>Reads preserve <see cref="BinaryReader"/> partial-read behavior; the unread suffix remains unchanged.</remarks>
+		/// <param name="value">The character destination when reading, or source when writing.</param>
+		/// <returns>This <see cref="EndianStream"/>, for chaining.</returns>
+		public EndianStream Stream(Span<char> value)
+		{
+				 if (IsReading) Reader.Read(value);
+			else if (IsWriting) Writer.Write((ReadOnlySpan<char>)value);
 
 			return this;
 		}

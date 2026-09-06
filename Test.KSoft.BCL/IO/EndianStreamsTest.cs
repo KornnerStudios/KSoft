@@ -233,6 +233,266 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void Stream_SpanByteWholeBuffer_RoundTripsReadAndWrite()
+	{
+		byte[] source = { 0x11, 0x22, 0x33, 0x44 };
+		byte[] written;
+
+		using (var writeStream = new MemoryStream())
+		{
+			using (var writer = new EndianWriter(writeStream) { BaseStreamOwner = false })
+			using (var writeEndianStream = EndianStream.UsingWriter(writer))
+			{
+				Assert.AreSame(writeEndianStream, writeEndianStream.Stream(new Span<byte>(source)));
+			}
+
+			Assert.AreEqual(source.Length, writeStream.Position);
+			written = writeStream.ToArray();
+		}
+		CollectionAssert.AreEqual(source, written);
+
+		var destination = new byte[source.Length];
+		using (var reader = new EndianReader(new MemoryStream(written)))
+		using (var readEndianStream = EndianStream.UsingReader(reader))
+		{
+			Assert.AreSame(readEndianStream, readEndianStream.Stream(destination.AsSpan()));
+			Assert.AreEqual(source.Length, reader.BaseStream.Position);
+		}
+		CollectionAssert.AreEqual(source, destination);
+	}
+
+	[TestMethod]
+	public void Stream_SpanCharWholeBuffer_RoundTripsReadAndWrite()
+	{
+		char[] source = { 'W', 'X', 'Y', 'Z' };
+		byte[] written;
+
+		using (var writeStream = new MemoryStream())
+		{
+			using (var writer = new EndianWriter(writeStream) { BaseStreamOwner = false })
+			using (var writeEndianStream = EndianStream.UsingWriter(writer))
+			{
+				Assert.AreSame(writeEndianStream, writeEndianStream.Stream(new Span<char>(source)));
+			}
+
+			written = writeStream.ToArray();
+		}
+		CollectionAssert.AreEqual(Encoding.UTF8.GetBytes(source), written);
+
+		var destination = new char[source.Length];
+		using (var reader = new EndianReader(new MemoryStream(written)))
+		using (var readEndianStream = EndianStream.UsingReader(reader))
+		{
+			Assert.AreSame(readEndianStream, readEndianStream.Stream(destination.AsSpan()));
+			Assert.AreEqual(written.Length, reader.BaseStream.Position);
+		}
+		CollectionAssert.AreEqual(source, destination);
+	}
+
+	[TestMethod]
+	public void Stream_SpanBytePrefixSlice_LeavesDestinationSuffixUntouched()
+	{
+		using (var writeStream = new MemoryStream())
+		{
+			using (var writer = new EndianWriter(writeStream) { BaseStreamOwner = false })
+			using (var writeEndianStream = EndianStream.UsingWriter(writer))
+			{
+				byte[] source = { 1, 2, 3, 4 };
+				Assert.AreSame(writeEndianStream, writeEndianStream.Stream(source.AsSpan(0, 2)));
+			}
+
+			CollectionAssert.AreEqual(new byte[] { 1, 2 }, writeStream.ToArray());
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(new byte[] { 9, 8, 7 })))
+		using (var readEndianStream = EndianStream.UsingReader(reader))
+		{
+			var destination = new byte[] { 0, 0, 0, 0 };
+
+			Assert.AreSame(readEndianStream, readEndianStream.Stream(destination.AsSpan(0, 2)));
+
+			CollectionAssert.AreEqual(new byte[] { 9, 8, 0, 0 }, destination);
+			Assert.AreEqual(2L, reader.BaseStream.Position);
+		}
+	}
+
+	[TestMethod]
+	public void Stream_SpanCharPrefixSlice_LeavesDestinationSuffixUntouched()
+	{
+		using (var writeStream = new MemoryStream())
+		{
+			using (var writer = new EndianWriter(writeStream) { BaseStreamOwner = false })
+			using (var writeEndianStream = EndianStream.UsingWriter(writer))
+			{
+				char[] source = { 'A', 'B', 'C', 'D' };
+				Assert.AreSame(writeEndianStream, writeEndianStream.Stream(source.AsSpan(0, 2)));
+			}
+
+			CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("AB"), writeStream.ToArray());
+		}
+
+		using (var reader = new EndianReader(new MemoryStream(Encoding.UTF8.GetBytes("XY"))))
+		using (var readEndianStream = EndianStream.UsingReader(reader))
+		{
+			var destination = new[] { '\0', '\0', '\0', '\0' };
+
+			Assert.AreSame(readEndianStream, readEndianStream.Stream(destination.AsSpan(0, 2)));
+
+			CollectionAssert.AreEqual(new[] { 'X', 'Y', '\0', '\0' }, destination);
+			Assert.AreEqual(2L, reader.BaseStream.Position);
+		}
+	}
+
+	[TestMethod]
+	public void Stream_SpanByteShortStream_PartialReadMatchesLegacyArrayBehaviorAndActualCounts()
+	{
+		byte[] available = { 0xAA, 0xBB };
+		const int requestedCount = 4;
+
+		// Legacy KSoft-declared array overload: array-return identity preserved, actual transferred
+		// count is discarded internally but still observable via stream position.
+		using (var legacyReader = new EndianReader(new MemoryStream(available)))
+		{
+			var legacyBuffer = new byte[requestedCount];
+			Assert.AreSame(legacyBuffer, legacyReader.Read(legacyBuffer, requestedCount));
+			CollectionAssert.AreEqual(new byte[] { 0xAA, 0xBB, 0, 0 }, legacyBuffer);
+			Assert.AreEqual(available.Length, legacyReader.BaseStream.Position);
+		}
+
+		// Inherited three-argument BinaryReader.Read is not an EndianReader-declared overload (no
+		// KSOFTSPAN002 attribute applies) and exposes the actual transferred count directly.
+		int actualInherited;
+		using (var inheritedReader = new EndianReader(new MemoryStream(available)))
+		{
+			var inheritedBuffer = new byte[requestedCount];
+			actualInherited = inheritedReader.Read(inheritedBuffer, 0, requestedCount);
+			CollectionAssert.AreEqual(new byte[] { 0xAA, 0xBB, 0, 0 }, inheritedBuffer);
+		}
+		Assert.AreEqual(available.Length, actualInherited);
+
+		// Canonical Span<byte> path: same partial-read contract; the actual count is the direct return value.
+		using (var spanReader = new EndianReader(new MemoryStream(available)))
+		{
+			var spanBuffer = new byte[requestedCount];
+			int actualSpan = spanReader.Read(spanBuffer.AsSpan());
+
+			Assert.AreEqual(actualInherited, actualSpan);
+			CollectionAssert.AreEqual(new byte[] { 0xAA, 0xBB, 0, 0 }, spanBuffer);
+			Assert.AreEqual(available.Length, spanReader.BaseStream.Position);
+		}
+	}
+
+	[TestMethod]
+	public void Stream_SpanCharShortStream_PartialReadMatchesLegacyArrayBehaviorAndActualCounts()
+	{
+		byte[] availableBytes = Encoding.UTF8.GetBytes("AB");
+		const int requestedCount = 4;
+
+		using (var legacyReader = new EndianReader(new MemoryStream(availableBytes)))
+		{
+			var legacyBuffer = new char[requestedCount];
+			Assert.AreSame(legacyBuffer, legacyReader.Read(legacyBuffer, requestedCount));
+			CollectionAssert.AreEqual(new[] { 'A', 'B', '\0', '\0' }, legacyBuffer);
+			Assert.AreEqual(availableBytes.Length, legacyReader.BaseStream.Position);
+		}
+
+		int actualInherited;
+		using (var inheritedReader = new EndianReader(new MemoryStream(availableBytes)))
+		{
+			var inheritedBuffer = new char[requestedCount];
+			actualInherited = inheritedReader.Read(inheritedBuffer, 0, requestedCount);
+			CollectionAssert.AreEqual(new[] { 'A', 'B', '\0', '\0' }, inheritedBuffer);
+		}
+		Assert.AreEqual(2, actualInherited);
+
+		using (var spanReader = new EndianReader(new MemoryStream(availableBytes)))
+		{
+			var spanBuffer = new char[requestedCount];
+			int actualSpan = spanReader.Read(spanBuffer.AsSpan());
+
+			Assert.AreEqual(actualInherited, actualSpan);
+			CollectionAssert.AreEqual(new[] { 'A', 'B', '\0', '\0' }, spanBuffer);
+			Assert.AreEqual(availableBytes.Length, spanReader.BaseStream.Position);
+		}
+	}
+
+	[TestMethod]
+	public void Stream_EmptyByteBuffer_LegacyWholeArraySucceedsAndSpanEndSliceSucceeds()
+	{
+		using var readStream = new MemoryStream(new byte[] { 1, 2, 3 });
+		using var reader = new EndianReader(readStream);
+		using var readEndianStream = EndianStream.UsingReader(reader);
+
+		// Legacy whole-array overload: count==0/length==0 already succeeds with no I/O (array-return
+		// identity preserved).
+		Assert.AreSame(Array.Empty<byte>(), reader.Read(Array.Empty<byte>()));
+		Assert.AreEqual(0L, readStream.Position);
+
+		// Facade over the same legacy whole-array overload: also succeeds with no I/O.
+		Assert.AreSame(readEndianStream, readEndianStream.Stream(Array.Empty<byte>()));
+		Assert.AreEqual(0L, readStream.Position);
+
+		// Canonical empty end-of-buffer Span slice: legal, succeeds, no I/O.
+		byte[] buffer = new byte[3];
+		Assert.AreSame(readEndianStream, readEndianStream.Stream(buffer.AsSpan(buffer.Length, 0)));
+		Assert.AreEqual(0L, readStream.Position);
+
+		// The legacy (index, count) overload's stricter validation is unchanged: index == Length is
+		// still rejected even when count == 0 (also asserted in
+		// EndianStreamFacadeDirectGuards_ThrowExpectedExceptions).
+		AssertThrowsArgumentOutOfRange("index", () => readEndianStream.Stream(buffer, buffer.Length, 0));
+	}
+
+	[TestMethod]
+	public void Stream_EmptyCharBuffer_LegacyWholeArraySucceedsAndSpanEndSliceSucceeds()
+	{
+		using var readStream = new MemoryStream(Encoding.UTF8.GetBytes("abc"));
+		using var reader = new EndianReader(readStream);
+		using var readEndianStream = EndianStream.UsingReader(reader);
+
+		Assert.AreSame(Array.Empty<char>(), reader.Read(Array.Empty<char>()));
+		Assert.AreEqual(0L, readStream.Position);
+
+		Assert.AreSame(readEndianStream, readEndianStream.Stream(Array.Empty<char>()));
+		Assert.AreEqual(0L, readStream.Position);
+
+		char[] buffer = new char[3];
+		Assert.AreSame(readEndianStream, readEndianStream.Stream(buffer.AsSpan(buffer.Length, 0)));
+		Assert.AreEqual(0L, readStream.Position);
+
+		AssertThrowsArgumentOutOfRange("index", () => readEndianStream.Stream(buffer, buffer.Length, 0));
+	}
+
+	[TestMethod]
+	public void Stream_ReadWritePositions_AdvanceByActualTransferredBytesForLegacyAndSpanPaths()
+	{
+		using (var writeStream = new MemoryStream())
+		{
+			using var writer = new EndianWriter(writeStream) { BaseStreamOwner = false };
+			using var writeEndianStream = EndianStream.UsingWriter(writer);
+
+			writeEndianStream.Stream(new byte[] { 1, 2, 3 }); // legacy whole-array facade overload
+			Assert.AreEqual(3L, writeStream.Position);
+
+			writeEndianStream.Stream(new Span<byte>(new byte[] { 4, 5 })); // canonical Span facade overload
+			Assert.AreEqual(5L, writeStream.Position);
+		}
+
+		using (var readStream = new MemoryStream(new byte[] { 9, 8, 7, 6, 5 }))
+		using (var reader = new EndianReader(readStream))
+		using (var readEndianStream = EndianStream.UsingReader(reader))
+		{
+			var legacyDestination = new byte[3];
+			readEndianStream.Stream(legacyDestination); // legacy whole-array facade overload
+			Assert.AreEqual(3L, readStream.Position);
+
+			var spanDestination = new byte[2];
+			readEndianStream.Stream(spanDestination.AsSpan()); // canonical Span facade overload
+			Assert.AreEqual(5L, readStream.Position);
+		}
+	}
+
+	[TestMethod]
 	public void TagSpanOverloads_PreserveEndianOrderingAndDestinationBounds()
 	{
 		Span<char> tag32 = stackalloc char[5];

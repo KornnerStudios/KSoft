@@ -123,6 +123,62 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
+		public void ReadWrite_CStringUnicodeNonFixedLength_RoundTripsThroughEndianStreamAndReader()
+		{
+			// Non-fixed-length (storage.FixedLength == 0) drives IO.EndianReader through
+			// StringStorageEncoding.Decoder.ReadCStringMultiByte -- no BaseStream character reads.
+			const string text = "Hi";
+			byte[] expectedBytes = System.Text.Encoding.Unicode.GetBytes(text + '\0');
+
+			using var writeStream = new System.IO.MemoryStream();
+			using (var writer = new IO.EndianWriter(writeStream, Shell.EndianFormat.Little) { BaseStreamOwner = false })
+			using (var writeEndianStream = IO.EndianStream.UsingWriter(writer))
+			{
+				string writeValue = text;
+				writeEndianStream.Stream(ref writeValue, MS.StringStorage.CStringUnicode);
+			}
+
+			byte[] bytes = writeStream.ToArray();
+			CollectionAssert.AreEqual(expectedBytes, bytes);
+
+			using var reader = new IO.EndianReader(new System.IO.MemoryStream(bytes), Shell.EndianFormat.Little);
+			using var readEndianStream = IO.EndianStream.UsingReader(reader);
+			string readValue = null!;
+
+			readEndianStream.Stream(ref readValue, MS.StringStorage.CStringUnicode);
+
+			Assert.AreEqual(text, readValue);
+			Assert.AreEqual(bytes.Length, reader.BaseStream.Position);
+		}
+
+		[TestMethod]
+		public void ReadWrite_CStringUnicodeBigEndianNonFixedLength_RoundTripsThroughEndianStreamAndReader()
+		{
+			const string text = "Hi";
+			byte[] expectedBytes = System.Text.Encoding.BigEndianUnicode.GetBytes(text + '\0');
+
+			using var writeStream = new System.IO.MemoryStream();
+			using (var writer = new IO.EndianWriter(writeStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+			using (var writeEndianStream = IO.EndianStream.UsingWriter(writer))
+			{
+				string writeValue = text;
+				writeEndianStream.Stream(ref writeValue, MS.StringStorage.CStringUnicodeBigEndian);
+			}
+
+			byte[] bytes = writeStream.ToArray();
+			CollectionAssert.AreEqual(expectedBytes, bytes);
+
+			using var reader = new IO.EndianReader(new System.IO.MemoryStream(bytes), Shell.EndianFormat.Big);
+			using var readEndianStream = IO.EndianStream.UsingReader(reader);
+			string readValue = null!;
+
+			readEndianStream.Stream(ref readValue, MS.StringStorage.CStringUnicodeBigEndian);
+
+			Assert.AreEqual(text, readValue);
+			Assert.AreEqual(bytes.Length, reader.BaseStream.Position);
+		}
+
+		[TestMethod]
 		public void ReadWrite_CStringValues_RoundTripAndTruncateAtFixedLength()
 		{
 			const bool k_output_ms = true;

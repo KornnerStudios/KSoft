@@ -99,6 +99,10 @@ namespace KSoft.IO
 		/// <param name="value"></param>
 		/// <param name="count"></param>
 		/// <seealso cref="BinaryWriter.Write(byte[], int, int)"/>
+		[System.Obsolete(
+			"Use Write((ReadOnlySpan<byte>)value.AsSpan(0, count)).",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public void Write(byte[] value, int count)
 		{
 			Verify.Buffers.CountWithinLength(value, count);
@@ -110,6 +114,10 @@ namespace KSoft.IO
 		/// <param name="value"></param>
 		/// <param name="count"></param>
 		/// <seealso cref="BinaryWriter.Write(char[], int, int)"/>
+		[System.Obsolete(
+			"Use Write((ReadOnlySpan<char>)value.AsSpan(0, count)).",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public void Write(char[] value, int count)
 		{
 			Verify.Buffers.CountWithinLength(value, count);

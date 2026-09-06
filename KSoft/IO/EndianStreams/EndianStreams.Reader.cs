@@ -101,11 +101,18 @@ namespace KSoft.IO
 		public void Pad128(){ Pad(sizeof(ulong)*2); }
 		#endregion
 
+		// #REVIEW: #DOTNET10 BinaryReader gains an inherited ReadExactly(Span<byte>) overload on .NET 10;
+		// on net9.0 today, explicitly raw-byte callers can already reach exact-read semantics via
+		// Stream.ReadExactly through BaseStream. No EndianReader-level exact-read wrapper is needed now.
 		/// <summary>Reads an unsigned byte array</summary>
 		/// <param name="value"></param>
 		/// <param name="count"></param>
 		/// <returns></returns>
 		/// <seealso cref="BinaryReader.Read(byte[], int, int)"/>
+		[System.Obsolete(
+			"Use Read(buffer.AsSpan(0, count)); the returned int is the actual bytes read.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public byte[] Read(byte[] buffer, int count)
 		{
 			Verify.Buffers.CountWithinLength(buffer, count);
@@ -118,6 +125,10 @@ namespace KSoft.IO
 		/// <param name="value"></param>
 		/// <returns></returns>
 		/// <seealso cref="BinaryReader.Read(byte[], int, int)"/>
+		[System.Obsolete(
+			"Use Read(buffer.AsSpan()); the returned int is the actual bytes read, and buffer keeps its identity.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public byte[] Read(byte[] buffer)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
@@ -132,6 +143,10 @@ namespace KSoft.IO
 		/// <param name="count"></param>
 		/// <returns></returns>
 		/// <seealso cref="BinaryReader.Read(char[], int, int)"/>
+		[System.Obsolete(
+			"Use Read(buffer.AsSpan(0, count)); the returned int is the actual characters read.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public char[] Read(char[] buffer, int count)
 		{
 			Verify.Buffers.CountWithinLength(buffer, count);
@@ -144,6 +159,10 @@ namespace KSoft.IO
 		/// <param name="value"></param>
 		/// <returns></returns>
 		/// <seealso cref="BinaryReader.Read(char[], int, int)"/>
+		[System.Obsolete(
+			"Use Read(buffer.AsSpan()); the returned int is the actual characters read, and buffer keeps its identity.",
+			false,
+			DiagnosticId = "KSOFTSPAN002")]
 		public char[] Read(char[] buffer)
 		{
 			ArgumentNullException.ThrowIfNull(buffer);
