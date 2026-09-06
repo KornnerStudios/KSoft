@@ -333,8 +333,12 @@ namespace KSoft.Text
 			if (!mStorage.IsFixedLength)
 			{
 				characters = new byte[mNullCharacterSize];
-				while (!ReadStringMultiByteIsNull(s.ByteOrder, s.Read(characters), 0))
+				while (true)
 				{
+					s.Read(characters.AsSpan());
+					if (ReadStringMultiByteIsNull(s.ByteOrder, characters, 0))
+						break;
+
 					ms.Write(characters, 0, characters.Length);
 				}
 			}
