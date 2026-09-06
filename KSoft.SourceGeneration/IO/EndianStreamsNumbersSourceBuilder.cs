@@ -170,55 +170,27 @@ internal static class EndianStreamsNumbersSourceBuilder
 	{
 		string readMethodName = ReadMethodName(typeSpec);
 
-		writer.WriteLine(
-			$"public {typeSpec.Keyword}[] ReadFixedArray({typeSpec.Keyword}[] array, int startIndex, int length)");
+		writer.WriteLine($"public void ReadFixedArray(Span<{typeSpec.Keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			WriteFixedArrayContracts(writer, typeSpec);
-			writer.WriteLine();
-			writer.WriteLine("for (int x = startIndex, end = startIndex+length; x < end; x++)");
+			writer.WriteLine("for (int x = 0; x < values.Length; x++)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine($"array[x] = {readMethodName}();");
+				writer.WriteLine($"values[x] = {readMethodName}();");
 			}
-
-			writer.WriteLine();
-			writer.WriteLine("return array;");
-		}
-
-		writer.WriteLine($"public {typeSpec.Keyword}[] ReadFixedArray({typeSpec.Keyword}[] array)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("return ReadFixedArray(array, 0, array.Length);");
 		}
 	}
 
 	private static void WriteWriteFixedArrayMethods(SourceWriter writer, NumberSpec typeSpec)
 	{
-		writer.WriteLine(
-			$"public {typeSpec.Keyword}[] WriteFixedArray({typeSpec.Keyword}[] array, int startIndex, int length)");
+		writer.WriteLine($"public void WriteFixedArray(ReadOnlySpan<{typeSpec.Keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			WriteFixedArrayContracts(writer, typeSpec);
-			writer.WriteLine();
-			writer.WriteLine("for (int x = startIndex, end = startIndex+length; x < end; x++)");
+			writer.WriteLine("for (int x = 0; x < values.Length; x++)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				writer.WriteLine("Write(array[x]);");
+				writer.WriteLine("Write(values[x]);");
 			}
-
-			writer.WriteLine();
-			writer.WriteLine("return array;");
-		}
-
-		writer.WriteLine($"public {typeSpec.Keyword}[] WriteFixedArray({typeSpec.Keyword}[] array)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("return WriteFixedArray(array, 0, array.Length);");
 		}
 	}
 
@@ -238,34 +210,14 @@ internal static class EndianStreamsNumbersSourceBuilder
 
 	private static void WriteStreamFixedArrayMethods(SourceWriter writer, NumberSpec typeSpec)
 	{
-		writer.WriteLine(
-			$"public EndianStream StreamFixedArray({typeSpec.Keyword}[] array, int startIndex, int length)");
+		writer.WriteLine($"public EndianStream StreamFixedArray(Span<{typeSpec.Keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
-			writer.WriteLine();
-			writer.WriteLine("if (IsReading) { Reader.ReadFixedArray(array, startIndex, length); }");
-			writer.WriteLine("else if (IsWriting) { Writer.WriteFixedArray(array, startIndex, length); }");
+			writer.WriteLine("if (IsReading) { Reader.ReadFixedArray(values); }");
+			writer.WriteLine("else if (IsWriting) { Writer.WriteFixedArray(values); }");
 			writer.WriteLine();
 			writer.WriteLine("return this;");
 		}
-
-		writer.WriteLine($"public EndianStream StreamFixedArray({typeSpec.Keyword}[] array)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("return StreamFixedArray(array, 0, array.Length);");
-		}
-	}
-
-	private static void WriteFixedArrayContracts(SourceWriter writer, NumberSpec typeSpec)
-	{
-		writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(startIndex);");
-		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(length);");
 	}
 
 	private static string ReadMethodName(NumberSpec typeSpec)

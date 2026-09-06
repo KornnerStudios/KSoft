@@ -261,22 +261,10 @@ namespace KSoft.IO
 			implementation.Write(this, value);
 		}
 
-		public bool[] WriteFixedArray(bool[] array, int startIndex, int length)
+		public void WriteFixedArray(ReadOnlySpan<bool> values)
 		{
-			ArgumentNullException.ThrowIfNull(array);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfNegative(length);
-
-			for (int x = startIndex, end = startIndex+length; x < end; x++)
-				Write(array[x]);
-
-			return array;
-		}
-		public bool[] WriteFixedArray(bool[] array)
-		{
-			ArgumentNullException.ThrowIfNull(array);
-
-			return WriteFixedArray(array, 0, array.Length);
+			for (int x = 0; x < values.Length; x++)
+				Write(values[x]);
 		}
 	};
 }

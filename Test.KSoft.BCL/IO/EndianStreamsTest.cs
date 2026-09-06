@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -47,6 +49,41 @@ public class EndianStreamsTest : BaseTestClass
 	{
 		public void Serialize(EndianStream s)
 		{
+		}
+	}
+
+	sealed class WriteLimitStream : MemoryStream
+	{
+		int mRemainingBytes;
+
+		public WriteLimitStream(int byteLimit)
+		{
+			mRemainingBytes = byteLimit;
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			Write(buffer.AsSpan(offset, count));
+		}
+
+		public override void Write(ReadOnlySpan<byte> buffer)
+		{
+			int count = Math.Min(mRemainingBytes, buffer.Length);
+			byte[] bytes = buffer[..count].ToArray();
+			base.Write(bytes, 0, bytes.Length);
+			mRemainingBytes -= count;
+
+			if (count != buffer.Length)
+				throw new IOException("Test stream write limit reached.");
+		}
+
+		public override void WriteByte(byte value)
+		{
+			if (mRemainingBytes == 0)
+				throw new IOException("Test stream write limit reached.");
+
+			base.WriteByte(value);
+			mRemainingBytes--;
 		}
 	}
 
@@ -213,7 +250,7 @@ public class EndianStreamsTest : BaseTestClass
 		using (var reader = new EndianReader(new MemoryStream(new byte[] { 1, 0 }), Shell.EndianFormat.Big))
 		{
 			var values = new bool[2];
-			Assert.AreSame(values, reader.ReadFixedArray(values));
+			reader.ReadFixedArray(values.AsSpan());
 			CollectionAssert.AreEqual(new[] { true, false }, values);
 		}
 	}
@@ -867,94 +904,146 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void FixedArray_InvalidArguments_ThrowsExplicitExceptions()
+	public void FixedArrayPublicApi_ExposesExactCanonicalSpanSurface()
 	{
-		using var writerStream = new MemoryStream();
-		using var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
-
-		Assert.Throws<ArgumentNullException>(() => writer.WriteFixedArray((ushort[])null!, 0, 0));
-		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], -1, 1));
-		Assert.Throws<ArgumentOutOfRangeException>(() => writer.WriteFixedArray(new ushort[1], 0, -1));
-
-		using var reader = new EndianReader(
-			new MemoryStream(new byte[] { 0x12, 0x34 }),
-			Shell.EndianFormat.Big);
-
-		Assert.Throws<ArgumentNullException>(() => reader.ReadFixedArray((ushort[])null!, 0, 0));
-		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], -1, 1));
-		Assert.Throws<ArgumentOutOfRangeException>(() => reader.ReadFixedArray(new ushort[1], 0, -1));
-	}
-
-	[TestMethod]
-	public void FixedArray_OutOfRangeWrite_PreservesPartialSideEffects()
-	{
-		using var writerStream = new MemoryStream();
-		using (var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+		Type[] elementTypes =
+		[
+			typeof(bool),
+			typeof(byte),
+			typeof(sbyte),
+			typeof(ushort),
+			typeof(short),
+			typeof(uint),
+			typeof(int),
+			typeof(ulong),
+			typeof(long),
+			typeof(float),
+			typeof(double),
+		];
+		var apiShapes = new[]
 		{
-			Assert.Throws<IndexOutOfRangeException>(()
-				=> writer.WriteFixedArray(new ushort[] { 0x1111, 0x2233 }, 1, 2));
+			(DeclaringType: typeof(EndianReader), Name: nameof(EndianReader.ReadFixedArray),
+				ReturnType: typeof(void), ParameterType: typeof(Span<>)),
+			(DeclaringType: typeof(EndianWriter), Name: nameof(EndianWriter.WriteFixedArray),
+				ReturnType: typeof(void), ParameterType: typeof(ReadOnlySpan<>)),
+			(DeclaringType: typeof(EndianStream), Name: nameof(EndianStream.StreamFixedArray),
+				ReturnType: typeof(EndianStream), ParameterType: typeof(Span<>)),
+		};
+		var fixedArrayMethods = apiShapes
+			.SelectMany(static shape => shape.DeclaringType.GetMethods(
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+				.Where(method => method.Name == shape.Name))
+			.ToArray();
+
+		Assert.AreEqual(33, fixedArrayMethods.Length);
+		Assert.IsFalse(fixedArrayMethods.Any(static method =>
+			method.GetParameters().Any(static parameter => parameter.ParameterType.IsArray)));
+
+		foreach (var shape in apiShapes)
+		{
+			var methods = fixedArrayMethods
+				.Where(method => method.DeclaringType == shape.DeclaringType && method.Name == shape.Name)
+				.ToArray();
+
+			Assert.AreEqual(elementTypes.Length, methods.Length);
+			Assert.IsTrue(methods.All(method => method.ReturnType == shape.ReturnType));
+			Assert.IsTrue(methods.All(static method => method.GetParameters().Length == 1));
+			Assert.IsTrue(methods.All(method =>
+				method.GetParameters()[0].ParameterType.IsGenericType &&
+				method.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == shape.ParameterType));
+			CollectionAssert.AreEquivalent(
+				elementTypes,
+				methods.Select(static method =>
+					method.GetParameters()[0].ParameterType.GetGenericArguments()[0]).ToArray());
 		}
-
-		CollectionAssert.AreEqual(new byte[] { 0x22, 0x33 }, writerStream.ToArray());
-
-		using var readStream = new MemoryStream(new byte[] { 0x11, 0x22, 0x33, 0x44 });
-		using var reader = new EndianReader(readStream, Shell.EndianFormat.Big);
-		var values = new ushort[2];
-
-		Assert.Throws<IndexOutOfRangeException>(() => reader.ReadFixedArray(values, 1, 2));
-		Assert.AreEqual(4L, readStream.Position);
-		Assert.AreEqual((ushort)0x1122, values[1]);
 	}
 
 	[TestMethod]
-	public void BoolFixedArrayGuards_ThrowExpectedExceptions()
+	public void FixedArray_EmptyAndEndSlices_DoNotPerformIo()
 	{
+		using var readStream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+		using var reader = new EndianReader(readStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
+		var readValues = new ushort[2];
+
+		reader.ReadFixedArray(Span<ushort>.Empty);
+		reader.ReadFixedArray(readValues.AsSpan(readValues.Length, 0));
+		Assert.AreEqual(0L, readStream.Position);
+
 		using var writeStream = new MemoryStream();
 		using var writer = new EndianWriter(writeStream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
-		using var writerEndianStream = EndianStream.UsingWriter(writer);
-		using var reader = new EndianReader(new MemoryStream(new byte[2]), Shell.EndianFormat.Big);
-		using var readerEndianStream = EndianStream.UsingReader(reader);
+		var writeValues = new[] { true, false };
 
-		AssertThrowsArgumentNull("array", () => writer.WriteFixedArray((bool[])null!, 0, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => writer.WriteFixedArray(new bool[1], -1, 0));
-		AssertThrowsArgumentOutOfRange("length", () => writer.WriteFixedArray(new bool[1], 0, -1));
-		AssertThrowsArgumentNull("array", () => writer.WriteFixedArray((bool[])null!));
+		writer.WriteFixedArray(ReadOnlySpan<bool>.Empty);
+		writer.WriteFixedArray(writeValues.AsSpan(writeValues.Length, 0));
+		Assert.AreEqual(0L, writeStream.Position);
 
-		AssertThrowsArgumentNull("array", () => reader.ReadFixedArray((bool[])null!, 0, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => reader.ReadFixedArray(new bool[1], -1, 0));
-		AssertThrowsArgumentOutOfRange("length", () => reader.ReadFixedArray(new bool[1], 0, -1));
-		AssertThrowsArgumentNull("array", () => reader.ReadFixedArray((bool[])null!));
-
-		AssertThrowsArgumentNull("array", () => writerEndianStream.StreamFixedArray((bool[])null!, 0, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => writerEndianStream.StreamFixedArray(new bool[1], -1, 0));
-		AssertThrowsArgumentOutOfRange("length", () => writerEndianStream.StreamFixedArray(new bool[1], 0, -1));
-		AssertThrowsArgumentNull("array", () => writerEndianStream.StreamFixedArray((bool[])null!));
-
-		AssertThrowsArgumentNull("array", () => readerEndianStream.StreamFixedArray((bool[])null!, 0, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => readerEndianStream.StreamFixedArray(new bool[1], -1, 0));
-		AssertThrowsArgumentOutOfRange("length", () => readerEndianStream.StreamFixedArray(new bool[1], 0, -1));
-		AssertThrowsArgumentNull("array", () => readerEndianStream.StreamFixedArray((bool[])null!));
+		using var readEndianStream = EndianStream.UsingReader(reader);
+		using var writeEndianStream = EndianStream.UsingWriter(writer);
+		Assert.AreSame(readEndianStream, readEndianStream.StreamFixedArray(Span<ushort>.Empty));
+		Assert.AreSame(
+			readEndianStream,
+			readEndianStream.StreamFixedArray(readValues.AsSpan(readValues.Length, 0)));
+		Assert.AreSame(writeEndianStream, writeEndianStream.StreamFixedArray(Span<bool>.Empty));
+		Assert.AreSame(
+			writeEndianStream,
+			writeEndianStream.StreamFixedArray(writeValues.AsSpan(writeValues.Length, 0)));
+		Assert.AreEqual(0L, readStream.Position);
+		Assert.AreEqual(0L, writeStream.Position);
 	}
 
 	[TestMethod]
-	public void BoolFixedArray_OutOfRangeWrite_PreservesPartialSideEffects()
+	public void BoolFixedArray_NonzeroInputAndCanonicalOutput_PreserveWireEncoding()
 	{
-		using var writerStream = new MemoryStream();
-		using (var writer = new EndianWriter(writerStream, Shell.EndianFormat.Big) { BaseStreamOwner = false })
+		var values = new bool[3];
+		using (var reader = new EndianReader(new MemoryStream(new byte[] { 0, 2, 0xFF })))
 		{
-			Assert.Throws<IndexOutOfRangeException>(()
-				=> writer.WriteFixedArray(new bool[] { true, false }, 1, 2));
+			reader.ReadFixedArray(values.AsSpan());
+			Assert.AreEqual(3L, reader.BaseStream.Position);
+		}
+		CollectionAssert.AreEqual(new[] { false, true, true }, values);
+
+		using var stream = new MemoryStream();
+		using (var writer = new EndianWriter(stream) { BaseStreamOwner = false })
+		{
+			writer.WriteFixedArray(values.AsSpan());
+		}
+		CollectionAssert.AreEqual(new byte[] { 0, 1, 1 }, stream.ToArray());
+	}
+
+	[TestMethod]
+	public void ReadFixedArray_TruncatedInput_PreservesCompletedElementsAndAdvancement()
+	{
+		using (var reader = new EndianReader(new MemoryStream(new byte[] { 0x11, 0x22 })))
+		{
+			var values = new byte[] { 0xCC, 0xCC, 0xCC };
+
+			Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadFixedArray(values.AsSpan()));
+
+			CollectionAssert.AreEqual(new byte[] { 0x11, 0x22, 0xCC }, values);
+			Assert.AreEqual(2L, reader.BaseStream.Position);
 		}
 
-		CollectionAssert.AreEqual(new byte[] { 0 }, writerStream.ToArray());
+		using var readStream = new MemoryStream(new byte[] { 0x11, 0x22, 0x33, 0x44, 0x55 });
+		using var ushortReader = new EndianReader(readStream, Shell.EndianFormat.Big);
+		var ushortValues = new ushort[] { 0xAAAA, 0xBBBB, 0xCCCC };
 
-		using var readStream = new MemoryStream(new byte[] { 1, 0 });
-		using var reader = new EndianReader(readStream, Shell.EndianFormat.Big);
-		var values = new bool[2];
+		Assert.ThrowsExactly<EndOfStreamException>(() => ushortReader.ReadFixedArray(ushortValues.AsSpan()));
 
-		Assert.Throws<IndexOutOfRangeException>(() => reader.ReadFixedArray(values, 1, 2));
-		Assert.AreEqual(2L, readStream.Position);
-		Assert.IsTrue(values[1]);
+		CollectionAssert.AreEqual(new ushort[] { 0x1122, 0x3344, 0xCCCC }, ushortValues);
+		Assert.AreEqual(5L, readStream.Position);
+	}
+
+	[TestMethod]
+	public void WriteFixedArray_TruncatedOutput_PreservesCompletedElementsAndAdvancement()
+	{
+		using var stream = new WriteLimitStream(byteLimit: 3);
+		using var writer = new EndianWriter(stream, Shell.EndianFormat.Big) { BaseStreamOwner = false };
+		ushort[] values = { 0x1122, 0x3344, 0x5566 };
+
+		Assert.ThrowsExactly<IOException>(() => writer.WriteFixedArray(values.AsSpan()));
+
+		CollectionAssert.AreEqual(new byte[] { 0x11, 0x22, 0x33 }, stream.ToArray());
+		Assert.AreEqual(3L, stream.Position);
 	}
 
 	[TestMethod]
@@ -1104,31 +1193,39 @@ public class EndianStreamsTest : BaseTestClass
 
 	static void WriteFixedArrayRangeValues(EndianWriter writer)
 	{
-		writer.WriteFixedArray(new byte[] { 0xA0, 0x11, 0x22, 0xA3 }, 1, 2);
-		writer.WriteFixedArray(new sbyte[] { -1, 0x11, 0x22, -4 }, 1, 2);
-		writer.WriteFixedArray(new ushort[] { 0, 0x1234, 0x5678, 0 }, 1, 2);
-		writer.WriteFixedArray(new short[] { 0, unchecked((short)0x89AB), 0x1234, 0 }, 1, 2);
-		writer.WriteFixedArray(new uint[] { 0, 0x89ABCDEFU, 0x01234567U, 0 }, 1, 2);
-		writer.WriteFixedArray(new int[] { 0, unchecked((int)0x89ABCDEF), 0x01234567, 0 }, 1, 2);
-		writer.WriteFixedArray(new ulong[] { 0, 0x0123456789ABCDEFUL, 0xFEDCBA9876543210UL, 0 }, 1, 2);
+		writer.WriteFixedArray(new bool[] { true, false, true, false }.AsSpan(1, 2));
+		writer.WriteFixedArray(new byte[] { 0xA0, 0x11, 0x22, 0xA3 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new sbyte[] { -1, 0x11, 0x22, -4 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new ushort[] { 0, 0x1234, 0x5678, 0 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new short[] { 0, unchecked((short)0x89AB), 0x1234, 0 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new uint[] { 0, 0x89ABCDEFU, 0x01234567U, 0 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new int[] { 0, unchecked((int)0x89ABCDEF), 0x01234567, 0 }.AsSpan(1, 2));
+		writer.WriteFixedArray(new ulong[] {
+			0,
+			0x0123456789ABCDEFUL,
+			0xFEDCBA9876543210UL,
+			0,
+		}.AsSpan(1, 2));
 		writer.WriteFixedArray(new long[] {
 			0,
 			0x0123456789ABCDEFL,
 			unchecked((long)0xFEDCBA9876543210UL),
 			0,
-		}, 1, 2);
+		}.AsSpan(1, 2));
 		writer.WriteFixedArray(new float[] {
 			0,
 			BitConverter.Int32BitsToSingle(0x3F800000),
 			BitConverter.Int32BitsToSingle(unchecked((int)0xFFC00001)),
+			BitConverter.Int32BitsToSingle(unchecked((int)0x80000000)),
 			0,
-		}, 1, 2);
+		}.AsSpan(1, 3));
 		writer.WriteFixedArray(new double[] {
 			0,
 			BitConverter.Int64BitsToDouble(0x3FF0000000000000L),
 			BitConverter.Int64BitsToDouble(unchecked((long)0xFFF8000000000001UL)),
+			BitConverter.Int64BitsToDouble(unchecked((long)0x8000000000000000UL)),
 			0,
-		}, 1, 2);
+		}.AsSpan(1, 3));
 	}
 
 	static void StreamScalarValues(EndianStream stream)
@@ -1158,31 +1255,45 @@ public class EndianStreamsTest : BaseTestClass
 
 	static void StreamFixedArrayRangeValues(EndianStream stream)
 	{
-		stream.StreamFixedArray(new byte[] { 0xA0, 0x11, 0x22, 0xA3 }, 1, 2);
-		stream.StreamFixedArray(new sbyte[] { -1, 0x11, 0x22, -4 }, 1, 2);
-		stream.StreamFixedArray(new ushort[] { 0, 0x1234, 0x5678, 0 }, 1, 2);
-		stream.StreamFixedArray(new short[] { 0, unchecked((short)0x89AB), 0x1234, 0 }, 1, 2);
-		stream.StreamFixedArray(new uint[] { 0, 0x89ABCDEFU, 0x01234567U, 0 }, 1, 2);
-		stream.StreamFixedArray(new int[] { 0, unchecked((int)0x89ABCDEF), 0x01234567, 0 }, 1, 2);
-		stream.StreamFixedArray(new ulong[] { 0, 0x0123456789ABCDEFUL, 0xFEDCBA9876543210UL, 0 }, 1, 2);
-		stream.StreamFixedArray(new long[] {
+		Assert.AreSame(stream, stream.StreamFixedArray(new bool[] { true, false, true, false }.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new byte[] { 0xA0, 0x11, 0x22, 0xA3 }.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new sbyte[] { -1, 0x11, 0x22, -4 }.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new ushort[] { 0, 0x1234, 0x5678, 0 }.AsSpan(1, 2)));
+		Assert.AreSame(
+			stream,
+			stream.StreamFixedArray(new short[] { 0, unchecked((short)0x89AB), 0x1234, 0 }.AsSpan(1, 2)));
+		Assert.AreSame(
+			stream,
+			stream.StreamFixedArray(new uint[] { 0, 0x89ABCDEFU, 0x01234567U, 0 }.AsSpan(1, 2)));
+		Assert.AreSame(
+			stream,
+			stream.StreamFixedArray(new int[] { 0, unchecked((int)0x89ABCDEF), 0x01234567, 0 }.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new ulong[] {
 			0,
-			0x0123456789ABCDEFL,
-			unchecked((long)0xFEDCBA9876543210UL),
+			0x0123456789ABCDEFUL,
+			0xFEDCBA9876543210UL,
 			0,
-		}, 1, 2);
-		stream.StreamFixedArray(new float[] {
-			0,
-			BitConverter.Int32BitsToSingle(0x3F800000),
-			BitConverter.Int32BitsToSingle(unchecked((int)0xFFC00001)),
-			0,
-		}, 1, 2);
-		stream.StreamFixedArray(new double[] {
-			0,
-			BitConverter.Int64BitsToDouble(0x3FF0000000000000L),
-			BitConverter.Int64BitsToDouble(unchecked((long)0xFFF8000000000001UL)),
-			0,
-		}, 1, 2);
+		}.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new long[] {
+				0,
+				0x0123456789ABCDEFL,
+				unchecked((long)0xFEDCBA9876543210UL),
+				0,
+			}.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new float[] {
+				0,
+				BitConverter.Int32BitsToSingle(0x3F800000),
+				BitConverter.Int32BitsToSingle(unchecked((int)0xFFC00001)),
+				BitConverter.Int32BitsToSingle(unchecked((int)0x80000000)),
+				0,
+			}.AsSpan(1, 3)));
+		Assert.AreSame(stream, stream.StreamFixedArray(new double[] {
+				0,
+				BitConverter.Int64BitsToDouble(0x3FF0000000000000L),
+				BitConverter.Int64BitsToDouble(unchecked((long)0xFFF8000000000001UL)),
+				BitConverter.Int64BitsToDouble(unchecked((long)0x8000000000000000UL)),
+				0,
+			}.AsSpan(1, 3)));
 	}
 
 	static void AssertReadPrimitives(byte[] bytes, Shell.EndianFormat byteOrder)
@@ -1255,6 +1366,7 @@ public class EndianStreamsTest : BaseTestClass
 
 	static void AssertReadFixedArrayRangeValues(EndianReader reader)
 	{
+		var boolValues = new[] { true, true, true, false };
 		var byteValues = new byte[] { 0xA0, 0, 0, 0xA3 };
 		var sbyteValues = new sbyte[] { -1, 0, 0, -4 };
 		var ushortValues = new ushort[] { 0xAAAA, 0, 0, 0xBBBB };
@@ -1263,21 +1375,23 @@ public class EndianStreamsTest : BaseTestClass
 		var intValues = new int[] { -1, 0, 0, -2 };
 		var ulongValues = new ulong[] { ulong.MaxValue, 0, 0, ulong.MaxValue };
 		var longValues = new long[] { -1, 0, 0, -2 };
-		var floatValues = new float[] { -1, 0, 0, -2 };
-		var doubleValues = new double[] { -1, 0, 0, -2 };
+		var floatValues = new float[] { -1, 0, 0, 0, -2 };
+		var doubleValues = new double[] { -1, 0, 0, 0, -2 };
 
-		reader.ReadFixedArray(byteValues, 1, 2);
-		reader.ReadFixedArray(sbyteValues, 1, 2);
-		reader.ReadFixedArray(ushortValues, 1, 2);
-		reader.ReadFixedArray(shortValues, 1, 2);
-		reader.ReadFixedArray(uintValues, 1, 2);
-		reader.ReadFixedArray(intValues, 1, 2);
-		reader.ReadFixedArray(ulongValues, 1, 2);
-		reader.ReadFixedArray(longValues, 1, 2);
-		reader.ReadFixedArray(floatValues, 1, 2);
-		reader.ReadFixedArray(doubleValues, 1, 2);
+		reader.ReadFixedArray(boolValues.AsSpan(1, 2));
+		reader.ReadFixedArray(byteValues.AsSpan(1, 2));
+		reader.ReadFixedArray(sbyteValues.AsSpan(1, 2));
+		reader.ReadFixedArray(ushortValues.AsSpan(1, 2));
+		reader.ReadFixedArray(shortValues.AsSpan(1, 2));
+		reader.ReadFixedArray(uintValues.AsSpan(1, 2));
+		reader.ReadFixedArray(intValues.AsSpan(1, 2));
+		reader.ReadFixedArray(ulongValues.AsSpan(1, 2));
+		reader.ReadFixedArray(longValues.AsSpan(1, 2));
+		reader.ReadFixedArray(floatValues.AsSpan(1, 3));
+		reader.ReadFixedArray(doubleValues.AsSpan(1, 3));
 
 		AssertFixedArrayRangeValues(
+			boolValues,
 			byteValues,
 			sbyteValues,
 			ushortValues,
@@ -1292,6 +1406,7 @@ public class EndianStreamsTest : BaseTestClass
 
 	static void AssertReadStreamFixedArrayRangeValues(EndianStream stream)
 	{
+		var boolValues = new[] { true, true, true, false };
 		var byteValues = new byte[] { 0xA0, 0, 0, 0xA3 };
 		var sbyteValues = new sbyte[] { -1, 0, 0, -4 };
 		var ushortValues = new ushort[] { 0xAAAA, 0, 0, 0xBBBB };
@@ -1300,21 +1415,23 @@ public class EndianStreamsTest : BaseTestClass
 		var intValues = new int[] { -1, 0, 0, -2 };
 		var ulongValues = new ulong[] { ulong.MaxValue, 0, 0, ulong.MaxValue };
 		var longValues = new long[] { -1, 0, 0, -2 };
-		var floatValues = new float[] { -1, 0, 0, -2 };
-		var doubleValues = new double[] { -1, 0, 0, -2 };
+		var floatValues = new float[] { -1, 0, 0, 0, -2 };
+		var doubleValues = new double[] { -1, 0, 0, 0, -2 };
 
-		stream.StreamFixedArray(byteValues, 1, 2);
-		stream.StreamFixedArray(sbyteValues, 1, 2);
-		stream.StreamFixedArray(ushortValues, 1, 2);
-		stream.StreamFixedArray(shortValues, 1, 2);
-		stream.StreamFixedArray(uintValues, 1, 2);
-		stream.StreamFixedArray(intValues, 1, 2);
-		stream.StreamFixedArray(ulongValues, 1, 2);
-		stream.StreamFixedArray(longValues, 1, 2);
-		stream.StreamFixedArray(floatValues, 1, 2);
-		stream.StreamFixedArray(doubleValues, 1, 2);
+		Assert.AreSame(stream, stream.StreamFixedArray(boolValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(byteValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(sbyteValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(ushortValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(shortValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(uintValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(intValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(ulongValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(longValues.AsSpan(1, 2)));
+		Assert.AreSame(stream, stream.StreamFixedArray(floatValues.AsSpan(1, 3)));
+		Assert.AreSame(stream, stream.StreamFixedArray(doubleValues.AsSpan(1, 3)));
 
 		AssertFixedArrayRangeValues(
+			boolValues,
 			byteValues,
 			sbyteValues,
 			ushortValues,
@@ -1328,6 +1445,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	static void AssertFixedArrayRangeValues(
+		bool[] boolValues,
 		byte[] byteValues,
 		sbyte[] sbyteValues,
 		ushort[] ushortValues,
@@ -1339,6 +1457,7 @@ public class EndianStreamsTest : BaseTestClass
 		float[] floatValues,
 		double[] doubleValues)
 	{
+		CollectionAssert.AreEqual(new[] { true, false, true, false }, boolValues);
 		CollectionAssert.AreEqual(new byte[] { 0xA0, 0x11, 0x22, 0xA3 }, byteValues);
 		CollectionAssert.AreEqual(new sbyte[] { -1, 0x11, 0x22, -4 }, sbyteValues);
 		CollectionAssert.AreEqual(new ushort[] { 0xAAAA, 0x1234, 0x5678, 0xBBBB }, ushortValues);
@@ -1359,8 +1478,12 @@ public class EndianStreamsTest : BaseTestClass
 		}, longValues);
 		Assert.AreEqual(0x3F800000, BitConverter.SingleToInt32Bits(floatValues[1]));
 		Assert.AreEqual(unchecked((int)0xFFC00001), BitConverter.SingleToInt32Bits(floatValues[2]));
+		Assert.AreEqual(unchecked((int)0x80000000), BitConverter.SingleToInt32Bits(floatValues[3]));
 		Assert.AreEqual(0x3FF0000000000000L, BitConverter.DoubleToInt64Bits(doubleValues[1]));
 		Assert.AreEqual(unchecked((long)0xFFF8000000000001UL), BitConverter.DoubleToInt64Bits(doubleValues[2]));
+		Assert.AreEqual(
+			unchecked((long)0x8000000000000000UL),
+			BitConverter.DoubleToInt64Bits(doubleValues[3]));
 	}
 
 	static byte[] CreateBigEndianPrimitiveBytes() => new byte[] {
@@ -1398,6 +1521,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	static byte[] CreateBigEndianFixedArrayRangeBytes() => new byte[] {
+		0x00, 0x01,
 		0x11, 0x22,
 		0x11, 0x22,
 		0x12, 0x34, 0x56, 0x78,
@@ -1410,11 +1534,14 @@ public class EndianStreamsTest : BaseTestClass
 		0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
 		0x3F, 0x80, 0x00, 0x00,
 		0xFF, 0xC0, 0x00, 0x01,
+		0x80, 0x00, 0x00, 0x00,
 		0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0xFF, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+		0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	};
 
 	static byte[] CreateLittleEndianFixedArrayRangeBytes() => new byte[] {
+		0x00, 0x01,
 		0x11, 0x22,
 		0x11, 0x22,
 		0x34, 0x12, 0x78, 0x56,
@@ -1427,7 +1554,9 @@ public class EndianStreamsTest : BaseTestClass
 		0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE,
 		0x00, 0x00, 0x80, 0x3F,
 		0x01, 0x00, 0xC0, 0xFF,
+		0x00, 0x00, 0x00, 0x80,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0x3F,
 		0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0xFF,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
 	};
 }

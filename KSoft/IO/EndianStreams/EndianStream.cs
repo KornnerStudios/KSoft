@@ -766,22 +766,12 @@ namespace KSoft.IO
 		#endregion
 
 		#region Stream Fixed Array
-		public EndianStream StreamFixedArray(bool[] array, int startIndex, int length)
+		public EndianStream StreamFixedArray(Span<bool> values)
 		{
-			ArgumentNullException.ThrowIfNull(array);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfNegative(length);
-
-				 if (IsReading) Reader.ReadFixedArray(array, startIndex, length);
-			else if (IsWriting) Writer.WriteFixedArray(array, startIndex, length);
+				 if (IsReading) Reader.ReadFixedArray(values);
+			else if (IsWriting) Writer.WriteFixedArray(values);
 
 			return this;
-		}
-		public EndianStream StreamFixedArray(bool[] array)
-		{
-			ArgumentNullException.ThrowIfNull(array);
-
-			return StreamFixedArray(array, 0, array.Length);
 		}
 		#endregion
 

@@ -406,22 +406,10 @@ namespace KSoft.IO
 			return implementation.Read(this);
 		}
 
-		public bool[] ReadFixedArray(bool[] array, int startIndex, int length)
+		public void ReadFixedArray(Span<bool> values)
 		{
-			ArgumentNullException.ThrowIfNull(array);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfNegative(length);
-
-			for (int x = startIndex, end = startIndex+length; x < end; x++)
-				array[x] = ReadBoolean();
-
-			return array;
-		}
-		public bool[] ReadFixedArray(bool[] array)
-		{
-			ArgumentNullException.ThrowIfNull(array);
-
-			return ReadFixedArray(array, 0, array.Length);
+			for (int x = 0; x < values.Length; x++)
+				values[x] = ReadBoolean();
 		}
 	};
 }
