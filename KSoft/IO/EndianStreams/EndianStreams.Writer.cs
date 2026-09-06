@@ -95,36 +95,6 @@ namespace KSoft.IO
 		public void Pad128(){ base.Write(ulong.MinValue); base.Write(ulong.MinValue); }
 		#endregion
 
-		/// <summary>Writes an unsigned byte array</summary>
-		/// <param name="value"></param>
-		/// <param name="count"></param>
-		/// <seealso cref="BinaryWriter.Write(byte[], int, int)"/>
-		[System.Obsolete(
-			"Use Write((ReadOnlySpan<byte>)value.AsSpan(0, count)).",
-			false,
-			DiagnosticId = "KSOFTSPAN002")]
-		public void Write(byte[] value, int count)
-		{
-			Verify.Buffers.CountWithinLength(value, count);
-
-			base.Write(value, 0, count);
-		}
-
-		/// <summary>Writes a character array</summary>
-		/// <param name="value"></param>
-		/// <param name="count"></param>
-		/// <seealso cref="BinaryWriter.Write(char[], int, int)"/>
-		[System.Obsolete(
-			"Use Write((ReadOnlySpan<char>)value.AsSpan(0, count)).",
-			false,
-			DiagnosticId = "KSOFTSPAN002")]
-		public void Write(char[] value, int count)
-		{
-			Verify.Buffers.CountWithinLength(value, count);
-
-			base.Write(value, 0, count);
-		}
-
 		#region Write group tag
 		// #VITA_KEEP: tag helpers preserve KSoft character/group-tag ordering semantics.
 		/// <summary>Writes a tag id (four character code)</summary>
