@@ -7,25 +7,37 @@ namespace KSoft.Bitwise.Test;
 public sealed class Encoded7BitIntTest : BaseTestClass
 {
 
-	static void AssertRead(byte[] buffer, int startIndex, int maxCount, int expectedValue, int expectedEndingIndex)
+	static void AssertEncoding(int value, byte[] expectedBytes)
 	{
-		int value = Encoded7BitInt.Read(buffer, startIndex, maxCount, out int endingIndex);
+		var buffer = new byte[4];
+		Array.Fill(buffer, (byte)0xCC);
 
-		Assert.AreEqual(expectedValue, value);
-		Assert.AreEqual(expectedEndingIndex, endingIndex);
+		int bytesWritten = Encoded7BitInt.Write(buffer, value);
+
+		Assert.AreEqual(expectedBytes.Length, Encoded7BitInt.CalculateSize(value));
+		Assert.AreEqual(expectedBytes.Length, bytesWritten);
+		CollectionAssert.AreEqual(expectedBytes, buffer[..bytesWritten]);
+	}
+
+	static void AssertReadFailure(ReadOnlySpan<byte> buffer)
+	{
+		int value = Encoded7BitInt.Read(buffer, out int bytesRead);
+
+		Assert.AreEqual(TypeExtensions.kNone, value);
+		Assert.AreEqual(TypeExtensions.kNone, bytesRead);
 	}
 
 	[TestMethod]
-	public void CalculateSize_BoundaryValues_ReturnsExpectedByteCount()
+	public void CalculateSizeAndWrite_BoundaryValues_ReturnExpectedSizesAndBytes()
 	{
-		Assert.AreEqual(1, Encoded7BitInt.CalculateSize(0));
-		Assert.AreEqual(1, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue1Bytes));
-		Assert.AreEqual(2, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue1Bytes + 1));
-		Assert.AreEqual(2, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue2Bytes));
-		Assert.AreEqual(3, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue2Bytes + 1));
-		Assert.AreEqual(3, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue3Bytes));
-		Assert.AreEqual(4, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue3Bytes + 1));
-		Assert.AreEqual(4, Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue4Bytes));
+		AssertEncoding(0, [0x00]);
+		AssertEncoding(Encoded7BitInt.kMaxValue1Bytes, [0x7F]);
+		AssertEncoding(Encoded7BitInt.kMaxValue1Bytes + 1, [0x80, 0x01]);
+		AssertEncoding(Encoded7BitInt.kMaxValue2Bytes, [0xFF, 0x7F]);
+		AssertEncoding(Encoded7BitInt.kMaxValue2Bytes + 1, [0x80, 0x80, 0x01]);
+		AssertEncoding(Encoded7BitInt.kMaxValue3Bytes, [0xFF, 0xFF, 0x7F]);
+		AssertEncoding(Encoded7BitInt.kMaxValue3Bytes + 1, [0x80, 0x80, 0x80, 0x01]);
+		AssertEncoding(Encoded7BitInt.kMaxValue4Bytes, [0xFF, 0xFF, 0xFF, 0x7F]);
 	}
 
 	[TestMethod]
@@ -36,66 +48,94 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void Read_ValidBuffers_ReturnsDecodedValueAndEndingIndex()
+	public void Read_WholeSpan_ReturnsDecodedValueAndRelativeBytesRead()
 	{
-		AssertRead([0x00], 0, 1, 0, 1);
-		AssertRead([0x03, 0xAA, 0xBB, 0xCC], 0, 4, 3, 1);
-		AssertRead([0xEE, 0x03, 0xAA, 0xBB, 0xCC], 1, 4, 3, 2);
+		byte[] buffer = [0x03, 0xAA, 0xBB, 0xCC];
+		byte[] original = (byte[])buffer.Clone();
 
-		var buffer = new byte[130];
-		buffer[0] = 0x80;
-		buffer[1] = 0x01;
-		AssertRead(buffer, 0, buffer.Length, 128, 2);
+		int value = Encoded7BitInt.Read(buffer, out int bytesRead);
+
+		Assert.AreEqual(3, value);
+		Assert.AreEqual(1, bytesRead);
+		CollectionAssert.AreEqual(original, buffer);
 	}
 
 	[TestMethod]
-	public void Read_InvalidArgumentsThrowExpectedExceptions()
+	public void Read_NonzeroCallerSlice_ReturnsRelativeBytesReadAndDoesNotMutateSource()
 	{
-		AssertThrowsArgumentNull("buffer", () => Encoded7BitInt.Read(null!, 0, 1, out _));
-		AssertThrowsArgumentOutOfRange("startIndex", () => Encoded7BitInt.Read([0], -1, 1, out _));
-		AssertThrowsArgumentOutOfRange("startIndex", () => Encoded7BitInt.Read([0], 2, 1, out _));
-		AssertThrowsArgumentOutOfRange("maxCount", () => Encoded7BitInt.Read([0], 0, 0, out _));
-		AssertThrowsArgumentOutOfRange("maxCount", () => Encoded7BitInt.Read([0], 0, 2, out _));
+		var buffer = new byte[132];
+		Array.Fill(buffer, (byte)0xAA);
+		buffer[0] = 0xEE;
+		buffer[1] = 0x80;
+		buffer[2] = 0x01;
+		buffer[^1] = 0xFF;
+		byte[] original = (byte[])buffer.Clone();
+
+		int value = Encoded7BitInt.Read(buffer.AsSpan(1, 130), out int bytesRead);
+
+		Assert.AreEqual(128, value);
+		Assert.AreEqual(2, bytesRead);
+		CollectionAssert.AreEqual(original, buffer);
 	}
 
 	[TestMethod]
-	public void Read_IncompleteOrInvalidData_ReturnsNone()
+	public void Read_EmptyIncompleteOrCorruptData_ReturnsBothFailureSentinels()
 	{
-		AssertRead([0x80], 0, 1, TypeExtensions.kNone, TypeExtensions.kNone);
-		AssertRead([0x04, 0xAA, 0xBB, 0xCC], 0, 4, TypeExtensions.kNone, TypeExtensions.kNone);
-		AssertRead([0x80, 0x80, 0x80, 0x80, 0x00], 0, 5, TypeExtensions.kNone, TypeExtensions.kNone);
+		AssertReadFailure([]);
+		AssertReadFailure([0x80]);
+		AssertReadFailure([0x80, 0x80]);
+		AssertReadFailure([0x80, 0x80, 0x80]);
+		AssertReadFailure([0x80, 0x80, 0x80, 0x80]);
+		AssertReadFailure([0x80, 0x80, 0x80, 0x80, 0x00]);
 	}
 
 	[TestMethod]
-	public void Write_ValidValuesWritesExpectedBytesAndReturnsEndingIndex()
+	public void Read_DecodedPayloadDoesNotFitRemainingSpan_ReturnsBothFailureSentinels()
+	{
+		AssertReadFailure([0x04, 0xAA, 0xBB, 0xCC]);
+
+		byte[] buffer = [0xEE, 0x03, 0xAA, 0xBB, 0xCC, 0xFF];
+		AssertReadFailure(buffer.AsSpan(1, 3));
+	}
+
+	[TestMethod]
+	public void Write_NonzeroCallerSlice_ReturnsRelativeByteCountAndPreservesSentinels()
 	{
 		var buffer = new byte[8];
+		Array.Fill(buffer, (byte)0xCC);
 
-		Assert.AreEqual(1, Encoded7BitInt.Write(buffer, 0, 0));
-		Assert.AreEqual((byte)0x00, buffer[0]);
+		int bytesWritten = Encoded7BitInt.Write(buffer.AsSpan(2, 4), Encoded7BitInt.kMaxValue4Bytes);
 
-		Array.Clear(buffer);
-		Assert.AreEqual(1, Encoded7BitInt.Write(buffer, 0, Encoded7BitInt.kMaxValue1Bytes));
-		Assert.AreEqual((byte)0x7F, buffer[0]);
-
-		Array.Clear(buffer);
-		Assert.AreEqual(2, Encoded7BitInt.Write(buffer, 0, Encoded7BitInt.kMaxValue1Bytes + 1));
-		CollectionAssert.AreEqual(new byte[] { 0x80, 0x01 }, buffer[..2]);
-
-		Array.Clear(buffer);
-		Assert.AreEqual(6, Encoded7BitInt.Write(buffer, 2, Encoded7BitInt.kMaxValue4Bytes));
-		CollectionAssert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F }, buffer[2..6]);
+		Assert.AreEqual(4, bytesWritten);
+		CollectionAssert.AreEqual(
+			new byte[] { 0xCC, 0xCC, 0xFF, 0xFF, 0xFF, 0x7F, 0xCC, 0xCC },
+			buffer);
 	}
 
 	[TestMethod]
-	public void Write_InvalidArgumentsThrowExpectedExceptions()
+	public void Write_InsufficientDestination_ThrowsBeforeMutation()
 	{
-		AssertThrowsArgumentNull("buffer", () => Encoded7BitInt.Write(null!, 0, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => Encoded7BitInt.Write(new byte[1], -1, 0));
-		AssertThrowsArgumentOutOfRange("startIndex", () => Encoded7BitInt.Write(new byte[1], 2, 0));
-		AssertThrowsArgumentOutOfRange("value", () => Encoded7BitInt.Write(new byte[1], 0, -1));
+		var buffer = new byte[4];
+		Array.Fill(buffer, (byte)0xCC);
+		byte[] original = (byte[])buffer.Clone();
+
+		AssertThrowsArgument("buffer",
+			() => Encoded7BitInt.Write(buffer.AsSpan(1, 1), Encoded7BitInt.kMaxValue1Bytes + 1));
+
+		CollectionAssert.AreEqual(original, buffer);
+	}
+
+	[TestMethod]
+	public void Write_InvalidValuesThrowBeforeMutation()
+	{
+		var buffer = new byte[4];
+		Array.Fill(buffer, (byte)0xCC);
+		byte[] original = (byte[])buffer.Clone();
+
+		AssertThrowsArgumentOutOfRange("value", () => Encoded7BitInt.Write(buffer, -1));
 		AssertThrowsArgumentOutOfRange("value",
-			() => Encoded7BitInt.Write(new byte[4], 0, Encoded7BitInt.kMaxValue4Bytes + 1));
-		AssertThrowsArgument("buffer", () => Encoded7BitInt.Write(new byte[1], 0, Encoded7BitInt.kMaxValue1Bytes + 1));
+			() => Encoded7BitInt.Write(buffer, Encoded7BitInt.kMaxValue4Bytes + 1));
+
+		CollectionAssert.AreEqual(original, buffer);
 	}
 }

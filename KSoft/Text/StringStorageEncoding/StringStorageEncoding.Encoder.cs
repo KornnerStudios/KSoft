@@ -90,8 +90,7 @@ namespace KSoft.Text
 			int prefix_bytes;
 			switch (mStorage.LengthPrefix)
 			{
-				case StringStorageLengthPrefix.Int7:	Bitwise.Encoded7BitInt.Write(bytes, byteIndex, charCount);
-					prefix_bytes = Bitwise.Encoded7BitInt.CalculateSize(charCount); break;
+				case StringStorageLengthPrefix.Int7:	prefix_bytes = Bitwise.Encoded7BitInt.Write(bytes.AsSpan(byteIndex), charCount); break;
 				case StringStorageLengthPrefix.Int8:	bytes[byteIndex] = (byte)charCount;
 					prefix_bytes = sizeof(byte); break;
 				case StringStorageLengthPrefix.Int16:	Bitwise.ByteSwap.ReplaceBytes(bytes, byteIndex, (short)charCount);

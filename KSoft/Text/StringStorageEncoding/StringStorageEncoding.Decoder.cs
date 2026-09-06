@@ -78,7 +78,13 @@ namespace KSoft.Text
 		/// <returns>Byte count of the actual string data to be transformed into characters</returns>
 		static int CalcCharByteCountPascalInt7(byte[] buffer, ref int byteIndex, int byteCount)
 		{
-			return Bitwise.Encoded7BitInt.Read(buffer, byteIndex, byteCount, out byteIndex);
+			int startIndex = byteIndex;
+			int result = Bitwise.Encoded7BitInt.Read(buffer.AsSpan(byteIndex, byteCount), out int bytesRead);
+			byteIndex = bytesRead == TypeExtensions.kNone
+				? TypeExtensions.kNone
+				: startIndex + bytesRead;
+
+			return result;
 		}
 		/// <summary>Calculate the true character byte count of a raw <see cref="StringStorageType.Pascal"/> string</summary>
 		/// <param name="buffer">The byte array containing the sequence of bytes to decode</param>

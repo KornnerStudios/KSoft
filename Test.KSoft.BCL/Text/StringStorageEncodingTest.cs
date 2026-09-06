@@ -62,10 +62,27 @@ namespace KSoft.Text.Test
 			Assert.AreEqual((byte)text.Length, bytes[0]);
 			Assert.AreEqual(text, encoding.GetString(bytes));
 
-			var wrappedBytes = new byte[bytes.Length + 1];
-			wrappedBytes[0] = 0xEE;
-			Array.Copy(bytes, 0, wrappedBytes, 1, bytes.Length);
-			Assert.AreEqual(text, encoding.GetString(wrappedBytes, 1, bytes.Length));
+			var wrappedBytes = new byte[bytes.Length + 2];
+			Array.Fill(wrappedBytes, (byte)0xEE);
+			char[] chars = text.ToCharArray();
+
+			int bytesWritten = encoding.GetBytes(chars, 0, chars.Length, wrappedBytes, 1);
+
+			Assert.AreEqual(bytes.Length, bytesWritten);
+			CollectionAssert.AreEqual(bytes, wrappedBytes[1..^1]);
+			Assert.AreEqual((byte)0xEE, wrappedBytes[0]);
+			Assert.AreEqual((byte)0xEE, wrappedBytes[^1]);
+			Assert.AreEqual(text, encoding.GetString(wrappedBytes, 1, bytesWritten));
+		}
+
+		[TestMethod]
+		public void StringStorageEncoding_Int7PascalMalformedInput_ThrowsArgumentOutOfRangeException()
+		{
+			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+
+			Assert.Throws<ArgumentOutOfRangeException>(() => encoding.GetString([0x80]));
+			Assert.Throws<ArgumentOutOfRangeException>(() => encoding.GetString([0x02, 0x41]));
 		}
 
 		[TestMethod]

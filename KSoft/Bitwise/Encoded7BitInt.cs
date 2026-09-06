@@ -26,22 +26,6 @@ namespace KSoft.Bitwise
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(value, kMaxValue4Bytes);
 		}
 
-		static void ValidateReadRange(byte[] buffer, int startIndex, int maxCount)
-		{
-			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
-			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(maxCount, buffer.Length - startIndex);
-		}
-
-		static void ValidateWriteRange(byte[] buffer, int startIndex, int encodedByteCount)
-		{
-			Verify.Buffers.StartIndexWithinLength(buffer, startIndex);
-			if (encodedByteCount > buffer.Length - startIndex)
-			{
-				throw new ArgumentException("Destination buffer is too small.", nameof(buffer));
-			}
-		}
-
 		/// <summary>Calculate how many bytes it would take to encode a value into a 7-bit integer</summary>
 		/// <param name="value">Value to encode</param>
 		/// <returns>Number of bytes it would take to encode <paramref name="value"/>, from 1 through 4.</returns>
@@ -58,16 +42,18 @@ namespace KSoft.Bitwise
 
 			return ++size;
 		}
-		/// <summary>Decode a value from a byte array</summary>
-		/// <param name="buffer">The byte array containing the integer to decode</param>
-		/// <param name="startIndex">The index of the first byte to decode</param>
-		/// <param name="maxCount">Maximum bytes available from <paramref name="startIndex"/>, including payload bytes</param>
-		/// <param name="endingIndex">The ending index after the value has been decoded, or -1 if this function fails</param>
-		/// <returns>Decoded integer read from <paramref name="buffer"/> or -1 if this function fails</returns>
-		public static int Read(byte[] buffer, int startIndex, int maxCount, out int endingIndex)
+		/// <summary>Decode a 7-bit integer payload byte count from the beginning of a span</summary>
+		/// <param name="buffer">The complete readable range, beginning with the encoded count and followed by its payload bytes</param>
+		/// <param name="bytesRead">
+		/// The relative number of prefix bytes consumed, from 1 through 4, or
+		/// <see cref="TypeExtensions.kNone"/> if the data is incomplete or corrupt.
+		/// </param>
+		/// <returns>
+		/// The decoded payload byte count, or <see cref="TypeExtensions.kNone"/> if the data is incomplete or corrupt.
+		/// </returns>
+		public static int Read(ReadOnlySpan<byte> buffer, out int bytesRead)
 		{
-			ValidateReadRange(buffer, startIndex, maxCount);
-			endingIndex = TypeExtensions.kNone;
+			bytesRead = TypeExtensions.kNone;
 
 			int size = 0; // size (bytes) of the encoded int
 			int count = 0;
@@ -76,48 +62,55 @@ namespace KSoft.Bitwise
 			do
 			{
 				// Either the prefix is corrupt or the buffer is incomplete.
-				if (size >= kMaxEncodedByteCount || size >= maxCount)
+				if (size >= kMaxEncodedByteCount || size >= buffer.Length)
 				{
 					return TypeExtensions.kNone;
 				}
 
-				b = buffer[startIndex + size++];
+				b = buffer[size++];
 				count |= (b & 0x7F) << shift;
 				shift += 7;
 			} while ((b & 0x80) != 0);
 
 			// either buffer is incomplete or
 			// this isn't even data with a 7-bit integer.
-			if (count > maxCount - size)
+			if (count > buffer.Length - size)
 			{
 				return TypeExtensions.kNone;
 			}
 
-			endingIndex = startIndex + size;
+			bytesRead = size;
 
 			return count;
 		}
-		/// <summary>Encode a value into a byte array</summary>
-		/// <param name="buffer">The byte array to encode the 7-bit integer into</param>
-		/// <param name="startIndex">The index of the first byte for the 7-bit integer</param>
+		/// <summary>Encode a value at the beginning of a span</summary>
+		/// <param name="buffer">The complete writable range beginning where the encoded value should be written</param>
 		/// <param name="value">The value to encode into <paramref name="buffer"/></param>
-		/// <returns>Index of the first byte after the encoded value in <paramref name="buffer"/></returns>
-		public static int Write(byte[] buffer, int startIndex, int value)
+		/// <returns>The relative number of bytes written, from 1 through 4.</returns>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is outside the supported range.</exception>
+		/// <exception cref="ArgumentException">
+		/// <paramref name="buffer"/> is too small for the encoded value. No bytes are written.
+		/// </exception>
+		public static int Write(Span<byte> buffer, int value)
 		{
 			int encodedByteCount = CalculateSize(value);
-			ValidateWriteRange(buffer, startIndex, encodedByteCount);
+			if (encodedByteCount > buffer.Length)
+			{
+				throw new ArgumentException("Destination buffer is too small.", nameof(buffer));
+			}
 
 			// Write out an int 7 bits at a time.  The high bit of the byte,
 			// when on, tells reader to continue reading more bytes.
+			int bytesWritten = 0;
 			uint v = (uint)value;
-			for (; v >= 0x80; v >>= 7, startIndex++)
+			for (; v >= 0x80; v >>= 7)
 			{
-				buffer[startIndex] = (byte)(v | 0x80);
+				buffer[bytesWritten++] = (byte)(v | 0x80);
 			}
 
-			buffer[startIndex++] = (byte)v;
+			buffer[bytesWritten++] = (byte)v;
 
-			return startIndex;
+			return bytesWritten;
 		}
 	};
 }
