@@ -142,7 +142,8 @@ namespace KSoft.Text
 		#region Encode StringStorageType Data Postfix
 		int EncStringStoragePostfixCStringData(byte[] bytes, int byteIndex)
 		{
-			for (int x = byteIndex; x < mNullCharacterSize; x++)
+			int endIndex = byteIndex + mNullCharacterSize;
+			for (int x = byteIndex; x < endIndex; x++)
 			{
 				bytes[x] = 0;
 			}
@@ -230,7 +231,8 @@ namespace KSoft.Text
 				bytes_written += mEnc.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written, mEncoding.DontAlwaysFlush ? flush : true);
 
 				// Add our String Storage calculations
-				bytes_written += mEncoding.EncodeStringStorageTypePostfixData(chars, charIndex, charCount, bytes, bytes_written);
+				bytes_written += mEncoding.EncodeStringStorageTypePostfixData(
+					chars, charIndex, charCount, bytes, byteIndex + bytes_written);
 
 				return bytes_written;
 			}

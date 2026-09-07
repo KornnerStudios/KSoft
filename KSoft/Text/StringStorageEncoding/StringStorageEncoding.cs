@@ -113,7 +113,8 @@ namespace KSoft.Text
 			bytes_written += mBaseEncoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written);
 
 			// Add our String Storage calculations
-			bytes_written += EncodeStringStorageTypePostfixData(chars, charIndex, charCount, bytes, bytes_written);
+			bytes_written += EncodeStringStorageTypePostfixData(
+				chars, charIndex, charCount, bytes, byteIndex + bytes_written);
 
 			return bytes_written;
 		}

@@ -50,6 +50,41 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
+		public void StringStorageEncoding_CStringNonzeroDestinationOffset_WritesTerminatorAtPayloadEnd()
+		{
+			var cases = new[] {
+				(MS.StringStorage.CStringAscii, "AB", new byte[] { 0x41, 0x42, 0x00 }),
+				(MS.StringStorage.CStringUtf8, "A\u00E9", new byte[] { 0x41, 0xC3, 0xA9, 0x00 }),
+				(MS.StringStorage.CStringUnicode, "AB",
+					new byte[] { 0x41, 0x00, 0x42, 0x00, 0x00, 0x00 }),
+				(MS.StringStorage.CStringUnicodeBigEndian, "AB",
+					new byte[] { 0x00, 0x41, 0x00, 0x42, 0x00, 0x00 }),
+			};
+
+			foreach (var (storage, text, expectedBytes) in cases)
+			{
+				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+				char[] chars = text.ToCharArray();
+
+				foreach (bool useEncoder in new[] { false, true })
+				{
+					var destination = new byte[expectedBytes.Length + 4];
+					Array.Fill(destination, (byte)0xCC);
+					int bytesWritten = useEncoder
+						? encoding.GetEncoder().GetBytes(
+							chars, 0, chars.Length, destination, 2, flush: true)
+						: encoding.GetBytes(chars, 0, chars.Length, destination, 2);
+
+					Assert.AreEqual(expectedBytes.Length, bytesWritten);
+					CollectionAssert.AreEqual(expectedBytes, destination[2..^2]);
+					CollectionAssert.AreEqual(new byte[] { 0xCC, 0xCC }, destination[..2]);
+					CollectionAssert.AreEqual(new byte[] { 0xCC, 0xCC }, destination[^2..]);
+					Assert.AreEqual(text, encoding.GetString(destination, 2, bytesWritten));
+				}
+			}
+		}
+
+		[TestMethod]
 		public void StringStorageEncoding_Int7PascalAsciiRoundTripsAtBufferStartAndOffset()
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
