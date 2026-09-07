@@ -12,8 +12,6 @@ internal static partial class BitsCoreSourceBuilder
 	{
 		WriteBitmaskLookupTableRegion(writer);
 		writer.WriteLine();
-		WriteArrayCopyRegion(writer);
-		writer.WriteLine();
 		WriteBitReverseRefRegion(writer);
 		writer.WriteLine();
 		WriteGetMaxEnumBitsRegion(writer);
@@ -92,73 +90,6 @@ internal static partial class BitsCoreSourceBuilder
 			writer.WriteLine($"BitmaskLookUpTableGenerate(wordBitSize, out {typeSpec.Keyword}[] lut);");
 			writer.WriteLine();
 			writer.WriteLine("return lut;");
-		}
-	}
-
-	private static void WriteArrayCopyRegion(SourceWriter writer)
-	{
-		using (writer.EnterRegion("ArrayCopy"))
-		{
-			foreach (NumberSpec typeSpec in PrimitiveCatalog.BittableTypesUnsigned)
-			{
-				if (typeSpec.IsByte)
-				{
-					continue;
-				}
-
-				using (writer.EnterRegion(TypeCodeName(typeSpec)))
-				{
-					WriteArrayCopyFromBytesMethod(writer, typeSpec);
-					WriteArrayCopyToBytesMethod(writer, typeSpec);
-				}
-				writer.WriteLine();
-			}
-		}
-	}
-
-	private static void WriteArrayCopyFromBytesMethod(SourceWriter writer, NumberSpec typeSpec)
-	{
-		writer.WriteLine(
-			$"public static void ArrayCopy(byte[] src, int srcOffset, {typeSpec.Keyword}[] dst, " +
-			"int dstOffset, int count)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(src);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);");
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(dst);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);");
-			writer.WriteLine();
-			writer.WriteLine("if (!ArrayCopyFromBytesBoundsValidate(");
-			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})))");
-			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(count));");
-			writer.WriteLine();
-			writer.WriteLine($"var memcpy = new MemoryCopier<{typeSpec.Keyword}, byte>(dummy: false);");
-			writer.WriteLine("memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);");
-		}
-	}
-
-	private static void WriteArrayCopyToBytesMethod(SourceWriter writer, NumberSpec typeSpec)
-	{
-		writer.WriteLine(
-			$"public static void ArrayCopy({typeSpec.Keyword}[] src, int srcOffset, byte[] dst, " +
-			"int dstOffset, int count)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(src);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(srcOffset);");
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(dst);");
-			writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(dstOffset);");
-			writer.WriteLine();
-			writer.WriteLine("if (!ArrayCopyToBytesBoundsValidate(");
-			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-				writer.WriteLine($"src, srcOffset, dst, dstOffset, count, sizeof({typeSpec.Keyword})))");
-			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(count));");
-			writer.WriteLine();
-			writer.WriteLine($"var memcpy = new MemoryCopier<byte, {typeSpec.Keyword}>(dummy: false);");
-			writer.WriteLine("memcpy.CopyInternal(dst, dstOffset, src, srcOffset, count);");
 		}
 	}
 
