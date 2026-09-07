@@ -67,14 +67,12 @@ namespace KSoft.Text
 			return (int)System.Math.Ceiling((charsCount * kBitsPerDigit) / Bits.kByteBitCount);
 		}
 
-		/// <summary>Encode a byte array into a radix-encoded string</summary>
-		/// <param name="bytes">byte array to encode</param>
+		/// <summary>Encode bytes into a radix-encoded string</summary>
+		/// <param name="bytes">Bytes to encode</param>
 		/// <returns>The bytes in encoded into a radix-encoded string</returns>
 		/// <remarks>If <paramref name="bytes"/> is zero length, returns an empty string</remarks>
-		public string Encode(byte[] bytes)
+		public string Encode(ReadOnlySpan<byte> bytes)
 		{
-			ArgumentNullException.ThrowIfNull(bytes);
-
 			// Don't really have to do this, our code will build this result (empty string),
 			// but why not catch the condition before doing work?
 			if (bytes.Length == 0)
@@ -82,20 +80,13 @@ namespace KSoft.Text
 				return string.Empty;
 			}
 
-			// if the array ends with zeros, having the capacity set to this will help us know how much
+			// if the input ends with zeros, having the capacity set to this will help us know how much
 			// 'padding' we will need to add
 			int result_length = EncodingCharsCount(bytes.Length);
 			// List<> has a(n in-place) Reverse method. StringBuilder doesn't. That's why.
 			var result = new List<char>(result_length);
 
-			// HACK: BigInteger uses the last byte as the 'sign' byte. If the byte's MSB is set,
-			// we need to pad the input with an extra 0 (ie, make it positive)
-			if (IntegerMath.IsSigned(bytes[bytes.Length-1]))
-			{
-				Array.Resize(ref bytes, bytes.Length+1);
-			}
-
-			var dividend = new BigInteger(bytes);
+			var dividend = new BigInteger(bytes, isUnsigned: true, isBigEndian: false);
 			// IsZero's computation is less complex than evaluating "dividend > 0"
 			// which invokes BigInteger.CompareTo(BigInteger)
 			while (!dividend.IsZero)

@@ -30,8 +30,36 @@ namespace KSoft.Text.Test
 			var encoding = new RadixEncoding("01");
 
 			AssertThrowsArgumentNull("digits", () => _ = new RadixEncoding(null!));
-			AssertThrowsArgumentNull("bytes", () => _ = encoding.Encode(null!));
 			AssertThrowsArgumentNull("radixChars", () => _ = encoding.Decode(null!));
+		}
+
+		[TestMethod]
+		public void Encode_KnownInputs_PreservesPersistedMapping()
+		{
+			const string k_hex_digits = "0123456789abcdef";
+			var little = new RadixEncoding(k_hex_digits, Shell.EndianFormat.Little, false);
+			var big = new RadixEncoding(k_hex_digits, Shell.EndianFormat.Big, false);
+			var little_with_zeros = new RadixEncoding(k_hex_digits, Shell.EndianFormat.Little, true);
+			var big_with_zeros = new RadixEncoding(k_hex_digits, Shell.EndianFormat.Big, true);
+
+			Assert.AreEqual(string.Empty, little.Encode(Array.Empty<byte>()));
+			Assert.AreEqual("3412", little.Encode([0x12, 0x34]));
+			Assert.AreEqual("2143", big.Encode([0x12, 0x34]));
+			byte[] high_bit_input = [0x01, 0x80];
+			byte[] high_bit_original = (byte[])high_bit_input.Clone();
+			Assert.AreEqual("8001", little.Encode(high_bit_input));
+			Assert.AreEqual("1008", big.Encode([0x01, 0x80]));
+			CollectionAssert.AreEqual(high_bit_original, high_bit_input);
+			Assert.AreEqual("12", little.Encode([0x12, 0x00]));
+			Assert.AreEqual("21", big.Encode([0x12, 0x00]));
+			Assert.AreEqual("0012", little_with_zeros.Encode([0x12, 0x00]));
+			Assert.AreEqual("2100", big_with_zeros.Encode([0x12, 0x00]));
+
+			byte[] input = [0xAA, 0x01, 0x80, 0xBB];
+			byte[] original = (byte[])input.Clone();
+			Assert.AreEqual("8001", little.Encode([0x01, 0x80]));
+			Assert.AreEqual("8001", little.Encode(input.AsSpan(1, 2)));
+			CollectionAssert.AreEqual(original, input);
 		}
 
 		[TestMethod]
@@ -55,6 +83,7 @@ namespace KSoft.Text.Test
 			byte[] bytes = [ // fidm52dkvy545555i2ugzvmbd2kczbayaaaaaaaa
 				0x05, 0x0d, 0xf6, 0xf9, 0x50, 0x15, 0x7f, 0xff, 0xff, 0xff, 0x88, 0x53, 0x93, 0x2b, 0x0b, 0x83, 0x2b, 0x91, 0x03, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00,
 			];
+			Assert.AreEqual("fidm52dkvy545555i2ugzvmbd2kczbayaaaaaaaa", base32.Encode(bytes));
 			Assert.IsTrue(Validate(base32, bytes));
 
 			// http://stackoverflow.com/questions/14110010/base-n-encoding-of-a-byte-array?noredirect=1#comment25188602_14110010
