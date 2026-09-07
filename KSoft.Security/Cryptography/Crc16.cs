@@ -80,7 +80,7 @@ namespace KSoft.Security.Cryptography
 		protected override byte[] HashFinal()
 		{
 			Hash16 ^= mDefinition.XorOut;
-			Bitwise.ByteSwap.ReplaceBytes(mHashBytes, 0, Hash16);
+			BitConverter.TryWriteBytes(mHashBytes.AsSpan(0, sizeof(ushort)), Hash16);
 			return mHashBytes;
 		}
 	};

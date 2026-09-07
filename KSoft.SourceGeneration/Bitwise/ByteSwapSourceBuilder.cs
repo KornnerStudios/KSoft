@@ -65,8 +65,11 @@ internal static class ByteSwapSourceBuilder
 		{
 			WriteSwapReturnMethod(writer, spec, isSigned: false);
 			WriteSwapRefMethod(writer, spec, isSigned: false);
-			WriteSwapBufferMethod(writer, spec, isSigned: false);
-			WriteReplaceBytesMethod(writer, spec, isSigned: false);
+			if (spec.IsUnnaturalWord)
+			{
+				WriteSwapBufferMethod(writer, spec, isSigned: false);
+				WriteReplaceBytesMethod(writer, spec, isSigned: false);
+			}
 		}
 	}
 
@@ -76,8 +79,11 @@ internal static class ByteSwapSourceBuilder
 		{
 			WriteSwapReturnMethod(writer, spec, isSigned: true);
 			WriteSwapRefMethod(writer, spec, isSigned: true);
-			WriteSwapBufferMethod(writer, spec, isSigned: true);
-			WriteReplaceBytesMethod(writer, spec, isSigned: true);
+			if (spec.IsUnnaturalWord)
+			{
+				WriteSwapBufferMethod(writer, spec, isSigned: true);
+				WriteReplaceBytesMethod(writer, spec, isSigned: true);
+			}
 		}
 	}
 
@@ -146,29 +152,20 @@ internal static class ByteSwapSourceBuilder
 	private static void WriteSwapBufferMethod(SourceWriter writer, ByteSwapWordSpec spec, bool isSigned)
 	{
 		string methodName = "Swap" + (isSigned ? spec.ConstantKeyword : "U" + spec.ConstantKeyword);
-		string crefName = isSigned ? spec.SignedCode : spec.UnsignedCode;
 
-		writer.WriteXmlDocSummary($"Swaps a <see cref=\"{crefName}\" /> at a position in a bye array");
-		writer.WriteXmlDocParam("buffer", "source array");
-		writer.WriteXmlDocParam("offset", "offset at which to perform the byte swap");
-		writer.WriteXmlDocReturns($"offset + {spec.SizeOfInBytes}");
-		writer.WriteLine($"public static int {methodName}(byte[] buffer, int offset)");
+		writer.WriteXmlDocSummary($"Swaps the first {spec.SizeOfInBytes} bytes in a span");
+		writer.WriteXmlDocParam("buffer", "span containing the bytes to swap");
+		writer.WriteLine($"public static void {methodName}(Span<byte> buffer)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			if (isSigned)
 			{
-				writer.WriteLine($"return SwapU{spec.ConstantKeyword}(buffer, offset);");
+				writer.WriteLine($"SwapU{spec.ConstantKeyword}(buffer);");
 				return;
 			}
 
-			WriteBufferContracts(writer, spec);
-			writer.WriteLine();
-			WriteByteDeclarations(writer, spec);
-			WriteBytesFromBuffer(writer, spec);
-			writer.WriteLine();
-			WriteBytesToBuffer(writer, spec, useSwapFormat: true);
-			writer.WriteLine();
-			writer.WriteLine($"return offset + {spec.SizeOfCode};");
+			writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
+			writer.WriteLine($"buffer[..{spec.SizeOfCode}].Reverse();");
 		}
 	}
 
@@ -179,30 +176,13 @@ internal static class ByteSwapSourceBuilder
 			? (isSigned ? spec.ConstantKeyword : "U" + spec.ConstantKeyword)
 			: "";
 
-		writer.WriteXmlDocSummary($"Replaces {spec.SizeOfInBytes} bytes in an array with a integer value");
-		writer.WriteXmlDocParam("buffer", "byte buffer");
-		writer.WriteXmlDocParam("offset", "offset in <paramref name=\"buffer\"/> to put the new value");
-		writer.WriteXmlDocParam("value", "value to replace the buffer's current bytes with");
-		writer.WriteXmlDocReturns($"offset + {spec.SizeOfInBytes}");
-		if (isSigned)
-		{
-			writer.WriteLine(
-				"/// <remarks><paramref name=\"buffer\"/>'s endian order is assumed to be the same as the " +
-				"current operating environment</remarks>");
-		}
-		else
-		{
-			writer.WriteLine("/// <remarks>");
-			writer.WriteLine(
-				"/// <paramref name=\"buffer\"/>'s endian order is assumed to be the same as the current " +
-				"operating environment.");
-			writer.WriteLine(
-				"/// Uses <see cref=\"BitConverter.IsLittleEndian\" /> to determine <paramref name=\"value\"/>'s " +
-				"byte ordering");
-			writer.WriteLine("/// when written to the buffer");
-			writer.WriteLine("/// </remarks>");
-		}
-		writer.WriteLine($"public static int ReplaceBytes{methodSuffix}(byte[] buffer, int offset,");
+		writer.WriteXmlDocSummary($"Replaces the first {spec.SizeOfInBytes} bytes in a span with an integer value");
+		writer.WriteXmlDocParam("buffer", "span to receive the value");
+		writer.WriteXmlDocParam("value", "value to write to the span");
+		writer.WriteLine(
+			"/// <remarks><paramref name=\"value\"/> is written in the current operating environment's byte " +
+			"order.</remarks>");
+		writer.WriteLine($"public static void ReplaceBytes{methodSuffix}(Span<byte> buffer,");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 		{
 			writer.WriteLine($"{typeName} value)");
@@ -215,13 +195,12 @@ internal static class ByteSwapSourceBuilder
 					? "U" + spec.ConstantKeyword
 					: "";
 				writer.WriteLine(
-					$"return ReplaceBytes{unsignedMethodSuffix}(buffer, offset, ({spec.UnsignedKeyword})value);");
+					$"ReplaceBytes{unsignedMethodSuffix}(buffer, ({spec.UnsignedKeyword})value);");
 				return;
 			}
 
-			WriteBufferContracts(writer, spec);
-			writer.WriteLine();
-			WriteByteDeclarations(writer, spec);
+			writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
+			writer.WriteLine($"buffer = buffer[..{spec.SizeOfCode}];");
 			writer.WriteLine("if (BitConverter.IsLittleEndian) {");
 			using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
 			{
@@ -233,55 +212,17 @@ internal static class ByteSwapSourceBuilder
 				WriteBytesFromValue(writer, spec, littleEndian: false);
 			}
 			writer.WriteLine("}");
-			writer.WriteLine();
-			WriteBytesToBuffer(writer, spec, useSwapFormat: false);
-			writer.WriteLine();
-			writer.WriteLine("return offset;");
-		}
-	}
-
-	private static void WriteBufferContracts(SourceWriter writer, ByteSwapWordSpec spec)
-	{
-		writer.WriteLine("ArgumentNullException.ThrowIfNull(buffer);");
-		writer.WriteLine("ArgumentOutOfRangeException.ThrowIfNegative(offset);");
-		writer.WriteLine(
-			$"ArgumentOutOfRangeException.ThrowIfGreaterThan(offset, buffer.Length - {spec.SizeOfCode});");
-	}
-
-	private static void WriteByteDeclarations(SourceWriter writer, ByteSwapWordSpec spec)
-	{
-		string[] byteNames = ByteNames(spec);
-		writer.WriteLine("byte " + string.Join(", ", byteNames) + ";");
-	}
-
-	private static void WriteBytesFromBuffer(SourceWriter writer, ByteSwapWordSpec spec)
-	{
-		foreach (string byteName in ByteNames(spec))
-		{
-			writer.WriteLine($"{byteName} = buffer[offset++];");
 		}
 	}
 
 	private static void WriteBytesFromValue(SourceWriter writer, ByteSwapWordSpec spec, bool littleEndian)
 	{
-		string[] byteNames = ByteNames(spec);
-		for (int index = 0; index < byteNames.Length; index++)
+		for (int index = 0; index < spec.SizeOfInBytes; index++)
 		{
 			int byteIndex = littleEndian
 				? index
-				: byteNames.Length - index - 1;
-			writer.WriteLine($"{byteNames[index]} = (byte)(value >> {byteIndex * 8,2});");
-		}
-	}
-
-	private static void WriteBytesToBuffer(SourceWriter writer, ByteSwapWordSpec spec, bool useSwapFormat)
-	{
-		foreach (string byteName in ByteNames(spec))
-		{
-			string offsetExpression = useSwapFormat
-				? "--offset"
-				: "offset++";
-			writer.WriteLine($"buffer[{offsetExpression}] = {byteName};");
+				: spec.SizeOfInBytes - index - 1;
+			writer.WriteLine($"buffer[{index}] = (byte)(value >> {byteIndex * 8,2});");
 		}
 	}
 
@@ -302,17 +243,6 @@ internal static class ByteSwapSourceBuilder
 				$"((value {shiftOperator} {shiftMagnitude,2}) & {ByteMask(spec, byteIndex)}){suffix}");
 		}
 		writer.WriteLine(";");
-	}
-
-	private static string[] ByteNames(ByteSwapWordSpec spec)
-	{
-		var names = new string[spec.SizeOfInBytes];
-		for (int index = 0; index < names.Length; index++)
-		{
-			names[index] = "b" + index.ToString(PrimitiveCatalog.InvariantCulture);
-		}
-
-		return names;
 	}
 
 	private static string ByteMask(ByteSwapWordSpec spec, int byteIndex)

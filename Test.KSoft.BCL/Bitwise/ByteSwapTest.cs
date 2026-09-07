@@ -193,6 +193,10 @@ namespace KSoft.Bitwise.Test
 			foreach (uint bits in single_bits)
 			{
 				float value = ByteSwap.SingleFromUInt32(bits);
+				byte[] bytes = new byte[sizeof(float)];
+				BitConverter.TryWriteBytes(bytes.AsSpan(), value);
+				Assert.AreEqual(bits, BitConverter.ToUInt32(bytes));
+
 				float swapped = ByteSwap.SwapSingle(value);
 				Assert.AreEqual(ByteSwap.SwapUInt32(bits), ByteSwap.SingleToUInt32(swapped));
 
@@ -211,6 +215,10 @@ namespace KSoft.Bitwise.Test
 			foreach (ulong bits in double_bits)
 			{
 				double value = ByteSwap.DoubleFromUInt64(bits);
+				byte[] bytes = new byte[sizeof(double)];
+				BitConverter.TryWriteBytes(bytes.AsSpan(), value);
+				Assert.AreEqual(bits, BitConverter.ToUInt64(bytes));
+
 				double swapped = ByteSwap.SwapDouble(value);
 				Assert.AreEqual(ByteSwap.SwapUInt64(bits), ByteSwap.DoubleToUInt64(swapped));
 
@@ -220,170 +228,90 @@ namespace KSoft.Bitwise.Test
 		}
 
 		[TestMethod]
-		public void ReplaceBytes_AllIntegerWidths_WritesHostEndianBytes()
+		public void ReplaceBytes_PartialWidthSpans_WriteHostEndianBytes()
 		{
-			byte[] buffer = new byte[sizeof(ulong)];
-			byte[] buffer_bc;
-			ulong value = kBeforeValue;
+			byte[] buffer = CreateSentinelBuffer(21);
 
-			// UInt64
-			ByteSwap.ReplaceBytes(buffer, 0, value);
-			buffer_bc = BitConverter.GetBytes(value);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+			ByteSwap.ReplaceBytesUInt24(buffer.AsSpan(1, ByteSwap.kSizeOfUInt24), 0x123456);
+			AssertHostEndianBytes(buffer, 1, 0x123456, ByteSwap.kSizeOfUInt24);
 
-			// UInt40
-			value = kBeforeValueUInt40;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytesUInt40(buffer, 0, value);
-			buffer_bc = BitConverter.GetBytes(value);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+			ByteSwap.ReplaceBytesInt24(
+				buffer.AsSpan(5, ByteSwap.kSizeOfInt24),
+				unchecked((int)0xFF923456));
+			AssertHostEndianBytes(buffer, 5, 0x923456, ByteSwap.kSizeOfInt24);
 
-			// UInt32
-			value >>= 32;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytes(buffer, 0, (uint)value);
-			buffer_bc = BitConverter.GetBytes((uint)value);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+			ByteSwap.ReplaceBytesUInt40(buffer.AsSpan(9, ByteSwap.kSizeOfUInt40), 0x123456789AUL);
+			AssertHostEndianBytes(buffer, 9, 0x123456789AUL, ByteSwap.kSizeOfUInt40);
 
-			// UInt24
-			value = kBeforeValueUInt24;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytesUInt24(buffer, 0, (uint)value);
-			buffer_bc = BitConverter.GetBytes((uint)value);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-
-			// UInt16
-			value >>= 16;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytes(buffer, 0, (ushort)value);
-			buffer_bc = BitConverter.GetBytes((ushort)value);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-		}
-
-		[TestMethod]
-		public void ReplaceBytes_NonzeroOffsets_WritesHostEndianBytes()
-		{
-			byte[] buffer = CreateSentinelBuffer(24);
-
-			int next_offset = ByteSwap.ReplaceBytes(buffer, 1, (ushort)0x1234);
-			Assert.AreEqual(1 + sizeof(ushort), next_offset);
-			AssertHostEndianBytes(buffer, 1, 0x1234, sizeof(ushort));
-
-			next_offset = ByteSwap.ReplaceBytesUInt24(buffer, 5, 0x123456);
-			Assert.AreEqual(5 + ByteSwap.kSizeOfUInt24, next_offset);
-			AssertHostEndianBytes(buffer, 5, 0x123456, ByteSwap.kSizeOfUInt24);
-
-			next_offset = ByteSwap.ReplaceBytes(buffer, 9, 0x12345678U);
-			Assert.AreEqual(9 + sizeof(uint), next_offset);
-			AssertHostEndianBytes(buffer, 9, 0x12345678, sizeof(uint));
-
-			next_offset = ByteSwap.ReplaceBytesUInt40(buffer, 14, 0x123456789AUL);
-			Assert.AreEqual(14 + ByteSwap.kSizeOfUInt40, next_offset);
-			AssertHostEndianBytes(buffer, 14, 0x123456789AUL, ByteSwap.kSizeOfUInt40);
+			ByteSwap.ReplaceBytesInt40(
+				buffer.AsSpan(15, ByteSwap.kSizeOfInt40),
+				unchecked((long)0xFFFFFF923456789AUL));
+			AssertHostEndianBytes(buffer, 15, 0x923456789AUL, ByteSwap.kSizeOfInt40);
 
 			Assert.AreEqual(0xCC, buffer[0]);
 			Assert.AreEqual(0xCC, buffer[4]);
 			Assert.AreEqual(0xCC, buffer[8]);
-			Assert.AreEqual(0xCC, buffer[13]);
-			Assert.AreEqual(0xCC, buffer[19]);
-		}
-
-		// NOTE: ReplaceBytes_AllIntegerWidths_WritesHostEndianBytes should be tested before SwapBuffer_DefinedLayout_SwapsExpectedFields (see OrderedTests_ByteSwap)
-		[TestMethod]
-		public void SwapBuffer_DefinedLayout_SwapsExpectedFields()
-		{
-			byte[] buffer = new byte[sizeof(ulong)];
-			byte[] buffer_bc;
-			ulong value_before = kBeforeValue;
-			ulong value_after = kAfterValue;
-
-			// UInt64
-			ByteSwap.ReplaceBytes(buffer, 0, value_before);
-			ByteSwap.SwapInt64(buffer, 0);
-			buffer_bc = BitConverter.GetBytes(value_after);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-
-			// UInt32
-			value_before >>= 32;
-			value_after >>= 32;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytes(buffer, 0, (uint)value_before);
-			ByteSwap.SwapInt32(buffer, 0);
-			buffer_bc = BitConverter.GetBytes((uint)value_after);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-
-			// UInt16
-			value_before >>= 16;
-			value_after >>= 16;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytes(buffer, 0, (ushort)value_before);
-			ByteSwap.SwapInt16(buffer, 0);
-			buffer_bc = BitConverter.GetBytes((ushort)value_after);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-
-			// UInt40
-			value_before = kBeforeValueUInt40;
-			value_after = kAfterValueUInt40;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytesUInt40(buffer, 0, value_before);
-			ByteSwap.SwapInt40(buffer, 0);
-			buffer_bc = BitConverter.GetBytes(value_after);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
-
-			// UInt24
-			value_before = kBeforeValueUInt24;
-			value_after = kAfterValueUInt24;
-			Array.Clear(buffer, 0, buffer.Length);
-			ByteSwap.ReplaceBytesUInt24(buffer, 0, (uint)value_before);
-			ByteSwap.SwapInt24(buffer, 0);
-			buffer_bc = BitConverter.GetBytes((uint)value_after);
-			Assert.IsTrue(buffer_bc.EqualsArray(buffer));
+			Assert.AreEqual(0xCC, buffer[14]);
+			Assert.AreEqual(0xCC, buffer[20]);
 		}
 
 		[TestMethod]
-		public void SwapBuffer_OverlappingWindows_SwapsInPlace()
+		public void SwapBuffer_PartialWidthSpans_SwapInPlaceAndPreserveSentinels()
 		{
 			byte[] buffer =
 			[
-				0x01,
-				0x02,
-				0x03,
-				0x04,
-				0x05,
-				0x06,
+				0xCC, 0x12, 0x34, 0x56, 0xCC,
+				0x92, 0x34, 0x56, 0xCC,
+				0x12, 0x34, 0x56, 0x78, 0x9A, 0xCC,
+				0x92, 0x34, 0x56, 0x78, 0x9A, 0xCC,
 			];
 
-			int next_offset = ByteSwap.SwapInt32(buffer, 0);
-			Assert.AreEqual(sizeof(int), next_offset);
-			CollectionAssert.AreEqual(new byte[] { 0x04, 0x03, 0x02, 0x01, 0x05, 0x06 }, buffer);
+			ByteSwap.SwapUInt24(buffer.AsSpan(1, ByteSwap.kSizeOfUInt24));
+			ByteSwap.SwapInt24(buffer.AsSpan(5, ByteSwap.kSizeOfInt24));
+			ByteSwap.SwapUInt40(buffer.AsSpan(9, ByteSwap.kSizeOfUInt40));
+			ByteSwap.SwapInt40(buffer.AsSpan(15, ByteSwap.kSizeOfInt40));
 
-			next_offset = ByteSwap.SwapInt32(buffer, 2);
-			Assert.AreEqual(2 + sizeof(int), next_offset);
-			CollectionAssert.AreEqual(new byte[] { 0x04, 0x03, 0x06, 0x05, 0x01, 0x02 }, buffer);
+			CollectionAssert.AreEqual(
+				new byte[]
+				{
+					0xCC, 0x56, 0x34, 0x12, 0xCC,
+					0x56, 0x34, 0x92, 0xCC,
+					0x9A, 0x78, 0x56, 0x34, 0x12, 0xCC,
+					0x9A, 0x78, 0x56, 0x34, 0x92, 0xCC,
+				},
+				buffer);
+
+			byte[] overlapping = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06];
+			ByteSwap.SwapUInt24(overlapping.AsSpan(0, ByteSwap.kSizeOfUInt24));
+			ByteSwap.SwapInt40(overlapping.AsSpan(1, ByteSwap.kSizeOfInt40));
+			CollectionAssert.AreEqual(new byte[] { 0x03, 0x06, 0x05, 0x04, 0x01, 0x02 }, overlapping);
 		}
 
 		[TestMethod]
-		public void SwapAndReplace_InvalidOffsets_ThrowExpectedExceptions()
+		public void PartialWidthSpanOperations_ShortSpansFailBeforeMutation()
 		{
-			Assert.Throws<ArgumentNullException>(() => ByteSwap.SwapUInt16(null!, 0));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], -1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt16(new byte[2], 2));
+			byte[] short24 = [0x12, 0x34];
+			byte[] expected24 = (byte[])short24.Clone();
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt24(short24));
+			CollectionAssert.AreEqual(expected24, short24);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.SwapInt24(short24));
+			CollectionAssert.AreEqual(expected24, short24);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytesUInt24(short24, 0x123456));
+			CollectionAssert.AreEqual(expected24, short24);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytesInt24(short24, -1));
+			CollectionAssert.AreEqual(expected24, short24);
 
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt24(new byte[3], 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt32(new byte[4], 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(new byte[5], 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt64(new byte[8], 1));
-
-			Assert.Throws<ArgumentNullException>(() => ByteSwap.ReplaceBytes(null!, 0, 0x1234U));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], -1, 0x1234U));
-			Assert.Throws<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytes(new byte[4], 1, 0x12345678U));
-			Assert.Throws<ArgumentOutOfRangeException>(
-				() => ByteSwap.ReplaceBytesUInt24(new byte[3], 1, 0x123456));
-			Assert.Throws<ArgumentOutOfRangeException>(
-				() => ByteSwap.ReplaceBytesUInt40(new byte[5], 1, 0x123456789AUL));
-			Assert.Throws<ArgumentOutOfRangeException>(
-				() => ByteSwap.SwapData(ByteSwap.kInt32Definition, new byte[sizeof(uint) - 1]));
+			byte[] short40 = [0x12, 0x34, 0x56, 0x78];
+			byte[] expected40 = (byte[])short40.Clone();
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.SwapUInt40(short40));
+			CollectionAssert.AreEqual(expected40, short40);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.SwapInt40(short40));
+			CollectionAssert.AreEqual(expected40, short40);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+				() => ByteSwap.ReplaceBytesUInt40(short40, 0x123456789AUL));
+			CollectionAssert.AreEqual(expected40, short40);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => ByteSwap.ReplaceBytesInt40(short40, -1));
+			CollectionAssert.AreEqual(expected40, short40);
 		}
 
 		[TestMethod]
@@ -444,7 +372,7 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(ByteSwap.kInt32Definition.ByteSwapCodes.Length, sizeInCodes);
 		}
 
-		// #NOTE Assumes ByteSwap.ReplaceBytes isn't broken
+		// #NOTE Assumes BitConverter.TryWriteBytes isn't broken
 		[TestMethod]
 		public void SwapData_IntegerDefinition_SwapsExpectedBytes()
 		{
@@ -453,9 +381,9 @@ namespace KSoft.Bitwise.Test
 
 			buffer_index = 0;
 			{
-				ReplaceBytes(Bits.kInt64BitCount, kBeforeValue, buffer, ref buffer_index);
-				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
-				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt64BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
 			}
 			Assert.AreEqual(buffer.Length, buffer_index);
 
@@ -504,14 +432,14 @@ namespace KSoft.Bitwise.Test
 			buffer_index = 0;
 			for (int x = 0; x < structure_count; x++)
 			{
-				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
-				ReplaceBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt16BitCount, kBeforeValue, buffer, ref buffer_index);
 
-				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
 
-				ReplaceBytes(Bits.kInt64BitCount, kSkipValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt64BitCount, kSkipValue, buffer, ref buffer_index);
 
-				ReplaceBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
+				WriteBytes(Bits.kInt32BitCount, kBeforeValue, buffer, ref buffer_index);
 			}
 			Assert.AreEqual(buffer.Length, buffer_index);
 
@@ -536,20 +464,29 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(buffer.Length, buffer_index);
 		}
 
-		private static void ReplaceBytes(int bitCount, ulong value, byte[] buffer, ref int bufferIndex)
+		private static void WriteBytes(int bitCount, ulong value, byte[] buffer, ref int bufferIndex)
 		{
 			switch (bitCount)
 			{
 				case Bits.kInt16BitCount:
-					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((ushort)value));
+					BitConverter.TryWriteBytes(
+						buffer.AsSpan(bufferIndex, sizeof(ushort)),
+						unchecked((ushort)value));
+					bufferIndex += sizeof(ushort);
 					break;
 
 				case Bits.kInt32BitCount:
-					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((uint)value));
+					BitConverter.TryWriteBytes(
+						buffer.AsSpan(bufferIndex, sizeof(uint)),
+						unchecked((uint)value));
+					bufferIndex += sizeof(uint);
 					break;
 
 				case Bits.kInt64BitCount:
-					bufferIndex = ByteSwap.ReplaceBytes(buffer, bufferIndex, unchecked((ulong)value));
+					BitConverter.TryWriteBytes(
+						buffer.AsSpan(bufferIndex, sizeof(ulong)),
+						unchecked((ulong)value));
+					bufferIndex += sizeof(ulong);
 					break;
 			}
 		}

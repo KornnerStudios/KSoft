@@ -139,17 +139,6 @@ namespace KSoft.Bitwise
 		{
 			value = SwapSingle(value);
 		}
-		/// <summary>Replaces 4 bytes in an array with a floating-point value</summary>
-		/// <param name="buffer">byte buffer</param>
-		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
-		/// <param name="value">value to replace the buffer's current bytes with</param>
-		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		public static void ReplaceBytes(byte[] buffer, int offset,
-			float value)
-		{
-			ReplaceBytes(buffer, offset, new SingleUnion(value).Integer);
-		}
-
 		public static float SingleFromUInt32(uint bits)
 		{
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt32BitsToSingle.
@@ -179,17 +168,6 @@ namespace KSoft.Bitwise
 		{
 			value = SwapDouble(value);
 		}
-		/// <summary>Replaces 8 bytes in an array with a floating-point value</summary>
-		/// <param name="buffer">byte buffer</param>
-		/// <param name="offset">offset in <paramref name="buffer"/> to put the new value</param>
-		/// <param name="value">value to replace the buffer's current bytes with</param>
-		/// <remarks><paramref name="buffer"/>'s endian order is assumed to be the same as the current operating environment</remarks>
-		public static void ReplaceBytes(byte[] buffer, int offset,
-			double value)
-		{
-			ReplaceBytes(buffer, offset, new DoubleUnion(value).Integer);
-		}
-
 		public static double DoubleFromUInt64(ulong bits)
 		{
 			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt64BitsToDouble.

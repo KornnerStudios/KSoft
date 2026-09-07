@@ -77,7 +77,7 @@ namespace KSoft.Bitwise
 							case (int)BsCode.Int16:
 								if (buffer != null)
 								{
-									SwapInt16(buffer, buffer_index);
+									buffer.AsSpan(buffer_index, sizeof(short)).Reverse();
 									buffer_index += sizeof(short);
 								}
 
@@ -91,7 +91,7 @@ namespace KSoft.Bitwise
 							case (int)BsCode.Int32:
 								if (buffer != null)
 								{
-									SwapInt32(buffer, buffer_index);
+									buffer.AsSpan(buffer_index, sizeof(int)).Reverse();
 									buffer_index += sizeof(int);
 								}
 
@@ -105,7 +105,7 @@ namespace KSoft.Bitwise
 							case (int)BsCode.Int64:
 								if (buffer != null)
 								{
-									SwapInt64(buffer, buffer_index);
+									buffer.AsSpan(buffer_index, sizeof(long)).Reverse();
 									buffer_index += sizeof(long);
 								}
 

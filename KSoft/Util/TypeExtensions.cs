@@ -222,9 +222,9 @@ namespace KSoft
 
 			if (respectEndian)
 			{
-				Bitwise.ByteSwap.SwapInt32(data, 0);
-				Bitwise.ByteSwap.SwapInt16(data, sizeof(uint));
-				Bitwise.ByteSwap.SwapInt16(data, sizeof(uint)+sizeof(ushort));
+				data.AsSpan(0, sizeof(uint)).Reverse();
+				data.AsSpan(sizeof(uint), sizeof(ushort)).Reverse();
+				data.AsSpan(sizeof(uint) + sizeof(ushort), sizeof(ushort)).Reverse();
 			}
 
 			s.Write(data);

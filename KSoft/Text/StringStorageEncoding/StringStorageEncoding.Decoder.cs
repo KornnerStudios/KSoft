@@ -236,7 +236,7 @@ namespace KSoft.Text
 			{
 				if (byteOrder != mStorage.ByteOrder)
 				{
-					Bitwise.ByteSwap.SwapInt32(characters, offset);
+					characters.AsSpan(offset, sizeof(uint)).Reverse();
 				}
 
 				result =  characters[offset+3] == 0;
@@ -248,7 +248,7 @@ namespace KSoft.Text
 			{
 				if (byteOrder != mStorage.ByteOrder)
 				{
-					Bitwise.ByteSwap.SwapInt16(characters, offset);
+					characters.AsSpan(offset, sizeof(ushort)).Reverse();
 				}
 
 				result =  characters[offset+1] == 0;

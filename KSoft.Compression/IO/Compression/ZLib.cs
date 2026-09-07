@@ -138,7 +138,7 @@ namespace KSoft.IO.Compression
 			byte[] size_bytes = BitConverter.GetBytes(bytes.Length);
 			if (!byteOrder.IsSameAsRuntime())
 			{
-				Bitwise.ByteSwap.SwapInt32(size_bytes, 0);
+				size_bytes.AsSpan(0, sizeof(int)).Reverse();
 			}
 			Array.Copy(size_bytes, result, size_bytes.Length);
 

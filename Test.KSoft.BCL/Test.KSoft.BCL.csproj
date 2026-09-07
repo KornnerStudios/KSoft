@@ -29,9 +29,4 @@
       <Name>KSoft</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Bitwise\OrderedTests_ByteSwap.orderedtest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
