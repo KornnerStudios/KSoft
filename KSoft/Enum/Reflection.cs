@@ -154,7 +154,7 @@ namespace KSoft.Reflection
 		/// <summary>Does the underlying enumeration have a <see cref="FlagsAttribute"/>?</summary>
 		protected static readonly bool kIsFlags =				kEnumType.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
 
-		// #VITA_SHIM: Generic Enum metadata avoids Type-based array creation once enum constraints are explicit.
+		// #VITA_KEEP: cache typed enum metadata for the public Names and Values reflection surface.
 		protected static readonly string[] kEnumNames =			System.Enum.GetNames<TEnum>();
 		protected static readonly TEnum[] kEnumValues =			System.Enum.GetValues<TEnum>();
 

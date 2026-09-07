@@ -108,7 +108,7 @@ namespace KSoft.Security.Cryptography.Test
 				var hash = tiger.ComputeHash(input);
 				Assert.AreEqual(
 					expectedHashByteString.ToUpper(KSoft.Util.InvariantCultureInfo),
-					KSoft.Text.Util.ByteArrayToString(hash));
+					Convert.ToHexString(hash));
 			}
 		}
 	};

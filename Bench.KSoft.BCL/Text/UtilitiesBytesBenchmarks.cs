@@ -31,10 +31,6 @@ public class UtilitiesBytesBenchmarks
 	}
 
 	[Benchmark]
-	public string ByteArrayToString() =>
-		global::KSoft.Text.Util.ByteArrayToString(mData);
-
-	[Benchmark]
 	public byte[] ByteStringToArray() =>
 		global::KSoft.Text.Util.ByteStringToArray(mHexString);
 

@@ -18,7 +18,7 @@ namespace KSoft.Text.Test
 			byte[]? decoded = encoding.Decode(encoded);
 			if (writeToConsole)
 			{
-				Console.WriteLine(Util.ByteArrayToString(decoded!));
+				Console.WriteLine(Convert.ToHexString(decoded!));
 			}
 
 			return bytes.EqualsArray(decoded!);

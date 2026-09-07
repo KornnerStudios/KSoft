@@ -92,7 +92,7 @@ internal static class EndianStreamsNumbersSourceBuilder
 		writer.WriteLine($"public override {typeSpec.Keyword} Read{code}()");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("// #VITA_SHIM: BinaryPrimitives reads the stream byte order directly without byte-swap wrappers.");
+			writer.WriteLine("// #VITA_KEEP: BinaryPrimitives implements the required endian-aware stream read.");
 			writer.WriteLine($"Span<byte> bytes = stackalloc byte[sizeof({typeSpec.Keyword})];");
 			writer.WriteLine("BaseStream.ReadExactly(bytes);");
 			writer.WriteLine("return ByteOrder == Shell.EndianFormat.Little");
@@ -112,7 +112,7 @@ internal static class EndianStreamsNumbersSourceBuilder
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine(
-				"// #VITA_SHIM: BinaryPrimitives writes the stream byte order directly without byte-swap wrappers.");
+				"// #VITA_KEEP: BinaryPrimitives implements the required endian-aware stream write.");
 			writer.WriteLine($"Span<byte> bytes = stackalloc byte[sizeof({typeSpec.Keyword})];");
 			writer.WriteLine("if (ByteOrder == Shell.EndianFormat.Little)");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))

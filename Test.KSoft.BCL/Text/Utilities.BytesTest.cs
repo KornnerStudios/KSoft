@@ -37,25 +37,11 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ByteArrayToString_FullAndPartialRanges_ReturnExpectedHexText()
-		{
-			// Test case: Entire byte array
-			var test_value = Util.ByteArrayToString(StringConstants.kDataBytes);
-			Assert.AreEqual(StringConstants.kDataString, test_value);
-			// Test case: Partial byte array (explicit start)
-			test_value = Util.ByteArrayToString(StringConstants.kDataBytes, 1);
-			Assert.AreEqual(StringConstants.kDataString.Substring(2), test_value);
-			// Test case: Partial byte array (explicit range)
-			test_value = Util.ByteArrayToString(StringConstants.kDataBytes, 1, 2);
-			Assert.AreEqual(StringConstants.kDataString.Substring(2, 4), test_value);
-		}
-
-		[TestMethod]
 		public void ByteStringToArray_RoundTripHexText_ReturnsOriginalBytes()
 		{
 			byte[] test_data = System.Text.Encoding.ASCII.GetBytes(StringConstants.kDataStringLong);
 			// Test the byte converter for strings of hex digits
-			var test_value = Util.ByteArrayToString(test_data);
+			var test_value = Convert.ToHexString(test_data);
 			byte[] round_tripped_data = Util.ByteStringToArray(test_value);
 
 			CollectionAssert.AreEqual(test_data, round_tripped_data);
@@ -112,12 +98,6 @@ namespace KSoft.Text.Test
 			AssertThrowsArgumentNull("buffer", () => _ = Util.DetermineStringEncoding(null!));
 			AssertThrowsArgumentOutOfRange("index", () => _ = Util.DetermineStringEncoding([0], -1));
 
-			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!, 0, 1));
-			AssertThrowsArgumentNull("data", () => _ = Util.ByteArrayToString(null!));
-			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteArrayToString([0], -1, 1));
-			AssertThrowsArgumentOutOfRange("startIndex", () => _ = Util.ByteArrayToString([0], 1, 1));
-			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteArrayToString([0], 0, 0));
-			AssertThrowsArgumentOutOfRange("count", () => _ = Util.ByteArrayToString([0], 0, 2));
 			AssertThrowsArgumentNull("data", () => Util.ByteArrayToStream(null!, writer, 0, 1));
 			AssertThrowsArgumentNull("stream", () => Util.ByteArrayToStream([0], null!, 0, 1));
 			AssertThrowsArgumentOutOfRange("startIndex", () => Util.ByteArrayToStream([0], writer, -1, 1));

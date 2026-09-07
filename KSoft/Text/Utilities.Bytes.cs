@@ -136,21 +136,7 @@ namespace KSoft.Text
 			}
 		}
 
-		#region ByteArrayToString (byte[] to string)
-		/// <summary>Converts an array of bytes to a hex string</summary>
-		/// <param name="data">Buffer of bytes to convert</param>
-		/// <param name="startIndex">Index in <paramref name="data"/> to start the conversion</param>
-		/// <param name="count">Number of bytes to convert</param>
-		/// <example>"1337BEEF"</example>
-		/// <returns></returns>
-		public static string ByteArrayToString(byte[] data, int startIndex, int count)
-		{
-			ArgumentNullException.ThrowIfNull(data);
-			ValidateRange(data.Length, startIndex, count);
-
-			// #VITA_SHIM: Preserve KSoft's uppercase hex string API while routing exact-format output through the BCL.
-			return Convert.ToHexString(data, startIndex, count);
-		}
+		#region ByteArrayToStream
 		/// <summary>Converts an array of bytes to a hex string and outputs it to the stream</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
 		/// <param name="stream">Stream to output the hex string to</param>
@@ -163,7 +149,7 @@ namespace KSoft.Text
 			ArgumentNullException.ThrowIfNull(stream);
 			ValidateRange(data.Length, startIndex, count);
 
-			// #VITA_SHIM: TextWriter output uses BCL hex conversion in bounded stack chunks to avoid a hidden full string.
+			// #VITA_KEEP: bounded TextWriter output avoids allocating a complete intermediate hex string.
 			ReadOnlySpan<byte> source = data.AsSpan(startIndex, count);
 			Span<char> buffer = stackalloc char[kHexStreamBytesPerChunk * 2];
 			bool canWriteSpan = TextWriterOverridesSpanWrite(stream);
@@ -187,19 +173,6 @@ namespace KSoft.Text
 				}
 				source = source.Slice(chunkLength);
 			}
-		}
-		/// <summary>Converts an array of bytes to a hex string</summary>
-		/// <param name="data">Buffer of bytes to convert</param>
-		/// <param name="startIndex">Index in <paramref name="data"/> to start the conversion</param>
-		/// <example>"1337BEEF"</example>
-		/// <returns></returns>
-		public static string ByteArrayToString(byte[] data
-			, int startIndex = 0)
-		{
-			ArgumentNullException.ThrowIfNull(data);
-			ValidateStartIndex(data.Length, startIndex);
-
-			return ByteArrayToString(data, startIndex, data.Length-startIndex);
 		}
 		/// <summary>Converts an array of bytes to a hex string and outputs it to the stream</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
@@ -253,7 +226,7 @@ namespace KSoft.Text
 
 			Array.Clear(bytes, 0, bytes.Length);
 
-			// #VITA_SHIM: Strict hex input can use the BCL converter; legacy non-hex digit behavior falls back below.
+			// #VITA_KEEP: strict hex uses the BCL converter while legacy non-hex digit behavior falls back below.
 			if (IsBclHexString(data, startIndex, count))
 			{
 				ConvertHexStringToArray(bytes, data, startIndex, count);
@@ -294,7 +267,7 @@ namespace KSoft.Text
 			ValidateRange(data.Length, startIndex, count);
 			ValidateEvenCharacterCount(count, nameof(count));
 
-			// #VITA_SHIM: Strict hex input can allocate directly through the BCL without changing the public result shape.
+			// #VITA_KEEP: strict hex can allocate directly through the BCL while legacy parsing remains supported.
 			if (IsBclHexString(data, startIndex, count))
 			{
 				return Convert.FromHexString(data.AsSpan(startIndex, count));
@@ -346,12 +319,14 @@ namespace KSoft.Text
 			int index = 0;
 			for (int b = 0; b < blocks; b++, index+=digitsPerLine)
 			{
-				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index, digitsPerLine), new_line);
+				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}",
+					padding, Convert.ToHexString(data, index, digitsPerLine), new_line);
 			}
 
 			if (leftovers > 0)
 			{
-				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}", padding, ByteArrayToString(data, index), new_line);
+				sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "{0}{1}{2}",
+					padding, Convert.ToHexString(data.AsSpan(index)), new_line);
 			}
 
 			return sb.ToString();
@@ -379,7 +354,8 @@ namespace KSoft.Text
 					output.Write(padding);
 				}
 
-				output.WriteLine(ByteArrayToString(data, index, digitsPerLine));
+				ByteArrayToStream(data, output, index, digitsPerLine);
+				output.WriteLine();
 			}
 
 			if (leftovers > 0)
@@ -389,7 +365,8 @@ namespace KSoft.Text
 					output.Write(padding);
 				}
 
-				output.WriteLine(ByteArrayToString(data, index));
+				ByteArrayToStream(data, output, index);
+				output.WriteLine();
 			}
 		}
 		#endregion
