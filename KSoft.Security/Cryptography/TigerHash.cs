@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 // #NOTE: .net9 HashAlgorithm.TransformFinalBlock calls CaptureHashCodeAndReinitialize
 // which means the algo's Initialize method will be executed before the call returns!
@@ -185,24 +186,26 @@ namespace KSoft.Security.Cryptography
 			return false;
 		}
 
-		public bool TryGetAsTiger192(byte[] buffer, int offset = 0)
+		public bool TryGetAsTiger192(Span<byte> buffer)
 		{
-			if (buffer == null)
+			if (buffer.Length < (kHashSize/Bits.kByteBitCount))
 			{
 				return false;
 			}
 
-			if ((buffer.Length-offset) < (kHashSize/Bits.kByteBitCount))
-			{
-				return false;
-			}
-
-			// This would only ever happen if Initialize wasn't called
+#if TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 			if (mRegs != null && mRegs.Length >= 3)
 			{
-				Bits.ArrayCopy(mRegs, 0, buffer, offset, mRegs.Length);
+				MemoryMarshal.AsBytes(mRegs.AsSpan()).CopyTo(buffer);
 				return true;
 			}
+#else
+			if (HashValue != null && HashValue.Length == ActualHashValueArrayLength)
+			{
+				HashValue.CopyTo(buffer);
+				return true;
+			}
+#endif // TIGER_HASH_CAN_USE_REG_VALUES_AFTER_FINAL_HASH
 
 			return false;
 		}
@@ -272,50 +275,37 @@ namespace KSoft.Security.Cryptography
 			mRegs[2] += c;
 		}
 
-		void CopyBlock(byte[] inputBuffer, int inputOffset)
+		void CopyBlock(ReadOnlySpan<byte> inputBuffer)
 		{
-			int remaining_bytes = inputBuffer.Length - inputOffset;
-			int input_count = System.Math.Min(BlockSize, remaining_bytes);
-			if (input_count != BlockSize)
-			{
-				Array.Clear(mX, 0, mX.Length);
-			}
-			Bits.ArrayCopy(inputBuffer, inputOffset, mX, 0, input_count);
+			System.Diagnostics.Debug.Assert(inputBuffer.Length == BlockSize);
+			inputBuffer.CopyTo(MemoryMarshal.AsBytes(mX.AsSpan()));
 		}
 
-		void ProcessBlockOfWords(byte[] inputBuffer, int inputOffset, int blockCount)
+		void ProcessBlockOfWords(ReadOnlySpan<byte> inputBuffer)
 		{
-			for (int block_index = 0, block_offset_in_input = inputOffset;
-				block_index < blockCount;
-				block_index++, block_offset_in_input += BlockSize)
+			System.Diagnostics.Debug.Assert(inputBuffer.Length % BlockSize == 0);
+			for (int blockOffset = 0;
+				blockOffset < inputBuffer.Length;
+				blockOffset += BlockSize)
 			{
-				CopyBlock(inputBuffer, block_offset_in_input);
+				CopyBlock(inputBuffer.Slice(blockOffset, BlockSize));
 
 				ProcessWords();
 			}
 		}
 
-		protected override void ProcessBlock(byte[] inputBuffer, int inputOffset, int blockCount)
+		protected override void ProcessBlock(ReadOnlySpan<byte> inputBuffer)
 		{
-			ProcessBlockOfWords(inputBuffer, inputOffset, blockCount);
+			ProcessBlockOfWords(inputBuffer);
 		}
 
-		protected override byte[] ProcessFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+		protected override byte[] ProcessFinalBlock(Span<byte> inputBuffer, int inputCount)
 		{
-			// It's okay to modify inputBuffer here since it's the final block and actually
-			// BlockHashAlgorithm's internal buffer.
-
+			// This span aliases BlockHashAlgorithm's internal final-block buffer, so padding can be
+			// written in place. Pending bytes are always stored at its start, eliminating the old memmove.
 			ulong msg_bit_length = ((ulong)TotalBytesProcessed + (ulong)inputCount) << 3;
 
-			if (inputOffset > 0 && inputCount > 0)
-			{
-				// memmove the bytes starting at inputOffset to the start of the buffer
-				Array.Copy(inputBuffer, inputOffset, inputBuffer, 0, inputCount);
-			}
-
-			inputOffset = 0;
-
-			Array.Clear(inputBuffer, inputCount, BlockSize-inputCount);
+			inputBuffer[inputCount..].Clear();
 
 			// Write the padding byte then align up to the next word boundary. Proceeding bytes are
 			// already zero due to the Clear above.
@@ -327,12 +317,12 @@ namespace KSoft.Security.Cryptography
 			// remaining bytes are still all zero, due to above Clear.
 			if (input_offset > (BlockSize-sizeof(ulong)))
 			{
-				ProcessBlock(inputBuffer, inputOffset, 1);
+				ProcessBlock(inputBuffer);
 
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
 				input_offset = 0;
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
-				Array.Clear(inputBuffer, 0, BlockSize);
+				inputBuffer.Clear();
 			}
 
 			// write out the number of bytes that were processed before finalization
@@ -341,11 +331,11 @@ namespace KSoft.Security.Cryptography
 				; inputBuffer[input_offset] = (byte)msg_bit_length, msg_bit_length >>= 8, ++input_offset)
 			{
 			}
-			ProcessBlock(inputBuffer, inputOffset, 1);
+			ProcessBlock(inputBuffer);
 
 			HashValue ??= new byte[ActualHashValueArrayLength];
 			byte[] hash_value = HashValue;
-			Bits.ArrayCopy(mRegs, 0, hash_value, 0, mRegs.Length);
+			MemoryMarshal.AsBytes(mRegs.AsSpan()).CopyTo(hash_value);
 			return hash_value;
 		}
 

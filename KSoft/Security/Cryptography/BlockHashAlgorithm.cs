@@ -26,16 +26,14 @@ namespace KSoft.Security.Cryptography
 		}
 
 		/// <summary>Process a block of data.</summary>
-		/// <param name="inputBuffer">The block of data to process.</param>
-		/// <param name="inputOffset">Where to start in the block.</param>
-		protected abstract void ProcessBlock(byte[] inputBuffer, int inputOffset, int inputLength);
+		/// <param name="inputBuffer">One or more complete blocks of data to process.</param>
+		protected abstract void ProcessBlock(ReadOnlySpan<byte> inputBuffer);
 
 		/// <summary>Process the last block of data.</summary>
 		/// <param name="inputBuffer">The block of data to process.</param>
-		/// <param name="inputOffset">Where to start in the block.</param>
 		/// <param name="inputCount">How many bytes need to be processed.</param>
 		/// <returns>The results of the completed hash calculation.</returns>
-		protected abstract byte[] ProcessFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount);
+		protected abstract byte[] ProcessFinalBlock(Span<byte> inputBuffer, int inputCount);
 
 		#region HashAlgorithm
 		/// <summary>Initializes the algorithm.</summary>
@@ -54,42 +52,44 @@ namespace KSoft.Security.Cryptography
 		/// <param name="count">How many bytes in the array to read.</param>
 		protected override void HashCore(byte[] array, int startIndex, int count)
 		{
+			ReadOnlySpan<byte> input = array.AsSpan(startIndex, count);
+
 			// Use what may already be in the buffer.
 			if (BlockBytesRemaining > 0)
 			{
-				if (count + BlockBytesRemaining < BlockSize)
+				if (input.Length + BlockBytesRemaining < BlockSize)
 				{
 					// Still don't have enough for a full block, just store it.
-					Array.Copy(array, startIndex, mBlockBuffer, BlockBytesRemaining, count);
-					BlockBytesRemaining += count;
+					input.CopyTo(mBlockBuffer.AsSpan(BlockBytesRemaining));
+					BlockBytesRemaining += input.Length;
 					return;
 				}
 				else
 				{
 					// Fill out the buffer to make a full block, and then process it.
-					int i = BlockSize - BlockBytesRemaining;
-					Array.Copy(array, startIndex, mBlockBuffer, BlockBytesRemaining, i);
-					ProcessBlock(mBlockBuffer, 0, 1);
+					int bytesToFill = BlockSize - BlockBytesRemaining;
+					input[..bytesToFill].CopyTo(mBlockBuffer.AsSpan(BlockBytesRemaining));
+					ProcessBlock(mBlockBuffer);
 					TotalBytesProcessed += BlockSize;
 					BlockBytesRemaining = 0;
-					startIndex += i;
-					count -= i;
+					input = input[bytesToFill..];
 				}
 			}
 
 			// For as long as we have full blocks, process them.
-			if (count >= BlockSize)
+			int blockBytes = input.Length - (input.Length % BlockSize);
+			if (blockBytes > 0)
 			{
-				ProcessBlock(array, startIndex, count / BlockSize);
-				TotalBytesProcessed += count - count % BlockSize;
+				ProcessBlock(input[..blockBytes]);
+				TotalBytesProcessed += blockBytes;
+				input = input[blockBytes..];
 			}
 
 			// If we still have some bytes left, store them for later.
-			int bytesLeft = count % BlockSize;
-			if (bytesLeft != 0)
+			if (!input.IsEmpty)
 			{
-				Array.Copy(array, ((count - bytesLeft) + startIndex), mBlockBuffer, 0, bytesLeft);
-				BlockBytesRemaining = bytesLeft;
+				input.CopyTo(mBlockBuffer);
+				BlockBytesRemaining = input.Length;
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace KSoft.Security.Cryptography
 		/// <returns>The final hash value.</returns>
 		protected override byte[] HashFinal()
 		{
-			return ProcessFinalBlock(mBlockBuffer, 0, BlockBytesRemaining);
+			return ProcessFinalBlock(mBlockBuffer.AsSpan(), BlockBytesRemaining);
 		}
 		#endregion
 	};

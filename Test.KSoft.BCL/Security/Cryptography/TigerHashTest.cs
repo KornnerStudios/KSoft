@@ -58,6 +58,46 @@ namespace KSoft.Security.Cryptography.Test
 			AssertThrowsArgument("algName", () => TigerHash2.Create(TigerHash.kAlgorithmName));
 		}
 
+		[TestMethod]
+		public void TryGetAsTiger192_SpanSlice_WritesOnlyDestination()
+		{
+			using var tiger = new TigerHash();
+			byte[] hash = tiger.ComputeHash(System.Text.Encoding.ASCII.GetBytes("span"));
+			byte[] destination = new byte[hash.Length + 2];
+			Array.Fill(destination, (byte)0xCC);
+
+			Assert.IsFalse(tiger.TryGetAsTiger192(destination.AsSpan(1, hash.Length - 1)));
+			Assert.IsTrue(tiger.TryGetAsTiger192(destination.AsSpan(1, hash.Length)));
+
+			Assert.AreEqual((byte)0xCC, destination[0]);
+			CollectionAssert.AreEqual(hash, destination[1..^1]);
+			Assert.AreEqual((byte)0xCC, destination[^1]);
+		}
+
+		[TestMethod]
+		public void Tiger1_ChunkedInput_MatchesOneShotHashAcrossBlockBoundaries()
+		{
+			var input = new byte[127];
+			for (int x = 0; x < input.Length; x++)
+			{
+				input[x] = (byte)(x * 37);
+			}
+
+			using var expectedAlgorithm = new TigerHash();
+			byte[] expected = expectedAlgorithm.ComputeHash(input);
+			using var actualAlgorithm = new TigerHash();
+			int offset = 0;
+			const int chunkSize = 17;
+			while (input.Length - offset > chunkSize)
+			{
+				actualAlgorithm.TransformBlock(input, offset, chunkSize, null, 0);
+				offset += chunkSize;
+			}
+			actualAlgorithm.TransformFinalBlock(input, offset, input.Length - offset);
+
+			CollectionAssert.AreEqual(expected, actualAlgorithm.Hash);
+		}
+
 		static void TestTiger(string algName,
 			string inputString,
 			string expectedHashByteString)
