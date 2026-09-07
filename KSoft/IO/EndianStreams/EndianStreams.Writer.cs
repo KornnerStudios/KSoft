@@ -128,7 +128,10 @@ namespace KSoft.IO
 		/// <param name="tag"></param>
 		public void WriteTag32(uint tag)
 		{
-			if (mRequiresByteSwap) Bitwise.ByteSwap.Swap(ref tag);
+			if (mRequiresByteSwap)
+			{
+				tag = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(tag);
+			}
 			base.Write(tag);
 		}
 
@@ -136,7 +139,10 @@ namespace KSoft.IO
 		/// <param name="tag"></param>
 		public void WriteTag64(ulong tag)
 		{
-			if (mRequiresByteSwap) Bitwise.ByteSwap.Swap(ref tag);
+			if (mRequiresByteSwap)
+			{
+				tag = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(tag);
+			}
 			base.Write(tag);
 		}
 		#endregion

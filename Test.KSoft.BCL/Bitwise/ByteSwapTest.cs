@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -17,12 +16,6 @@ namespace KSoft.Bitwise.Test
 
 		const ulong kBeforeValueUInt24 = 0x123456;
 		const ulong kAfterValueUInt24 = 0x563412;
-		const int kBenchmarkWarmupIterations = 20_000;
-		const int kBenchmarkIterations = 2_000_000;
-
-		static ushort gBenchmarkUInt16;
-		static uint gBenchmarkUInt32;
-		static ulong gBenchmarkUInt64;
 
 		static short[] CreateInt32SwapCodes() =>
 		[
@@ -32,30 +25,11 @@ namespace KSoft.Bitwise.Test
 		];
 
 		[TestMethod]
-		public void Swap_IntegerValues_ReversesByteOrder()
+		public void Swap_PartialWidthIntegerValues_ReversesByteOrder()
 		{
-			ulong value_before = kBeforeValue;
-			ulong value_after = kAfterValue;
-
-			// UInt64
-			Assert.AreEqual(value_after, ByteSwap.SwapUInt64(value_before));
-			Assert.AreEqual((long)value_after, ByteSwap.SwapInt64((long)value_before));
-
-			// UInt32
-			value_before >>= 32;
-			value_after >>= 32;
-			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt32((uint)value_before));
-			Assert.AreEqual((int)value_after,  ByteSwap.SwapInt32 ((int) value_before));
-
-			// UInt16
-			value_before >>= 16;
-			value_after >>= 16;
-			Assert.AreEqual((ushort)value_after, ByteSwap.SwapUInt16((ushort)value_before));
-			Assert.AreEqual((short)value_after,  ByteSwap.SwapInt16 ((short) value_before));
-
 			// UInt40
-			value_before = kBeforeValueUInt40;
-			value_after = kAfterValueUInt40;
+			ulong value_before = kBeforeValueUInt40;
+			ulong value_after = kAfterValueUInt40;
 			Assert.AreEqual(value_after, ByteSwap.SwapUInt40(value_before));
 			Assert.AreEqual((long)value_after, ByteSwap.SwapInt40((long)value_before));
 
@@ -64,91 +38,6 @@ namespace KSoft.Bitwise.Test
 			value_after = kAfterValueUInt24;
 			Assert.AreEqual((uint)value_after, ByteSwap.SwapUInt24((uint)value_before));
 			Assert.AreEqual((int)value_after,  ByteSwap.SwapInt24 ((int) value_before));
-		}
-
-		[TestMethod]
-		public void Swap_NaturalWidths_MatchesBinaryPrimitives()
-		{
-			ushort[] values16 =
-			[
-				0x0000,
-				0x0001,
-				0x00FF,
-				0x8000,
-				0xFFFF,
-			];
-			foreach (ushort value in values16)
-			{
-				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt16(value));
-				Assert.AreEqual(
-					BinaryPrimitives.ReverseEndianness(unchecked((short)value)),
-					ByteSwap.SwapInt16(unchecked((short)value)));
-			}
-
-			uint[] values32 =
-			[
-				0x00000000,
-				0x00000001,
-				0x00FF00FF,
-				0x80000000,
-				0xFFFFFFFF,
-			];
-			foreach (uint value in values32)
-			{
-				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt32(value));
-				Assert.AreEqual(
-					BinaryPrimitives.ReverseEndianness(unchecked((int)value)),
-					ByteSwap.SwapInt32(unchecked((int)value)));
-			}
-
-			ulong[] values64 =
-			[
-				0x0000000000000000,
-				0x0000000000000001,
-				0x00FF00FF00FF00FF,
-				0x8000000000000000,
-				0xFFFFFFFFFFFFFFFF,
-			];
-			foreach (ulong value in values64)
-			{
-				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(value), ByteSwap.SwapUInt64(value));
-				Assert.AreEqual(
-					BinaryPrimitives.ReverseEndianness(unchecked((long)value)),
-					ByteSwap.SwapInt64(unchecked((long)value)));
-			}
-		}
-
-		[TestMethod]
-		public void Swap_ByReference_MatchesReturnedValue()
-		{
-			// The return-value and by-ref overloads are generated as separate bodies. Keep both covered so the
-			// natural-width BCL route cannot accidentally modernize only one overload family.
-			ushort u16 = 0x1234;
-			ByteSwap.Swap(ref u16);
-			Assert.AreEqual(ByteSwap.SwapUInt16(0x1234), u16);
-
-			short i16_original = unchecked((short)0x9234);
-			short i16 = i16_original;
-			ByteSwap.Swap(ref i16);
-			Assert.AreEqual(ByteSwap.SwapInt16(i16_original), i16);
-
-			uint u32 = 0x12345678U;
-			ByteSwap.Swap(ref u32);
-			Assert.AreEqual(ByteSwap.SwapUInt32(0x12345678U), u32);
-
-			int i32_original = unchecked((int)0x92345678U);
-			int i32 = i32_original;
-			ByteSwap.Swap(ref i32);
-			Assert.AreEqual(ByteSwap.SwapInt32(i32_original), i32);
-
-			ulong u64 = 0x123456789ABCDEF0UL;
-			ByteSwap.Swap(ref u64);
-			Assert.AreEqual(ByteSwap.SwapUInt64(0x123456789ABCDEF0UL), u64);
-
-			long i64_original = unchecked((long)0x923456789ABCDEF0UL);
-			long i64 = i64_original;
-			ByteSwap.Swap(ref i64);
-			Assert.AreEqual(ByteSwap.SwapInt64(i64_original), i64);
 		}
 
 		[TestMethod]
@@ -198,10 +87,10 @@ namespace KSoft.Bitwise.Test
 				Assert.AreEqual(bits, BitConverter.ToUInt32(bytes));
 
 				float swapped = ByteSwap.SwapSingle(value);
-				Assert.AreEqual(ByteSwap.SwapUInt32(bits), BitConverter.SingleToUInt32Bits(swapped));
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(bits), BitConverter.SingleToUInt32Bits(swapped));
 
 				ByteSwap.SwapSingle(ref value);
-				Assert.AreEqual(ByteSwap.SwapUInt32(bits), BitConverter.SingleToUInt32Bits(value));
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(bits), BitConverter.SingleToUInt32Bits(value));
 			}
 
 			ulong[] double_bits =
@@ -220,10 +109,10 @@ namespace KSoft.Bitwise.Test
 				Assert.AreEqual(bits, BitConverter.ToUInt64(bytes));
 
 				double swapped = ByteSwap.SwapDouble(value);
-				Assert.AreEqual(ByteSwap.SwapUInt64(bits), BitConverter.DoubleToUInt64Bits(swapped));
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(bits), BitConverter.DoubleToUInt64Bits(swapped));
 
 				ByteSwap.SwapDouble(ref value);
-				Assert.AreEqual(ByteSwap.SwapUInt64(bits), BitConverter.DoubleToUInt64Bits(value));
+				Assert.AreEqual(BinaryPrimitives.ReverseEndianness(bits), BitConverter.DoubleToUInt64Bits(value));
 			}
 		}
 
@@ -543,131 +432,5 @@ namespace KSoft.Bitwise.Test
 			}
 		}
 
-		#region Benchmark
-		[TestMethod]
-		[TestCategory("Benchmark")]
-		public void SwapImplementations_BenchmarkInputs_ProduceEqualResults()
-		{
-			WarmUpBenchmarkPrototype();
-
-			TimeSpan current16 = Measure(() => gBenchmarkUInt16 = BenchmarkCurrentUInt16(kBenchmarkIterations));
-			ushort current16_result = gBenchmarkUInt16;
-			TimeSpan bcl16 = Measure(() => gBenchmarkUInt16 = BenchmarkBclUInt16(kBenchmarkIterations));
-			Assert.AreEqual(current16_result, gBenchmarkUInt16);
-
-			TimeSpan current32 = Measure(() => gBenchmarkUInt32 = BenchmarkCurrentUInt32(kBenchmarkIterations));
-			uint current32_result = gBenchmarkUInt32;
-			TimeSpan bcl32 = Measure(() => gBenchmarkUInt32 = BenchmarkBclUInt32(kBenchmarkIterations));
-			Assert.AreEqual(current32_result, gBenchmarkUInt32);
-
-			TimeSpan current64 = Measure(() => gBenchmarkUInt64 = BenchmarkCurrentUInt64(kBenchmarkIterations));
-			ulong current64_result = gBenchmarkUInt64;
-			TimeSpan bcl64 = Measure(() => gBenchmarkUInt64 = BenchmarkBclUInt64(kBenchmarkIterations));
-			Assert.AreEqual(current64_result, gBenchmarkUInt64);
-
-			WriteBenchmarkResult("UInt16", current16, bcl16);
-			WriteBenchmarkResult("UInt32", current32, bcl32);
-			WriteBenchmarkResult("UInt64", current64, bcl64);
-		}
-
-		private static TimeSpan Measure(Action action)
-		{
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			GC.Collect();
-
-			var stopwatch = Stopwatch.StartNew();
-			action();
-			stopwatch.Stop();
-			return stopwatch.Elapsed;
-		}
-
-		private static void WarmUpBenchmarkPrototype()
-		{
-			gBenchmarkUInt16 = BenchmarkCurrentUInt16(kBenchmarkWarmupIterations);
-			gBenchmarkUInt16 = BenchmarkBclUInt16(kBenchmarkWarmupIterations);
-			gBenchmarkUInt32 = BenchmarkCurrentUInt32(kBenchmarkWarmupIterations);
-			gBenchmarkUInt32 = BenchmarkBclUInt32(kBenchmarkWarmupIterations);
-			gBenchmarkUInt64 = BenchmarkCurrentUInt64(kBenchmarkWarmupIterations);
-			gBenchmarkUInt64 = BenchmarkBclUInt64(kBenchmarkWarmupIterations);
-		}
-
-		private static ushort BenchmarkCurrentUInt16(int iterations)
-		{
-			ushort result = 0;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= ByteSwap.SwapUInt16(unchecked((ushort)x));
-			}
-
-			return result;
-		}
-
-		private static ushort BenchmarkBclUInt16(int iterations)
-		{
-			ushort result = 0;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= BinaryPrimitives.ReverseEndianness(unchecked((ushort)x));
-			}
-
-			return result;
-		}
-
-		private static uint BenchmarkCurrentUInt32(int iterations)
-		{
-			uint result = 0;
-			uint value = 0x12345678;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= ByteSwap.SwapUInt32(value + unchecked((uint)x));
-			}
-
-			return result;
-		}
-
-		private static uint BenchmarkBclUInt32(int iterations)
-		{
-			uint result = 0;
-			uint value = 0x12345678;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= BinaryPrimitives.ReverseEndianness(value + unchecked((uint)x));
-			}
-
-			return result;
-		}
-
-		private static ulong BenchmarkCurrentUInt64(int iterations)
-		{
-			ulong result = 0;
-			ulong value = 0x123456789ABCDEF0;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= ByteSwap.SwapUInt64(value + unchecked((uint)x));
-			}
-
-			return result;
-		}
-
-		private static ulong BenchmarkBclUInt64(int iterations)
-		{
-			ulong result = 0;
-			ulong value = 0x123456789ABCDEF0;
-			for (int x = 0; x < iterations; x++)
-			{
-				result ^= BinaryPrimitives.ReverseEndianness(value + unchecked((uint)x));
-			}
-
-			return result;
-		}
-
-		private void WriteBenchmarkResult(string name, TimeSpan current, TimeSpan bcl)
-		{
-			double ratio = bcl.TotalMilliseconds / current.TotalMilliseconds;
-			TestContext.WriteLine("{0}: current={1:F3} ms, BinaryPrimitives={2:F3} ms, bcl/current={3:F3}",
-				name, current.TotalMilliseconds, bcl.TotalMilliseconds, ratio);
-		}
-		#endregion
 	};
 }

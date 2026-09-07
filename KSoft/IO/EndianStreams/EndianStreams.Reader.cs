@@ -64,7 +64,7 @@ namespace KSoft.IO
 			var signature = this.ReadUInt32();
 			if (signature != expectedSignature)
 			{
-				var signatureInverted = Bitwise.ByteSwap.SwapUInt32(signature);
+				var signatureInverted = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(signature);
 				if (signatureInverted == expectedSignature)
 				{
 					actualSignature = signatureInverted;
@@ -156,7 +156,10 @@ namespace KSoft.IO
 		public uint ReadTagUInt32()
 		{
 			uint value = base.ReadUInt32();
-			if (mRequiresByteSwap)	Bitwise.ByteSwap.Swap(ref value);
+			if (mRequiresByteSwap)
+			{
+				value = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(value);
+			}
 
 			return value;
 		}
@@ -167,7 +170,10 @@ namespace KSoft.IO
 		public ulong ReadTagUInt64()
 		{
 			ulong value = base.ReadUInt64();
-			if (mRequiresByteSwap)	Bitwise.ByteSwap.Swap(ref value);
+			if (mRequiresByteSwap)
+			{
+				value = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(value);
+			}
 
 			return value;
 		}

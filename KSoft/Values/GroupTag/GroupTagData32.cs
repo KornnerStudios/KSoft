@@ -155,7 +155,7 @@ namespace KSoft.Values
 
 			if (!System.BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.Swap(ref value);
+				value = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(value);
 			}
 
 			return value;

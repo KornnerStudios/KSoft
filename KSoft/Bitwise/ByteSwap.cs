@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 
 
@@ -129,7 +130,7 @@ namespace KSoft.Bitwise
 			float value)
 		{
 			return BitConverter.UInt32BitsToSingle(
-				SwapUInt32(BitConverter.SingleToUInt32Bits(value)));
+				BinaryPrimitives.ReverseEndianness(BitConverter.SingleToUInt32Bits(value)));
 		}
 		/// <summary>Swaps a <see cref="Single" /> by reference</summary>
 		/// <param name="value"></param>
@@ -147,7 +148,7 @@ namespace KSoft.Bitwise
 			double value)
 		{
 			return BitConverter.UInt64BitsToDouble(
-				SwapUInt64(BitConverter.DoubleToUInt64Bits(value)));
+				BinaryPrimitives.ReverseEndianness(BitConverter.DoubleToUInt64Bits(value)));
 		}
 		/// <summary>Swaps a <see cref="Double" /> by reference</summary>
 		/// <param name="value"></param>

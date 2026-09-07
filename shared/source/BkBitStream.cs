@@ -804,7 +804,7 @@ namespace BKSystem.IO
 			_uiBitBuffer_Length = (uint)(bits.Length * KSoft.Bits.kByteBitCount);
 			Buffer.BlockCopy(bits, 0, _auiBitBuffer, 0, bits.Length);
 			for (int x = 0; x < _auiBitBuffer.Length; x++)
-				KSoft.Bitwise.ByteSwap.Swap(ref _auiBitBuffer[x]);
+				_auiBitBuffer[x] = System.Buffers.Binary.BinaryPrimitives.ReverseEndianness(_auiBitBuffer[x]);
 			this.Position = 0;
 		}
 		#endregion

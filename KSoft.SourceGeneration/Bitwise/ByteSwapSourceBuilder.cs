@@ -8,16 +8,10 @@ internal static class ByteSwapSourceBuilder
 {
 	public const string HintName = "KSoft.Bitwise.ByteSwap.g.cs";
 
-	private const string kBinaryPrimitivesShimComment =
-		"// #VITA_SHIM: Keep KSoft API while callers migrate to BinaryPrimitives.ReverseEndianness.";
-
 	// Mirrors KSoft.T4.Bitwise.BitwiseT4.ByteSwapableIntegers while deriving primitive metadata from NumberSpec,
 	// the Roslyn-side replacement for KSoft.T4.PrimitiveDefinitions.
 	private static readonly ByteSwapWordSpec[] kWordSpecs =
 		[
-			new(PrimitiveCatalog.NumberFor(TypeCode.UInt16)),
-			new(PrimitiveCatalog.NumberFor(TypeCode.UInt32)),
-			new(PrimitiveCatalog.NumberFor(TypeCode.UInt64)),
 			new(PrimitiveCatalog.NumberFor(TypeCode.UInt32), 24),
 			new(PrimitiveCatalog.NumberFor(TypeCode.UInt64), 40),
 		];
@@ -25,10 +19,8 @@ internal static class ByteSwapSourceBuilder
 	public static string Build()
 	{
 		var writer = new SourceWriter();
-
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
-		writer.WriteLine("using System.Buffers.Binary;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft.Bitwise");
 		writer.WriteLine();
@@ -104,17 +96,9 @@ internal static class ByteSwapSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			if (spec.IsUnnaturalWord)
-			{
-				writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
-				writer.WriteLine("return");
-				WriteUnnaturalSwapExpression(writer, spec);
-			}
-			else
-			{
-				writer.WriteLine(kBinaryPrimitivesShimComment);
-				writer.WriteLine("return BinaryPrimitives.ReverseEndianness(value);");
-			}
+			writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
+			writer.WriteLine("return");
+			WriteUnnaturalSwapExpression(writer, spec);
 		}
 	}
 
@@ -135,17 +119,9 @@ internal static class ByteSwapSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			if (spec.IsUnnaturalWord)
-			{
-				writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
-				writer.WriteLine("value =");
-				WriteUnnaturalSwapExpression(writer, spec);
-			}
-			else
-			{
-				writer.WriteLine(kBinaryPrimitivesShimComment);
-				writer.WriteLine("value = BinaryPrimitives.ReverseEndianness(value);");
-			}
+			writer.WriteLine("// #VITA_KEEP: 24/40-bit game-format widths have no BinaryPrimitives equivalent.");
+			writer.WriteLine("value =");
+			WriteUnnaturalSwapExpression(writer, spec);
 		}
 	}
 
