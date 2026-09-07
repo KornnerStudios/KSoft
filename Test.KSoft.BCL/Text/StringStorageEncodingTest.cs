@@ -120,11 +120,11 @@ namespace KSoft.Text.Test
 				pascalText,
 				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int8));
 			AssertBitStreamWriteBytes(
-				[0x00, 0x02, 0x41, 0xC3, 0xA9],
+				[0x02, 0x00, 0x41, 0xC3, 0xA9],
 				pascalText,
 				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int16));
 			AssertBitStreamWriteBytes(
-				[0x00, 0x00, 0x00, 0x02, 0x41, 0xC3, 0xA9],
+				[0x02, 0x00, 0x00, 0x00, 0x41, 0xC3, 0xA9],
 				pascalText,
 				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int32));
 

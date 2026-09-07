@@ -94,10 +94,12 @@ namespace KSoft.Text
 				case StringStorageLengthPrefix.Int8:	bytes[byteIndex] = (byte)charCount;
 					prefix_bytes = sizeof(byte); break;
 				case StringStorageLengthPrefix.Int16:	Bitwise.ByteSwap.ReplaceBytes(bytes, byteIndex, (short)charCount);
-														Bitwise.ByteSwap.SwapInt16(bytes, byteIndex);
+														if (!mStorage.ByteOrder.IsSameAsRuntime())
+															Bitwise.ByteSwap.SwapInt16(bytes, byteIndex);
 					prefix_bytes = sizeof(short); break;
 				case StringStorageLengthPrefix.Int32:	Bitwise.ByteSwap.ReplaceBytes(bytes, byteIndex, charCount);
-														Bitwise.ByteSwap.SwapInt32(bytes, byteIndex);
+														if (!mStorage.ByteOrder.IsSameAsRuntime())
+															Bitwise.ByteSwap.SwapInt32(bytes, byteIndex);
 					prefix_bytes = sizeof(int); break;
 				default:
 					throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString());

@@ -188,8 +188,42 @@ public class EndianStreamsTest : BaseTestClass
 				Memory.Strings.StringStorageType.CString, fixedLength: 4));
 
 		CollectionAssert.AreEqual(
-			new byte[] { 0x41, 0x42, 0x43, 0xC3, 0xA9, 0x00, 0x00, 0x02, 0x41, 0xC3, 0xA9, 0x41, 0x42, 0x43, 0x00 },
+			new byte[] { 0x41, 0x42, 0x43, 0xC3, 0xA9, 0x00, 0x02, 0x00, 0x41, 0xC3, 0xA9, 0x41, 0x42, 0x43, 0x00 },
 			stream.ToArray());
+	}
+
+	[TestMethod]
+	public void ReaderWriterPascalPrefixes_HonorStorageByteOrder()
+	{
+		var cases = new[] {
+			(Memory.Strings.StringStorageLengthPrefix.Int16, Shell.EndianFormat.Little,
+				new byte[] { 0x02, 0x00, 0x41, 0x42 }),
+			(Memory.Strings.StringStorageLengthPrefix.Int16, Shell.EndianFormat.Big,
+				new byte[] { 0x00, 0x02, 0x41, 0x42 }),
+			(Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Little,
+				new byte[] { 0x02, 0x00, 0x00, 0x00, 0x41, 0x42 }),
+			(Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big,
+				new byte[] { 0x00, 0x00, 0x00, 0x02, 0x41, 0x42 }),
+		};
+
+		foreach (var (prefix, byteOrder, expectedBytes) in cases)
+		{
+			var storage = new Memory.Strings.StringStorage(
+				Memory.Strings.StringStorageWidthType.Ascii, prefix, byteOrder);
+			var encoding = new Text.StringStorageEncoding(storage);
+			using var stream = new MemoryStream();
+			using (var writer = new EndianWriter(stream) { BaseStreamOwner = false })
+			{
+				writer.Write("AB".AsSpan(), encoding);
+			}
+
+			CollectionAssert.AreEqual(expectedBytes, stream.ToArray(), $"{prefix} {byteOrder}");
+
+			stream.Position = 0;
+			using var reader = new EndianReader(stream) { BaseStreamOwner = false };
+			Assert.AreEqual("AB", reader.ReadString(encoding), $"{prefix} {byteOrder}");
+			Assert.AreEqual(stream.Length, stream.Position, $"{prefix} {byteOrder}");
+		}
 	}
 
 	[TestMethod]
