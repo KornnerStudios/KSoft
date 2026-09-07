@@ -696,26 +696,30 @@ namespace KSoft.IO
 		#endregion
 
 		#region Stream Fixed Array
-		public int StreamableFixedArray<T, TContext>(TName elementName, T[] array,
+		public int StreamableFixedArray<T, TContext>(TName elementName, Span<T> values,
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
-			ArgumentNullException.ThrowIfNull(array);
 			ArgumentNullException.ThrowIfNull(ctor);
 
-			if (IsReading) return ReadFixedArray(elementName, array, ctxt, ctor);
-			else if (IsWriting) WriteStreamableElements(elementName, array);
+			if (IsReading)
+			{
+				return ReadFixedArray(elementName, values, ctxt, ctor);
+			}
+			else if (IsWriting)
+			{
+				WriteStreamableElements<T>(elementName, values);
+			}
 
-			return array.Length;
+			return values.Length;
 		}
-		public int StreamableFixedArray<T>(TName elementName, T[] array)
+		public int StreamableFixedArray<T>(TName elementName, Span<T> values)
 			where T : ITagElementStreamable<TName>, new()
 		{
 			ThrowIfInvalidNameArg(elementName, nameof(elementName));
-			ArgumentNullException.ThrowIfNull(array);
 
-			return StreamableFixedArray(elementName, array, (object)null!, (nil) => new T());
+			return StreamableFixedArray(elementName, values, (object)null!, (nil) => new T());
 		}
 		#endregion
 

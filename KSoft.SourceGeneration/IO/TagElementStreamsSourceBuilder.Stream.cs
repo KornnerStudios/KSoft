@@ -417,16 +417,15 @@ internal static partial class TagElementStreamsSourceBuilder
 			? ", numBase"
 			: "";
 
-		writer.WriteLine($"public int StreamFixedArray(TName name, {keyword}[] array{baseParameter})");
+		writer.WriteLine($"public int StreamFixedArray(TName name, Span<{keyword}> values{baseParameter})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
-			writer.WriteLine($"if (IsReading) {{ return ReadFixedArray(name, array{baseArgument}); }}");
-			writer.WriteLine($"else if (IsWriting) {{ WriteElements(name, array{baseArgument}); }}");
+			writer.WriteLine($"if (IsReading) {{ return ReadFixedArray(name, values{baseArgument}); }}");
+			writer.WriteLine($"else if (IsWriting) {{ WriteElements(name, values{baseArgument}); }}");
 			writer.WriteLine();
-			writer.WriteLine("return array.Length;");
+			writer.WriteLine("return values.Length;");
 		}
 	}
 };

@@ -403,27 +403,24 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		string keyword = typeSpec.Keyword;
 
-		writer.WriteLine($"int ReadFixedArray(IEnumerable<TCursor> elements, {keyword}[] array)");
+		writer.WriteLine($"int ReadFixedArray(IEnumerable<TCursor> elements, Span<{keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			WriteReadFixedArrayLoop(writer, "ReadCursor(ref array[count++]);");
+			WriteReadFixedArrayLoop(writer, "ReadCursor(ref values[count++]);");
 		}
 
-		writer.WriteLine($"public int ReadFixedArray({keyword}[] array)");
+		writer.WriteLine($"public int ReadFixedArray(Span<{keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("return ReadFixedArray(this.Elements, array);");
+			writer.WriteLine("return ReadFixedArray(this.Elements, values);");
 		}
 
-		writer.WriteLine($"public int ReadFixedArray(TName name, {keyword}[] array)");
+		writer.WriteLine($"public int ReadFixedArray(TName name, Span<{keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
-			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array);");
+			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), values);");
 		}
 	}
 
@@ -432,28 +429,25 @@ internal static partial class TagElementStreamsSourceBuilder
 		string keyword = typeSpec.Keyword;
 
 		writer.WriteLine(
-			$"int ReadFixedArray(IEnumerable<TCursor> elements, {keyword}[] array, NumeralBase fromBase = NumeralBase.Decimal)");
+			$"int ReadFixedArray(IEnumerable<TCursor> elements, Span<{keyword}> values, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			WriteReadFixedArrayLoop(writer, "ReadCursor(ref array[count++], fromBase);");
+			WriteReadFixedArrayLoop(writer, "ReadCursor(ref values[count++], fromBase);");
 		}
 
-		writer.WriteLine($"public int ReadFixedArray({keyword}[] array, NumeralBase fromBase = NumeralBase.Decimal)");
+		writer.WriteLine($"public int ReadFixedArray(Span<{keyword}> values, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("return ReadFixedArray(this.Elements, array, fromBase);");
+			writer.WriteLine("return ReadFixedArray(this.Elements, values, fromBase);");
 		}
 
 		writer.WriteLine(
-			$"public int ReadFixedArray(TName name, {keyword}[] array, NumeralBase fromBase = NumeralBase.Decimal)");
+			$"public int ReadFixedArray(TName name, Span<{keyword}> values, NumeralBase fromBase = NumeralBase.Decimal)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
 			writer.WriteLine("if (!ValidateNameArg(name)) { throw new ArgumentException(\"Invalid name.\", nameof(name)); }");
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine();
-			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), array, fromBase);");
+			writer.WriteLine("return ReadFixedArray(this.ElementsByName(name), values, fromBase);");
 		}
 	}
 
@@ -463,17 +457,16 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteLine("foreach (var node in elements)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
+			writer.WriteLine("if (count == values.Length)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine("break;");
+			}
+			writer.WriteLine();
 			writer.WriteLine("using (EnterCursorBookmark(node))");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
 				writer.WriteLine(readStatement);
-			}
-
-			writer.WriteLine();
-			writer.WriteLine("if (count == array.Length)");
-			using (writer.EnterBlock(SourceWriterBlockType.Braces))
-			{
-				writer.WriteLine("break;");
 			}
 		}
 

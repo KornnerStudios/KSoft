@@ -366,5 +366,19 @@ internal static partial class TagElementStreamsSourceBuilder
 				writer.WriteLine($"WriteElement(elementName, value{baseArgument});");
 			}
 		}
+
+		writer.WriteLine();
+		writer.WriteLine($"public void WriteElements(TName elementName, ReadOnlySpan<{keyword}> values{baseParameter})");
+		using (writer.EnterBlock(SourceWriterBlockType.Braces))
+		{
+			writer.WriteLine(
+				"if (!ValidateNameArg(elementName)) { throw new ArgumentException(\"Invalid name.\", nameof(elementName)); }");
+			writer.WriteLine();
+			writer.WriteLine("foreach (var value in values)");
+			using (writer.EnterBlock(SourceWriterBlockType.Braces))
+			{
+				writer.WriteLine($"WriteElement(elementName, value{baseArgument});");
+			}
+		}
 	}
 };

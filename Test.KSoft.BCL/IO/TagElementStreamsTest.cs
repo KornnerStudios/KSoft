@@ -24,6 +24,44 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		public string? Value { get; set; }
 	}
 
+	sealed class FixedArrayReferenceValue : ITagElementStreamable<string>
+	{
+		public int Value;
+
+		public FixedArrayReferenceValue()
+		{
+		}
+
+		public FixedArrayReferenceValue(int value)
+		{
+			Value = value;
+		}
+
+		public void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			s.StreamAttribute("value", ref Value);
+		}
+	}
+
+	struct FixedArrayValue : ITagElementStreamable<string>
+	{
+		public int Value;
+
+		public FixedArrayValue(int value)
+		{
+			Value = value;
+		}
+
+		public void Serialize<TDoc, TCursor>(TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			s.StreamAttribute("value", ref Value);
+		}
+	}
+
 	[TestMethod]
 	public void XmlElementStream_WriteGeneratedSurfaces_ProducesExpectedShape()
 	{
@@ -60,13 +98,14 @@ public sealed class TagElementStreamsTest : BaseTestClass
 	public void XmlElementStream_GeneratedCollectionSurfaces_StreamExpectedValues()
 	{
 		using var writeStream = XmlElementStream.CreateForWrite("root");
-		var writeValues = new List<int> { 10, 11 };
+		int[] writeValues = [-1, 10, 11, -2];
 		var streamValues = new List<int> { 12, 13 };
-		char[] letters = ['A', 'B'];
+		char[] letters = ['!', 'A', 'B', '?'];
 
-		writeStream.WriteElements("item", writeValues, NumeralBase.Hex);
+		writeStream.WriteElements("item", writeValues.AsSpan(1, 2), NumeralBase.Hex);
 		writeStream.StreamElements("streamed", streamValues, NumeralBase.Hex);
-		writeStream.StreamFixedArray("letter", letters);
+		Assert.AreEqual(0, writeStream.StreamFixedArray("unused", Span<char>.Empty));
+		Assert.AreEqual(2, writeStream.StreamFixedArray("letter", letters.AsSpan(1, 2)));
 
 		// Keep this XML whitespace-free: OuterXml is compared exactly and formatted raw strings change the shape.
 		const string expected =
@@ -77,18 +116,76 @@ public sealed class TagElementStreamsTest : BaseTestClass
 		using var readStream = CreateReadStream(writeStream.Document.OuterXml);
 		var readValues = new List<int>();
 		var readStreamValues = new List<int>();
-		char[] readLetters = new char[3];
+		char[] readLetters = ['!', default, default, '?'];
 
 		readStream.ReadElements("item", readValues, NumeralBase.Hex);
 		readStream.StreamElements("streamed", readStreamValues, NumeralBase.Hex);
-		int readLetterCount = readStream.ReadFixedArray("letter", readLetters);
+		Assert.AreEqual(0, readStream.ReadFixedArray("letter", Span<char>.Empty));
+		int readLetterCount = readStream.ReadFixedArray("letter", readLetters.AsSpan(1, 2));
 
-		CollectionAssert.AreEqual(writeValues, readValues);
+		CollectionAssert.AreEqual(writeValues[1..3], readValues);
 		CollectionAssert.AreEqual(streamValues, readStreamValues);
 		Assert.AreEqual(2, readLetterCount);
-		Assert.AreEqual('A', readLetters[0]);
-		Assert.AreEqual('B', readLetters[1]);
-		Assert.AreEqual(default, readLetters[2]);
+		Assert.AreEqual('!', readLetters[0]);
+		Assert.AreEqual('A', readLetters[1]);
+		Assert.AreEqual('B', readLetters[2]);
+		Assert.AreEqual('?', readLetters[3]);
+	}
+
+	[TestMethod]
+	public void XmlElementStream_StreamableFixedArray_RespectsSpanBoundaries()
+	{
+		using var writeStream = XmlElementStream.CreateForWrite("root");
+		FixedArrayReferenceValue[] referenceValues =
+		[
+			new(-1),
+			new(1),
+			new(2),
+			new(-2),
+		];
+		FixedArrayValue[] values = [new(-1), new(3), new(4), new(-2)];
+
+		Assert.AreEqual(
+			0,
+			writeStream.StreamableFixedArray("unused", Span<FixedArrayReferenceValue>.Empty));
+		Assert.AreEqual(
+			2,
+			writeStream.StreamableFixedArray("reference", referenceValues.AsSpan(1, 2)));
+		Assert.AreEqual(2, writeStream.StreamableFixedArray("value", values.AsSpan(1, 2)));
+
+		const string expected =
+			"""<root><reference value="1" /><reference value="2" />""" +
+			"""<value value="3" /><value value="4" /></root>""";
+		Assert.AreEqual(expected, writeStream.Document.OuterXml);
+
+		using var readStream = CreateReadStream(writeStream.Document.OuterXml);
+		FixedArrayReferenceValue[] readReferenceValues =
+		[
+			new(-1),
+			new(-10),
+			new(-20),
+			new(-2),
+		];
+		FixedArrayValue[] readValues = [new(-1), new(-10), new(-20), new(-2)];
+		var firstReference = readReferenceValues[0];
+		var lastReference = readReferenceValues[3];
+
+		Assert.AreEqual(
+			0,
+			readStream.StreamableFixedArray("reference", Span<FixedArrayReferenceValue>.Empty));
+		Assert.AreEqual(
+			2,
+			readStream.StreamableFixedArray("reference", readReferenceValues.AsSpan(1, 2)));
+		Assert.AreEqual(2, readStream.StreamableFixedArray("value", readValues.AsSpan(1, 2)));
+
+		Assert.AreSame(firstReference, readReferenceValues[0]);
+		Assert.AreEqual(1, readReferenceValues[1].Value);
+		Assert.AreEqual(2, readReferenceValues[2].Value);
+		Assert.AreSame(lastReference, readReferenceValues[3]);
+		Assert.AreEqual(-1, readValues[0].Value);
+		Assert.AreEqual(3, readValues[1].Value);
+		Assert.AreEqual(4, readValues[2].Value);
+		Assert.AreEqual(-2, readValues[3].Value);
 	}
 
 	[TestMethod]

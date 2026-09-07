@@ -434,47 +434,45 @@ namespace KSoft.IO
 		#endregion
 
 		#region Read Fixed Array
-		int ReadFixedArray<T, TContext>(IEnumerable<TCursor> elements, T[] array,
+		int ReadFixedArray<T, TContext>(IEnumerable<TCursor> elements, Span<T> values,
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			int count = 0;
 			foreach (var node in elements)
 			{
+				if (count == values.Length)
+				{
+					break;
+				}
+
 				using (EnterCursorBookmark(node))
 				{
 					var value = ctor(ctxt);
 					value.Serialize(this);
 
-					array[count++] = value;
-				}
-
-				if (count == array.Length)
-				{
-					break;
+					values[count++] = value;
 				}
 			}
 
 			return count;
 		}
-		public int ReadFixedArray<T, TContext>(T[] array,
+		public int ReadFixedArray<T, TContext>(Span<T> values,
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
-			ArgumentNullException.ThrowIfNull(array);
 			ArgumentNullException.ThrowIfNull(ctor);
 
-			return ReadFixedArray(this.Elements, array, ctxt, ctor);
+			return ReadFixedArray(this.Elements, values, ctxt, ctor);
 		}
-		public int ReadFixedArray<T, TContext>(TName name, T[] array,
+		public int ReadFixedArray<T, TContext>(TName name, Span<T> values,
 			TContext ctxt, Func<TContext, T> ctor)
 			where T : ITagElementStreamable<TName>
 		{
 			ThrowIfInvalidNameArg(name, nameof(name));
-			ArgumentNullException.ThrowIfNull(array);
 			ArgumentNullException.ThrowIfNull(ctor);
 
-			return ReadFixedArray(this.ElementsByName(name), array, ctxt, ctor);
+			return ReadFixedArray(this.ElementsByName(name), values, ctxt, ctor);
 		}
 		#endregion
 	};

@@ -266,6 +266,25 @@ namespace KSoft.IO
 				}
 			}
 		}
+
+		public void WriteStreamableElements<T>(TName elementName,
+			ReadOnlySpan<T> values,
+			Predicate<T>? shouldWritePredicate = null)
+			where T : ITagElementStreamable<TName>
+		{
+			ThrowIfInvalidNameArg(elementName, nameof(elementName));
+
+			foreach (var value in values)
+			{
+				if (shouldWritePredicate == null || shouldWritePredicate(value))
+				{
+					using (EnterCursorBookmark(elementName))
+					{
+						value.Serialize(this);
+					}
+				}
+			}
+		}
 		#endregion
 
 		#region WriteElements (IDictionary)
