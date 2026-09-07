@@ -264,7 +264,7 @@ namespace KSoft.Text
 				; x < (startIndex+count)
 				; x+=2, index++)
 			{
-				bytes[index] = (byte)CharsToByte(NumeralBase.Hex, data, x);
+				bytes[index] = (byte)CharsToByte(NumeralBase.Hex, data.AsSpan(x, 2));
 			}
 
 			return bytes;
@@ -491,32 +491,20 @@ namespace KSoft.Text
 		/// <summary>Convert a byte digit character pair to the byte they represent</summary>
 		/// <param name="radix">The base we're converting from</param>
 		/// <param name="data">Buffer that holds the byte digit character pair</param>
-		/// <param name="index">Index to start processing in <paramref name="data"/></param>
-		/// <returns></returns>
-		/// <remarks>Upper ('A') and lower ('a') case char digits map to the same int values</remarks>
-		public static int CharsToByte(NumeralBase radix, char[] data, int index = 0)
-		{
-			ArgumentNullException.ThrowIfNull(data);
-			ValidateStartIndex(data.Length, index, nameof(index));
-
-			return CharsToByte(radix, data[index], data[index+1]);
-		}
-		/// <summary>Convert a byte digit character pair to the byte they represent</summary>
-		/// <param name="radix">The base we're converting from</param>
-		/// <param name="data">Buffer that holds the byte digit character pair</param>
-		/// <param name="index">Index to start processing in <paramref name="data"/></param>
 		/// <returns></returns>
 		/// <remarks>Upper ('A') and lower ('a') case char digits map to the same int values</remarks>
 		/// <example>
-		/// int b = CharsToByte(NumeralBase.Hex, "3F");
+		/// int b = CharsToByte(NumeralBase.Hex, "3F".AsSpan());
 		/// b == 63;
 		/// </example>
-		public static int CharsToByte(NumeralBase radix, string data, int index = 0)
+		public static int CharsToByte(NumeralBase radix, ReadOnlySpan<char> data)
 		{
-			ArgumentNullException.ThrowIfNull(data);
-			ValidateStartIndex(data.Length, index, nameof(index));
+			if (data.Length < 2)
+			{
+				throw new ArgumentException("At least two characters are required.", nameof(data));
+			}
 
-			return CharsToByte(radix, data[index], data[index+1]);
+			return CharsToByte(radix, data[0], data[1]);
 		}
 		#endregion
 	};

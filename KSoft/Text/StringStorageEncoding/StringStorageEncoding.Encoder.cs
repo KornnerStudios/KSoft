@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Text
 {
@@ -85,23 +84,23 @@ namespace KSoft.Text
 		}
 
 		#region Encode StringStorageType Data Prefix
-		int EncStringStorageTypePrefixPascalData(int charCount, byte[] bytes, int byteIndex)
+		int EncStringStorageTypePrefixPascalData(int charCount, Span<byte> bytes)
 		{
 			int prefix_bytes;
 			switch (mStorage.LengthPrefix)
 			{
-				case StringStorageLengthPrefix.Int7:	prefix_bytes = Bitwise.Encoded7BitInt.Write(bytes.AsSpan(byteIndex), charCount); break;
-				case StringStorageLengthPrefix.Int8:	bytes[byteIndex] = (byte)charCount;
+				case StringStorageLengthPrefix.Int7:	prefix_bytes = Bitwise.Encoded7BitInt.Write(bytes, charCount); break;
+				case StringStorageLengthPrefix.Int8:	bytes[0] = (byte)charCount;
 					prefix_bytes = sizeof(byte); break;
 				case StringStorageLengthPrefix.Int16:	BitConverter.TryWriteBytes(
-															bytes.AsSpan(byteIndex, sizeof(short)), (short)charCount);
+															bytes[..sizeof(short)], (short)charCount);
 														if (!mStorage.ByteOrder.IsSameAsRuntime())
-															bytes.AsSpan(byteIndex, sizeof(short)).Reverse();
+															bytes[..sizeof(short)].Reverse();
 					prefix_bytes = sizeof(short); break;
 				case StringStorageLengthPrefix.Int32:	BitConverter.TryWriteBytes(
-															bytes.AsSpan(byteIndex, sizeof(int)), charCount);
+															bytes[..sizeof(int)], charCount);
 														if (!mStorage.ByteOrder.IsSameAsRuntime())
-															bytes.AsSpan(byteIndex, sizeof(int)).Reverse();
+															bytes[..sizeof(int)].Reverse();
 					prefix_bytes = sizeof(int); break;
 				default:
 					throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString());
@@ -109,31 +108,17 @@ namespace KSoft.Text
 
 			return prefix_bytes;
 		}
-		/// <summary>Encode any prefix related data for the <see cref="StringStorageType"/> into a byte array</summary>
-		/// <param name="chars">The character array containing the set of characters to encode</param>
-		/// <param name="charIndex">The index of the first character to encode</param>
+		/// <summary>Encode any prefix related data for the <see cref="StringStorageType"/> into a byte span</summary>
 		/// <param name="charCount">The number of characters to encode</param>
-		/// <param name="bytes">The byte array to contain the resulting sequence of bytes</param>
-		/// <param name="byteIndex">The index at which to start writing the resulting sequence of bytes</param>
+		/// <param name="bytes">The destination for the resulting sequence of bytes</param>
 		/// <returns>Number of prefix bytes written into <paramref name="bytes"/></returns>
-		int EncodeStringStorageTypePrefixData(
-			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
-			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			char[] chars,
-			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
-			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			int charIndex,
-			int charCount, byte[] bytes, int byteIndex)
-		{
-			return EncodeStringStorageTypePrefixData(charCount, bytes, byteIndex);
-		}
-		int EncodeStringStorageTypePrefixData(int charCount, byte[] bytes, int byteIndex)
+		int EncodeStringStorageTypePrefixData(int charCount, Span<byte> bytes)
 		{
 			return mStorage.Type switch
 			{
 				// No prefix for CString
 				StringStorageType.CString => 0,
-				StringStorageType.Pascal => EncStringStorageTypePrefixPascalData(charCount, bytes, byteIndex),
+				StringStorageType.Pascal => EncStringStorageTypePrefixPascalData(charCount, bytes),
 				// CharArray doesn't do anything anyway
 				StringStorageType.CharArray => 0,
 				_ => throw new Debug.UnreachableException(mStorage.Type.ToString()),
@@ -142,42 +127,20 @@ namespace KSoft.Text
 		#endregion
 
 		#region Encode StringStorageType Data Postfix
-		int EncStringStoragePostfixCStringData(byte[] bytes, int byteIndex)
+		int EncStringStoragePostfixCStringData(Span<byte> bytes)
 		{
-			int endIndex = byteIndex + mNullCharacterSize;
-			for (int x = byteIndex; x < endIndex; x++)
-			{
-				bytes[x] = 0;
-			}
+			bytes[..mNullCharacterSize].Clear();
 
 			return mNullCharacterSize; // number of bytes written into [bytes]
 		}
-		/// <summary>Encode any additional <see cref="StringStorageType"/> related data into a byte array</summary>
-		/// <param name="chars">The character array containing the set of characters to encode</param>
-		/// <param name="charIndex">The index of the first character to encode</param>
-		/// <param name="charCount">The number of characters to encode</param>
-		/// <param name="bytes">The byte array to contain the resulting sequence of bytes</param>
-		/// <param name="byteIndex">The index at which to start writing the resulting sequence of postfix bytes</param>
+		/// <summary>Encode any additional <see cref="StringStorageType"/> related data into a byte span</summary>
+		/// <param name="bytes">The destination for the resulting sequence of postfix bytes</param>
 		/// <returns>The actual number of bytes written into <paramref name="bytes"/></returns>
-		int EncodeStringStorageTypePostfixData(
-			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
-			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			char[] chars,
-			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
-			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			int charIndex,
-			[SuppressMessage("Microsoft.Design", "CA1801:ReviewUnusedParameters")]
-			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			int charCount,
-			byte[] bytes, int byteIndex)
-		{
-			return EncodeStringStorageTypePostfixData(bytes, byteIndex);
-		}
-		int EncodeStringStorageTypePostfixData(byte[] bytes, int byteIndex)
+		int EncodeStringStorageTypePostfixData(Span<byte> bytes)
 		{
 			return mStorage.Type switch
 			{
-				StringStorageType.CString => EncStringStoragePostfixCStringData(bytes, byteIndex),
+				StringStorageType.CString => EncStringStoragePostfixCStringData(bytes),
 				// No postfix for Pascal
 				StringStorageType.Pascal => 0,
 				// CharArray doesn't do anything anyway
@@ -228,13 +191,14 @@ namespace KSoft.Text
 			public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex, bool flush)
 			{
 				// Add our String Storage calculations
-				int bytes_written = mEncoding.EncodeStringStorageTypePrefixData(chars, charCount, charCount, bytes, byteIndex);
+				int bytes_written = mEncoding.EncodeStringStorageTypePrefixData(
+					charCount, bytes.AsSpan(byteIndex));
 
 				bytes_written += mEnc.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written, mEncoding.DontAlwaysFlush ? flush : true);
 
 				// Add our String Storage calculations
 				bytes_written += mEncoding.EncodeStringStorageTypePostfixData(
-					chars, charIndex, charCount, bytes, byteIndex + bytes_written);
+					bytes.AsSpan(byteIndex + bytes_written));
 
 				return bytes_written;
 			}
@@ -252,10 +216,10 @@ namespace KSoft.Text
 
 			int base_byte_count = mBaseEncoding.GetByteCount(chars);
 			byte[] bytes = new byte[CalculateByteCount(base_byte_count)];
-			int bytes_written = EncodeStringStorageTypePrefixData(chars.Length, bytes, 0);
+			int bytes_written = EncodeStringStorageTypePrefixData(chars.Length, bytes.AsSpan());
 
 			bytes_written += mBaseEncoding.GetBytes(chars, bytes.AsSpan(bytes_written));
-			EncodeStringStorageTypePostfixData(bytes, bytes_written);
+			EncodeStringStorageTypePostfixData(bytes.AsSpan(bytes_written));
 
 			return bytes;
 		}

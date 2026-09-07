@@ -108,13 +108,13 @@ namespace KSoft.Text
 			ClampCharCount(ref charCount);
 
 			// Add our String Storage calculations
-			int bytes_written = EncodeStringStorageTypePrefixData(chars, charIndex, charCount, bytes, byteIndex);
+			int bytes_written = EncodeStringStorageTypePrefixData(charCount, bytes.AsSpan(byteIndex));
 
 			bytes_written += mBaseEncoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written);
 
 			// Add our String Storage calculations
 			bytes_written += EncodeStringStorageTypePostfixData(
-				chars, charIndex, charCount, bytes, byteIndex + bytes_written);
+				bytes.AsSpan(byteIndex + bytes_written));
 
 			return bytes_written;
 		}

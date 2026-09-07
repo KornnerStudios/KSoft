@@ -155,12 +155,8 @@ namespace KSoft.Text.Test
 			AssertThrowsArgumentNull("data", () => Util.ByteArrayToAlignedOutput(null!, writer));
 			AssertThrowsArgumentOutOfRange("digitsPerLine", () => Util.ByteArrayToAlignedOutput([0], writer, digitsPerLine: 1));
 			AssertThrowsArgument("digitsPerLine", () => Util.ByteArrayToAlignedOutput([0], writer, digitsPerLine: 3));
-			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (char[])null!));
-			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, ['0', '0'], -1));
-			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, ['0', '0'], 2));
-			AssertThrowsArgumentNull("data", () => _ = Util.CharsToByte(NumeralBase.Hex, (string)null!));
-			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, "00", -1));
-			AssertThrowsArgumentOutOfRange("index", () => _ = Util.CharsToByte(NumeralBase.Hex, "00", 2));
+			AssertThrowsArgument("data", () => _ = Util.CharsToByte(NumeralBase.Hex, ""));
+			AssertThrowsArgument("data", () => _ = Util.CharsToByte(NumeralBase.Hex, "0"));
 		}
 
 		[TestMethod]
@@ -343,7 +339,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void CharsToByte_ArrayStringAndOffsets_ReturnsExpectedByte()
+		public void CharsToByte_ScalarAndSpanSlices_ReturnExpectedByte()
 		{
 			const int k_expected_0 = 51; // result expected when using chars starting at index 0
 			const int k_expected_1 = 63; // result expected when using chars starting at index 1
@@ -352,12 +348,12 @@ namespace KSoft.Text.Test
 			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, chars[0], chars[1]));
 			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, chars[1], chars[2]));
 
-			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, chars));
-			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, chars, 1));
+			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, chars.AsSpan(0, 2)));
+			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, chars.AsSpan(1, 2)));
 
 			var str = new string(chars);
-			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, str));
-			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, str, 1));
+			Assert.AreEqual(k_expected_0, Util.CharsToByte(NumeralBase.Hex, str.AsSpan(0, 2)));
+			Assert.AreEqual(k_expected_1, Util.CharsToByte(NumeralBase.Hex, str.AsSpan(1, 2)));
 		}
 	};
 }
