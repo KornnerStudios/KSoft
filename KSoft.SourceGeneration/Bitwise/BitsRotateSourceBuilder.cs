@@ -14,7 +14,6 @@ internal static class BitsRotateSourceBuilder
 
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
-		writer.WriteLine("using System.Numerics;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
@@ -22,6 +21,11 @@ internal static class BitsRotateSourceBuilder
 		{
 			foreach (NumberSpec typeSpec in PrimitiveCatalog.BittableTypesUnsigned)
 			{
+				if (UsesBitOperations(typeSpec))
+				{
+					continue;
+				}
+
 				WriteRotateMethod(writer, typeSpec, "RotateLeft", "<<", ">>");
 				WriteRotateMethod(writer, typeSpec, "RotateRight", ">>", "<<");
 				writer.WriteLine();
@@ -48,20 +52,12 @@ internal static class BitsRotateSourceBuilder
 			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(shift, {bitCountConstantName});");
 			writer.WriteLine();
 
-			if (UsesBitOperations(typeSpec))
-			{
-				writer.WriteLine($"// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.{methodName}.");
-				writer.WriteLine($"return BitOperations.{methodName}(x, shift);");
-			}
-			else
-			{
-				// BitOperations only exposes 32/64-bit rotates; byte and ushort must wrap inside their own width.
-				writer.WriteLine("// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.");
-				string rotateExpression =
-					$"return ({typeSpec.Keyword})( (x {firstShiftOperator} shift) " +
-					$"| (x {secondShiftOperator} ({bitCountConstantName} - shift)) );";
-				writer.WriteLine(rotateExpression);
-			}
+			// BitOperations only exposes 32/64-bit rotates; byte and ushort must wrap inside their own width.
+			writer.WriteLine("// #VITA_KEEP: byte/ushort rotates are width-specific; BitOperations exposes 32/64-bit rotates.");
+			string rotateExpression =
+				$"return ({typeSpec.Keyword})( (x {firstShiftOperator} shift) " +
+				$"| (x {secondShiftOperator} ({bitCountConstantName} - shift)) );";
+			writer.WriteLine(rotateExpression);
 		}
 	}
 

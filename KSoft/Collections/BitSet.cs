@@ -63,8 +63,8 @@ namespace KSoft.Collections
 			// Big:    Bits go from MSB->LSB, so we want to count the 'left most' zeros
 			// Little: Bits go from LSB->MSB, so we want to count the 'right most' zeros
 			kCountZerosForNextBit = Bits.kVectorWordFormat == Shell.EndianFormat.Big
-				? (Func<TWord,byte>)Bits.LeadingZerosCount   // Big Endian
-				: (Func<TWord,byte>)Bits.TrailingZerosCount; // Little Endian
+				? value => (byte)System.Numerics.BitOperations.LeadingZeroCount(value)   // Big Endian
+				: value => (byte)System.Numerics.BitOperations.TrailingZeroCount(value); // Little Endian
 //#pragma warning restore 0162
 		}
 
@@ -337,11 +337,13 @@ namespace KSoft.Collections
 		#region RecalculateCardinality
 		/// <summary>Update <see cref="Cardinality"/> for an individual word in the underlying array</summary>
 		/// <param name="wordIndex"></param>
-		void RecalculateCardinalityRound(int wordIndex)		=> Cardinality += Bits.BitCount(mArray[wordIndex]);
+		void RecalculateCardinalityRound(int wordIndex)		=>
+			Cardinality += System.Numerics.BitOperations.PopCount(mArray[wordIndex]);
 
 		/// <summary>Undo a previous <see cref="RecalculateCardinalityRound"/> for an individual word in the underlying array</summary>
 		/// <param name="wordIndex"></param>
-		void RecalculateCardinalityUndoRound(int wordIndex)	=> Cardinality -= Bits.BitCount(mArray[wordIndex]);
+		void RecalculateCardinalityUndoRound(int wordIndex)	=>
+			Cardinality -= System.Numerics.BitOperations.PopCount(mArray[wordIndex]);
 
 		void RecalculateCardinalityFinishRounds(int startWordIndex)
 		{

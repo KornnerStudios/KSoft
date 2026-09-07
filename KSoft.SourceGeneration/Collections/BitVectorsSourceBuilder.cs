@@ -95,7 +95,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteAttribute("SuppressMessage(\"Performance\", \"CA1822:Mark members as static\")");
 		writer.WriteLine("public readonly int Length => kNumberOfBits;");
 		writer.WriteXmlDocSummary("Number of bits set to true");
-		writer.WriteLine("public readonly int Cardinality => Bits.BitCount(mWord);");
+		writer.WriteLine("public readonly int Cardinality => System.Numerics.BitOperations.PopCount(mWord);");
 		writer.WriteXmlDocSummary("Number of bits set to false");
 		writer.WriteLine("public readonly int CardinalityZeros => Length - Cardinality;");
 		writer.WriteLine();
@@ -104,7 +104,7 @@ internal static class BitVectorsSourceBuilder
 		writer.WriteXmlDocSummary("Are all the bits in this set currently true?");
 		writer.WriteLine($"public readonly bool IsAllSet => mWord == {spec.WordKeyword}.MaxValue;");
 		writer.WriteLine();
-		writer.WriteLine("public readonly int TrailingZerosCount => Bits.TrailingZerosCount(mWord);");
+		writer.WriteLine("public readonly int TrailingZerosCount => System.Numerics.BitOperations.TrailingZeroCount(mWord);");
 		writer.WriteLine("public readonly int IndexOfHighestBitSet => Bits.IndexOfHighestBitSet(mWord);");
 	}
 

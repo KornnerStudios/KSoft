@@ -268,7 +268,7 @@ namespace KSoft
 		/// <returns>Number of leading zeros, from 0 through <see cref="kByteBitCount"/>.</returns>
 		public static byte LeadingZerosCount(byte value)
 		{
-			// #VITA_SHIM: Keep KSoft's byte-width result while using the BCL 32-bit primitive.
+			// #VITA_KEEP: BitOperations exposes 32/64-bit counts; adjust the result to byte width.
 			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 3) );
 		}
 		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
@@ -276,43 +276,8 @@ namespace KSoft
 		/// <returns>Number of leading zeros, from 0 through <see cref="kInt16BitCount"/>.</returns>
 		public static byte LeadingZerosCount(ushort value)
 		{
-			// #VITA_SHIM: Keep KSoft's ushort-width result while using the BCL 32-bit primitive.
+			// #VITA_KEEP: BitOperations exposes 32/64-bit counts; adjust the result to ushort width.
 			return (byte)( BitOperations.LeadingZeroCount((uint)value) - (kByteBitCount * 2) );
-		}
-		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Number of leading zeros, from 0 through <see cref="kInt32BitCount"/>.</returns>
-		public static byte LeadingZerosCount(uint value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
-			return (byte)BitOperations.LeadingZeroCount(value);
-		}
-		/// <summary>Count the "leftmost" consecutive zero bits (leading) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Number of leading zeros, from 0 through <see cref="kInt64BitCount"/>.</returns>
-		public static byte LeadingZerosCount(ulong value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.LeadingZeroCount.
-			return (byte)BitOperations.LeadingZeroCount(value);
-		}
-		#endregion
-
-		#region TrailingZerosCount
-		/// <summary>Count the "rightmost" consecutive zero bits (trailing) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Number of trailing zeros, from 0 through <see cref="kInt32BitCount"/>.</returns>
-		public static byte TrailingZerosCount(uint value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
-			return (byte)BitOperations.TrailingZeroCount(value);
-		}
-		/// <summary>Count the "rightmost" consecutive zero bits (trailing) in an unsigned integer</summary>
-		/// <param name="value"></param>
-		/// <returns>Number of trailing zeros, from 0 through <see cref="kInt64BitCount"/>.</returns>
-		public static byte TrailingZerosCount(ulong value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.TrailingZeroCount.
-			return (byte)BitOperations.TrailingZeroCount(value);
 		}
 		#endregion
 

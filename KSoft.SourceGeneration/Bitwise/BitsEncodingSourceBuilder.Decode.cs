@@ -115,7 +115,7 @@ internal static partial class BitsEncodingSourceBuilder
 			WriteBitIndexContracts(writer, wordSpec);
 			WriteBitMaskContract(writer);
 			writer.WriteLine();
-			writer.WriteLine("int bit_count = BitCount(bitMask);");
+			writer.WriteLine("int bit_count = System.Numerics.BitOperations.PopCount(bitMask);");
 			WriteBitCountAssert(writer, wordSpec);
 			writer.WriteLine();
 			writer.WriteLine("var value = (bits >> bitIndex) & bitMask;");

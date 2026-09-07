@@ -189,7 +189,7 @@ internal static partial class BitsEncodingSourceBuilder
 
 	private static void WriteBitEncodeRefCore(SourceWriter writer, NumberSpec wordSpec, string methodName)
 	{
-		writer.WriteLine("int bit_count = BitCount(bitMask);");
+		writer.WriteLine("int bit_count = System.Numerics.BitOperations.PopCount(bitMask);");
 		WriteBitCountAssert(writer, wordSpec);
 		writer.WriteLine();
 		writer.WriteLine($"bits = {methodName}(value, bits, bitIndex, bitMask);");

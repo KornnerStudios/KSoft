@@ -314,7 +314,7 @@ internal static class EnumSourceBuilder
 			{
 				writer.WriteLine("kBitmask = Bits.GetBitmaskEnum(kHasNone ? kMaxValue+1 : kMaxValue);");
 			}
-			writer.WriteLine("kBitCount = Bits.BitCount(kBitmask);");
+			writer.WriteLine("kBitCount = System.Numerics.BitOperations.PopCount(kBitmask);");
 		}
 	}
 

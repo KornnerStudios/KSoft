@@ -14,24 +14,11 @@ internal static class BitsBitCountSourceBuilder
 
 		writer.WriteGeneratedFileHeader();
 		writer.WriteLine("using System;");
-		writer.WriteLine("using System.Numerics;");
 		writer.WriteLine();
 		writer.WriteFileScopedNamespace("KSoft");
 		writer.WriteLine();
 		using (writer.EnterTypeDeclaration("partial class Bits"))
 		{
-			foreach (NumberSpec typeSpec in PrimitiveCatalog.BittableTypesUnsigned)
-			{
-				if (typeSpec.TypeCode == TypeCode.UInt16)
-				{
-					// Match the active T4 output: ushort only existed in the disabled pre-BitOperations block.
-					continue;
-				}
-
-				WriteBitCountMethod(writer, typeSpec);
-				writer.WriteLine();
-			}
-
 			foreach (NumberSpec typeSpec in PrimitiveCatalog.BittableTypesMajorWords)
 			{
 				WriteBitCountToMaskMethod(writer, typeSpec);
@@ -40,20 +27,6 @@ internal static class BitsBitCountSourceBuilder
 		}
 
 		return writer.ToString();
-	}
-
-	private static void WriteBitCountMethod(SourceWriter writer, NumberSpec typeSpec)
-	{
-		writer.WriteXmlDocSummary("Count the number of 'on' bits in an unsigned integer");
-		writer.WriteXmlDocParam("bits", "Integer whose bits to count");
-		writer.WriteXmlDocReturns();
-		writer.WritePurityAnnotation();
-		writer.WriteLine($"public static int BitCount({typeSpec.Keyword} bits)");
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("// #VITA_SHIM: Keep KSoft API while callers migrate to BitOperations.PopCount.");
-			writer.WriteLine("return BitOperations.PopCount(bits);");
-		}
 	}
 
 	private static void WriteBitCountToMaskMethod(SourceWriter writer, NumberSpec typeSpec)

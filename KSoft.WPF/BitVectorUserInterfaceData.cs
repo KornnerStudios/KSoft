@@ -212,7 +212,7 @@ namespace KSoft.WPF
 			foreach (var bit_field_info in bit_field_infos)
 			{
 				ulong flag = Convert.ToUInt64(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
-				if (Bits.BitCount(flag) > 0)
+				if (System.Numerics.BitOperations.PopCount(flag) > 0)
 				{
 					continue;
 				}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test
@@ -89,64 +88,7 @@ namespace KSoft.Bitwise.Test
 		}
 		#endregion
 
-		#region BitCount
-		[TestMethod]
-		public void BitCount_RepresentativeValues_ReturnsExpectedCounts()
-		{
-			Assert.AreEqual(0, Bits.BitCount(byte.MinValue));
-			Assert.AreEqual(Bits.kByteBitCount / 2, Bits.BitCount( unchecked((byte)kEvenBits) ));
-			Assert.AreEqual(Bits.kByteBitCount / 2, Bits.BitCount( unchecked((byte)kOddBits) ));
-			Assert.AreEqual(Bits.kByteBitCount / 2, Bits.BitCount( unchecked((byte)kEvenNybbles) ));
-			Assert.AreEqual(Bits.kByteBitCount / 2, Bits.BitCount( unchecked((byte)kOddNybbles) ));
-			Assert.AreEqual(Bits.kByteBitCount, Bits.BitCount(byte.MaxValue));
-
-			Assert.AreEqual(0, Bits.BitCount(ushort.MinValue));
-			Assert.AreEqual(Bits.kInt16BitCount / 2, Bits.BitCount( unchecked((ushort)kEvenBits) ));
-			Assert.AreEqual(Bits.kInt16BitCount / 2, Bits.BitCount( unchecked((ushort)kOddBits) ));
-			Assert.AreEqual(Bits.kInt16BitCount / 2, Bits.BitCount( unchecked((ushort)kEvenNybbles) ));
-			Assert.AreEqual(Bits.kInt16BitCount / 2, Bits.BitCount( unchecked((ushort)kOddNybbles) ));
-			Assert.AreEqual(Bits.kInt16BitCount, Bits.BitCount(ushort.MaxValue));
-
-			Assert.AreEqual(0, Bits.BitCount(uint.MinValue));
-			Assert.AreEqual(Bits.kInt32BitCount / 2, Bits.BitCount( unchecked((uint)kEvenBits) ));
-			Assert.AreEqual(Bits.kInt32BitCount / 2, Bits.BitCount( unchecked((uint)kOddBits) ));
-			Assert.AreEqual(Bits.kInt32BitCount / 2, Bits.BitCount( unchecked((uint)kEvenNybbles) ));
-			Assert.AreEqual(Bits.kInt32BitCount / 2, Bits.BitCount( unchecked((uint)kOddNybbles) ));
-			Assert.AreEqual(Bits.kInt32BitCount, Bits.BitCount(uint.MaxValue));
-
-			Assert.AreEqual(0, Bits.BitCount(ulong.MinValue));
-			Assert.AreEqual(Bits.kInt64BitCount / 2, Bits.BitCount( unchecked((ulong)kEvenBits) ));
-			Assert.AreEqual(Bits.kInt64BitCount / 2, Bits.BitCount( unchecked((ulong)kOddBits) ));
-			Assert.AreEqual(Bits.kInt64BitCount / 2, Bits.BitCount( unchecked((ulong)kEvenNybbles) ));
-			Assert.AreEqual(Bits.kInt64BitCount / 2, Bits.BitCount( unchecked((ulong)kOddNybbles) ));
-			Assert.AreEqual(Bits.kInt64BitCount, Bits.BitCount(ulong.MaxValue));
-		}
-		[TestMethod]
-		public void Bits_BitCountTest2()
-		{
-			{
-				const ulong kBitCountValue = 0xAAAAAAAAAAAAAAAA;
-				int i32;
-				int expected_bit_count;
-
-				expected_bit_count = Bits.kByteBitCount / 2;	i32 = Bits.BitCount(unchecked((byte)kBitCountValue));
-				Assert.AreEqual(expected_bit_count, i32);
-				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((byte)kBitCountValue)), i32);
-
-				expected_bit_count = Bits.kInt16BitCount / 2;	i32 = Bits.BitCount(unchecked((ushort)kBitCountValue));
-				Assert.AreEqual(expected_bit_count, i32);
-				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((ushort)kBitCountValue)), i32);
-
-				expected_bit_count = Bits.kInt32BitCount / 2;	i32 = Bits.BitCount(unchecked((uint)kBitCountValue));
-				Assert.AreEqual(expected_bit_count, i32);
-				Assert.AreEqual(System.Numerics.BitOperations.PopCount(unchecked((uint)kBitCountValue)), i32);
-
-				expected_bit_count = Bits.kInt64BitCount / 2;	i32 = Bits.BitCount(kBitCountValue);
-				Assert.AreEqual(expected_bit_count, i32);
-				Assert.AreEqual(System.Numerics.BitOperations.PopCount(kBitCountValue), i32);
-			}
-		}
-
+		#region BitCountToMask
 		[TestMethod]
 		public void BitCountToMask_RepresentativeCounts_ReturnsExpectedMasks()
 		{
@@ -301,28 +243,6 @@ namespace KSoft.Bitwise.Test
 
 		#region Rotate
 		[TestMethod]
-		public void Rotate_MajorIntegerWidths_MatchesBitOperations()
-		{
-			const uint kUInt32Value = 0x81234567U;
-			foreach (int shift in new[] { 0, 1, 7, 16, Bits.kInt32BitCount-1 })
-			{
-				Assert.AreEqual(BitOperations.RotateLeft(kUInt32Value, shift), Bits.RotateLeft(kUInt32Value, shift),
-					$"uint left shift={shift}");
-				Assert.AreEqual(BitOperations.RotateRight(kUInt32Value, shift), Bits.RotateRight(kUInt32Value, shift),
-					$"uint right shift={shift}");
-			}
-
-			const ulong kUInt64Value = 0x8123456789ABCDEFUL;
-			foreach (int shift in new[] { 0, 1, 7, 32, Bits.kInt64BitCount-1 })
-			{
-				Assert.AreEqual(BitOperations.RotateLeft(kUInt64Value, shift), Bits.RotateLeft(kUInt64Value, shift),
-					$"ulong left shift={shift}");
-				Assert.AreEqual(BitOperations.RotateRight(kUInt64Value, shift), Bits.RotateRight(kUInt64Value, shift),
-					$"ulong right shift={shift}");
-			}
-		}
-
-		[TestMethod]
 		public void Rotate_NarrowIntegerWidths_StaysWithinWidth()
 		{
 			// BitOperations only exposes 32/64-bit rotates. These assertions catch accidental use for byte/ushort,
@@ -361,54 +281,6 @@ namespace KSoft.Bitwise.Test
 			Assert.AreEqual(1, (int)Bits.LeadingZerosCount((ushort)0x4000));
 		}
 
-		[TestMethod]
-		public void TrailingZerosCount_IntegerWidths_MatchesBitOperations()
-		{
-			foreach (uint value in new[] { 0U, 1U, 0x10U, 0x80000000U, 0xF0001000U, uint.MaxValue })
-			{
-				Assert.AreEqual(BitOperations.TrailingZeroCount(value), (int)Bits.TrailingZerosCount(value),
-					$"uint value=0x{value:X8}");
-			}
-
-			foreach (ulong value in new[] { 0UL, 1UL, 0x10UL, 0x8000000000000000UL, 0xF000100000000000UL,
-				ulong.MaxValue })
-			{
-				Assert.AreEqual(BitOperations.TrailingZeroCount(value), (int)Bits.TrailingZerosCount(value),
-					$"ulong value=0x{value:X16}");
-			}
-		}
-
-		[TestMethod]
-		public void LeadingZerosCount_RepresentativeValues_ReturnsExpectedCounts()
-		{
-			Assert.AreEqual(Bits.kInt32BitCount, Bits.LeadingZerosCount(uint.MinValue));
-			for (uint x = 0, bits = uint.MaxValue; x < Bits.kInt32BitCount; x++, bits >>= 1)
-			{
-				Assert.AreEqual(x, (uint)Bits.LeadingZerosCount(bits));
-			}
-
-			Assert.AreEqual(Bits.kInt64BitCount, Bits.LeadingZerosCount(ulong.MinValue));
-			for (ulong x = 0, bits = ulong.MaxValue; x < Bits.kInt64BitCount; x++, bits >>= 1)
-			{
-				Assert.AreEqual(x, (ulong)Bits.LeadingZerosCount(bits));
-			}
-		}
-
-		[TestMethod]
-		public void TrailingZerosCount_RepresentativeValues_ReturnsExpectedCounts()
-		{
-			Assert.AreEqual(Bits.kInt32BitCount, Bits.TrailingZerosCount(uint.MinValue));
-			for (uint x = 0, bits = 1; x < Bits.kInt32BitCount; x++, bits <<= 1)
-			{
-				Assert.AreEqual(x, (uint)Bits.TrailingZerosCount(bits));
-			}
-
-			Assert.AreEqual(Bits.kInt64BitCount, Bits.TrailingZerosCount(ulong.MinValue));
-			for (ulong x = 0, bits = 1; x < Bits.kInt64BitCount; x++, bits <<= 1)
-			{
-				Assert.AreEqual(x, (ulong)Bits.TrailingZerosCount(bits));
-			}
-		}
 		#endregion
 
 		#region GetBitmask
