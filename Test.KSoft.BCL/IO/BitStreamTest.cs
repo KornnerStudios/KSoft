@@ -459,7 +459,7 @@ namespace KSoft.IO.Test
 			char writeChar = 'Z';
 			short writeShort = -17;
 			bool writeBool = true;
-			float writeFloat = Bitwise.ByteSwap.SingleFromUInt32(0xC0A00000U);
+			float writeFloat = BitConverter.UInt32BitsToSingle(0xC0A00000U);
 
 			byte[] bytes = WriteWithBitStream(bs =>
 			{
@@ -529,8 +529,8 @@ namespace KSoft.IO.Test
 		public void StreamElements_SingleValues_RoundTripsBitPatterns()
 		{
 			var writeValues = new List<float> {
-				Bitwise.ByteSwap.SingleFromUInt32(0x3F800000U),
-				Bitwise.ByteSwap.SingleFromUInt32(0xFFC00001U),
+				BitConverter.UInt32BitsToSingle(0x3F800000U),
+				BitConverter.UInt32BitsToSingle(0xFFC00001U),
 			};
 			byte[] bytes = WriteWithBitStream(bs => bs.StreamElements(writeValues, 3));
 

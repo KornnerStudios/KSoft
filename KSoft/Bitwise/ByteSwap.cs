@@ -128,7 +128,6 @@ namespace KSoft.Bitwise
 		public static float SwapSingle(
 			float value)
 		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter bit helpers.
 			return BitConverter.UInt32BitsToSingle(
 				SwapUInt32(BitConverter.SingleToUInt32Bits(value)));
 		}
@@ -139,16 +138,6 @@ namespace KSoft.Bitwise
 		{
 			value = SwapSingle(value);
 		}
-		public static float SingleFromUInt32(uint bits)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt32BitsToSingle.
-			return BitConverter.UInt32BitsToSingle(bits);
-		}
-		public static uint SingleToUInt32(float value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.SingleToUInt32Bits.
-			return BitConverter.SingleToUInt32Bits(value);
-		}
 		#endregion
 		#region Double
 		/// <summary>Swaps a <see cref="Double" /> and returns the result</summary>
@@ -157,7 +146,6 @@ namespace KSoft.Bitwise
 		public static double SwapDouble(
 			double value)
 		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter bit helpers.
 			return BitConverter.UInt64BitsToDouble(
 				SwapUInt64(BitConverter.DoubleToUInt64Bits(value)));
 		}
@@ -167,16 +155,6 @@ namespace KSoft.Bitwise
 			ref double value)
 		{
 			value = SwapDouble(value);
-		}
-		public static double DoubleFromUInt64(ulong bits)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.UInt64BitsToDouble.
-			return BitConverter.UInt64BitsToDouble(bits);
-		}
-		public static ulong DoubleToUInt64(double value)
-		{
-			// #VITA_SHIM: Keep KSoft API while callers migrate to BitConverter.DoubleToUInt64Bits.
-			return BitConverter.DoubleToUInt64Bits(value);
 		}
 		#endregion
 	};

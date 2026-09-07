@@ -112,7 +112,7 @@ namespace KSoft.Bitwise
 		{
 			encodedBits = 0;
 
-			uint singleValueAsUInt = Bitwise.ByteSwap.SingleToUInt32(singleValue);
+			uint singleValueAsUInt = BitConverter.SingleToUInt32Bits(singleValue);
 			uint mantissa = (singleValueAsUInt & Single32.kMantissaBitMask) >> Single32.kMantissaBitIndex;
 			uint exponentBits = (singleValueAsUInt & Single32.kExponentBitMask) >> Single32.kExponentBitIndex;
 			uint sign = (singleValueAsUInt & Single32.kSignBitMask) >> Single32.kSignBitIndex;
@@ -214,7 +214,7 @@ namespace KSoft.Bitwise
 		[System.Obsolete($"Use {nameof(TryFromSingle)}")]
 		public static uint FromSingle(float singleValue)
 		{
-			uint data = Bitwise.ByteSwap.SingleToUInt32(singleValue);
+			uint data = BitConverter.SingleToUInt32Bits(singleValue);
 			uint mantissa = (data & Single32.kMantissaBitMask) >> Single32.kMantissaBitIndex;
 			uint exponent = (data & Single32.kExponentBitMask) >> Single32.kExponentBitIndex;
 			uint sign = (data & Single32.kSignBitMask) >> Single32.kSignBitIndex;
@@ -273,7 +273,7 @@ namespace KSoft.Bitwise
 				v |= sign;
 			}
 
-			return Bitwise.ByteSwap.SingleFromUInt32(v);
+			return BitConverter.UInt32BitsToSingle(v);
 		}
 	};
 }

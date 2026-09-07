@@ -192,16 +192,16 @@ namespace KSoft.Bitwise.Test
 			];
 			foreach (uint bits in single_bits)
 			{
-				float value = ByteSwap.SingleFromUInt32(bits);
+				float value = BitConverter.UInt32BitsToSingle(bits);
 				byte[] bytes = new byte[sizeof(float)];
 				BitConverter.TryWriteBytes(bytes.AsSpan(), value);
 				Assert.AreEqual(bits, BitConverter.ToUInt32(bytes));
 
 				float swapped = ByteSwap.SwapSingle(value);
-				Assert.AreEqual(ByteSwap.SwapUInt32(bits), ByteSwap.SingleToUInt32(swapped));
+				Assert.AreEqual(ByteSwap.SwapUInt32(bits), BitConverter.SingleToUInt32Bits(swapped));
 
 				ByteSwap.SwapSingle(ref value);
-				Assert.AreEqual(ByteSwap.SwapUInt32(bits), ByteSwap.SingleToUInt32(value));
+				Assert.AreEqual(ByteSwap.SwapUInt32(bits), BitConverter.SingleToUInt32Bits(value));
 			}
 
 			ulong[] double_bits =
@@ -214,16 +214,16 @@ namespace KSoft.Bitwise.Test
 			];
 			foreach (ulong bits in double_bits)
 			{
-				double value = ByteSwap.DoubleFromUInt64(bits);
+				double value = BitConverter.UInt64BitsToDouble(bits);
 				byte[] bytes = new byte[sizeof(double)];
 				BitConverter.TryWriteBytes(bytes.AsSpan(), value);
 				Assert.AreEqual(bits, BitConverter.ToUInt64(bytes));
 
 				double swapped = ByteSwap.SwapDouble(value);
-				Assert.AreEqual(ByteSwap.SwapUInt64(bits), ByteSwap.DoubleToUInt64(swapped));
+				Assert.AreEqual(ByteSwap.SwapUInt64(bits), BitConverter.DoubleToUInt64Bits(swapped));
 
 				ByteSwap.SwapDouble(ref value);
-				Assert.AreEqual(ByteSwap.SwapUInt64(bits), ByteSwap.DoubleToUInt64(value));
+				Assert.AreEqual(ByteSwap.SwapUInt64(bits), BitConverter.DoubleToUInt64Bits(value));
 			}
 		}
 

@@ -215,11 +215,11 @@ namespace KSoft.IO
 		{
 			Read(out uint data, Bits.kInt32BitCount);
 
-			return Bitwise.ByteSwap.SingleFromUInt32(data);
+			return BitConverter.UInt32BitsToSingle(data);
 		}
 		public void Read(out float value) => value = ReadSingle();
 
-		public void Write(float value) => Write(Bitwise.ByteSwap.SingleToUInt32(value), Bits.kInt32BitCount);
+		public void Write(float value) => Write(BitConverter.SingleToUInt32Bits(value), Bits.kInt32BitCount);
 		#endregion
 
 		#region Double

@@ -28,7 +28,7 @@ namespace KSoft.Bitwise.Test
 				bool was_encoded = Single24.TryFromSingle(single, out uint output);
 
 				Assert.IsTrue(was_encoded);
-				Assert.AreEqual(ByteSwap.SingleFromUInt32(expected), single); // Test ToSingle
+				Assert.AreEqual(BitConverter.UInt32BitsToSingle(expected), single); // Test ToSingle
 				Assert.AreEqual(input, output); // Test FromSingle
 			}
 		}
@@ -172,7 +172,7 @@ namespace KSoft.Bitwise.Test
 			float result = Single24.ToSingle(0x800000);
 			Assert.AreEqual(-0f, result);
 			// Verify it's actually negative zero by checking the sign bit
-			uint bits = ByteSwap.SingleToUInt32(result);
+			uint bits = BitConverter.SingleToUInt32Bits(result);
 			Assert.AreEqual(0x80000000U, bits);
 		}
 
@@ -341,7 +341,7 @@ namespace KSoft.Bitwise.Test
 			uint single32Bits = 0x3F800000U; // 1.0f
 											 // Modify mantissa to create a tie that should round down
 			single32Bits |= 0x00000020U; // Add bits that will be at the midpoint
-			float value = ByteSwap.SingleFromUInt32(single32Bits);
+			float value = BitConverter.UInt32BitsToSingle(single32Bits);
 
 			bool success = Single24.TryFromSingle(value, out uint encodedBits);
 			Assert.IsTrue(success);
@@ -361,7 +361,7 @@ namespace KSoft.Bitwise.Test
 			uint single32Bits = 0x3F800000U; // 1.0f
 											 // Modify mantissa to create a tie that should round up
 			single32Bits |= 0x00000060U; // Set bit pattern that creates odd + midpoint
-			float value = ByteSwap.SingleFromUInt32(single32Bits);
+			float value = BitConverter.UInt32BitsToSingle(single32Bits);
 
 			bool success = Single24.TryFromSingle(value, out uint encodedBits);
 			Assert.IsTrue(success);
@@ -380,7 +380,7 @@ namespace KSoft.Bitwise.Test
 			// Create a scenario where rounding causes mantissa overflow
 			// This should increment the exponent
 			uint single32Bits = 0x3F7FFFFFU; // Just below 1.0, all mantissa bits set
-			float value = ByteSwap.SingleFromUInt32(single32Bits);
+			float value = BitConverter.UInt32BitsToSingle(single32Bits);
 
 			bool success = Single24.TryFromSingle(value, out uint encodedBits);
 			Assert.IsTrue(success);
@@ -398,7 +398,7 @@ namespace KSoft.Bitwise.Test
 		{
 			// Create a value at the maximum exponent where rounding would overflow
 			// This is a corner case that should return false
-			float valueNearMax = ByteSwap.SingleFromUInt32(0x4FFFFFFFU);
+			float valueNearMax = BitConverter.UInt32BitsToSingle(0x4FFFFFFFU);
 
 			bool success = Single24.TryFromSingle(valueNearMax, out uint encodedBits);
 			// Depending on the exact value, this may succeed or fail
@@ -413,7 +413,7 @@ namespace KSoft.Bitwise.Test
 		public void TryFromSingle_VerySmallDenormalizedValue_ReturnsZero()
 		{
 			// Test denormalized numbers (exponent = 0 in Single32)
-			float denormal = ByteSwap.SingleFromUInt32(0x00000001U);
+			float denormal = BitConverter.UInt32BitsToSingle(0x00000001U);
 			bool success = Single24.TryFromSingle(denormal, out uint encodedBits);
 			Assert.IsTrue(success);
 			Assert.AreEqual(0x000000U, encodedBits);
@@ -441,7 +441,7 @@ namespace KSoft.Bitwise.Test
 		public void TryFromSingle_ExponentUnderflow_ReturnsFalse()
 		{
 			// Create a very small normalized number that would underflow Single24
-			float tinyValue = ByteSwap.SingleFromUInt32(0x00800000U); // Smallest normalized Single32
+			float tinyValue = BitConverter.UInt32BitsToSingle(0x00800000U); // Smallest normalized Single32
 			bool success = Single24.TryFromSingle(tinyValue, out uint encodedBits);
 			// This should fail because the exponent is too small for Single24
 			Assert.IsFalse(success);
