@@ -201,30 +201,48 @@ namespace KSoft.IO.Test
 			using var stream = new MemoryStream(new byte[] { 0xFF });
 			using var bitStream = new IO.BitStream(stream, FileAccess.ReadWrite);
 
-			AssertThrowsArgumentNull("buffer", () => bitStream.Read(null!, 0, 0));
-			AssertThrowsArgumentOutOfRange("index", () => bitStream.Read(new byte[1], -1, 0));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 0, -1));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Read(new byte[1], 1, 1));
-			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Read(new byte[1], 0, 1, Bits.kByteBitCount + 1));
-
-			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!, 0, 0));
-			AssertThrowsArgumentOutOfRange("index", () => bitStream.Write(new byte[1], -1, 0));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 0, -1));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Write(new byte[1], 1, 1));
-			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Write(new byte[1], 0, 1, Bits.kByteBitCount + 1));
-
-			AssertThrowsArgumentNull("buffer", () => bitStream.Stream(null!, 0, 0));
-			AssertThrowsArgumentOutOfRange("index", () => bitStream.Stream(new byte[1], -1, 0));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 0, -1));
-			AssertThrowsArgumentOutOfRange("count", () => bitStream.Stream(new byte[1], 1, 1));
 			AssertThrowsArgumentOutOfRange("bitCount",
-				() => bitStream.Stream(new byte[1], 0, 1, Bits.kByteBitCount + 1));
-
+				() => bitStream.Read(new byte[1].AsSpan(), Bits.kByteBitCount + 1));
+			AssertThrowsArgumentOutOfRange("bitCount",
+				() => bitStream.Write(new byte[1].AsSpan(), Bits.kByteBitCount + 1));
+			AssertThrowsArgumentOutOfRange("bitCount",
+				() => bitStream.Stream(new byte[1].AsSpan(), Bits.kByteBitCount + 1));
 			AssertThrowsArgumentOutOfRange("byteCount", () => _ = bitStream.ReadBytes(-1));
-			AssertThrowsArgumentNull("buffer", () => _ = bitStream.Read(null!));
-			AssertThrowsArgumentOutOfRange("bitCount", () => _ = bitStream.Read(new byte[1], Bits.kByteBitCount + 1));
-			AssertThrowsArgumentNull("buffer", () => bitStream.Write(null!));
-			AssertThrowsArgumentOutOfRange("bitCount", () => bitStream.Write(new byte[1], Bits.kByteBitCount + 1));
+		}
+
+		[TestMethod]
+		public void ByteBufferMethods_SlicesAndEmptySpans_RoundTrip()
+		{
+			byte[] source = [0xAA, 0x12, 0x34, 0xBB];
+			byte[] writeBytes = WriteWithBitStream(bs =>
+			{
+				bs.Write(ReadOnlySpan<byte>.Empty);
+				bs.Write(source.AsSpan(1, 2));
+			});
+			byte[] streamBytes = WriteWithBitStream(bs =>
+			{
+				Assert.AreSame(bs, bs.Stream(Span<byte>.Empty));
+				Assert.AreSame(bs, bs.Stream(source.AsSpan(1, 2)));
+			});
+
+			CollectionAssert.AreEqual(new byte[] { 0x12, 0x34 }, writeBytes);
+			CollectionAssert.AreEqual(writeBytes, streamBytes);
+
+			byte[] readValues = [0xAA, 0, 0, 0xBB];
+			ReadWithBitStream(writeBytes, bs =>
+			{
+				bs.Read(Span<byte>.Empty);
+				bs.Read(readValues.AsSpan(1, 2));
+			});
+			CollectionAssert.AreEqual(source, readValues);
+
+			byte[] streamValues = [0xAA, 0, 0, 0xBB];
+			ReadWithBitStream(streamBytes, bs =>
+			{
+				Assert.AreSame(bs, bs.Stream(Span<byte>.Empty));
+				Assert.AreSame(bs, bs.Stream(streamValues.AsSpan(1, 2)));
+			});
+			CollectionAssert.AreEqual(source, streamValues);
 		}
 
 		[TestMethod]
@@ -472,11 +490,13 @@ namespace KSoft.IO.Test
 		[TestMethod]
 		public void StreamFixedArray_SignedValues_RoundTripsWithSignExtension()
 		{
-			var writeValues = new short[] { -3, 2, -1 };
-			byte[] bytes = WriteWithBitStream(bs => bs.StreamFixedArray(writeValues, 3, signExtend: true));
+			var writeValues = new short[] { 10, -3, 2, -1, 20 };
+			byte[] bytes = WriteWithBitStream(bs =>
+				bs.StreamFixedArray(writeValues.AsSpan(1, 3), 3, signExtend: true));
 
-			var readValues = new short[writeValues.Length];
-			ReadWithBitStream(bytes, bs => bs.StreamFixedArray(readValues, 3, signExtend: true));
+			var readValues = new short[] { 10, 0, 0, 0, 20 };
+			ReadWithBitStream(bytes, bs =>
+				bs.StreamFixedArray(readValues.AsSpan(1, 3), 3, signExtend: true));
 
 			CollectionAssert.AreEqual(writeValues, readValues);
 		}

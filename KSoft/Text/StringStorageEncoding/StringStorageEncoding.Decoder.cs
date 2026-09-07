@@ -375,16 +375,28 @@ namespace KSoft.Text
 			{
 				int x = 0;
 				characters = new byte[mNullCharacterSize];
-				while (!ReadStringMultiByteIsNull(mStorage.ByteOrder, s.Read(characters), 0) && ++x <= maxLength)
+				while (true)
 				{
+					s.Read(characters.AsSpan());
+					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters, 0) || ++x > maxLength)
+					{
+						break;
+					}
+
 					ms.Write(characters, 0, characters.Length);
 				}
 			}
 			else if (!mStorage.IsFixedLength)
 			{
 				characters = new byte[mNullCharacterSize];
-				while (!ReadStringMultiByteIsNull(mStorage.ByteOrder, s.Read(characters), 0))
+				while (true)
 				{
+					s.Read(characters.AsSpan());
+					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters, 0))
+					{
+						break;
+					}
+
 					ms.Write(characters, 0, characters.Length);
 				}
 			}

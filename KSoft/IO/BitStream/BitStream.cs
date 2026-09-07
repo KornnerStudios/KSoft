@@ -363,67 +363,35 @@ namespace KSoft.IO
 		}
 		#endregion
 
-		#region byte[]
-		public void Read(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
+		#region byte spans
+		public void Read(Span<byte> buffer, int bitCount = Bits.kByteBitCount)
 		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(index);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
-#if false // #TODO redo optimization
-			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount && count >= kWordByteCount)
-			{
-				LowLevel.Data.ByteSwap.ReplaceBytes(buffer, index, mCache);
-				index += sizeof(TWord); count -= sizeof(TWord);
-
-				// #TODO: need to handle unaligned reads
-				BaseStream.Read(buffer, index, count);
-				mCacheBitsStreamedCount += count * Bits.kByteBitCount;
-				FillCache();
-			}
-			else
-#endif
-			{
-				for (int x = index; x < count; x++)
-				{
-					Read(out buffer[x], bitCount);
-				}
-			}
-		}
-		public void Write(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(index);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
-			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
-#if false // #TODO redo optimization
-			if (mCacheBitIndex == 0 && bitCount == Bits.kByteBitCount)
-			{
-				// #TODO: need to handle unaligned writes
-				BaseStream.Write(buffer, index, count);
-				mCacheBitsStreamedCount += count * Bits.kByteBitCount;
-			}
-			else
-#endif
-			{
-				for (int x = index; x < count; x++)
-				{
-					Write(buffer[x], bitCount);
-				}
-			}
-		}
-		public BitStream Stream(byte[] buffer, int index, int count, int bitCount = Bits.kByteBitCount)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(index);
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
-			ArgumentOutOfRangeException.ThrowIfGreaterThan(index+count, buffer.Length, nameof(count));
 			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
 
-				 if (IsReading) { Read( buffer, index, count, bitCount); }
-			else if (IsWriting) { Write(buffer, index, count, bitCount); }
+			// #TODO redo optimization: use direct Span stream I/O for byte-aligned, full-width reads
+			// while preserving exact-fill behavior and cache position accounting.
+			for (int x = 0; x < buffer.Length; x++)
+			{
+				Read(out buffer[x], bitCount);
+			}
+		}
+		public void Write(ReadOnlySpan<byte> buffer, int bitCount = Bits.kByteBitCount)
+		{
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
+
+			// #TODO redo optimization: use direct ReadOnlySpan stream I/O for byte-aligned, full-width writes
+			// while preserving cache position accounting.
+			for (int x = 0; x < buffer.Length; x++)
+			{
+				Write(buffer[x], bitCount);
+			}
+		}
+		public BitStream Stream(Span<byte> buffer, int bitCount = Bits.kByteBitCount)
+		{
+			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
+
+				 if (IsReading) { Read(buffer, bitCount); }
+			else if (IsWriting) { Write(buffer, bitCount); }
 
 			return this;
 		}
@@ -436,32 +404,10 @@ namespace KSoft.IO
 
 			if (byteCount > 0)
 			{
-				Read(buffer, 0, byteCount);
+				Read(buffer.AsSpan());
 			}
 
 			return buffer;
-		}
-		public byte[] Read(byte[] buffer, int bitCount = Bits.kByteBitCount)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
-
-			if (buffer.Length > 0)
-			{
-				Read(buffer, 0, buffer.Length, bitCount);
-			}
-
-			return buffer;
-		}
-		public void Write(byte[] buffer, int bitCount = Bits.kByteBitCount)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			Verify.Bits.AtMost(bitCount, Bits.kByteBitCount);
-
-			if (buffer.Length > 0)
-			{
-				Write(buffer, 0, buffer.Length, bitCount);
-			}
 		}
 		#endregion
 	};

@@ -237,7 +237,7 @@ namespace KSoft.Text
 			}
 
 			byte[] bytes = EncodeString(value.AsSpan(0, length));
-			s.Write(bytes);
+			s.Write(bytes.AsSpan());
 		}
 		#endregion
 	};

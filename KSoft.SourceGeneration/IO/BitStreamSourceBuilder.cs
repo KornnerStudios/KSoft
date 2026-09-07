@@ -623,14 +623,13 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteStreamFixedArrayMethod(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
-		writer.WriteLine($"public BitStream StreamFixedArray({typeSpec.Keyword}[] array,");
+		writer.WriteLine($"public BitStream StreamFixedArray(Span<{typeSpec.Keyword}> values,");
 		writer.WriteLine($"\tint elementBitSize = {BitCountConstant(typeSpec)}{SignedParameterSuffix(typeSpec)})");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
 			writer.WriteLine($"ArgumentOutOfRangeException.ThrowIfGreaterThan(elementBitSize, {BitCountConstant(typeSpec)});");
 			writer.WriteLine();
-			writer.WriteLine($"for (int x = 0; x < array.Length; x++) {{ {StreamArrayElementCall(typeSpec)} }}");
+			writer.WriteLine($"for (int x = 0; x < values.Length; x++) {{ {StreamArrayElementCall(typeSpec, "values")} }}");
 			writer.WriteLine();
 			writer.WriteLine("return this;");
 		}
@@ -638,12 +637,10 @@ internal static class BitStreamSourceBuilder
 
 	private static void WriteStreamNonIntegerFixedArrayMethod(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
-		writer.WriteLine($"public BitStream StreamFixedArray({typeSpec.Keyword}[] array)");
+		writer.WriteLine($"public BitStream StreamFixedArray(Span<{typeSpec.Keyword}> values)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("ArgumentNullException.ThrowIfNull(array);");
-			writer.WriteLine();
-			writer.WriteLine("for (int x = 0; x < array.Length; x++) { Stream(ref array[x]); }");
+			writer.WriteLine("for (int x = 0; x < values.Length; x++) { Stream(ref values[x]); }");
 			writer.WriteLine();
 			writer.WriteLine("return this;");
 		}
@@ -844,14 +841,14 @@ internal static class BitStreamSourceBuilder
 		return $"{ReadMethodName(typeSpec)}({bitCountExpression})";
 	}
 
-	private static string StreamArrayElementCall(PrimitiveSpec typeSpec)
+	private static string StreamArrayElementCall(PrimitiveSpec typeSpec, string valuesName = "array")
 	{
 		if (IsSignedInteger(typeSpec))
 		{
-			return "Stream(ref array[x], elementBitSize, signExtend);";
+			return $"Stream(ref {valuesName}[x], elementBitSize, signExtend);";
 		}
 
-		return "Stream(ref array[x], elementBitSize);";
+		return $"Stream(ref {valuesName}[x], elementBitSize);";
 	}
 
 	private static bool Uses64BitSplit(PrimitiveSpec typeSpec)
