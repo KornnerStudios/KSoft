@@ -221,14 +221,13 @@ namespace KSoft.Text
 		#region ReadString
 		/// <summary>Determine if the multi-byte character is a null character or not</summary>
 		/// <param name="byteOrder">Byte order of the character data</param>
-		/// <param name="characters">Buffer containing the character's bytes</param>
-		/// <param name="offset">offset to start the null comparison at</param>
+		/// <param name="characters">Span containing the character's bytes</param>
 		/// <returns>True if <paramref name="characters"/> is null; all zeros</returns>
 		/// <remarks>
 		/// If <paramref name="byteOrder"/> is different from <see cref="Storage.ByteOrder"/>, this will
 		/// byte-swap the bytes before returning
 		/// </remarks>
-		bool ReadStringMultiByteIsNull(Shell.EndianFormat byteOrder, byte[] characters, int offset)
+		bool ReadStringMultiByteIsNull(Shell.EndianFormat byteOrder, Span<byte> characters)
 		{
 			bool result;
 
@@ -236,23 +235,23 @@ namespace KSoft.Text
 			{
 				if (byteOrder != mStorage.ByteOrder)
 				{
-					characters.AsSpan(offset, sizeof(uint)).Reverse();
+					characters[..sizeof(uint)].Reverse();
 				}
 
-				result =  characters[offset+3] == 0;
-				result &= characters[offset+2] == 0;
-				result &= characters[offset+1] == 0;
-				result &= characters[offset  ] == 0;
+				result =  characters[3] == 0;
+				result &= characters[2] == 0;
+				result &= characters[1] == 0;
+				result &= characters[0] == 0;
 			}
 			else if (mNullCharacterSize == sizeof(ushort))
 			{
 				if (byteOrder != mStorage.ByteOrder)
 				{
-					characters.AsSpan(offset, sizeof(ushort)).Reverse();
+					characters[..sizeof(ushort)].Reverse();
 				}
 
-				result =  characters[offset+1] == 0;
-				result &= characters[offset  ] == 0;
+				result =  characters[1] == 0;
+				result &= characters[0] == 0;
 			}
 			else
 			{
@@ -335,27 +334,28 @@ namespace KSoft.Text
 		/// <param name="ms">Stream to write the character's bytes to</param>
 		void ReadCStringMultiByte(IO.EndianReader s, System.IO.MemoryStream ms)
 		{
-			byte[] characters;
 			if (!mStorage.IsFixedLength)
 			{
-				characters = new byte[mNullCharacterSize];
+				Span<byte> characters = stackalloc byte[mNullCharacterSize];
+				characters.Clear();
 				while (true)
 				{
-					s.Read(characters.AsSpan());
-					if (ReadStringMultiByteIsNull(s.ByteOrder, characters, 0))
+					s.Read(characters);
+					if (ReadStringMultiByteIsNull(s.ByteOrder, characters))
 						break;
 
-					ms.Write(characters, 0, characters.Length);
+					ms.Write(characters);
 				}
 			}
 			else
 			{
-				characters = s.ReadBytes(mFixedLengthByteLength);
+				byte[] characters = s.ReadBytes(mFixedLengthByteLength);
 
 				int x;
 				for (x = 0; x < characters.Length - mNullCharacterSize; x += mNullCharacterSize)
 				{
-					if (ReadStringMultiByteIsNull(s.ByteOrder, characters, x))
+					if (ReadStringMultiByteIsNull(
+						s.ByteOrder, characters.AsSpan(x, mNullCharacterSize)))
 					{
 						break;
 					}
@@ -370,44 +370,46 @@ namespace KSoft.Text
 		/// <param name="maxLength">Optional maximum length of this specific string</param>
 		void ReadCStringMultiByte(IO.BitStream s, System.IO.MemoryStream ms, int maxLength)
 		{
-			byte[] characters;
 			if (maxLength > 0)
 			{
 				int x = 0;
-				characters = new byte[mNullCharacterSize];
+				Span<byte> characters = stackalloc byte[mNullCharacterSize];
+				characters.Clear();
 				while (true)
 				{
-					s.Read(characters.AsSpan());
-					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters, 0) || ++x > maxLength)
+					s.Read(characters);
+					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters) || ++x > maxLength)
 					{
 						break;
 					}
 
-					ms.Write(characters, 0, characters.Length);
+					ms.Write(characters);
 				}
 			}
 			else if (!mStorage.IsFixedLength)
 			{
-				characters = new byte[mNullCharacterSize];
+				Span<byte> characters = stackalloc byte[mNullCharacterSize];
+				characters.Clear();
 				while (true)
 				{
-					s.Read(characters.AsSpan());
-					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters, 0))
+					s.Read(characters);
+					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters))
 					{
 						break;
 					}
 
-					ms.Write(characters, 0, characters.Length);
+					ms.Write(characters);
 				}
 			}
 			else
 			{
-				characters = s.ReadBytes(mFixedLengthByteLength);
+				byte[] characters = s.ReadBytes(mFixedLengthByteLength);
 
 				int x;
 				for (x = 0; x < characters.Length - mNullCharacterSize; x += mNullCharacterSize)
 				{
-					if (ReadStringMultiByteIsNull(mStorage.ByteOrder, characters, x))
+					if (ReadStringMultiByteIsNull(
+						mStorage.ByteOrder, characters.AsSpan(x, mNullCharacterSize)))
 					{
 						break;
 					}
@@ -560,12 +562,14 @@ namespace KSoft.Text
 		}
 		int ReadStrCharArrayGetRealCountMultiByte(Shell.EndianFormat byteOrder, byte[] bytes)
 		{
-			if (ReadStringMultiByteIsNull(byteOrder, bytes, bytes.Length - mNullCharacterSize)) // padded string case
+			if (ReadStringMultiByteIsNull(
+				byteOrder, bytes.AsSpan(bytes.Length - mNullCharacterSize))) // padded string case
 			{
 				// find the first last index which isn't null
 				for (int x = bytes.Length - (mNullCharacterSize * 2); x > mNullCharacterSize; x -= mNullCharacterSize)
 				{
-					if (!ReadStringMultiByteIsNull(byteOrder, bytes, x))
+					if (!ReadStringMultiByteIsNull(
+						byteOrder, bytes.AsSpan(x, mNullCharacterSize)))
 					{
 						return x+mNullCharacterSize;
 					}
