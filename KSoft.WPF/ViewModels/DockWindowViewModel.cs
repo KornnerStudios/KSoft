@@ -1,35 +1,24 @@
 ﻿using System.Windows.Input;
+using KSoft.PropertyChanged.SourceGeneration;
 
 namespace KSoft.WPF.ViewModels
 {
-	public class DockWindowViewModel
+	public partial class DockWindowViewModel
 		: ObjectModel.BasicViewModel
 	{
 		#region Title
-		string? mTitle;
-		public string? Title
-		{
-			get { return mTitle; }
-			set { SetField(ref mTitle, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial string? Title { get; set; }
 		#endregion
 
 		#region CanClose
-		bool mCanClose = true;
-		public bool CanClose
-		{
-			get { return mCanClose; }
-			set { SetFieldVal(ref mCanClose, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial bool CanClose { get; set; } = true;
 		#endregion
 
 		#region IsClosed
-		bool mIsClosed;
-		public bool IsClosed
-		{
-			get { return mIsClosed; }
-			set { SetFieldVal(ref mIsClosed, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial bool IsClosed { get; set; }
 		#endregion
 
 		#region CloseCommand

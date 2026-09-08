@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSTest.Sdk/4.1.0">
+  <PropertyGroup>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Test.KSoft.WPF</RootNamespace>
+    <AssemblyName>Test.KSoft.WPF</AssemblyName>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KSoft.WPF\KSoft.WPF.csproj">
+      <Project>{8BC67689-8BAA-480E-B2C1-03590AB79259}</Project>
+      <Name>KSoft.WPF</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
