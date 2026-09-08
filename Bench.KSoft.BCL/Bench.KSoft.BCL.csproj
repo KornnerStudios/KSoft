@@ -6,12 +6,16 @@
     <RootNamespace>Bench.KSoft.BCL</RootNamespace>
     <AssemblyName>Bench.KSoft.BCL</AssemblyName>
     <Nullable>enable</Nullable>
+    <!-- HACK: BDN 0.15.8 carries Roslyn 4.14, which must not overwrite the generator tests' Roslyn 5 assemblies. -->
+    <OutDir>$(OutDir)Bench.KSoft.BCL\</OutDir>
+    <OutputPath>$(OutDir)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
-      <Private>False</Private>
+      <!-- HACK: The isolated benchmark output can no longer rely on KSoft.dll being colocated by the shared output. -->
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

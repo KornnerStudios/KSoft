@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>KSoft.PropertyChanged.SourceGeneration</RootNamespace>
+		<AssemblyName>KSoft.PropertyChanged.SourceGeneration</AssemblyName>
+		<Nullable>enable</Nullable>
+		<IsRoslynComponent>true</IsRoslynComponent>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<NoWarn>$(NoWarn);RS2008</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\KSoft.SourceGeneration\ExceptionHelpers.cs" Link="Shared\ExceptionHelpers.cs" />
+		<Compile Include="..\KSoft.SourceGeneration\Text\SourceWriter.cs" Link="Shared\Text\SourceWriter.cs" />
+		<Compile Include="..\KSoft.SourceGeneration\Text\SourceWriterBlock.cs" Link="Shared\Text\SourceWriterBlock.cs" />
+		<Compile Include="..\KSoft.SourceGeneration\Text\SourceWriterBlockType.cs" Link="Shared\Text\SourceWriterBlockType.cs" />
+		<Compile Include="..\KSoft.SourceGeneration\Text\SourceWriterRegion.cs" Link="Shared\Text\SourceWriterRegion.cs" />
+	</ItemGroup>
+</Project>
