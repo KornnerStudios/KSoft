@@ -12,6 +12,8 @@ public sealed class ProjectSourceGenerationWiringTests
 {
 	private const string kAnalyzerProjectReference =
 		"$(VitaRootDir)KSoft\\KSoft.SourceGeneration\\KSoft.SourceGeneration.csproj";
+	private const string kPropertyChangedAnalyzerProjectReference =
+		"$(VitaRootDir)KSoft\\KSoft.PropertyChanged.SourceGeneration\\KSoft.PropertyChanged.SourceGeneration.csproj";
 
 	[TestMethod]
 	public void ProjectsDoNotExposeSourceGenerationBuildSwitchTest()
@@ -64,6 +66,40 @@ public sealed class ProjectSourceGenerationWiringTests
 	}
 
 	[TestMethod]
+	public void PropertyChangedAnalyzerReferencesAreScopedAndUnconditionalTest()
+	{
+		foreach (ProjectFile project in PropertyChangedConsumerProjectFiles())
+		{
+			var document = LoadProject(project);
+			var analyzerReference = ElementsNamed(document, "ProjectReference")
+				.Single(x => string.Equals(
+					(string?)x.Attribute("Include"),
+					kPropertyChangedAnalyzerProjectReference,
+					StringComparison.Ordinal));
+
+			Assert.IsNull(analyzerReference.Attribute("Condition"), project.DisplayName);
+			Assert.AreEqual("Analyzer", analyzerReference.Attribute("OutputItemType")?.Value, project.DisplayName);
+			Assert.AreEqual("False", analyzerReference.Attribute("ReferenceOutputAssembly")?.Value, project.DisplayName);
+			Assert.AreEqual("all", analyzerReference.Attribute("PrivateAssets")?.Value, project.DisplayName);
+		}
+
+		foreach (ProjectFile project in PropertyChangedTestProjectFiles())
+		{
+			var document = LoadProject(project);
+			Assert.IsFalse(
+				ElementsNamed(document, "ProjectReference").Any(
+					x => string.Equals(
+							(string?)x.Attribute("OutputItemType"),
+							"Analyzer",
+							StringComparison.Ordinal)
+						&& ((string?)x.Attribute("Include"))?.Contains(
+							"KSoft.PropertyChanged.SourceGeneration",
+							StringComparison.Ordinal) == true),
+				project.DisplayName);
+		}
+	}
+
+	[TestMethod]
 	public void ProjectsDoNotUseLegacyT4BuildMetadataTest()
 	{
 		foreach (ProjectFile project in ProjectFiles())
@@ -95,6 +131,29 @@ public sealed class ProjectSourceGenerationWiringTests
 			new ProjectFile(
 				"KSoft.IO.TagElementStreams",
 				Path.Combine("KSoft.IO.TagElementStreams", "KSoft.IO.TagElementStreams.csproj")),
+		};
+	}
+
+	private static IReadOnlyList<ProjectFile> PropertyChangedConsumerProjectFiles()
+	{
+		return new[] {
+			new ProjectFile("KSoft.WPF", Path.Combine("KSoft.WPF", "KSoft.WPF.csproj")),
+			new ProjectFile(
+				"KSoft.Phoenix",
+				Path.Combine("..", "Games", "Phoenix", "KSoft.Phoenix", "KSoft.Phoenix.csproj")),
+		};
+	}
+
+	private static IReadOnlyList<ProjectFile> PropertyChangedTestProjectFiles()
+	{
+		return new[] {
+			new ProjectFile(
+				"Test.KSoft.SourceGeneration",
+				Path.Combine("Test.KSoft.SourceGeneration", "Test.KSoft.SourceGeneration.csproj")),
+			new ProjectFile("Test.KSoft.WPF", Path.Combine("Test.KSoft.WPF", "Test.KSoft.WPF.csproj")),
+			new ProjectFile(
+				"Test.KSoft.Phoenix",
+				Path.Combine("..", "Games", "Phoenix", "Test.KSoft.Phoenix", "Test.KSoft.Phoenix.csproj")),
 		};
 	}
 
