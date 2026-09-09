@@ -22,6 +22,8 @@ public sealed class PropertyChangedGeneratorTests
 			{
 				protected bool SetField<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args)
 				{ field = value; return true; }
+				protected bool SetField<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args, bool overrideChecks)
+				{ field = value; return overrideChecks; }
 				protected bool SetField(ref int field, int value, global::System.ComponentModel.PropertyChangedEventArgs args)
 				{ throw new global::System.InvalidOperationException("The non-generic overload must not be selected."); }
 				protected bool SetFieldVal<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args) where T : struct, global::System.IEquatable<T>
@@ -45,6 +47,11 @@ public sealed class PropertyChangedGeneratorTests
 		Assert.IsFalse(contract.Contains("#nullable", StringComparison.Ordinal));
 		StringAssert.Contains(contract, "internal sealed class GeneratedPropertyChangedAttribute", StringComparison.Ordinal);
 		StringAssert.Contains(contract, "public string BackingField { get; set; }", StringComparison.Ordinal);
+		StringAssert.Contains(contract, "public bool AlwaysNotify { get; set; }", StringComparison.Ordinal);
+		StringAssert.Contains(
+			contract,
+			"whether the generated setter assigns and raises a notification even when the old and new",
+			StringComparison.Ordinal);
 		Assert.IsFalse(contract.Contains("PropertyChangedEquality", StringComparison.Ordinal));
 		Assert.IsEmpty(run.GeneratorDiagnostics);
 	}
@@ -144,6 +151,24 @@ public sealed class PropertyChangedGeneratorTests
 		string source = "using KSoft.PropertyChanged.SourceGeneration; public partial class ModeViewModel : KSoft.ObjectModel.BasicViewModel { [GeneratedPropertyChanged] public partial " + typeName + " Value { get; set; } }";
 		TestRun run = Run(source);
 		StringAssert.Contains(PropertySource(run), expectedCall, StringComparison.Ordinal);
+		AssertValid(run);
+	}
+
+	[TestMethod]
+	public void AlwaysNotifySelectsForcedGenericHelperTest()
+	{
+		TestRun run = Run("""
+			using KSoft.PropertyChanged.SourceGeneration;
+			public partial class ForcedViewModel : KSoft.ObjectModel.BasicViewModel
+			{
+				[GeneratedPropertyChanged(AlwaysNotify = true)]
+				public partial int Value { get; set; }
+			}
+			""");
+		StringAssert.Contains(
+			PropertySource(run),
+			"base.SetField<global::System.Int32>(ref field, value, __PropertyChangedEventArgs.s_Value, true);",
+			StringComparison.Ordinal);
 		AssertValid(run);
 	}
 

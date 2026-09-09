@@ -52,14 +52,39 @@ public sealed class BasicViewModelSetFieldTest
 	{
 		var model = new Model();
 		var eventArgs = new PropertyChangedEventArgs(nameof(Model.Text));
+		var first = new string('v', 5);
+		var equalReplacement = new string('v', 5);
 		int notifications = 0;
 		model.PropertyChanged += (_, _) => notifications++;
 
-		Assert.IsTrue(model.SetTextCached("value", eventArgs));
-		Assert.IsFalse(model.SetTextCached(new string("value".ToCharArray()), eventArgs));
+		Assert.AreEqual(first, equalReplacement);
+		Assert.AreNotSame(first, equalReplacement);
+		Assert.IsTrue(model.SetTextCached(first, eventArgs));
+		Assert.IsFalse(model.SetTextCached(equalReplacement, eventArgs));
 
-		Assert.AreEqual("value", model.Text);
+		Assert.AreSame(first, model.Text);
 		Assert.AreEqual(1, notifications);
+	}
+
+	[TestMethod]
+	public void CachedSetField_ForcedEqualValue_AssignsAndReusesArgs()
+	{
+		var model = new Model();
+		var eventArgs = new PropertyChangedEventArgs(nameof(Model.Text));
+		var first = new string('v', 5);
+		var equalReplacement = new string('v', 5);
+		var receivedArgs = new List<PropertyChangedEventArgs>();
+		model.PropertyChanged += (_, args) => receivedArgs.Add(args);
+
+		Assert.AreEqual(first, equalReplacement);
+		Assert.AreNotSame(first, equalReplacement);
+		Assert.IsTrue(model.SetTextCached(first, eventArgs));
+		Assert.IsTrue(model.SetTextCached(equalReplacement, eventArgs, overrideChecks: true));
+
+		Assert.AreSame(equalReplacement, model.Text);
+		Assert.HasCount(2, receivedArgs);
+		Assert.AreSame(eventArgs, receivedArgs[0]);
+		Assert.AreSame(eventArgs, receivedArgs[1]);
 	}
 
 	[TestMethod]
@@ -281,8 +306,13 @@ public sealed class BasicViewModelSetFieldTest
 		public bool SetText(string? value) =>
 			SetField(ref mText, value, propertyName: nameof(Text));
 
-		public bool SetTextCached(string? value, PropertyChangedEventArgs eventArgs) =>
-			SetField(ref mText, value, eventArgs);
+		public bool SetTextCached(
+			string? value,
+			PropertyChangedEventArgs eventArgs,
+			bool overrideChecks = false) =>
+			overrideChecks
+				? SetField(ref mText, value, eventArgs, overrideChecks)
+				: SetField(ref mText, value, eventArgs);
 
 		public bool SetValue(MutatingEquatable value, bool overrideChecks = false) =>
 			SetFieldVal(ref mValue, value, overrideChecks, nameof(Value));

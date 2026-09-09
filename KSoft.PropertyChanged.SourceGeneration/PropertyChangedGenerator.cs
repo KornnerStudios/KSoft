@@ -160,6 +160,7 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		}
 
 		EqualityMode equality = EqualityModeFor(property.Type, equatableType);
+		bool alwaysNotify = ReadAlwaysNotify(candidate.Attribute);
 
 		IFieldSymbol? field = null;
 		if (hasExplicitField && !TryGetBackingField(containingType, property, backingFieldName!, out field))
@@ -168,7 +169,7 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 			return false;
 		}
 
-		result = new PropertyModel(property, syntax, field, equality, location);
+		result = new PropertyModel(property, syntax, field, equality, alwaysNotify, location);
 		return true;
 	}
 
@@ -196,11 +197,30 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		fieldName = null;
 		foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 		{
-			if (!string.Equals(argument.Key, "BackingField", StringComparison.Ordinal)) continue;
+			if (!string.Equals(
+				argument.Key,
+				GeneratorContracts.BackingFieldPropertyName,
+				StringComparison.Ordinal)) continue;
 			specified = true;
 			fieldName = argument.Value.Value as string;
 			return !string.IsNullOrWhiteSpace(fieldName);
 		}
+		return false;
+	}
+
+	private static bool ReadAlwaysNotify(AttributeData attribute)
+	{
+		foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
+		{
+			if (string.Equals(
+				argument.Key,
+				GeneratorContracts.AlwaysNotifyPropertyName,
+				StringComparison.Ordinal))
+			{
+				return argument.Value.Value is true;
+			}
+		}
+
 		return false;
 	}
 
@@ -322,8 +342,11 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 				writer.WriteLine($"{ModifiersText(getter.Modifiers)}get => {storage};");
 			}
 
-			writer.WriteLine(
-				$"{ModifiersText(setter.Modifiers)}set => base.{HelperName(model.Equality)}<{typeName}>(ref {storage}, value, {GeneratorContracts.CacheTypeName}.{EventArgsFieldName(property.Name)});");
+			string eventArgs = $"{GeneratorContracts.CacheTypeName}.{EventArgsFieldName(property.Name)}";
+			string helperCall = model.AlwaysNotify
+				? $"base.SetField<{typeName}>(ref {storage}, value, {eventArgs}, true)"
+				: $"base.{HelperName(model.Equality)}<{typeName}>(ref {storage}, value, {eventArgs})";
+			writer.WriteLine($"{ModifiersText(setter.Modifiers)}set => {helperCall};");
 		}
 	}
 
@@ -390,12 +413,13 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 
 	private sealed class PropertyModel
 	{
-		public PropertyModel(IPropertySymbol property, PropertyDeclarationSyntax syntax, IFieldSymbol? backingField, EqualityMode equality, Location location) { Property = property; Syntax = syntax; BackingField = backingField; Equality = equality; Location = location; }
+		public PropertyModel(IPropertySymbol property, PropertyDeclarationSyntax syntax, IFieldSymbol? backingField, EqualityMode equality, bool alwaysNotify, Location location) { Property = property; Syntax = syntax; BackingField = backingField; Equality = equality; AlwaysNotify = alwaysNotify; Location = location; }
 		public IPropertySymbol Property { get; }
 		public INamedTypeSymbol ContainingType => Property.ContainingType;
 		public PropertyDeclarationSyntax Syntax { get; }
 		public IFieldSymbol? BackingField { get; }
 		public EqualityMode Equality { get; }
+		public bool AlwaysNotify { get; }
 		public Location Location { get; }
 	}
 

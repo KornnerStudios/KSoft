@@ -5,32 +5,25 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.ComponentModel;
+using KSoft.PropertyChanged.SourceGeneration;
 
 namespace KSoft.WPF.ViewModels
 {
 	[SuppressMessage("Microsoft.Design", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	public class DockManagerViewModel
+	public partial class DockManagerViewModel
 		: ObjectModel.BasicViewModel
 		, IEnumerable<DockWindowViewModel>
 	{
 		#region Documents
-		ObservableCollection<DockWindowViewModel>? mDocuments;
 		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public ObservableCollection<DockWindowViewModel>? Documents
-		{
-			get { return mDocuments; }
-			set { SetField(ref mDocuments, value, overrideChecks: true); }
-		}
+		[GeneratedPropertyChanged(AlwaysNotify = true)]
+		public partial ObservableCollection<DockWindowViewModel>? Documents { get; set; }
 		#endregion
 
 		#region Anchorables
-		ObservableCollection<object>? mAnchorables;
 		[SuppressMessage("Microsoft.Design", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public ObservableCollection<object>? Anchorables
-		{
-			get { return mAnchorables; }
-			set { SetField(ref mAnchorables, value, overrideChecks: true); }
-		}
+		[GeneratedPropertyChanged(AlwaysNotify = true)]
+		public partial ObservableCollection<object>? Anchorables { get; set; }
 		#endregion
 
 		public void InitializeObservableCollections()

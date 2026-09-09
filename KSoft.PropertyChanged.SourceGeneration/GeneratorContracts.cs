@@ -6,6 +6,8 @@ internal static class GeneratorContracts
 	public const string GeneratorName = "KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator";
 	public const string GeneratorVersion = "1.0.0.0";
 	public const string BasicViewModelMetadataName = "KSoft.ObjectModel.BasicViewModel";
+	public const string BackingFieldPropertyName = "BackingField";
+	public const string AlwaysNotifyPropertyName = "AlwaysNotify";
 	public const string CacheTypeName = "__PropertyChangedEventArgs";
 	public const string ContractHintName = "KSoft.PropertyChanged.Contracts.g.cs";
 
@@ -21,9 +23,25 @@ internal static class GeneratorContracts
 			global::System.AttributeTargets.Property,
 			AllowMultiple = false,
 			Inherited = false)]
+		/// <summary>
+		/// Generates a partial-property implementation that raises a cached property-change notification.
+		/// </summary>
+		/// <remarks>
+		/// The containing type must directly derive from <c>KSoft.ObjectModel.BasicViewModel</c>.
+		/// </remarks>
 		internal sealed class GeneratedPropertyChangedAttribute : global::System.Attribute
 		{
+			/// <summary>
+			/// Gets or sets the name of an existing backing field. When omitted, the generated accessor uses the
+			/// C# compiler-provided <c>field</c> storage.
+			/// </summary>
 			public string BackingField { get; set; }
+
+			/// <summary>
+			/// Gets or sets whether the generated setter assigns and raises a notification even when the old and new
+			/// values compare equal.
+			/// </summary>
+			public bool AlwaysNotify { get; set; }
 		}
 		""";
 }

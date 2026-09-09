@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using KSoft.WPF.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -146,5 +147,40 @@ public sealed class DockWindowViewModelTests
 
 		CollectionAssert.AreEqual(new string?[] { "outer", "inner" }, observedValues);
 		Assert.AreEqual("inner", model.Title);
+	}
+
+	[TestMethod]
+	public void DockManagerGeneratedProperties_EqualAssignmentsAlwaysNotifyAndReuseArgs()
+	{
+		var manager = new DockManagerViewModel();
+		var documents = new ObservableCollection<DockWindowViewModel>();
+		var anchorables = new ObservableCollection<object>();
+		var receivedArgs = new List<PropertyChangedEventArgs>();
+		var receivedNames = new List<string?>();
+		manager.PropertyChanged += (sender, args) =>
+		{
+			Assert.AreSame(manager, sender);
+			receivedArgs.Add(args);
+			receivedNames.Add(args.PropertyName);
+		};
+
+		manager.Documents = documents;
+		manager.Documents = documents;
+		manager.Anchorables = anchorables;
+		manager.Anchorables = anchorables;
+
+		CollectionAssert.AreEqual(
+			new[] {
+				nameof(DockManagerViewModel.Documents),
+				nameof(DockManagerViewModel.Documents),
+				nameof(DockManagerViewModel.Anchorables),
+				nameof(DockManagerViewModel.Anchorables),
+			},
+			receivedNames);
+		Assert.AreSame(documents, manager.Documents);
+		Assert.AreSame(anchorables, manager.Anchorables);
+		Assert.AreSame(receivedArgs[0], receivedArgs[1]);
+		Assert.AreSame(receivedArgs[2], receivedArgs[3]);
+		Assert.AreNotSame(receivedArgs[0], receivedArgs[2]);
 	}
 }

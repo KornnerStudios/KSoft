@@ -95,5 +95,19 @@ namespace KSoft.ObjectModel
 			handler?.Invoke(this, eventArgs);
 			return true;
 		}
+		protected bool SetField<T>(ref T field, T value
+			, PropertyChangedEventArgs eventArgs
+			, bool overrideChecks)
+		{
+			var handler = PropertyChanged;
+			if (!overrideChecks && EqualityComparer<T>.Default.Equals(field, value))
+			{
+				return false;
+			}
+
+			field = value;
+			handler?.Invoke(this, eventArgs);
+			return true;
+		}
 	};
 }
