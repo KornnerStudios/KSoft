@@ -141,6 +141,9 @@ public sealed class ProjectSourceGenerationWiringTests
 			new ProjectFile(
 				"KSoft.Phoenix",
 				Path.Combine("..", "Games", "Phoenix", "KSoft.Phoenix", "KSoft.Phoenix.csproj")),
+			new ProjectFile(
+				"MegHalomaniac",
+				Path.Combine("..", "Games", "Blam", "MegHalomaniac", "MegHalomaniac.csproj")),
 		};
 	}
 
