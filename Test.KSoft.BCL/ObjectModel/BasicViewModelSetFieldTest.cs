@@ -67,6 +67,24 @@ public sealed class BasicViewModelSetFieldTest
 	}
 
 	[TestMethod]
+	public void CachedSetField_NullTransitionsNotifyAndReuseArgs()
+	{
+		var model = new Model();
+		var eventArgs = new PropertyChangedEventArgs(nameof(Model.Text));
+		var receivedArgs = new List<PropertyChangedEventArgs>();
+		model.PropertyChanged += (_, args) => receivedArgs.Add(args);
+
+		Assert.IsTrue(model.SetTextCached("value", eventArgs));
+		Assert.IsTrue(model.SetTextCached(null, eventArgs));
+		Assert.IsFalse(model.SetTextCached(null, eventArgs));
+
+		Assert.IsNull(model.Text);
+		Assert.HasCount(2, receivedArgs);
+		Assert.AreSame(eventArgs, receivedArgs[0]);
+		Assert.AreSame(eventArgs, receivedArgs[1]);
+	}
+
+	[TestMethod]
 	public void CachedSetField_ForcedEqualValue_AssignsAndReusesArgs()
 	{
 		var model = new Model();

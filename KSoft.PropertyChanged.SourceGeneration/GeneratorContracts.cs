@@ -28,6 +28,21 @@ internal static class GeneratorContracts
 		/// </summary>
 		/// <remarks>
 		/// The containing type must directly derive from <c>KSoft.ObjectModel.BasicViewModel</c>.
+		/// Unless <see cref="AlwaysNotify"/> is enabled, the generated setter chooses its equality helper from the
+		/// declared property type:
+		/// <list type="bullet">
+		/// <item><description>Enums use KSoft's enum equality helper.</description></item>
+		/// <item><description>
+		/// Non-nullable value types implementing <c>IEquatable&lt;TSelf&gt;</c> use KSoft's equatable-value helper.
+		/// </description></item>
+		/// <item><description>
+		/// Reference types, nullable value types, and all other types use
+		/// <c>EqualityComparer&lt;T&gt;.Default</c>.
+		/// </description></item>
+		/// </list>
+		/// Here, <c>T</c> is the declared property type. For example, an <c>object</c>-typed property uses
+		/// <c>EqualityComparer&lt;object&gt;.Default</c>, including when its values are boxed value types. The default
+		/// comparer treats null-to-value and value-to-null assignments as changes.
 		/// </remarks>
 		internal sealed class GeneratedPropertyChangedAttribute : global::System.Attribute
 		{

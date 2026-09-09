@@ -50,6 +50,14 @@ public sealed class PropertyChangedGeneratorTests
 		StringAssert.Contains(contract, "public bool AlwaysNotify { get; set; }", StringComparison.Ordinal);
 		StringAssert.Contains(
 			contract,
+			"an <c>object</c>-typed property uses",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			contract,
+			"comparer treats null-to-value and value-to-null assignments as changes.",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			contract,
 			"whether the generated setter assigns and raises a notification even when the old and new",
 			StringComparison.Ordinal);
 		Assert.IsFalse(contract.Contains("PropertyChangedEquality", StringComparison.Ordinal));
