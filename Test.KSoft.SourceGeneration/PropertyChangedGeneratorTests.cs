@@ -58,10 +58,120 @@ public sealed class PropertyChangedGeneratorTests
 			StringComparison.Ordinal);
 		StringAssert.Contains(
 			contract,
+			"internal sealed class GeneratedPropertyChangedEventArgsAttribute",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			contract,
+			"The containing type only needs to be partial; it does not need to derive from",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			contract,
 			"whether the generated setter assigns and raises a notification even when the old and new",
 			StringComparison.Ordinal);
 		Assert.IsFalse(contract.Contains("PropertyChangedEquality", StringComparison.Ordinal));
 		Assert.IsEmpty(run.GeneratorDiagnostics);
+	}
+
+	[TestMethod]
+	public void CacheOnlyContractEmitsLegacyNamedFieldsWithoutPropertiesTest()
+	{
+		TestRun run = Run("""
+			using KSoft.PropertyChanged.SourceGeneration;
+			public partial class CacheModel
+			{
+				private int mType;
+				private string mValue = "";
+
+				[GeneratedPropertyChangedEventArgs]
+				public int Type
+				{
+					get => mType;
+					set
+					{
+						mType = value;
+						NotifyPropertyChanged(kTypeChangedEventArgs);
+					}
+				}
+
+				[GeneratedPropertyChangedEventArgs]
+				public string Value
+				{
+					get => mValue;
+					set
+					{
+						mValue = value;
+						NotifyPropertyChanged(kValueChangedEventArgs);
+					}
+				}
+
+				private static void NotifyPropertyChanged(
+					global::System.ComponentModel.PropertyChangedEventArgs args)
+				{
+				}
+			}
+			""");
+		GeneratedSourceResult[] sources = PropertySources(run);
+		Assert.HasCount(2, sources);
+		string generated = string.Join(
+			Environment.NewLine,
+			sources.Select(static source => source.SourceText.ToString()));
+		StringAssert.Contains(
+			generated,
+			"PropertyChangedEventArgs kTypeChangedEventArgs",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"PropertyChangedEventArgs kValueChangedEventArgs",
+			StringComparison.Ordinal);
+		StringAssert.Contains(generated, "new(nameof(Type));", StringComparison.Ordinal);
+		StringAssert.Contains(generated, "new(nameof(Value));", StringComparison.Ordinal);
+		Assert.IsFalse(generated.Contains("public int Type", StringComparison.Ordinal));
+		AssertValid(run);
+	}
+
+	[TestMethod]
+	public void CacheOnlyContractInvalidHostAndFieldCollisionFailClosedTest()
+	{
+		TestRun invalidHost = Run("""
+			using KSoft.PropertyChanged.SourceGeneration;
+			public class InvalidCacheHost
+			{
+				[GeneratedPropertyChangedEventArgs]
+				public int Value { get; set; }
+			}
+			""");
+		AssertDiagnosticIds(invalidHost, "KSPC0007");
+
+		TestRun fieldCollision = Run("""
+			using KSoft.PropertyChanged.SourceGeneration;
+			public partial class CacheFieldCollision
+			{
+				private static readonly global::System.ComponentModel.PropertyChangedEventArgs kValueChangedEventArgs =
+					new(nameof(Value));
+				[GeneratedPropertyChangedEventArgs]
+				public int Value { get; set; }
+			}
+			""");
+		AssertDiagnosticIds(fieldCollision, "KSPC0006");
+	}
+
+	[TestMethod]
+	public void CacheOnlyContractRejectsExplicitInterfacePropertyTest()
+	{
+		TestRun run = Run("""
+			using KSoft.PropertyChanged.SourceGeneration;
+			public interface IValue
+			{
+				int Value { get; set; }
+			}
+
+			public partial class ExplicitCacheProperty : IValue
+			{
+				[GeneratedPropertyChangedEventArgs]
+				int IValue.Value { get; set; }
+			}
+			""");
+		AssertDiagnosticIds(run, "KSPC0007");
 	}
 
 	[TestMethod]
@@ -364,10 +474,18 @@ public sealed class PropertyChangedGeneratorTests
 
 	private static string PropertySource(TestRun run)
 	{
-		GeneratedSourceResult[] sources = run.Driver.GetRunResult().Results.Single().GeneratedSources.Where(static source => !string.Equals(source.HintName, "KSoft.PropertyChanged.Contracts.g.cs", StringComparison.Ordinal)).ToArray();
+		GeneratedSourceResult[] sources = PropertySources(run);
 		Assert.AreEqual(1, sources.Length);
 		return sources[0].SourceText.ToString();
 	}
+
+	private static GeneratedSourceResult[] PropertySources(TestRun run) =>
+		run.Driver.GetRunResult().Results.Single().GeneratedSources
+			.Where(static source => !string.Equals(
+				source.HintName,
+				"KSoft.PropertyChanged.Contracts.g.cs",
+				StringComparison.Ordinal))
+			.ToArray();
 
 	private static string GeneratedSource(TestRun run, string hintName) => run.Driver.GetRunResult().Results.Single().GeneratedSources.Single(source => string.Equals(source.HintName, hintName, StringComparison.Ordinal)).SourceText.ToString();
 

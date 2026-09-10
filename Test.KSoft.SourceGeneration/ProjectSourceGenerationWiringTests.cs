@@ -144,6 +144,15 @@ public sealed class ProjectSourceGenerationWiringTests
 			new ProjectFile(
 				"MegHalomaniac",
 				Path.Combine("..", "Games", "Blam", "MegHalomaniac", "MegHalomaniac.csproj")),
+			new ProjectFile(
+				"PhxGui",
+				Path.Combine("..", "Games", "Phoenix", "PhxGui", "PhxGui.csproj")),
+			new ProjectFile(
+				"KSoft.Blam",
+				Path.Combine("..", "Games", "Blam", "KSoft.Blam", "KSoft.Blam.csproj")),
+			new ProjectFile(
+				"Test.KSoft.BCL",
+				Path.Combine("Test.KSoft.BCL", "Test.KSoft.BCL.csproj")),
 		};
 	}
 

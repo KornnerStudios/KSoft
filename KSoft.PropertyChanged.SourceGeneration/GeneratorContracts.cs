@@ -3,6 +3,7 @@ namespace KSoft.PropertyChanged.SourceGeneration;
 internal static class GeneratorContracts
 {
 	public const string AttributeMetadataName = "KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedAttribute";
+	public const string EventArgsAttributeMetadataName = "KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgsAttribute";
 	public const string GeneratorName = "KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator";
 	public const string GeneratorVersion = "1.0.0.0";
 	public const string BasicViewModelMetadataName = "KSoft.ObjectModel.BasicViewModel";
@@ -57,6 +58,26 @@ internal static class GeneratorContracts
 			/// values compare equal.
 			/// </summary>
 			public bool AlwaysNotify { get; set; }
+		}
+
+		/// <summary>
+		/// Generates a reusable <c>PropertyChangedEventArgs</c> field for an existing handwritten property.
+		/// </summary>
+		/// <remarks>
+		/// This attribute does not generate properties, events, equality checks, assignments, or notification calls.
+		/// The containing type only needs to be partial; it does not need to derive from
+		/// <c>KSoft.ObjectModel.BasicViewModel</c>. The emitted private static readonly field is named
+		/// <c>k&lt;PropertyName&gt;ChangedEventArgs</c>.
+		/// </remarks>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute(
+			"KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator",
+			"1.0.0.0")]
+		[global::System.AttributeUsageAttribute(
+			global::System.AttributeTargets.Property,
+			AllowMultiple = false,
+			Inherited = false)]
+		internal sealed class GeneratedPropertyChangedEventArgsAttribute : global::System.Attribute
+		{
 		}
 		""";
 }
