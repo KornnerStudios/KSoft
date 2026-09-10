@@ -148,6 +148,9 @@ public sealed class ProjectSourceGenerationWiringTests
 				"PhxGui",
 				Path.Combine("..", "Games", "Phoenix", "PhxGui", "PhxGui.csproj")),
 			new ProjectFile(
+				"PhxStudio",
+				Path.Combine("..", "Games", "PhxStudio", "PhxStudio", "PhxStudio.csproj")),
+			new ProjectFile(
 				"KSoft.Blam",
 				Path.Combine("..", "Games", "Blam", "KSoft.Blam", "KSoft.Blam.csproj")),
 			new ProjectFile(
