@@ -10,6 +10,12 @@ namespace KSoft.PropertyChanged.SourceGeneration;
 
 internal static class GeneratedSourceUtilities
 {
+	public static readonly SymbolDisplayFormat TypeDisplayFormat = new(
+		globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
+		typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+		genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+		miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
+
 	public static string ModifiersText(SyntaxTokenList modifiers) =>
 		modifiers.Count == 0
 			? string.Empty

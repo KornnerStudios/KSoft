@@ -11,12 +11,6 @@ namespace KSoft.PropertyChanged.SourceGeneration;
 
 internal static class PropertyChangedEventArgsCacheGeneration
 {
-	private static readonly SymbolDisplayFormat sTypeDisplayFormat = new(
-		globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
-		typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-		genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-		miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
-
 	public static void Initialize(IncrementalGeneratorInitializationContext context)
 	{
 		IncrementalValuesProvider<Candidate> candidates = context.SyntaxProvider.ForAttributeWithMetadataName(
@@ -68,7 +62,7 @@ internal static class PropertyChangedEventArgsCacheGeneration
 
 		string hintName = GeneratedSourceUtilities.CreateHintName(
 			type,
-			sTypeDisplayFormat,
+			GeneratedSourceUtilities.TypeDisplayFormat,
 			$"EventArgs.{property.Name}");
 		context.AddSource(
 			hintName,

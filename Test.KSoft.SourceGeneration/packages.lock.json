@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
+      "Caliburn.Micro.Core": {
+        "type": "Direct",
+        "requested": "[4.0.210, )",
+        "resolved": "4.0.210",
+        "contentHash": "2rNpLvowRMDQEf7nR9w0fZd1fVlBVnYfQ5c3liCKycK6dFYw+Hk6KMBVXpOHyWjp+sT7+JpKdiT2PUo8cgYW+g=="
+      },
       "Microsoft.CodeAnalysis.CSharp": {
         "type": "Direct",
         "requested": "[5.0.0, )",

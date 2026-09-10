@@ -10,6 +10,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj" />
 		<ProjectReference Include="..\KSoft.PropertyChanged.SourceGeneration\KSoft.PropertyChanged.SourceGeneration.csproj" />
+		<PackageReference Include="Caliburn.Micro.Core" Version="4.0.210" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
 	</ItemGroup>
 </Project>

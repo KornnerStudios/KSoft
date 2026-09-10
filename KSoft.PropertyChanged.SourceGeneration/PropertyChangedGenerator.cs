@@ -12,16 +12,10 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace KSoft.PropertyChanged.SourceGeneration;
 
-/// <summary>Generates cached-args BasicViewModel partial-property implementations.</summary>
+/// <summary>Generates provider-specific partial properties and reusable event-args caches.</summary>
 [Generator(LanguageNames.CSharp)]
-public sealed class PropertyChangedGenerator : IIncrementalGenerator
+public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 {
-	private static readonly SymbolDisplayFormat sTypeDisplayFormat = new(
-		globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
-		typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-		genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-		miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
-
 	/// <inheritdoc />
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
@@ -48,17 +42,18 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		if (candidates.IsDefaultOrEmpty) return;
 
 		INamedTypeSymbol? basicViewModel = compilation.GetTypeByMetadataName(GeneratorContracts.BasicViewModelMetadataName);
+		INamedTypeSymbol? caliburnPropertyChangedBase = compilation.GetTypeByMetadataName(
+			GeneratorContracts.CaliburnPropertyChangedBaseMetadataName);
 		INamedTypeSymbol? equatableType = compilation.GetTypeByMetadataName(
 			typeof(IEquatable<>).FullName!);
 
-		// One generated file per host lets all of its properties share a single event-args cache.
+		// One generated file per host keeps provider-specific members and properties together.
 		var propertiesByType = new Dictionary<INamedTypeSymbol, List<PropertyModel>>(SymbolEqualityComparer.Default);
 		foreach (Candidate candidate in candidates)
 		{
 			if (!TryCreateProperty(
 				context,
 				candidate,
-				basicViewModel,
 				equatableType,
 				out PropertyModel? property)) continue;
 			PropertyModel validProperty = property!;
@@ -74,15 +69,30 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		foreach (KeyValuePair<INamedTypeSymbol, List<PropertyModel>> pair in propertiesByType)
 		{
 			pair.Value.Sort(static (left, right) => string.CompareOrdinal(left.Property.Name, right.Property.Name));
-			if (pair.Key.GetMembers(GeneratorContracts.CacheTypeName).Length != 0)
+			if (!TryResolveHostStrategy(
+				context,
+				pair.Key,
+				pair.Value[0].Property.Name,
+				pair.Value[0].Location,
+				basicViewModel,
+				caliburnPropertyChangedBase,
+				out PropertyChangedHostStrategy? strategy)) continue;
+
+			PropertyChangedHostStrategy validStrategy = strategy!;
+			if (validStrategy.ReservedMemberName(pair.Value) is string reservedMemberName
+				&& pair.Key.GetMembers(reservedMemberName).Length != 0)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.GeneratedMemberCollision, pair.Value[0].Location, pair.Key.ToDisplayString(), GeneratorContracts.CacheTypeName));
+				context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.GeneratedMemberCollision, pair.Value[0].Location, pair.Key.ToDisplayString(), reservedMemberName));
 				continue;
 			}
 			outputs.Add(new GeneratedType(
 				pair.Key,
 				pair.Value,
-				GeneratedSourceUtilities.CreateHintName(pair.Key, sTypeDisplayFormat, "Properties")));
+				validStrategy,
+				GeneratedSourceUtilities.CreateHintName(
+					pair.Key,
+					GeneratedSourceUtilities.TypeDisplayFormat,
+					"Properties")));
 		}
 
 		outputs.Sort(static (left, right) => string.CompareOrdinal(left.HintName, right.HintName));
@@ -101,7 +111,6 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 	private static bool TryCreateProperty(
 		SourceProductionContext context,
 		Candidate candidate,
-		INamedTypeSymbol? basicViewModel,
 		INamedTypeSymbol? equatableType,
 		out PropertyModel? result)
 	{
@@ -152,12 +161,10 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 			return false;
 		}
 
-		if (basicViewModel == null
-			|| equatableType == null
-			|| !SymbolEqualityComparer.Default.Equals(containingType.BaseType, basicViewModel))
+		if (equatableType == null)
 		{
 			context.ReportDiagnostic(Diagnostic.Create(
-				DiagnosticDescriptors.InvalidBasicViewModelHost,
+				DiagnosticDescriptors.InvalidPropertyChangedHost,
 				location,
 				containingType.ToDisplayString()));
 			return false;
@@ -293,33 +300,22 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 			$"{GeneratedSourceUtilities.ModifiersText(declaration.Modifiers)}class {GeneratedSourceUtilities.EscapeIdentifier(output.Type.Name)}");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			WriteGeneratedAttributes(writer);
-			writer.WriteLine($"private static class {GeneratorContracts.CacheTypeName}");
-			using (writer.EnterBlock(SourceWriterBlockType.Braces))
-			{
-				foreach (PropertyModel property in output.Properties)
-				{
-					string propertyName = GeneratedSourceUtilities.EscapeIdentifier(property.Property.Name);
-					writer.WriteLine(
-						$"internal static readonly global::System.ComponentModel.PropertyChangedEventArgs {EventArgsFieldName(property.Property.Name)} =");
-					using (writer.EnterBlock())
-					{
-						writer.WriteLine($"new(nameof({propertyName}));");
-					}
-				}
-			}
+			output.Strategy.WriteTypeMembers(writer, output.Properties);
 
 			foreach (PropertyModel property in output.Properties)
 			{
 				writer.WriteLine();
-				WriteProperty(writer, property);
+				WriteProperty(writer, property, output.Strategy);
 			}
 		}
 
 		return writer.ToString();
 	}
 
-	private static void WriteProperty(SourceWriter writer, PropertyModel model)
+	private static void WriteProperty(
+		SourceWriter writer,
+		PropertyModel model,
+		PropertyChangedHostStrategy strategy)
 	{
 		IPropertySymbol property = model.Property;
 		string name = GeneratedSourceUtilities.EscapeIdentifier(property.Name);
@@ -328,7 +324,7 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		AccessorDeclarationSyntax setter = model.Syntax.AccessorList.Accessors.Single(
 			static accessor => accessor.IsKind(SyntaxKind.SetAccessorDeclaration));
 		// The defining partial property carries nullability; the generated implementation stays nullable-oblivious.
-		string typeName = property.Type.ToDisplayString(sTypeDisplayFormat);
+		string typeName = property.Type.ToDisplayString(GeneratedSourceUtilities.TypeDisplayFormat);
 
 		WriteGeneratedAttributes(writer);
 		writer.WriteLine(
@@ -347,11 +343,7 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 				writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(getter.Modifiers)}get => {storage};");
 			}
 
-			string eventArgs = $"{GeneratorContracts.CacheTypeName}.{EventArgsFieldName(property.Name)}";
-			string helperCall = model.AlwaysNotify
-				? $"base.SetField<{typeName}>(ref {storage}, value, {eventArgs}, true)"
-				: $"base.{HelperName(model.Equality)}<{typeName}>(ref {storage}, value, {eventArgs})";
-			writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(setter.Modifiers)}set => {helperCall};");
+			strategy.WriteSetter(writer, model, setter, typeName, name, storage);
 		}
 	}
 
@@ -370,7 +362,7 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 		_ => "SetField",
 	};
 
-	private static string EventArgsFieldName(string propertyName) => "s_" + propertyName;
+	private static string BasicViewModelCacheFieldName(string propertyName) => "s_" + propertyName;
 
 	private sealed class Candidate
 	{
@@ -395,9 +387,10 @@ public sealed class PropertyChangedGenerator : IIncrementalGenerator
 
 	private sealed class GeneratedType
 	{
-		public GeneratedType(INamedTypeSymbol type, List<PropertyModel> properties, string hintName) { Type = type; Properties = properties; HintName = hintName; }
+		public GeneratedType(INamedTypeSymbol type, List<PropertyModel> properties, PropertyChangedHostStrategy strategy, string hintName) { Type = type; Properties = properties; Strategy = strategy; HintName = hintName; }
 		public INamedTypeSymbol Type { get; }
 		public List<PropertyModel> Properties { get; }
+		public PropertyChangedHostStrategy Strategy { get; }
 		public string HintName { get; }
 	}
 
