@@ -9,9 +9,11 @@ internal static class GeneratorContracts
 	public const string GeneratorVersion = "1.0.0.0";
 	public const string BasicViewModelMetadataName = "KSoft.ObjectModel.BasicViewModel";
 	public const string CaliburnPropertyChangedBaseMetadataName = "Caliburn.Micro.PropertyChangedBase";
+	public const string EquatableMetadataName = "System.IEquatable`1";
 	public const string PropertyChangedEventArgsMetadataName = "System.ComponentModel.PropertyChangedEventArgs";
 	public const string BackingFieldPropertyName = "BackingField";
 	public const string AlwaysNotifyPropertyName = "AlwaysNotify";
+	public const string DependentPropertiesPropertyName = "DependentProperties";
 	public const string NotificationMethodPropertyName = "NotificationMethod";
 	public const string CacheTypeName = "__PropertyChangedEventArgs";
 	public const string ValueEqualityMethodName = "__PropertyChangedValuesEqual";
@@ -26,7 +28,7 @@ internal static class GeneratorContracts
 		/// Generates a partial-property implementation using the containing type's supported notification provider.
 		/// </summary>
 		/// <remarks>
-		/// The containing type must use <see cref="GeneratedPropertyChangedHostAttribute"/>, directly derive from
+		/// The containing type must use <see cref="GeneratedPropertyChangedHostAttribute"/>, inherit
 		/// <c>KSoft.ObjectModel.BasicViewModel</c>, or inherit <c>Caliburn.Micro.PropertyChangedBase</c>. Explicit host
 		/// markers take precedence over inferred framework hosts. BasicViewModel hosts raise cached event args.
 		/// Caliburn hosts preserve the virtual string-based notification pipeline, including <c>IsNotifying</c> and UI
@@ -67,6 +69,12 @@ internal static class GeneratorContracts
 			/// values compare equal.
 			/// </summary>
 			public bool AlwaysNotify { get; set; }
+
+			/// <summary>
+			/// Gets or sets the instance-property names to notify, in declaration order, after the generated property's
+			/// primary notification is accepted.
+			/// </summary>
+			public string[] DependentProperties { get; set; }
 		}
 
 		/// <summary>

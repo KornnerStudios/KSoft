@@ -10,6 +10,8 @@ public sealed partial class PropertyChangedGenerator
 {
 	private abstract class PropertyChangedHostStrategy
 	{
+		public virtual string? UnsupportedDependentNotificationProvider => null;
+
 		public virtual IEnumerable<ReservedMember> ReservedMembers(IReadOnlyList<PropertyModel> properties)
 		{
 			yield break;
@@ -51,6 +53,9 @@ public sealed partial class PropertyChangedGenerator
 			model.BackingField == null
 				? storage
 				: $"this.{storage}";
+
+		protected static string DependentPropertyName(string propertyName) =>
+			Microsoft.CodeAnalysis.CSharp.SymbolDisplay.FormatLiteral(propertyName, quote: true);
 
 		protected static void WriteEqualityGuard(
 			SourceWriter writer,

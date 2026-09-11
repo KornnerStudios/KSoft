@@ -49,7 +49,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 		INamedTypeSymbol? propertyChangedEventArgs = compilation.GetTypeByMetadataName(
 			GeneratorContracts.PropertyChangedEventArgsMetadataName);
 		INamedTypeSymbol? equatableType = compilation.GetTypeByMetadataName(
-			typeof(IEquatable<>).FullName!);
+			GeneratorContracts.EquatableMetadataName);
 
 		// One generated file per host keeps provider-specific members and properties together.
 		var propertiesByType = new Dictionary<INamedTypeSymbol, List<PropertyModel>>(SymbolEqualityComparer.Default);
@@ -57,6 +57,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 		{
 			if (!TryCreateProperty(
 				context,
+				compilation,
 				candidate,
 				equatableType,
 				out PropertyModel? property)) continue;
@@ -77,8 +78,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 				context,
 				compilation,
 				pair.Key,
-				pair.Value[0].Property.Name,
-				pair.Value[0].Location,
+				pair.Value,
 				hostAttribute,
 				propertyChangedEventArgs,
 				basicViewModel,
@@ -86,6 +86,23 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 				out PropertyChangedHostStrategy? strategy)) continue;
 
 			PropertyChangedHostStrategy validStrategy = strategy!;
+			if (validStrategy.UnsupportedDependentNotificationProvider is string providerName)
+			{
+				bool unsupportedDependents = false;
+				foreach (PropertyModel property in pair.Value)
+				{
+					if (property.DependentProperties.IsDefaultOrEmpty) continue;
+
+					context.ReportDiagnostic(Diagnostic.Create(
+						DiagnosticDescriptors.UnsupportedDependentNotifications,
+						property.Location,
+						property.Property.Name,
+						providerName));
+					unsupportedDependents = true;
+				}
+				if (unsupportedDependents) continue;
+			}
+
 			bool hasCollision = false;
 			foreach (ReservedMember reservedMember in validStrategy.ReservedMembers(pair.Value))
 			{
@@ -144,6 +161,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 
 	private static bool TryCreateProperty(
 		SourceProductionContext context,
+		Compilation compilation,
 		Candidate candidate,
 		INamedTypeSymbol? equatableType,
 		out PropertyModel? result)
@@ -206,6 +224,14 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 
 		EqualityMode equality = EqualityModeFor(property.Type, equatableType);
 		bool alwaysNotify = ReadAlwaysNotify(candidate.Attribute);
+		if (!TryReadDependentProperties(
+			context,
+			compilation,
+			candidate,
+			out ImmutableArray<string> dependentProperties))
+		{
+			return false;
+		}
 
 		IFieldSymbol? field = null;
 		if (hasExplicitField && !TryGetBackingField(containingType, property, backingFieldName!, out field))
@@ -214,7 +240,14 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			return false;
 		}
 
-		result = new PropertyModel(property, syntax, field, equality, alwaysNotify, location);
+		result = new PropertyModel(
+			property,
+			syntax,
+			field,
+			equality,
+			alwaysNotify,
+			dependentProperties,
+			location);
 		return true;
 	}
 
@@ -268,6 +301,153 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 
 		return false;
 	}
+
+	private static bool TryReadDependentProperties(
+		SourceProductionContext context,
+		Compilation compilation,
+		Candidate candidate,
+		out ImmutableArray<string> dependentProperties)
+	{
+		dependentProperties = ImmutableArray<string>.Empty;
+		foreach (KeyValuePair<string, TypedConstant> argument in candidate.Attribute.NamedArguments)
+		{
+			if (!string.Equals(
+				argument.Key,
+				GeneratorContracts.DependentPropertiesPropertyName,
+				StringComparison.Ordinal)) continue;
+
+			if (argument.Value.IsNull)
+			{
+				ReportInvalidDependentProperty(
+					context,
+					candidate,
+					"<null>",
+					"DependentProperties cannot be null");
+				return false;
+			}
+
+			var builder = ImmutableArray.CreateBuilder<string>(argument.Value.Values.Length);
+			var names = new HashSet<string>(StringComparer.Ordinal);
+			bool valid = true;
+			foreach (TypedConstant value in argument.Value.Values)
+			{
+				string? name = value.Value as string;
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					ReportInvalidDependentProperty(
+						context,
+						candidate,
+						name ?? "<null>",
+						"dependent property names must be non-empty");
+					valid = false;
+					continue;
+				}
+				string validName = name!;
+				if (string.Equals(validName, candidate.Property.Name, StringComparison.Ordinal))
+				{
+					ReportInvalidDependentProperty(
+						context,
+						candidate,
+						validName,
+						"a generated property cannot depend on itself");
+					valid = false;
+					continue;
+				}
+				if (!names.Add(validName))
+				{
+					ReportInvalidDependentProperty(
+						context,
+						candidate,
+						validName,
+						"a dependent property cannot be listed more than once");
+					valid = false;
+					continue;
+				}
+
+				DependentPropertyResolution resolution = ResolveDependentProperty(
+					compilation,
+					candidate.Property.ContainingType,
+					validName);
+				if (resolution != DependentPropertyResolution.Instance)
+				{
+					string reason = resolution == DependentPropertyResolution.StaticOnly
+						? "the name resolves only to a static property; name an instance property"
+						: "the name must resolve to an instance property on the containing type, a base type, or an implemented interface";
+					ReportInvalidDependentProperty(context, candidate, validName, reason);
+					valid = false;
+					continue;
+				}
+
+				builder.Add(validName);
+			}
+
+			if (!valid) return false;
+
+			dependentProperties = builder.MoveToImmutable();
+			return true;
+		}
+
+		return true;
+	}
+
+	private static DependentPropertyResolution ResolveDependentProperty(
+		Compilation compilation,
+		INamedTypeSymbol containingType,
+		string name)
+	{
+		bool foundStatic = false;
+		for (INamedTypeSymbol? current = containingType;
+			current != null;
+			current = current.BaseType)
+		{
+			foreach (IPropertySymbol property in current.GetMembers().OfType<IPropertySymbol>())
+			{
+				if (!MatchesDependentPropertyName(property, name)) continue;
+				if (property.IsStatic)
+				{
+					foundStatic = true;
+					continue;
+				}
+				if (compilation.IsSymbolAccessibleWithin(property, containingType)
+					|| SymbolEqualityComparer.Default.Equals(current, containingType))
+				{
+					return DependentPropertyResolution.Instance;
+				}
+			}
+		}
+
+		foreach (INamedTypeSymbol interfaceType in containingType.AllInterfaces)
+		{
+			foreach (IPropertySymbol property in interfaceType.GetMembers().OfType<IPropertySymbol>())
+			{
+				if (!MatchesDependentPropertyName(property, name)) continue;
+				if (!property.IsStatic) return DependentPropertyResolution.Instance;
+
+				foundStatic = true;
+			}
+		}
+
+		return foundStatic
+			? DependentPropertyResolution.StaticOnly
+			: DependentPropertyResolution.Missing;
+	}
+
+	private static bool MatchesDependentPropertyName(IPropertySymbol property, string name) =>
+		string.Equals(property.Name, name, StringComparison.Ordinal)
+			|| property.ExplicitInterfaceImplementations.Any(implementation =>
+				string.Equals(implementation.Name, name, StringComparison.Ordinal));
+
+	private static void ReportInvalidDependentProperty(
+		SourceProductionContext context,
+		Candidate candidate,
+		string dependentProperty,
+		string reason) =>
+		context.ReportDiagnostic(Diagnostic.Create(
+			DiagnosticDescriptors.InvalidDependentProperty,
+			candidate.Location,
+			candidate.Property.Name,
+			dependentProperty,
+			reason));
 
 	private static EqualityMode EqualityModeFor(
 		ITypeSymbol type,
@@ -409,13 +589,30 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 
 	private sealed class PropertyModel
 	{
-		public PropertyModel(IPropertySymbol property, PropertyDeclarationSyntax syntax, IFieldSymbol? backingField, EqualityMode equality, bool alwaysNotify, Location location) { Property = property; Syntax = syntax; BackingField = backingField; Equality = equality; AlwaysNotify = alwaysNotify; Location = location; }
+		public PropertyModel(
+			IPropertySymbol property,
+			PropertyDeclarationSyntax syntax,
+			IFieldSymbol? backingField,
+			EqualityMode equality,
+			bool alwaysNotify,
+			ImmutableArray<string> dependentProperties,
+			Location location)
+		{
+			Property = property;
+			Syntax = syntax;
+			BackingField = backingField;
+			Equality = equality;
+			AlwaysNotify = alwaysNotify;
+			DependentProperties = dependentProperties;
+			Location = location;
+		}
 		public IPropertySymbol Property { get; }
 		public INamedTypeSymbol ContainingType => Property.ContainingType;
 		public PropertyDeclarationSyntax Syntax { get; }
 		public IFieldSymbol? BackingField { get; }
 		public EqualityMode Equality { get; }
 		public bool AlwaysNotify { get; }
+		public ImmutableArray<string> DependentProperties { get; }
 		public Location Location { get; }
 	}
 
@@ -429,4 +626,6 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 	}
 
 	private enum EqualityMode { Default, EquatableValue, Enum }
+
+	private enum DependentPropertyResolution { Missing, StaticOnly, Instance }
 }

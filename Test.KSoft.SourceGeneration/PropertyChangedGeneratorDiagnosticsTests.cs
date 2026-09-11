@@ -98,7 +98,7 @@ public sealed partial class PropertyChangedGeneratorTests
 	}
 
 	[TestMethod]
-	public void IndirectBasicViewModelHostReportsKspc0004Test()
+	public void IndirectBasicViewModelHostIsSupportedTest()
 	{
 		TestRun run = Run("""
 			using KSoft.PropertyChanged.SourceGeneration;
@@ -109,7 +109,11 @@ public sealed partial class PropertyChangedGeneratorTests
 					public partial int Value { get; set; }
 			}
 			""");
-		AssertDiagnosticIds(run, "KSPC0004");
+		StringAssert.Contains(
+			PropertySource(run),
+			"base.SetFieldVal<global::System.Int32>",
+			StringComparison.Ordinal);
+		AssertValid(run);
 	}
 
 	[TestMethod]

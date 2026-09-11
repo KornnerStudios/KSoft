@@ -20,18 +20,51 @@ public sealed partial class PropertyChangedGeneratorTests
 		{
 			public abstract class BasicViewModel
 			{
+				public event global::System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+
+				protected virtual void OnPropertyChanged(string propertyName = "")
+				{
+					PropertyChanged?.Invoke(
+						this,
+						new global::System.ComponentModel.PropertyChangedEventArgs(propertyName));
+				}
+
 				protected bool SetField<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args)
-					{ field = value; return true; }
+				{
+					if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value))
+						return false;
+					field = value;
+					PropertyChanged?.Invoke(this, args);
+					return true;
+				}
 				protected bool SetField<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args, bool overrideChecks)
-					{ field = value; return overrideChecks; }
+				{
+					if (!overrideChecks && global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value))
+						return false;
+					field = value;
+					PropertyChanged?.Invoke(this, args);
+					return true;
+				}
 				protected bool SetField(ref int field, int value, global::System.ComponentModel.PropertyChangedEventArgs args)
 					{ throw new global::System.InvalidOperationException("The non-generic overload must not be selected."); }
 				protected bool SetFieldVal<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args) where T : struct, global::System.IEquatable<T>
-					{ field = value; return true; }
+				{
+					if (field.Equals(value))
+						return false;
+					field = value;
+					PropertyChanged?.Invoke(this, args);
+					return true;
+				}
 				protected bool SetFieldVal(ref int field, int value, global::System.ComponentModel.PropertyChangedEventArgs args)
 					{ throw new global::System.InvalidOperationException("The non-generic overload must not be selected."); }
 				protected bool SetFieldEnum<T>(ref T field, T value, global::System.ComponentModel.PropertyChangedEventArgs args) where T : struct, global::System.Enum
-					{ field = value; return true; }
+				{
+					if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value))
+						return false;
+					field = value;
+					PropertyChanged?.Invoke(this, args);
+					return true;
+				}
 			}
 		}
 		""";

@@ -26,6 +26,12 @@ public sealed partial class PropertyChangedGeneratorTests
 		Assert.AreEqual(
 			SpecialType.System_Boolean,
 			generatedPropertyAttribute.GetMembers("AlwaysNotify").OfType<IPropertySymbol>().Single().Type.SpecialType);
+		var dependentProperties = (IArrayTypeSymbol)generatedPropertyAttribute
+			.GetMembers("DependentProperties")
+			.OfType<IPropertySymbol>()
+			.Single()
+			.Type;
+		Assert.AreEqual(SpecialType.System_String, dependentProperties.ElementType.SpecialType);
 		string? propertyDocumentation = generatedPropertyAttribute.GetDocumentationCommentXml();
 		Assert.IsNotNull(propertyDocumentation);
 		StringAssert.Contains(propertyDocumentation, "Caliburn.Micro.PropertyChangedBase", StringComparison.Ordinal);

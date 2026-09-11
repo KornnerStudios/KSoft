@@ -21,6 +21,8 @@ public sealed partial class PropertyChangedGenerator
 			mNotificationMethodName = notificationMethodName;
 		}
 
+		public override string? UnsupportedDependentNotificationProvider => "CachedEventArgs";
+
 		public static HostStrategyMatch Match(
 			Compilation compilation,
 			INamedTypeSymbol containingType,

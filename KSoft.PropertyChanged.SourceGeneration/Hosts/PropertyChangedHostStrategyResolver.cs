@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using KSoft.PropertyChanged.SourceGeneration.Diagnostics;
 using Microsoft.CodeAnalysis;
 
@@ -9,14 +10,15 @@ public sealed partial class PropertyChangedGenerator
 		SourceProductionContext context,
 		Compilation compilation,
 		INamedTypeSymbol containingType,
-		string targetName,
-		Location location,
+		IReadOnlyList<PropertyModel> properties,
 		INamedTypeSymbol? hostAttribute,
 		INamedTypeSymbol? propertyChangedEventArgs,
 		INamedTypeSymbol? basicViewModel,
 		INamedTypeSymbol? caliburnPropertyChangedBase,
 		out PropertyChangedHostStrategy? strategy)
 	{
+		string targetName = properties[0].Property.Name;
+		Location location = properties[0].Location;
 		HostStrategyMatch cachedEventArgsMatch = CachedEventArgsHostStrategy.Match(
 			compilation,
 			containingType,
@@ -38,11 +40,27 @@ public sealed partial class PropertyChangedGenerator
 				return false;
 		}
 
-		if (basicViewModel != null
-			&& SymbolEqualityComparer.Default.Equals(containingType.BaseType, basicViewModel))
+		HostStrategyMatch basicViewModelMatch = BasicViewModelHostStrategy.Match(
+			compilation,
+			containingType,
+			basicViewModel,
+			propertyChangedEventArgs,
+			properties,
+			out unsupportedReason);
+		switch (basicViewModelMatch)
 		{
-			strategy = BasicViewModelHostStrategy.Instance;
-			return true;
+			case HostStrategyMatch.Supported:
+				strategy = BasicViewModelHostStrategy.Instance;
+				return true;
+
+			case HostStrategyMatch.InvalidContract:
+				context.ReportDiagnostic(Diagnostic.Create(
+					DiagnosticDescriptors.UnsupportedTarget,
+					location,
+					targetName,
+					unsupportedReason));
+				strategy = null;
+				return false;
 		}
 
 		HostStrategyMatch caliburnMatch = CaliburnMicroHostStrategy.Match(

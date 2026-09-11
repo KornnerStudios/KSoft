@@ -169,10 +169,11 @@ public sealed partial class PropertyChangedGeneratorTests
 			using KSoft.PropertyChanged.SourceGeneration;
 			public partial class HiddenHelperViewModel : KSoft.ObjectModel.BasicViewModel
 			{
-				private bool SetField<T>(
+				private bool SetFieldVal<T>(
 					ref T field,
 					T value,
 					global::System.ComponentModel.PropertyChangedEventArgs args)
+					where T : struct, global::System.IEquatable<T>
 				{
 					field = value;
 					return true;

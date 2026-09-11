@@ -77,6 +77,11 @@ public sealed partial class PropertyChangedGenerator
 				{
 					writer.WriteLine(
 						$"propertyChangedNotifier.NotifyOfPropertyChange(nameof({propertyName}));");
+					foreach (string dependentProperty in model.DependentProperties)
+					{
+						writer.WriteLine(
+							$"propertyChangedNotifier.NotifyOfPropertyChange({DependentPropertyName(dependentProperty)});");
+					}
 				}
 			}
 		}
