@@ -45,6 +45,9 @@ internal static class GeneratedSourceUtilities
 				? "@" + identifier
 				: identifier;
 
+	public static string PropertyChangedEventArgsFieldName(string propertyName) =>
+		$"k{propertyName}ChangedEventArgs";
+
 	public static string CreateHintName(
 		INamedTypeSymbol type,
 		SymbolDisplayFormat displayFormat,

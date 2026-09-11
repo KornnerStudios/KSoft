@@ -37,6 +37,26 @@ public sealed partial class PropertyChangedGeneratorTests
 		Assert.AreEqual(Accessibility.Internal, cacheAttribute.DeclaredAccessibility);
 		Assert.IsTrue(cacheAttribute.IsSealed);
 		Assert.IsFalse(string.IsNullOrWhiteSpace(cacheAttribute.GetDocumentationCommentXml()));
+
+		INamedTypeSymbol hostProvider = run.OutputCompilation.GetTypeByMetadataName(
+			"KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHostProvider")!;
+		Assert.IsNotNull(hostProvider);
+		Assert.AreEqual(Accessibility.Internal, hostProvider.DeclaredAccessibility);
+		Assert.AreEqual(TypeKind.Enum, hostProvider.TypeKind);
+		Assert.IsNotNull(hostProvider.GetMembers("CachedEventArgs").SingleOrDefault());
+
+		INamedTypeSymbol hostAttribute = run.OutputCompilation.GetTypeByMetadataName(
+			"KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHostAttribute")!;
+		Assert.IsNotNull(hostAttribute);
+		Assert.AreEqual(Accessibility.Internal, hostAttribute.DeclaredAccessibility);
+		Assert.IsTrue(hostAttribute.IsSealed);
+		Assert.IsTrue(SymbolEqualityComparer.Default.Equals(
+			hostProvider,
+			hostAttribute.InstanceConstructors.Single(
+				static constructor => constructor.Parameters.Length == 1).Parameters[0].Type));
+		Assert.AreEqual(
+			SpecialType.System_String,
+			hostAttribute.GetMembers("NotificationMethod").OfType<IPropertySymbol>().Single().Type.SpecialType);
 		AssertValid(run);
 	}
 }

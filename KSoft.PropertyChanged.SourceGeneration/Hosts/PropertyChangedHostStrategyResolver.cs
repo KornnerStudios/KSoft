@@ -7,13 +7,37 @@ public sealed partial class PropertyChangedGenerator
 {
 	private static bool TryResolveHostStrategy(
 		SourceProductionContext context,
+		Compilation compilation,
 		INamedTypeSymbol containingType,
 		string targetName,
 		Location location,
+		INamedTypeSymbol? hostAttribute,
+		INamedTypeSymbol? propertyChangedEventArgs,
 		INamedTypeSymbol? basicViewModel,
 		INamedTypeSymbol? caliburnPropertyChangedBase,
 		out PropertyChangedHostStrategy? strategy)
 	{
+		HostStrategyMatch cachedEventArgsMatch = CachedEventArgsHostStrategy.Match(
+			compilation,
+			containingType,
+			hostAttribute,
+			propertyChangedEventArgs,
+			out strategy,
+			out string? unsupportedReason);
+		switch (cachedEventArgsMatch)
+		{
+			case HostStrategyMatch.Supported:
+				return true;
+
+			case HostStrategyMatch.InvalidContract:
+				context.ReportDiagnostic(Diagnostic.Create(
+					DiagnosticDescriptors.UnsupportedTarget,
+					location,
+					targetName,
+					unsupportedReason));
+				return false;
+		}
+
 		if (basicViewModel != null
 			&& SymbolEqualityComparer.Default.Equals(containingType.BaseType, basicViewModel))
 		{
@@ -24,7 +48,7 @@ public sealed partial class PropertyChangedGenerator
 		HostStrategyMatch caliburnMatch = CaliburnMicroHostStrategy.Match(
 			containingType,
 			caliburnPropertyChangedBase,
-			out string? unsupportedReason);
+			out unsupportedReason);
 		switch (caliburnMatch)
 		{
 			case HostStrategyMatch.Supported:

@@ -39,26 +39,21 @@ public sealed partial class PropertyChangedGenerator
 			return HostStrategyMatch.InvalidContract;
 		}
 
-		public override string? ReservedMemberName(IReadOnlyList<PropertyModel> properties) =>
-			RequiresValueEqualityHelper(properties)
-				? GeneratorContracts.CaliburnValueEqualityMethodName
-				: null;
+		public override IEnumerable<ReservedMember> ReservedMembers(IReadOnlyList<PropertyModel> properties)
+		{
+			if (RequiresValueEqualityHelper(properties))
+			{
+				yield return new ReservedMember(
+					GeneratorContracts.ValueEqualityMethodName,
+					properties[0].Location);
+			}
+		}
 
 		public override void WriteTypeMembers(SourceWriter writer, IReadOnlyList<PropertyModel> properties)
 		{
 			if (!RequiresValueEqualityHelper(properties)) return;
 
-			WriteGeneratedAttributes(writer);
-			writer.WriteLine(
-				$"private static bool {GeneratorContracts.CaliburnValueEqualityMethodName}<T>(ref T left, T right)");
-			using (writer.EnterBlock())
-			{
-				writer.WriteLine("where T : struct, global::System.IEquatable<T>");
-			}
-			using (writer.EnterBlock(SourceWriterBlockType.Braces))
-			{
-				writer.WriteLine("return left.Equals(right);");
-			}
+			WriteValueEqualityHelper(writer);
 		}
 
 		public override void WriteSetter(
@@ -69,24 +64,11 @@ public sealed partial class PropertyChangedGenerator
 			string propertyName,
 			string storage)
 		{
-			string valueStorage = model.BackingField == null
-				? storage
-				: $"this.{storage}";
+			string valueStorage = ValueStorage(model, storage);
 			writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(setter.Modifiers)}set");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
-				if (!model.AlwaysNotify)
-				{
-					string equality = model.Equality == EqualityMode.EquatableValue
-						? $"{GeneratorContracts.CaliburnValueEqualityMethodName}(ref {valueStorage}, value)"
-						: $"global::System.Collections.Generic.EqualityComparer<{typeName}>.Default.Equals({valueStorage}, value)";
-					writer.WriteLine($"if ({equality})");
-					using (writer.EnterBlock(SourceWriterBlockType.Braces))
-					{
-						writer.WriteLine("return;");
-					}
-				}
-
+				WriteEqualityGuard(writer, model, typeName, valueStorage);
 				writer.WriteLine($"{valueStorage} = value;");
 				writer.WriteLine(
 					"global::Caliburn.Micro.PropertyChangedBase propertyChangedNotifier = this;");
@@ -98,11 +80,6 @@ public sealed partial class PropertyChangedGenerator
 				}
 			}
 		}
-
-		private static bool RequiresValueEqualityHelper(IReadOnlyList<PropertyModel> properties) =>
-			properties.Any(static property =>
-				!property.AlwaysNotify
-					&& property.Equality == EqualityMode.EquatableValue);
 
 		private static bool InheritsFrom(INamedTypeSymbol type, INamedTypeSymbol expectedBase)
 		{

@@ -44,6 +44,10 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 		INamedTypeSymbol? basicViewModel = compilation.GetTypeByMetadataName(GeneratorContracts.BasicViewModelMetadataName);
 		INamedTypeSymbol? caliburnPropertyChangedBase = compilation.GetTypeByMetadataName(
 			GeneratorContracts.CaliburnPropertyChangedBaseMetadataName);
+		INamedTypeSymbol? hostAttribute = compilation.GetTypeByMetadataName(
+			GeneratorContracts.HostAttributeMetadataName);
+		INamedTypeSymbol? propertyChangedEventArgs = compilation.GetTypeByMetadataName(
+			GeneratorContracts.PropertyChangedEventArgsMetadataName);
 		INamedTypeSymbol? equatableType = compilation.GetTypeByMetadataName(
 			typeof(IEquatable<>).FullName!);
 
@@ -71,20 +75,31 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			pair.Value.Sort(static (left, right) => string.CompareOrdinal(left.Property.Name, right.Property.Name));
 			if (!TryResolveHostStrategy(
 				context,
+				compilation,
 				pair.Key,
 				pair.Value[0].Property.Name,
 				pair.Value[0].Location,
+				hostAttribute,
+				propertyChangedEventArgs,
 				basicViewModel,
 				caliburnPropertyChangedBase,
 				out PropertyChangedHostStrategy? strategy)) continue;
 
 			PropertyChangedHostStrategy validStrategy = strategy!;
-			if (validStrategy.ReservedMemberName(pair.Value) is string reservedMemberName
-				&& pair.Key.GetMembers(reservedMemberName).Length != 0)
+			bool hasCollision = false;
+			foreach (ReservedMember reservedMember in validStrategy.ReservedMembers(pair.Value))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.GeneratedMemberCollision, pair.Value[0].Location, pair.Key.ToDisplayString(), reservedMemberName));
-				continue;
+				if (!HasAccessibleMember(pair.Key, reservedMember.Name, compilation)) continue;
+
+				context.ReportDiagnostic(Diagnostic.Create(
+					DiagnosticDescriptors.GeneratedMemberCollision,
+					reservedMember.Location,
+					pair.Key.ToDisplayString(),
+					reservedMember.Name));
+				hasCollision = true;
 			}
+			if (hasCollision) continue;
+
 			outputs.Add(new GeneratedType(
 				pair.Key,
 				pair.Value,
@@ -106,6 +121,25 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			}
 			context.AddSource(output.HintName, SourceText.From(BuildSource(output), Encoding.UTF8));
 		}
+	}
+
+	private static bool HasAccessibleMember(
+		INamedTypeSymbol containingType,
+		string memberName,
+		Compilation compilation)
+	{
+		for (INamedTypeSymbol? current = containingType;
+			current != null;
+			current = current.BaseType)
+		{
+			if (current.GetMembers(memberName)
+				.Any(member => compilation.IsSymbolAccessibleWithin(member, containingType)))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private static bool TryCreateProperty(

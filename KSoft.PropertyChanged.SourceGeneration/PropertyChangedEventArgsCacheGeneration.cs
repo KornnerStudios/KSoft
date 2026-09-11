@@ -30,6 +30,19 @@ internal static class PropertyChangedEventArgsCacheGeneration
 		IPropertySymbol property = candidate.Property;
 		INamedTypeSymbol type = property.ContainingType;
 		Location location = candidate.Syntax.GetLocation();
+		if (property.GetAttributes().Any(static attribute =>
+			string.Equals(
+				attribute.AttributeClass?.ToDisplayString(),
+				GeneratorContracts.AttributeMetadataName,
+				System.StringComparison.Ordinal)))
+		{
+			context.ReportDiagnostic(Diagnostic.Create(
+				DiagnosticDescriptors.ConflictingPropertyAttributes,
+				location,
+				property.Name));
+			return;
+		}
+
 		if (type.ContainingType != null
 			|| type.Arity != 0
 			|| type.TypeKind != TypeKind.Class
@@ -49,7 +62,7 @@ internal static class PropertyChangedEventArgsCacheGeneration
 			return;
 		}
 
-		string fieldName = EventArgsFieldName(property.Name);
+		string fieldName = GeneratedSourceUtilities.PropertyChangedEventArgsFieldName(property.Name);
 		if (type.GetMembers(fieldName).Length != 0)
 		{
 			context.ReportDiagnostic(Diagnostic.Create(
@@ -100,9 +113,6 @@ internal static class PropertyChangedEventArgsCacheGeneration
 
 		return writer.ToString();
 	}
-
-	private static string EventArgsFieldName(string propertyName) =>
-		$"k{propertyName}ChangedEventArgs";
 
 	private sealed class Candidate
 	{

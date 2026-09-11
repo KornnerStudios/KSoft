@@ -15,8 +15,10 @@ public sealed partial class PropertyChangedGenerator
 		{
 		}
 
-		public override string ReservedMemberName(IReadOnlyList<PropertyModel> properties) =>
-			GeneratorContracts.CacheTypeName;
+		public override IEnumerable<ReservedMember> ReservedMembers(IReadOnlyList<PropertyModel> properties)
+		{
+			yield return new ReservedMember(GeneratorContracts.CacheTypeName, properties[0].Location);
+		}
 
 		public override void WriteTypeMembers(SourceWriter writer, IReadOnlyList<PropertyModel> properties)
 		{

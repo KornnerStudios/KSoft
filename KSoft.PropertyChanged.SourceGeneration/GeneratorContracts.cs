@@ -4,14 +4,17 @@ internal static class GeneratorContracts
 {
 	public const string AttributeMetadataName = "KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedAttribute";
 	public const string EventArgsAttributeMetadataName = "KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgsAttribute";
+	public const string HostAttributeMetadataName = "KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHostAttribute";
 	public const string GeneratorName = "KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator";
 	public const string GeneratorVersion = "1.0.0.0";
 	public const string BasicViewModelMetadataName = "KSoft.ObjectModel.BasicViewModel";
 	public const string CaliburnPropertyChangedBaseMetadataName = "Caliburn.Micro.PropertyChangedBase";
+	public const string PropertyChangedEventArgsMetadataName = "System.ComponentModel.PropertyChangedEventArgs";
 	public const string BackingFieldPropertyName = "BackingField";
 	public const string AlwaysNotifyPropertyName = "AlwaysNotify";
+	public const string NotificationMethodPropertyName = "NotificationMethod";
 	public const string CacheTypeName = "__PropertyChangedEventArgs";
-	public const string CaliburnValueEqualityMethodName = "__PropertyChangedValuesEqual";
+	public const string ValueEqualityMethodName = "__PropertyChangedValuesEqual";
 	public const string ContractHintName = "KSoft.PropertyChanged.Contracts.g.cs";
 
 	public const string ContractSource = """
@@ -23,9 +26,11 @@ internal static class GeneratorContracts
 		/// Generates a partial-property implementation using the containing type's supported notification provider.
 		/// </summary>
 		/// <remarks>
-		/// The containing type must directly derive from <c>KSoft.ObjectModel.BasicViewModel</c> or inherit
-		/// <c>Caliburn.Micro.PropertyChangedBase</c>. BasicViewModel hosts raise cached event args. Caliburn hosts
-		/// preserve the virtual string-based notification pipeline, including <c>IsNotifying</c> and UI dispatch.
+		/// The containing type must use <see cref="GeneratedPropertyChangedHostAttribute"/>, directly derive from
+		/// <c>KSoft.ObjectModel.BasicViewModel</c>, or inherit <c>Caliburn.Micro.PropertyChangedBase</c>. Explicit host
+		/// markers take precedence over inferred framework hosts. BasicViewModel hosts raise cached event args.
+		/// Caliburn hosts preserve the virtual string-based notification pipeline, including <c>IsNotifying</c> and UI
+		/// dispatch.
 		/// Unless <see cref="AlwaysNotify"/> is enabled, the generated setter chooses its equality behavior from the
 		/// declared property type:
 		/// <list type="bullet">
@@ -82,6 +87,42 @@ internal static class GeneratorContracts
 			Inherited = false)]
 		internal sealed class GeneratedPropertyChangedEventArgsAttribute : global::System.Attribute
 		{
+		}
+
+		/// <summary>Identifies the notification provider used by a generated property-change host.</summary>
+		internal enum GeneratedPropertyChangedHostProvider
+		{
+			/// <summary>
+			/// Generates legacy <c>k&lt;PropertyName&gt;ChangedEventArgs</c> fields and passes them to the configured
+			/// notification method.
+			/// </summary>
+			CachedEventArgs = 0,
+		}
+
+		/// <summary>Configures an explicit notification provider for generated partial properties.</summary>
+		/// <remarks>
+		/// Apply this marker to a partial class. The nearest marker in a generated property's base-type chain wins.
+		/// </remarks>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute(
+			"KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator",
+			"1.0.0.0")]
+		[global::System.AttributeUsageAttribute(
+			global::System.AttributeTargets.Class,
+			AllowMultiple = false,
+			Inherited = true)]
+		internal sealed class GeneratedPropertyChangedHostAttribute : global::System.Attribute
+		{
+			/// <summary>Initializes a new host marker for <paramref name="provider"/>.</summary>
+			public GeneratedPropertyChangedHostAttribute(GeneratedPropertyChangedHostProvider provider)
+			{
+				Provider = provider;
+			}
+
+			/// <summary>Gets the provider used by the marked host.</summary>
+			public GeneratedPropertyChangedHostProvider Provider { get; }
+
+			/// <summary>Gets or sets the instance method that receives generated cached event args.</summary>
+			public string NotificationMethod { get; set; }
 		}
 		""";
 }
