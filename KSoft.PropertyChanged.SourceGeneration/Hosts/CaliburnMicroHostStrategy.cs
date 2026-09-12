@@ -8,6 +8,23 @@ namespace KSoft.PropertyChanged.SourceGeneration;
 
 public sealed partial class PropertyChangedGenerator
 {
+	/// <summary>Emits setters that retain Caliburn's virtual string-based notification pipeline.</summary>
+	/// <remarks>
+	/// <para>
+	/// This provider removes handwritten setter boilerplate, not framework notification allocations.
+	/// Caliburn.Micro 4.0.210 creates <c>PropertyChangedEventArgs</c> for delivered notifications and uses a
+	/// capturing closure/delegate for UI dispatch. See that version's <c>PropertyChangedBase.NotifyOfPropertyChange</c>.
+	/// </para>
+	/// <para>
+	/// Caliburn 5 and 6 have not been evaluated here for allocation changes; do not extrapolate the 4.0.210
+	/// findings to those versions. Evaluate compatible upstream APIs before considering a maintained fork.
+	/// </para>
+	/// <para>
+	/// Any allocation-free replacement must preserve subscriber gating, <c>IsNotifying</c>, UI dispatch, and
+	/// virtual interception, including existing overrides. Do not bypass that pipeline with direct
+	/// <c>OnPropertyChanged</c> calls or fork Gemini solely for this optimization.
+	/// </para>
+	/// </remarks>
 	private sealed class CaliburnMicroHostStrategy
 		: PropertyChangedHostStrategy
 	{

@@ -28,15 +28,9 @@ The BCL aims to provide a compartmentalized framework which provides functionali
 
 Compartmentalized in that non-critical systems like KSoft.Security are outside the actual root assembly, just named "KSoft".
 
-Example functionality which you can't find in the .NET framework is a BitStream class. We also provide utilities for
-treating and using Enums as actual bit flags, in an optimized and complete manner.
+Examples include stream-based bit-level I/O and readable helpers for generic enum flag mutation.
 
-KSoft historically relied on [T4 Text Templates][MsdnT4] for generated source such as numeric overload matrices. Current
-modernization work is retiring the T4 source in favor of Roslyn source generators. The checked-in `.tt` and `KSoft.T4`
-assets should be treated as historical source; git history and the `pre-t4-removal` tag are the rollback record once
-those files are removed.
-
-[MsdnT4]: http://msdn.microsoft.com/en-us/library/bb126445.aspx
+KSoft uses Roslyn source generators for repeated C# surfaces such as numeric overload matrices. The former T4 assets are preserved in Git history and the `pre-t4-removal` tag.
 
 ## Our BitStream
 You will actually be hard pressed to find a decent, comprehensive BitStream class for .NET anywhere on The 'Net. The most comprehensive one that I know of is featured in [a CodeProject article][CodeProjectBitStream]. To compare the two:
@@ -45,30 +39,14 @@ You will actually be hard pressed to find a decent, comprehensive BitStream clas
 
 * **They** were last updated in 2005 and have unpatched bugs; **KSoft** has a tried and tested class. Tested in both regular use and with Unit Tests to validate core operations. A patched version of the article is used in our Unit Testing to check compatibility
 
-* **They** have a #region infested, monolithic .cs file; **KSoft** makes use of partial classes and code generation using T4 to keep the files _bite_-sized and copy&paste code to a minimum
+* **They** have a #region infested, monolithic .cs file; **KSoft** makes use of partial classes and Roslyn source generators to keep the files _bite_-sized and copy&paste code to a minimum
 
 [CodeProjectBitStream]: http://www.codeproject.com/Articles/12261/A-BitStream-Class-for-the-NET-Framework
 
 ## [Flags]Enum++
-The .NET framework offers a [Enum.HasFlag()][EnumHasFlagMsdn] object method which you can use to test that an enum. Unfortunately, that method is [far from efficient][EnumHasFlagSO].
+Use `Enum.HasFlag` for all-bits flag tests and .NET's `EqualityComparer<TEnum>.Default` / `Comparer<TEnum>.Default` for enum equality, hashing, and ordering.
 
-Using code generation (via Linq Expressions), we're able to address the inefficiencies found in .NET's Enum.HasFlag(). We don't perform any boxing and can operate on the underlying type (ie, integer) of the enum instead of using UInt64 as a catch-all.
-
-We take this one step further still and provide functionality for Add, Remove, and Modify as methods. What's great about this is that you're able to add a new semantic level to bit flag operations in your code, instead of bleeding your enum values together with the normal bit-wise operators.
-
-If we so desired (and we presently don't), we could even modify the code generator to add checks to **DEBUG** assemblies that validate the flags being used in bit operations (Test, Add, etc) have named members in the enum type.
-
-If there are other .NET languages which don't (easily) offer bit flag operations on enum types, I'm sure our utilities would prove their use once again in adding such support.
-
-[EnumHasFlagMsdn]: http://msdn.microsoft.com/en-us/library/system.enum.hasflag%28v=vs.110%29.aspx
-[EnumHasFlagSO]: http://stackoverflow.com/questions/7368652/what-is-it-that-makes-enum-hasflag-so-slow
+`EnumFlags.Add`, `Remove`, and `Modify` remain readability helpers for `[Flags]` enums, with value-returning and `ref` forms. They support generic enum mutation by operating on the backing type through shared `EnumValue<TEnum>` conversions, rather than a separate expression-compiled flags implementation. See `KSoft\Enum\EnumFlags.cs` for the contract.
 
 ## Building
 Before you try building any of the projects, first [read the requirements](https://bitbucket.org/KornnerStudios/ksoft/wiki/Requirements) you may need.
-
-Current active builds do not require Visual Studio TextTemplating or `KSoft.T4`. Historical commits before
-`pre-t4-removal` may still require `KSoft.T4` first because it was the meta assembly used by the T4 documents.
-
-**NOTE**: The BCL contains some C++/cli projects, which cause the 'Win32' Platform to be defined. The only projects that get built with this active platform are these C++/cli projects. Instead, you should opt for the 'x86' Platform which will also build the .NET assemblies. Long story short, *don't* select 'Win32' for your active configuration.
-
-However, at the time of this writing these C++/cli projects haven't been populated with meaningful code, so you're currently safe just building for 'Any CPU'
