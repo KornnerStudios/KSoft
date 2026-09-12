@@ -13,6 +13,7 @@ internal static class GeneratorContracts
 	public const string PropertyChangedEventArgsMetadataName = "System.ComponentModel.PropertyChangedEventArgs";
 	public const string BackingFieldPropertyName = "BackingField";
 	public const string AlwaysNotifyPropertyName = "AlwaysNotify";
+	public const string ChangedHookPropertyName = "ChangedHook";
 	public const string DependentPropertiesPropertyName = "DependentProperties";
 	public const string NotificationMethodPropertyName = "NotificationMethod";
 	public const string CacheTypeName = "__PropertyChangedEventArgs";
@@ -71,10 +72,36 @@ internal static class GeneratorContracts
 			public bool AlwaysNotify { get; set; }
 
 			/// <summary>
+			/// Gets or sets the optional hook invoked after an accepted property change. Omission and
+			/// <see cref="GeneratedPropertyChangedHook.None"/> do not emit a hook.
+			/// </summary>
+			/// <remarks>
+			/// <see cref="GeneratedPropertyChangedHook.Parameterless"/> is supported only by
+			/// <c>KSoft.ObjectModel.BasicViewModel</c> hosts. It emits an optional, parameterless partial
+			/// method that runs after primary notification and before dependent notifications. Undefined modes
+			/// and unsupported resolved providers prevent property generation with <c>KSPC0007</c>; a conflicting
+			/// hook member prevents host generation with <c>KSPC0006</c>.
+			/// </remarks>
+			public GeneratedPropertyChangedHook ChangedHook { get; set; }
+
+			/// <summary>
 			/// Gets or sets the instance-property names to notify, in declaration order, after the generated property's
 			/// primary notification is accepted.
 			/// </summary>
 			public string[] DependentProperties { get; set; }
+		}
+
+		/// <summary>Specifies the optional hook emitted for a generated property.</summary>
+		internal enum GeneratedPropertyChangedHook
+		{
+			/// <summary>Does not emit a property-change hook.</summary>
+			None = 0,
+
+			/// <summary>
+			/// Emits an optional, parameterless <c>On&lt;PropertyName&gt;Changed</c> partial method for a
+			/// supported <c>KSoft.ObjectModel.BasicViewModel</c> host.
+			/// </summary>
+			Parameterless = 1,
 		}
 
 		/// <summary>

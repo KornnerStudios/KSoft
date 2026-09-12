@@ -113,6 +113,15 @@ public sealed partial class PropertyChangedGenerator
 					}
 				}
 			}
+
+			foreach (PropertyModel property in properties)
+			{
+				if (property.ChangedHook != ChangedHookMode.Parameterless) continue;
+
+				writer.WriteLine();
+				writer.WriteLine(
+					$"partial void {GeneratedSourceUtilities.EscapeIdentifier(ParameterlessHookName(property))}();");
+			}
 		}
 
 		public override void WriteSetter(
@@ -128,7 +137,8 @@ public sealed partial class PropertyChangedGenerator
 			string helperCall = model.AlwaysNotify
 				? $"base.SetField<{typeName}>(ref {storage}, value, {eventArgs}, true)"
 				: $"base.{HelperName(model.Equality)}<{typeName}>(ref {storage}, value, {eventArgs})";
-			if (model.DependentProperties.IsDefaultOrEmpty)
+			if (model.ChangedHook == ChangedHookMode.None
+				&& model.DependentProperties.IsDefaultOrEmpty)
 			{
 				writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(setter.Modifiers)}set => {helperCall};");
 				return;
@@ -140,6 +150,12 @@ public sealed partial class PropertyChangedGenerator
 				writer.WriteLine($"if ({helperCall})");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
+					if (model.ChangedHook == ChangedHookMode.Parameterless)
+					{
+						writer.WriteLine(
+							$"this.{GeneratedSourceUtilities.EscapeIdentifier(ParameterlessHookName(model))}();");
+					}
+
 					foreach (string dependentProperty in model.DependentProperties)
 					{
 						writer.WriteLine(

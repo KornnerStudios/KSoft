@@ -26,6 +26,26 @@ public sealed partial class PropertyChangedGeneratorTests
 		Assert.AreEqual(
 			SpecialType.System_Boolean,
 			generatedPropertyAttribute.GetMembers("AlwaysNotify").OfType<IPropertySymbol>().Single().Type.SpecialType);
+		INamedTypeSymbol changedHook = run.OutputCompilation.GetTypeByMetadataName(
+			"KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHook")!;
+		Assert.IsNotNull(changedHook);
+		Assert.AreEqual(Accessibility.Internal, changedHook.DeclaredAccessibility);
+		Assert.AreEqual(TypeKind.Enum, changedHook.TypeKind);
+		IFieldSymbol[] hookModes = changedHook.GetMembers()
+			.OfType<IFieldSymbol>()
+			.Where(static field => field.HasConstantValue)
+			.ToArray();
+		CollectionAssert.AreEqual(
+			new[] { "None", "Parameterless" },
+			hookModes.Select(static field => field.Name).ToArray());
+		Assert.AreEqual(0, hookModes[0].ConstantValue);
+		Assert.AreEqual(1, hookModes[1].ConstantValue);
+		IPropertySymbol changedHookProperty = generatedPropertyAttribute
+			.GetMembers("ChangedHook")
+			.OfType<IPropertySymbol>()
+			.Single();
+		Assert.AreEqual(Accessibility.Public, changedHookProperty.DeclaredAccessibility);
+		Assert.IsTrue(SymbolEqualityComparer.Default.Equals(changedHook, changedHookProperty.Type));
 		var dependentProperties = (IArrayTypeSymbol)generatedPropertyAttribute
 			.GetMembers("DependentProperties")
 			.OfType<IPropertySymbol>()
@@ -36,6 +56,14 @@ public sealed partial class PropertyChangedGeneratorTests
 		Assert.IsNotNull(propertyDocumentation);
 		StringAssert.Contains(propertyDocumentation, "Caliburn.Micro.PropertyChangedBase", StringComparison.Ordinal);
 		StringAssert.Contains(propertyDocumentation, "virtual string-based notification pipeline", StringComparison.Ordinal);
+		StringAssert.Contains(
+			changedHookProperty.GetDocumentationCommentXml(),
+			"Parameterless",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			hookModes.Single(static field => field.Name == "Parameterless").GetDocumentationCommentXml(),
+			"parameterless",
+			StringComparison.Ordinal);
 
 		INamedTypeSymbol cacheAttribute = run.OutputCompilation.GetTypeByMetadataName(
 			"KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgsAttribute")!;

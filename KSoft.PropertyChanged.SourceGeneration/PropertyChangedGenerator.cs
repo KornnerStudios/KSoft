@@ -86,6 +86,13 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 				out PropertyChangedHostStrategy? strategy)) continue;
 
 			PropertyChangedHostStrategy validStrategy = strategy!;
+			if (!TryValidateChangedHooks(
+				context,
+				compilation,
+				pair.Key,
+				pair.Value,
+				validStrategy)) continue;
+
 			if (validStrategy.UnsupportedDependentNotificationProvider is string providerName)
 			{
 				bool unsupportedDependents = false;
@@ -112,7 +119,8 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 					DiagnosticDescriptors.GeneratedMemberCollision,
 					reservedMember.Location,
 					pair.Key.ToDisplayString(),
-					reservedMember.Name));
+					reservedMember.Name,
+					"an accessible member with that name already exists"));
 				hasCollision = true;
 			}
 			if (hasCollision) continue;
@@ -133,7 +141,12 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 		{
 			if (!usedHints.Add(output.HintName))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.GeneratedMemberCollision, output.Properties[0].Location, output.Type.ToDisplayString(), output.HintName));
+				context.ReportDiagnostic(Diagnostic.Create(
+					DiagnosticDescriptors.GeneratedMemberCollision,
+					output.Properties[0].Location,
+					output.Type.ToDisplayString(),
+					output.HintName,
+					"another generated host already uses this hint name"));
 				continue;
 			}
 			context.AddSource(output.HintName, SourceText.From(BuildSource(output), Encoding.UTF8));
@@ -224,6 +237,10 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 
 		EqualityMode equality = EqualityModeFor(property.Type, equatableType);
 		bool alwaysNotify = ReadAlwaysNotify(candidate.Attribute);
+		if (!TryReadChangedHook(context, candidate, out ChangedHookMode changedHook))
+		{
+			return false;
+		}
 		if (!TryReadDependentProperties(
 			context,
 			compilation,
@@ -246,6 +263,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			field,
 			equality,
 			alwaysNotify,
+			changedHook,
 			dependentProperties,
 			location);
 		return true;
@@ -595,6 +613,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			IFieldSymbol? backingField,
 			EqualityMode equality,
 			bool alwaysNotify,
+			ChangedHookMode changedHook,
 			ImmutableArray<string> dependentProperties,
 			Location location)
 		{
@@ -603,6 +622,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 			BackingField = backingField;
 			Equality = equality;
 			AlwaysNotify = alwaysNotify;
+			ChangedHook = changedHook;
 			DependentProperties = dependentProperties;
 			Location = location;
 		}
@@ -612,6 +632,7 @@ public sealed partial class PropertyChangedGenerator : IIncrementalGenerator
 		public IFieldSymbol? BackingField { get; }
 		public EqualityMode Equality { get; }
 		public bool AlwaysNotify { get; }
+		public ChangedHookMode ChangedHook { get; }
 		public ImmutableArray<string> DependentProperties { get; }
 		public Location Location { get; }
 	}
