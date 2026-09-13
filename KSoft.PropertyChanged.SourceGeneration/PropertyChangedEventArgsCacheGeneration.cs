@@ -69,7 +69,8 @@ internal static class PropertyChangedEventArgsCacheGeneration
 				DiagnosticDescriptors.GeneratedMemberCollision,
 				location,
 				type.ToDisplayString(),
-				fieldName));
+				fieldName,
+				"an existing member already uses the generated cache field name"));
 			return;
 		}
 

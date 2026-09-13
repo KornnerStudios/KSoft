@@ -137,7 +137,8 @@ public sealed partial class PropertyChangedGenerator
 			string helperCall = model.AlwaysNotify
 				? $"base.SetField<{typeName}>(ref {storage}, value, {eventArgs}, true)"
 				: $"base.{HelperName(model.Equality)}<{typeName}>(ref {storage}, value, {eventArgs})";
-			if (model.ChangedHook == ChangedHookMode.None
+			string? changedCallback = ChangedCallbackName(model);
+			if (changedCallback == null
 				&& model.DependentProperties.IsDefaultOrEmpty)
 			{
 				writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(setter.Modifiers)}set => {helperCall};");
@@ -150,10 +151,10 @@ public sealed partial class PropertyChangedGenerator
 				writer.WriteLine($"if ({helperCall})");
 				using (writer.EnterBlock(SourceWriterBlockType.Braces))
 				{
-					if (model.ChangedHook == ChangedHookMode.Parameterless)
+					if (changedCallback != null)
 					{
 						writer.WriteLine(
-							$"this.{GeneratedSourceUtilities.EscapeIdentifier(ParameterlessHookName(model))}();");
+							$"this.{GeneratedSourceUtilities.EscapeIdentifier(changedCallback)}();");
 					}
 
 					foreach (string dependentProperty in model.DependentProperties)

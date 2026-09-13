@@ -68,9 +68,19 @@ public sealed partial class PropertyChangedGenerator
 
 		public override void WriteTypeMembers(SourceWriter writer, IReadOnlyList<PropertyModel> properties)
 		{
-			if (!RequiresValueEqualityHelper(properties)) return;
+			if (RequiresValueEqualityHelper(properties))
+			{
+				WriteValueEqualityHelper(writer);
+			}
 
-			WriteValueEqualityHelper(writer);
+			foreach (PropertyModel property in properties)
+			{
+				if (property.ChangedHook != ChangedHookMode.Parameterless) continue;
+
+				writer.WriteLine();
+				writer.WriteLine(
+					$"partial void {GeneratedSourceUtilities.EscapeIdentifier(ParameterlessHookName(property))}();");
+			}
 		}
 
 		public override void WriteSetter(
@@ -82,6 +92,7 @@ public sealed partial class PropertyChangedGenerator
 			string storage)
 		{
 			string valueStorage = ValueStorage(model, storage);
+			string? changedCallback = ChangedCallbackName(model);
 			writer.WriteLine($"{GeneratedSourceUtilities.ModifiersText(setter.Modifiers)}set");
 			using (writer.EnterBlock(SourceWriterBlockType.Braces))
 			{
@@ -94,10 +105,34 @@ public sealed partial class PropertyChangedGenerator
 				{
 					writer.WriteLine(
 						$"propertyChangedNotifier.NotifyOfPropertyChange(nameof({propertyName}));");
-					foreach (string dependentProperty in model.DependentProperties)
+
+					if (changedCallback == null)
 					{
-						writer.WriteLine(
-							$"propertyChangedNotifier.NotifyOfPropertyChange({DependentPropertyName(dependentProperty)});");
+						foreach (string dependentProperty in model.DependentProperties)
+						{
+							writer.WriteLine(
+								$"propertyChangedNotifier.NotifyOfPropertyChange({DependentPropertyName(dependentProperty)});");
+						}
+					}
+				}
+
+				if (changedCallback != null)
+				{
+					writer.WriteLine();
+					writer.WriteLine(
+						$"this.{GeneratedSourceUtilities.EscapeIdentifier(changedCallback)}();");
+
+					if (!model.DependentProperties.IsDefaultOrEmpty)
+					{
+						writer.WriteLine("if (propertyChangedNotifier.IsNotifying)");
+						using (writer.EnterBlock(SourceWriterBlockType.Braces))
+						{
+							foreach (string dependentProperty in model.DependentProperties)
+							{
+								writer.WriteLine(
+									$"propertyChangedNotifier.NotifyOfPropertyChange({DependentPropertyName(dependentProperty)});");
+							}
+						}
 					}
 				}
 			}

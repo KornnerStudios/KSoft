@@ -283,7 +283,7 @@ public sealed partial class PropertyChangedGeneratorTests
 	}
 
 	[TestMethod]
-	public void ParameterlessChangedHooksRejectUnsupportedSelectedProvidersTest()
+	public void ParameterlessChangedHooksRejectCachedEventArgsProvidersTest()
 	{
 		TestRun run = Run(
 			"""
@@ -319,20 +319,311 @@ public sealed partial class PropertyChangedGeneratorTests
 				public partial int Value { get; set; }
 			}
 
-			public partial class CaliburnHookViewModel : Caliburn.Micro.PropertyChangedBase
-			{
-				[GeneratedPropertyChanged(
-					ChangedHook = GeneratedPropertyChangedHook.Parameterless)]
-				public partial int Value { get; set; }
-			}
 			""");
 
-		AssertDiagnosticIds(run, "KSPC0007", "KSPC0007", "KSPC0007");
+		AssertDiagnosticIds(run, "KSPC0007", "KSPC0007");
 		Assert.HasCount(0, PropertySources(run));
 		Assert.IsTrue(run.GeneratorDiagnostics.All(
 			static diagnostic => diagnostic.GetMessage().Contains(
 				"Parameterless",
 				StringComparison.Ordinal)));
+	}
+
+	[TestMethod]
+	public void ParameterlessChangedHooksSupportCaliburnWithVirtualNotificationSemanticsTest()
+	{
+		const string assemblyName = "CaliburnChangedHookRuntimeFixture";
+		TestRun run = Run(
+			"""
+			using KSoft.PropertyChanged.SourceGeneration;
+
+			public partial class CaliburnChangedHookViewModel : Caliburn.Micro.PropertyChangedBase
+			{
+				public int Dependent => 0;
+				public int HookCalls { get; private set; }
+				public bool ThrowInHook { get; set; }
+				public bool ThrowInNotification { get; set; }
+
+				[GeneratedPropertyChanged(
+					ChangedHook = GeneratedPropertyChangedHook.Parameterless,
+					DependentProperties = new[] { nameof(Dependent) })]
+				public partial int Value { get; set; }
+
+				[GeneratedPropertyChanged(
+					AlwaysNotify = true,
+					ChangedHook = GeneratedPropertyChangedHook.Parameterless)]
+				public partial int Forced { get; set; }
+
+				public override void NotifyOfPropertyChange(string? propertyName = null)
+				{
+					if (ThrowInNotification)
+					{
+						throw new global::System.InvalidOperationException("primary");
+					}
+
+					base.NotifyOfPropertyChange(propertyName);
+				}
+
+				partial void OnValueChanged()
+				{
+					if (ThrowInHook)
+					{
+						throw new global::System.InvalidOperationException("hook");
+					}
+
+					HookCalls++;
+				}
+
+				partial void OnForcedChanged() => HookCalls++;
+			}
+			""",
+			includeHost: false,
+			assemblyName: assemblyName);
+
+		CompilationUnitSyntax compilationUnit = GeneratedCompilationUnit(run);
+		MethodDeclarationSyntax[] hooks = compilationUnit.DescendantNodes()
+			.OfType<MethodDeclarationSyntax>()
+			.Where(static method =>
+				method.Identifier.ValueText is "OnValueChanged" or "OnForcedChanged")
+			.ToArray();
+		Assert.HasCount(2, hooks);
+		foreach (MethodDeclarationSyntax hook in hooks)
+		{
+			Assert.IsEmpty(hook.AttributeLists);
+			CollectionAssert.AreEqual(
+				new[] { SyntaxKind.PartialKeyword },
+				hook.Modifiers.Select(static modifier => modifier.Kind()).ToArray());
+		}
+		AssertSetterEquivalent(
+			"""
+			{
+				if (__PropertyChangedValuesEqual(ref field, value))
+				{
+					return;
+				}
+
+				field = value;
+				global::Caliburn.Micro.PropertyChangedBase propertyChangedNotifier = this;
+				if (propertyChangedNotifier.IsNotifying)
+				{
+					propertyChangedNotifier.NotifyOfPropertyChange(nameof(Value));
+				}
+
+				this.OnValueChanged();
+				if (propertyChangedNotifier.IsNotifying)
+				{
+					propertyChangedNotifier.NotifyOfPropertyChange("Dependent");
+				}
+			}
+			""",
+			run,
+			"Value");
+		AssertValid(run);
+
+		Type type = Emit(run).GetType("CaliburnChangedHookViewModel", throwOnError: true)!;
+		var model = (Caliburn.Micro.PropertyChangedBase)Activator.CreateInstance(type)!;
+		PropertyInfo value = type.GetProperty("Value")!;
+		PropertyInfo forced = type.GetProperty("Forced")!;
+		var propertyNames = new List<string?>();
+		var hookCountsAtNotification = new List<int>();
+		model.PropertyChanged += (_, args) =>
+		{
+			propertyNames.Add(args.PropertyName);
+			hookCountsAtNotification.Add((int)type.GetProperty("HookCalls")!.GetValue(model)!);
+		};
+
+		value.SetValue(model, 1);
+		value.SetValue(model, 1);
+		CollectionAssert.AreEqual(new[] { "Value", "Dependent" }, propertyNames);
+		CollectionAssert.AreEqual(new[] { 0, 1 }, hookCountsAtNotification);
+		Assert.AreEqual(1, type.GetProperty("HookCalls")!.GetValue(model));
+
+		model.IsNotifying = false;
+		value.SetValue(model, 2);
+		forced.SetValue(model, 0);
+		forced.SetValue(model, 0);
+		CollectionAssert.AreEqual(new[] { "Value", "Dependent" }, propertyNames);
+		Assert.AreEqual(4, type.GetProperty("HookCalls")!.GetValue(model));
+
+		model.IsNotifying = true;
+		type.GetProperty("ThrowInNotification")!.SetValue(model, true);
+		AssertInvocationException(() => value.SetValue(model, 3), "primary");
+		CollectionAssert.AreEqual(new[] { "Value", "Dependent" }, propertyNames);
+		Assert.AreEqual(4, type.GetProperty("HookCalls")!.GetValue(model));
+
+		type.GetProperty("ThrowInNotification")!.SetValue(model, false);
+		type.GetProperty("ThrowInHook")!.SetValue(model, true);
+		AssertInvocationException(() => value.SetValue(model, 4), "hook");
+		CollectionAssert.AreEqual(new[] { "Value", "Dependent", "Value" }, propertyNames);
+		Assert.AreEqual(4, type.GetProperty("HookCalls")!.GetValue(model));
+	}
+
+	[TestMethod]
+	public void ChangedCallbackSupportsGenericCaliburnHostsWithoutDeclaringAPartialHookTest()
+	{
+		const string assemblyName = "GenericCaliburnChangedCallbackFixture";
+		TestRun run = Run(
+			"""
+			using KSoft.PropertyChanged.SourceGeneration;
+
+			public sealed class ComparableValue : global::System.IComparable<ComparableValue>
+			{
+				public int CompareTo(ComparableValue? other) => 0;
+			}
+
+			public abstract partial class GenericCallbackViewModel<TProto, TExplorer>
+				: Caliburn.Micro.PropertyChangedBase
+				where TProto : class, global::System.IComparable<TProto>
+				where TExplorer : class, new()
+			{
+				private TProto? mValue;
+				public int CallbackCalls { get; private set; }
+
+				[GeneratedPropertyChanged(
+					BackingField = nameof(mValue),
+					ChangedCallback = nameof(OnValueChanged))]
+				public partial TProto? Value { get; set; }
+
+				protected virtual void OnValueChanged() => CallbackCalls++;
+			}
+
+			public sealed class ConcreteCallbackViewModel
+				: GenericCallbackViewModel<ComparableValue, object>
+			{
+			}
+			""",
+			includeHost: false,
+			assemblyName: assemblyName);
+
+		string generated = PropertySource(run);
+		StringAssert.Contains(generated, "#nullable enable annotations", StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"public abstract partial class GenericCallbackViewModel<TProto, TExplorer>",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"where TProto : class, global::System.IComparable<TProto>",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"where TExplorer : class, new()",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"partial TProto? Value",
+			StringComparison.Ordinal);
+		StringAssert.Contains(generated, "this.OnValueChanged();", StringComparison.Ordinal);
+		Assert.IsFalse(generated.Contains("partial void OnValueChanged();", StringComparison.Ordinal));
+		AssertValid(run);
+
+		Assembly assembly = Emit(run);
+		Type type = assembly.GetType("ConcreteCallbackViewModel", throwOnError: true)!;
+		object comparableValue = Activator.CreateInstance(
+			assembly.GetType("ComparableValue", throwOnError: true)!)!;
+		var model = (Caliburn.Micro.PropertyChangedBase)Activator.CreateInstance(type)!;
+		PropertyInfo value = type.GetProperty("Value")!;
+		var propertyNames = new List<string?>();
+		model.PropertyChanged += (_, args) => propertyNames.Add(args.PropertyName);
+
+		value.SetValue(model, comparableValue);
+		value.SetValue(model, value.GetValue(model));
+		Assert.AreEqual(1, type.GetProperty("CallbackCalls")!.GetValue(model));
+		CollectionAssert.AreEqual(new[] { "Value" }, propertyNames);
+
+		model.IsNotifying = false;
+		value.SetValue(model, null);
+		Assert.AreEqual(2, type.GetProperty("CallbackCalls")!.GetValue(model));
+		CollectionAssert.AreEqual(new[] { "Value" }, propertyNames);
+	}
+
+	[TestMethod]
+	public void ChangedCallbackRequiresOneCompatibleCaliburnMethodAndCannotCombineWithChangedHookTest()
+	{
+		TestRun run = Run(
+			"""
+			using KSoft.PropertyChanged.SourceGeneration;
+
+			public partial class MissingCallbackViewModel : Caliburn.Micro.PropertyChangedBase
+			{
+				[GeneratedPropertyChanged(ChangedCallback = "Missing")]
+				public partial int Value { get; set; }
+			}
+
+			public partial class ConflictingCallbackViewModel : Caliburn.Micro.PropertyChangedBase
+			{
+				[GeneratedPropertyChanged(
+					ChangedHook = GeneratedPropertyChangedHook.Parameterless,
+					ChangedCallback = nameof(OnValueChanged))]
+				public partial int Value { get; set; }
+
+				private void OnValueChanged()
+				{
+				}
+			}
+			""",
+			includeHost: false);
+
+		AssertDiagnosticIds(run, "KSPC0007", "KSPC0007");
+		Assert.HasCount(0, PropertySources(run));
+		Assert.IsTrue(run.GeneratorDiagnostics.All(
+			static diagnostic => diagnostic.GetMessage().Contains(
+				"ChangedCallback",
+				StringComparison.Ordinal)));
+	}
+
+	[TestMethod]
+	public void GenericHostConstraintClausesArePreservedTest()
+	{
+		TestRun run = Run(
+			"""
+			using KSoft.PropertyChanged.SourceGeneration;
+
+			public partial class GenericConstraintViewModel<
+				TReference,
+				TNullableReference,
+				TValue,
+				TUnmanaged,
+				TNotNull,
+				TConstructor,
+				TAllowsRefStruct>
+				: Caliburn.Micro.PropertyChangedBase
+				where TReference : class, global::System.IDisposable
+				where TNullableReference : class?
+				where TValue : struct, global::System.IEquatable<TValue>
+				where TUnmanaged : unmanaged
+				where TNotNull : notnull
+				where TConstructor : new()
+				where TAllowsRefStruct : allows ref struct
+			{
+				[GeneratedPropertyChanged]
+				public partial int Value { get; set; }
+			}
+			""",
+			includeHost: false);
+
+		string generated = PropertySource(run);
+		StringAssert.Contains(
+			generated,
+			"GenericConstraintViewModel<TReference, TNullableReference, TValue, TUnmanaged, TNotNull, TConstructor, TAllowsRefStruct>",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"where TReference : class, global::System.IDisposable",
+			StringComparison.Ordinal);
+		StringAssert.Contains(generated, "where TNullableReference : class?", StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"where TValue : struct, global::System.IEquatable<TValue>",
+			StringComparison.Ordinal);
+		StringAssert.Contains(generated, "where TUnmanaged : unmanaged", StringComparison.Ordinal);
+		StringAssert.Contains(generated, "where TNotNull : notnull", StringComparison.Ordinal);
+		StringAssert.Contains(generated, "where TConstructor : new()", StringComparison.Ordinal);
+		StringAssert.Contains(
+			generated,
+			"where TAllowsRefStruct : allows ref struct",
+			StringComparison.Ordinal);
+		AssertValid(run);
 	}
 
 	[TestMethod]

@@ -43,6 +43,33 @@ public sealed partial class PropertyChangedGenerator
 		return true;
 	}
 
+	private static bool TryReadChangedCallback(
+		SourceProductionContext context,
+		Candidate candidate,
+		out string? changedCallback)
+	{
+		changedCallback = null;
+		foreach (KeyValuePair<string, TypedConstant> argument in candidate.Attribute.NamedArguments)
+		{
+			if (!string.Equals(
+				argument.Key,
+				GeneratorContracts.ChangedCallbackPropertyName,
+				StringComparison.Ordinal)) continue;
+
+			changedCallback = argument.Value.Value as string;
+			if (!string.IsNullOrWhiteSpace(changedCallback)) return true;
+
+			ReportUnsupported(
+				context,
+				candidate.Property,
+				candidate.Location,
+				$"{GeneratorContracts.ChangedCallbackPropertyName} must name one existing parameterless callback method");
+			return false;
+		}
+
+		return true;
+	}
+
 	private static bool TryValidateChangedHooks(
 		SourceProductionContext context,
 		Compilation compilation,
@@ -53,9 +80,15 @@ public sealed partial class PropertyChangedGenerator
 		PropertyModel[] hookProperties = properties
 			.Where(static property => property.ChangedHook == ChangedHookMode.Parameterless)
 			.ToArray();
-		if (hookProperties.Length == 0) return true;
+		PropertyModel[] callbackProperties = properties
+			.Where(static property => property.ChangedCallback != null)
+			.ToArray();
+		if (hookProperties.Length == 0 && callbackProperties.Length == 0) return true;
 
-		if (strategy is not BasicViewModelHostStrategy)
+		bool valid = true;
+		if (hookProperties.Length != 0
+			&& strategy is not BasicViewModelHostStrategy
+			&& strategy is not CaliburnMicroHostStrategy)
 		{
 			foreach (PropertyModel property in hookProperties)
 			{
@@ -63,12 +96,11 @@ public sealed partial class PropertyChangedGenerator
 					context,
 					property.Property,
 					property.Location,
-					$"ChangedHook {nameof(ChangedHookMode.Parameterless)} requires the resolved KSoft.ObjectModel.BasicViewModel provider; the selected provider is {ProviderName(strategy)}");
+					$"ChangedHook {nameof(ChangedHookMode.Parameterless)} requires the resolved KSoft.ObjectModel.BasicViewModel or Caliburn.Micro.PropertyChangedBase provider; the selected provider is {ProviderName(strategy)}");
 			}
-			return false;
+			valid = false;
 		}
 
-		bool hasCollision = false;
 		foreach (PropertyModel property in hookProperties)
 		{
 			string hookName = ParameterlessHookName(property);
@@ -84,10 +116,40 @@ public sealed partial class PropertyChangedGenerator
 				containingType.ToDisplayString(),
 				hookName,
 				$"property '{property.Property.Name}' requests ChangedHook {nameof(ChangedHookMode.Parameterless)}, but {reason}"));
-			hasCollision = true;
+			valid = false;
 		}
 
-		return !hasCollision;
+		if (callbackProperties.Length != 0
+			&& strategy is not CaliburnMicroHostStrategy)
+		{
+			foreach (PropertyModel property in callbackProperties)
+			{
+				ReportUnsupported(
+					context,
+					property.Property,
+					property.Location,
+					$"{GeneratorContracts.ChangedCallbackPropertyName} requires the resolved Caliburn.Micro.PropertyChangedBase provider; the selected provider is {ProviderName(strategy)}");
+			}
+			valid = false;
+		}
+
+		foreach (PropertyModel property in callbackProperties)
+		{
+			if (TryValidateChangedCallback(
+				compilation,
+				containingType,
+				property.ChangedCallback!,
+				out string? reason)) continue;
+
+			ReportUnsupported(
+				context,
+				property.Property,
+				property.Location,
+				$"{GeneratorContracts.ChangedCallbackPropertyName} '{property.ChangedCallback}' {reason}");
+			valid = false;
+		}
+
+		return valid;
 	}
 
 	private static bool TryValidateParameterlessHook(
@@ -122,6 +184,49 @@ public sealed partial class PropertyChangedGenerator
 		return true;
 	}
 
+	private static bool TryValidateChangedCallback(
+		Compilation compilation,
+		INamedTypeSymbol containingType,
+		string callbackName,
+		out string? reason)
+	{
+		var methods = new List<IMethodSymbol>();
+		for (INamedTypeSymbol? current = containingType;
+			current != null;
+			current = current.BaseType)
+		{
+			methods.AddRange(current.GetMembers(callbackName)
+				.OfType<IMethodSymbol>()
+				.Where(method =>
+					SymbolEqualityComparer.Default.Equals(current, containingType)
+					|| compilation.IsSymbolAccessibleWithin(method, containingType)));
+		}
+
+		if (methods.Count != 1)
+		{
+			reason = "must resolve to exactly one accessible method";
+			return false;
+		}
+
+		IMethodSymbol method = methods[0];
+		if (method.MethodKind != MethodKind.Ordinary
+			|| method.IsStatic
+			|| method.IsAsync
+			|| !method.ReturnsVoid
+			|| method.Arity != 0
+			|| method.Parameters.Length != 0
+			|| method.PartialDefinitionPart != null
+			|| method.PartialImplementationPart != null)
+		{
+			reason =
+				"must name an instance, synchronous, non-generic, parameterless void method that is not partial";
+			return false;
+		}
+
+		reason = null;
+		return true;
+	}
+
 	private static bool IsParameterlessHookImplementation(ISymbol member)
 	{
 		if (member is not IMethodSymbol method
@@ -143,6 +248,11 @@ public sealed partial class PropertyChangedGenerator
 
 	private static string ParameterlessHookName(PropertyModel property) =>
 		"On" + property.Property.Name + "Changed";
+
+	private static string? ChangedCallbackName(PropertyModel property) =>
+		property.ChangedHook == ChangedHookMode.Parameterless
+			? ParameterlessHookName(property)
+			: property.ChangedCallback;
 
 	private static string ProviderName(PropertyChangedHostStrategy strategy) =>
 		strategy switch

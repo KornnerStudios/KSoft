@@ -12,11 +12,23 @@ namespace KSoft.ObjectModel
 		protected virtual void OnPropertyChanged(
 			[System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
 		{
+			InvokePropertyChanged(new PropertyChangedEventArgs(propertyName));
+		}
+
+		protected virtual void OnPropertyChangedCached(PropertyChangedEventArgs eventArgs)
+		{
+			ArgumentNullException.ThrowIfNull(eventArgs);
+
+			InvokePropertyChanged(eventArgs);
+		}
+
+		private void InvokePropertyChanged(PropertyChangedEventArgs eventArgs)
+		{
 			var handler = PropertyChanged;
 #pragma warning disable IDE0031 // Use null propagation
 			if (handler != null)
 			{
-				handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
+				handler.Invoke(this, eventArgs);
 			}
 #pragma warning restore IDE0031 // Use null propagation
 		}

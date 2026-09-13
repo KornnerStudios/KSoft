@@ -14,6 +14,7 @@ internal static class GeneratorContracts
 	public const string BackingFieldPropertyName = "BackingField";
 	public const string AlwaysNotifyPropertyName = "AlwaysNotify";
 	public const string ChangedHookPropertyName = "ChangedHook";
+	public const string ChangedCallbackPropertyName = "ChangedCallback";
 	public const string DependentPropertiesPropertyName = "DependentProperties";
 	public const string NotificationMethodPropertyName = "NotificationMethod";
 	public const string CacheTypeName = "__PropertyChangedEventArgs";
@@ -76,13 +77,25 @@ internal static class GeneratorContracts
 			/// <see cref="GeneratedPropertyChangedHook.None"/> do not emit a hook.
 			/// </summary>
 			/// <remarks>
-			/// <see cref="GeneratedPropertyChangedHook.Parameterless"/> is supported only by
-			/// <c>KSoft.ObjectModel.BasicViewModel</c> hosts. It emits an optional, parameterless partial
-			/// method that runs after primary notification and before dependent notifications. Undefined modes
-			/// and unsupported resolved providers prevent property generation with <c>KSPC0007</c>; a conflicting
-			/// hook member prevents host generation with <c>KSPC0006</c>.
+			/// <see cref="GeneratedPropertyChangedHook.Parameterless"/> is supported by resolved
+			/// <c>KSoft.ObjectModel.BasicViewModel</c> and <c>Caliburn.Micro.PropertyChangedBase</c> hosts.
+			/// It emits an optional, parameterless partial method that runs after primary notification and before
+			/// dependent notifications. Caliburn hooks run after assignment even when <c>IsNotifying</c> is false.
+			/// Undefined modes and unsupported resolved providers prevent property generation with <c>KSPC0007</c>;
+			/// a conflicting hook member prevents host generation with <c>KSPC0006</c>.
 			/// </remarks>
 			public GeneratedPropertyChangedHook ChangedHook { get; set; }
+
+			/// <summary>
+			/// Gets or sets the name of an existing, accessible, synchronous, parameterless <c>void</c> callback
+			/// invoked after an accepted property change.
+			/// </summary>
+			/// <remarks>
+			/// This callback form is supported by resolved <c>Caliburn.Micro.PropertyChangedBase</c> hosts and
+			/// does not generate a partial method declaration. It cannot be combined with
+			/// <see cref="ChangedHook"/>. Use this explicit opt-in to preserve an existing virtual callback contract.
+			/// </remarks>
+			public string ChangedCallback { get; set; }
 
 			/// <summary>
 			/// Gets or sets the instance-property names to notify, in declaration order, after the generated property's
@@ -99,7 +112,8 @@ internal static class GeneratorContracts
 
 			/// <summary>
 			/// Emits an optional, parameterless <c>On&lt;PropertyName&gt;Changed</c> partial method for a
-			/// supported <c>KSoft.ObjectModel.BasicViewModel</c> host.
+			/// supported <c>KSoft.ObjectModel.BasicViewModel</c> or
+			/// <c>Caliburn.Micro.PropertyChangedBase</c> host.
 			/// </summary>
 			Parameterless = 1,
 		}

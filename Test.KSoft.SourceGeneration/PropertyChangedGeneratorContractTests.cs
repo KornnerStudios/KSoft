@@ -46,6 +46,12 @@ public sealed partial class PropertyChangedGeneratorTests
 			.Single();
 		Assert.AreEqual(Accessibility.Public, changedHookProperty.DeclaredAccessibility);
 		Assert.IsTrue(SymbolEqualityComparer.Default.Equals(changedHook, changedHookProperty.Type));
+		IPropertySymbol changedCallbackProperty = generatedPropertyAttribute
+			.GetMembers("ChangedCallback")
+			.OfType<IPropertySymbol>()
+			.Single();
+		Assert.AreEqual(Accessibility.Public, changedCallbackProperty.DeclaredAccessibility);
+		Assert.AreEqual(SpecialType.System_String, changedCallbackProperty.Type.SpecialType);
 		var dependentProperties = (IArrayTypeSymbol)generatedPropertyAttribute
 			.GetMembers("DependentProperties")
 			.OfType<IPropertySymbol>()
@@ -59,6 +65,10 @@ public sealed partial class PropertyChangedGeneratorTests
 		StringAssert.Contains(
 			changedHookProperty.GetDocumentationCommentXml(),
 			"Parameterless",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
+			changedCallbackProperty.GetDocumentationCommentXml(),
+			"parameterless",
 			StringComparison.Ordinal);
 		StringAssert.Contains(
 			hookModes.Single(static field => field.Name == "Parameterless").GetDocumentationCommentXml(),

@@ -117,12 +117,11 @@ public sealed partial class PropertyChangedGeneratorTests
 	}
 
 	[TestMethod]
-	public void UnsupportedGenericInitAndExplicitInterfacePropertiesReportKspc0007Test()
+	public void UnsupportedInitAndExplicitInterfacePropertiesReportKspc0007Test()
 	{
 		TestRun run = Run("""
 			using KSoft.PropertyChanged.SourceGeneration;
 			public interface IValue { int Value { get; set; } }
-			public partial class GenericHost<T> : KSoft.ObjectModel.BasicViewModel { [GeneratedPropertyChanged] public partial int Value { get; set; } }
 			public partial class InitHost : KSoft.ObjectModel.BasicViewModel { [GeneratedPropertyChanged] public partial int Value { get; init; } }
 			public partial class InterfaceHost : KSoft.ObjectModel.BasicViewModel, IValue { [GeneratedPropertyChanged] partial int IValue.Value { get; set; } }
 			""");
@@ -130,7 +129,7 @@ public sealed partial class PropertyChangedGeneratorTests
 			.Select(static diagnostic => diagnostic.Id)
 			.OrderBy(static id => id, StringComparer.Ordinal)
 			.ToArray();
-		CollectionAssert.AreEqual(new[] { "KSPC0007", "KSPC0007", "KSPC0007" }, ids);
+		CollectionAssert.AreEqual(new[] { "KSPC0007", "KSPC0007" }, ids);
 	}
 
 	[TestMethod]

@@ -15,6 +15,13 @@ internal static class GeneratedSourceUtilities
 		typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
 		genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
 		miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
+	public static readonly SymbolDisplayFormat ConstraintTypeDisplayFormat = new(
+		globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
+		typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+		genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+		miscellaneousOptions:
+			SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers
+			| SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
 
 	public static string ModifiersText(SyntaxTokenList modifiers) =>
 		modifiers.Count == 0
