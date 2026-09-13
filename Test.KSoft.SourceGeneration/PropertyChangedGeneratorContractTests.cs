@@ -84,7 +84,9 @@ public sealed partial class PropertyChangedGeneratorTests
 		Assert.IsNotNull(cacheAttribute);
 		Assert.AreEqual(Accessibility.Internal, cacheAttribute.DeclaredAccessibility);
 		Assert.IsTrue(cacheAttribute.IsSealed);
-		Assert.IsFalse(string.IsNullOrWhiteSpace(cacheAttribute.GetDocumentationCommentXml()));
+		string? cacheDocumentation = cacheAttribute.GetDocumentationCommentXml();
+		Assert.IsNotNull(cacheDocumentation);
+		StringAssert.Contains(cacheDocumentation, "Explicit-interface", StringComparison.Ordinal);
 
 		INamedTypeSymbol hostProvider = run.OutputCompilation.GetTypeByMetadataName(
 			"KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHostProvider")!;

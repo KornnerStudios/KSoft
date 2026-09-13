@@ -127,7 +127,9 @@ internal static class GeneratorContracts
 		/// This attribute does not generate properties, events, equality checks, assignments, or notification calls.
 		/// The containing type only needs to be partial; it does not need to derive from
 		/// <c>KSoft.ObjectModel.BasicViewModel</c>. The emitted private static readonly field is named
-		/// <c>k&lt;PropertyName&gt;ChangedEventArgs</c>.
+		/// <c>k&lt;PropertyName&gt;ChangedEventArgs</c>. Explicit-interface properties are supported when they
+		/// implement exactly one interface property; their initializer uses that fully qualified interface member in
+		/// <c>nameof</c> so the generated source does not rely on an unqualified implementation name.
 		/// </remarks>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute(
 			"KSoft.PropertyChanged.SourceGeneration.PropertyChangedGenerator",
