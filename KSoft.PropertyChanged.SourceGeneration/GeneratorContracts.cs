@@ -81,6 +81,8 @@ internal static class GeneratorContracts
 			/// <c>KSoft.ObjectModel.BasicViewModel</c> and <c>Caliburn.Micro.PropertyChangedBase</c> hosts.
 			/// It emits an optional, parameterless partial method that runs after primary notification and before
 			/// dependent notifications. Caliburn hooks run after assignment even when <c>IsNotifying</c> is false.
+			/// Future old/new and delta hook shapes require a concrete consumer and specified timing/value semantics;
+			/// no placeholder enum values are published until that contract exists.
 			/// Undefined modes and unsupported resolved providers prevent property generation with <c>KSPC0007</c>;
 			/// a conflicting hook member prevents host generation with <c>KSPC0006</c>.
 			/// </remarks>

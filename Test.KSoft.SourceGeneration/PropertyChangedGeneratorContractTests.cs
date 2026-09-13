@@ -67,6 +67,10 @@ public sealed partial class PropertyChangedGeneratorTests
 			"Parameterless",
 			StringComparison.Ordinal);
 		StringAssert.Contains(
+			changedHookProperty.GetDocumentationCommentXml(),
+			"old/new",
+			StringComparison.Ordinal);
+		StringAssert.Contains(
 			changedCallbackProperty.GetDocumentationCommentXml(),
 			"parameterless",
 			StringComparison.Ordinal);
