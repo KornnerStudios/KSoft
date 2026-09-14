@@ -111,6 +111,34 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
+		public void StringStorageEncoding_Int7FiveBytePrefix_MatchesEndianReaderAndPreservesFollowingField()
+		{
+			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			// BinaryReader accepts this five-byte representation of one; the payload is one ASCII character.
+			byte[] bytes = [0x81, 0x80, 0x80, 0x80, 0x00, 0x41, 0xCC];
+
+			Assert.AreEqual("A", encoding.GetString(bytes, 0, 6));
+			using var reader = new IO.EndianReader(new System.IO.MemoryStream(bytes));
+			Assert.AreEqual("A", reader.ReadString(encoding));
+			Assert.AreEqual(6L, reader.BaseStream.Position);
+			Assert.AreEqual((byte)0xCC, reader.ReadByte());
+		}
+
+		[TestMethod]
+		[DataRow(0x0FFFFFFF, 4)]
+		[DataRow(0x10000000, 5)]
+		public void StringStorageEncoding_Int7Sizing_AcceptsFourAndFiveBytePrefixes(int charCount, int prefixBytes)
+		{
+			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+
+			// Exercise the size calculations without allocating strings or payload buffers.
+			Assert.AreEqual(charCount, encoding.GetMaxCharCount(charCount + prefixBytes));
+			Assert.IsGreaterThanOrEqualTo(charCount + prefixBytes, encoding.GetMaxByteCount(charCount));
+		}
+
+		[TestMethod]
 		public void StringStorageEncoding_Int7PascalMalformedInput_ThrowsArgumentOutOfRangeException()
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);

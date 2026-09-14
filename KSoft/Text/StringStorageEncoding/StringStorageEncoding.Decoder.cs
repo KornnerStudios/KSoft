@@ -27,7 +27,7 @@ namespace KSoft.Text
 			else if ((char_count - 4) <= Bitwise.Encoded7BitInt.kMaxValue4Bytes)	{ return byteCount - 4; }
 			else
 			{
-				throw new Debug.UnreachableException(char_count.ToString(KSoft.Util.InvariantCultureInfo));
+				return byteCount - 5;
 			}
 		}
 		/// <summary>Calculate the estimated character byte count of a raw <see cref="StringStorageType.Pascal"/> string</summary>

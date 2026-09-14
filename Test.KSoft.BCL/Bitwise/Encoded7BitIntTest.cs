@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Bitwise.Test;
@@ -9,7 +10,7 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 
 	static void AssertEncoding(int value, byte[] expectedBytes)
 	{
-		var buffer = new byte[4];
+		var buffer = new byte[5];
 		Array.Fill(buffer, (byte)0xCC);
 
 		int bytesWritten = Encoded7BitInt.Write(buffer, value);
@@ -17,6 +18,16 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 		Assert.AreEqual(expectedBytes.Length, Encoded7BitInt.CalculateSize(value));
 		Assert.AreEqual(expectedBytes.Length, bytesWritten);
 		CollectionAssert.AreEqual(expectedBytes, buffer[..bytesWritten]);
+		Assert.IsFalse(buffer.AsSpan(bytesWritten).ContainsAnyExcept((byte)0xCC));
+
+		using var referenceStream = new MemoryStream();
+		using var writer = new BinaryWriter(referenceStream);
+		writer.Write7BitEncodedInt(value);
+		CollectionAssert.AreEqual(expectedBytes, referenceStream.ToArray());
+
+		using var reader = new BinaryReader(new MemoryStream(buffer, 0, bytesWritten));
+		Assert.AreEqual(value, reader.Read7BitEncodedInt());
+		Assert.AreEqual((long)bytesWritten, reader.BaseStream.Position);
 	}
 
 	static void AssertReadFailure(ReadOnlySpan<byte> buffer)
@@ -38,13 +49,35 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 		AssertEncoding(Encoded7BitInt.kMaxValue3Bytes, [0xFF, 0xFF, 0x7F]);
 		AssertEncoding(Encoded7BitInt.kMaxValue3Bytes + 1, [0x80, 0x80, 0x80, 0x01]);
 		AssertEncoding(Encoded7BitInt.kMaxValue4Bytes, [0xFF, 0xFF, 0xFF, 0x7F]);
+		AssertEncoding(Encoded7BitInt.kMaxValue4Bytes + 1, [0x80, 0x80, 0x80, 0x80, 0x01]);
+		AssertEncoding(int.MaxValue, [0xFF, 0xFF, 0xFF, 0xFF, 0x07]);
+		AssertEncoding(int.MinValue, [0x80, 0x80, 0x80, 0x80, 0x08]);
+		AssertEncoding(-1, [0xFF, 0xFF, 0xFF, 0xFF, 0x0F]);
 	}
 
 	[TestMethod]
-	public void CalculateSize_InvalidValuesThrowExpectedExceptions()
+	[DataRow("8080808000", 0)]
+	[DataRow("8180808000", 1)]
+	[DataRow("8080808008", int.MinValue)]
+	[DataRow("FFFFFFFF0F", -1)]
+	public void Read_FiveBytePrefixes_MatchesBinaryReaderAndReturnsRelativeByteCount(string hex, int expectedValue)
 	{
-		AssertThrowsArgumentOutOfRange("value", () => Encoded7BitInt.CalculateSize(-1));
-		AssertThrowsArgumentOutOfRange("value", () => Encoded7BitInt.CalculateSize(Encoded7BitInt.kMaxValue4Bytes + 1));
+		byte[] prefix = Convert.FromHexString(hex);
+		// Preserve Read's existing payload-capacity check without allocating a large payload.
+		int payloadLength = Math.Max(expectedValue, 0);
+		var buffer = new byte[2 + prefix.Length + payloadLength + 1];
+		Array.Fill(buffer, (byte)0xCC);
+		prefix.CopyTo(buffer, 2);
+		byte[] original = (byte[])buffer.Clone();
+
+		int value = Encoded7BitInt.Read(buffer.AsSpan(2, prefix.Length + payloadLength), out int bytesRead);
+
+		Assert.AreEqual(expectedValue, value);
+		Assert.AreEqual(prefix.Length, bytesRead);
+		CollectionAssert.AreEqual(original, buffer);
+		using var reader = new BinaryReader(new MemoryStream(prefix));
+		Assert.AreEqual(reader.Read7BitEncodedInt(), value);
+		Assert.AreEqual(reader.BaseStream.Position, bytesRead);
 	}
 
 	[TestMethod]
@@ -86,7 +119,22 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 		AssertReadFailure([0x80, 0x80]);
 		AssertReadFailure([0x80, 0x80, 0x80]);
 		AssertReadFailure([0x80, 0x80, 0x80, 0x80]);
-		AssertReadFailure([0x80, 0x80, 0x80, 0x80, 0x00]);
+		AssertReadFailure([0x80, 0x80, 0x80, 0x80, 0x80]);
+	}
+
+	[TestMethod]
+	[DataRow((byte)0x10)]
+	[DataRow((byte)0x7F)]
+	[DataRow((byte)0x80)]
+	[DataRow((byte)0xFF)]
+	public void Read_InvalidFifthByte_RejectsTheSameOverflowAsBinaryReader(byte fifthByte)
+	{
+		byte[] buffer = [0x80, 0x80, 0x80, 0x80, fifthByte];
+
+		AssertReadFailure(buffer);
+		using var reader = new BinaryReader(new MemoryStream(buffer));
+		Assert.ThrowsExactly<FormatException>(() => reader.Read7BitEncodedInt());
+		Assert.AreEqual(5L, reader.BaseStream.Position);
 	}
 
 	[TestMethod]
@@ -96,6 +144,8 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 
 		byte[] buffer = [0xEE, 0x03, 0xAA, 0xBB, 0xCC, 0xFF];
 		AssertReadFailure(buffer.AsSpan(1, 3));
+		AssertReadFailure([0x80, 0x80, 0x80, 0x80, 0x01]);
+		AssertReadFailure([0xFF, 0xFF, 0xFF, 0xFF, 0x07]);
 	}
 
 	[TestMethod]
@@ -126,15 +176,30 @@ public sealed class Encoded7BitIntTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void Write_InvalidValuesThrowBeforeMutation()
+	public void Write_FiveByteValueInCallerSlice_PreservesSentinels()
+	{
+		var buffer = new byte[9];
+		Array.Fill(buffer, (byte)0xCC);
+
+		int bytesWritten = Encoded7BitInt.Write(buffer.AsSpan(2, 5), 0x10000000);
+
+		Assert.AreEqual(5, bytesWritten);
+		CollectionAssert.AreEqual(
+			new byte[] { 0xCC, 0xCC, 0x80, 0x80, 0x80, 0x80, 0x01, 0xCC, 0xCC }, buffer);
+	}
+
+	[TestMethod]
+	[DataRow(0x10000000)]
+	[DataRow(int.MaxValue)]
+	[DataRow(int.MinValue)]
+	[DataRow(-1)]
+	public void Write_FiveByteValuesWithShortDestination_ThrowBeforeMutation(int value)
 	{
 		var buffer = new byte[4];
 		Array.Fill(buffer, (byte)0xCC);
 		byte[] original = (byte[])buffer.Clone();
 
-		AssertThrowsArgumentOutOfRange("value", () => Encoded7BitInt.Write(buffer, -1));
-		AssertThrowsArgumentOutOfRange("value",
-			() => Encoded7BitInt.Write(buffer, Encoded7BitInt.kMaxValue4Bytes + 1));
+		AssertThrowsArgument("buffer", () => Encoded7BitInt.Write(buffer, value));
 
 		CollectionAssert.AreEqual(original, buffer);
 	}
