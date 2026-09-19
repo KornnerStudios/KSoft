@@ -169,8 +169,8 @@ namespace KSoft.Memory.Strings
 
 		#region IEquatable<StringStorage> Members
 		/// <summary>Compares this to another <see cref="StringStorage"/> object testing their underlying fields for equality</summary>
-		/// <param name="obj">other <see cref="StringStorage"/> object</param>
-		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
+		/// <param name="other">other <see cref="StringStorage"/> object</param>
+		/// <returns>true if both this object and <paramref name="other"/> are equal</returns>
 		public bool Equals(StringStorage other)					{ return kHashCode == other.kHashCode; }
 
 		public bool Equals(StringStorage x, StringStorage y)	{ return x.kHashCode == y.kHashCode; }
@@ -198,7 +198,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		/// <see cref="int CompareTo(StringStorage)"/>
+		/// <see cref="CompareTo(StringStorage)"/>
 		public int Compare(StringStorage x, StringStorage y) => x.CompareTo(y);
 		/// <summary>Compare this with another <see cref="StringStorage"/> object for similar serializer values</summary>
 		/// <param name="other"></param>
@@ -248,12 +248,12 @@ namespace KSoft.Memory.Strings
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		/// <see cref="int Compare(StringStorage, StringStorage)"/>
+		/// <see cref="Compare(StringStorage, StringStorage)"/>
 		public int Compare(object? x, object? y) => Compare((StringStorage)x!, (StringStorage)y!);
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		/// <see cref="int CompareTo(StringStorage)"/>
+		/// <see cref="CompareTo(StringStorage)"/>
 		public int CompareTo(object? obj) => CompareTo((StringStorage)obj!);
 		#endregion
 

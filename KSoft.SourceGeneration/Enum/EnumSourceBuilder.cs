@@ -496,7 +496,7 @@ internal static class EnumSourceBuilder
 
 	private static void WriteDecodeWithDefaultBitIndex(SourceWriter writer, NumberSpec spec)
 	{
-		WriteDecodeXmlDocs(writer, includeBitIndex: false, firstParamHasLegacyTypo: true);
+		WriteDecodeXmlDocs(writer, includeBitIndex: false);
 		writer.WriteLine(
 			"/// <remarks>Uses <see cref=\"DefaultBitIndex\"/> as the bit index to start decoding at</remarks>");
 		writer.WritePurityAnnotation();
@@ -568,14 +568,10 @@ internal static class EnumSourceBuilder
 	private static void WriteDecodeXmlDocs(
 		SourceWriter writer,
 		bool includeBitIndex,
-		bool firstParamHasLegacyTypo = false,
 		bool traits = false)
 	{
 		writer.WriteXmlDocSummary("Bit decode an enumeration value from an unsigned integer");
-		string bitsDocumentation = firstParamHasLegacyTypo
-			? "Unsigned integer to decode from<"
-			: "Unsigned integer to decode from";
-		writer.WriteXmlDocParam("bits", bitsDocumentation);
+		writer.WriteXmlDocParam("bits", "Unsigned integer to decode from");
 		if (includeBitIndex)
 		{
 			writer.WriteXmlDocParam("bitIndex", "Index in <paramref name=\"bits\"/> to start decoding at");

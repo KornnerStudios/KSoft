@@ -45,7 +45,7 @@ namespace KSoft.IO
 
 		#region IKSoftBinaryStream
 		/// <summary>Base address used for simulating pointers in the stream</summary>
-		/// <remarks>Default value is <see cref="Data.PtrHandle.Null32"/></remarks>
+		/// <remarks>Default value is <see cref="Values.PtrHandle.Null32"/></remarks>
 		public Values.PtrHandle BaseAddress
 		{
 			get { return Reader != null ? Reader.BaseAddress : Writer.BaseAddress; }

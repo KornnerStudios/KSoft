@@ -114,18 +114,16 @@ namespace KSoft.IO
 			BaseStream.Seek(mStartPosition, SeekOrigin.Begin);
 		}
 
-		/// <summary>Constuct a new bitsream using an underlying <see cref="Stream"/> object</summary>
+		/// <summary>Constructs a new bitstream using an underlying <see cref="System.IO.Stream"/> object.</summary>
 		/// <param name="baseStream">Underlying stream to read/write bits to</param>
 		/// <param name="permissions">Access permissions for <paramref name="baseStream"/></param>
 		/// <param name="startPos">Start of the bitstream in <paramref name="baseStream"/>, or -1 to use default value</param>
 		/// <param name="endPos">End of the bitstream in <paramref name="baseStream"/>, or -1 to use default value</param>
 		/// <param name="streamName">Optional name for this bitstream</param>
 		/// <remarks>
-		/// If <paramref name="baseStream"/> CanSeek, the default value for <paramref name="startPos"/> is the current Position of the stream.
-		/// Else the default value is zero.
+		/// If <paramref name="baseStream"/> CanSeek, the default value for <paramref name="startPos"/> is the current Position of the stream. Else the default value is zero.
 		///
-		/// The default value for <paramref name="endPos"/> is zero. When it is zero, <paramref name="Stream"/>'s Length is always used at
-		/// runtime. So it will acknowledge changes in the base stream length after the constructor finishes.
+		/// The default value for <paramref name="endPos"/> is zero. When it is zero, <paramref name="baseStream"/>'s Length is always used at runtime. So it will acknowledge changes in the base stream length after the constructor finishes.
 		/// </remarks>
 		public BitStream(Stream baseStream, FileAccess permissions = FileAccess.ReadWrite,
 			long startPos = TypeExtensions.kNone, long endPos = TypeExtensions.kNone,
