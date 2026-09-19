@@ -103,6 +103,9 @@
     <!-- Per-solution binary output directory -->
     <VitaSolutionFamilyBinPath
       >$(VitaBinRootPath)$(VitaSolutionFamily)\</VitaSolutionFamilyBinPath>
+    <!-- MSTest.Sdk sets this marker before Directory.Build.props is imported. -->
+    <VitaSolutionFamilyBinPath Condition=" '$(UsingMSTestSdk)' == 'true' "
+      >$(VitaBinRootPath)Tests\$(VitaSolutionFamily)\</VitaSolutionFamilyBinPath>
 
     <!-- Per-project library output directory -->
     <VitaLibDir
