@@ -269,17 +269,17 @@ namespace KSoft.IO
 		#endregion
 
 		#region String
-		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
+		/// <summary>Reads a string using explicit storage framing.</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
-		/// <param name="length">Length, in characters, of the string.</param>
-		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
-		/// <param name="prefixBitLength">Pascal only: Number of bits in the prefix count</param>
-		/// <returns></returns>
+		/// <param name="length">Optional payload length in serialized storage units.</param>
+		/// <param name="maxLength">Positive CString scan limit, excluding the terminator; nonpositive means no limit.</param>
+		/// <param name="prefixBitLength">Pascal prefix bit width; -1 uses the descriptor's width.</param>
+		/// <returns>The decoded payload.</returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or
-		/// doesn't require an explicit character length. If you do provide the
-		/// length, this operation will perform faster in some cases.
+		/// <para>Length follows the rules of <see cref="EndianReader.ReadString(Memory.Strings.StringStorage, int)"/>. Fixed fields are consumed in full, including padding, even with a scan limit.</para>
+		/// <para>The scan limit counts serialized units and is unused for an unfixed CString with an explicit positive length.</para>
 		/// </remarks>
+		/// <exception cref="NotSupportedException">The read requests an Int7 prefix, a little-endian prefix wider than eight bits, or a variable-width character count/limit.</exception>
 		public string ReadString(Memory.Strings.StringStorage storage, int length = TypeExtensions.kNone,
 			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
@@ -289,17 +289,12 @@ namespace KSoft.IO
 
 			return sse.ReadString(this, length, maxLength, prefixBitLength);
 		}
-		/// <summary>Read a string using a <see cref="Text.StringStorageEncoding"/> definition and a provided character length</summary>
+		/// <summary>Reads a string using a storage encoding.</summary>
 		/// <param name="encoding">Encoding to use for character streaming</param>
-		/// <param name="length">Length, in characters, of the string.</param>
-		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
-		/// <param name="prefixBitLength">Pascal only: Number of bits in the prefix count</param>
-		/// <returns></returns>
-		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or
-		/// doesn't require an explicit character length. If you do provide the
-		/// length, this operation will perform faster in some cases.
-		/// </remarks>
+		/// <param name="length">Optional payload length in serialized storage units.</param>
+		/// <param name="maxLength">Positive CString scan limit, excluding the terminator; nonpositive means no limit.</param>
+		/// <param name="prefixBitLength">Pascal prefix bit width; -1 uses the descriptor's width.</param>
+		/// <inheritdoc cref="ReadString(Memory.Strings.StringStorage, int, int, int)" path="/returns|/remarks|/exception"/>
 		public string ReadString(Text.StringStorageEncoding encoding, int length = TypeExtensions.kNone,
 			int maxLength = TypeExtensions.kNone, int prefixBitLength = TypeExtensions.kNone)
 		{
@@ -309,10 +304,14 @@ namespace KSoft.IO
 			return encoding.ReadString(this, length, maxLength, prefixBitLength);
 		}
 
-		/// <summary>Writes a string based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
-		/// <param name="value">String value to writee. Null defaults to an empty string</param>
+		/// <summary>Writes a string using explicit storage framing.</summary>
+		/// <param name="value">String value to write; null is written as an empty string.</param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
-		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
+		/// <param name="maxLength">Positive payload limit, excluding any CString terminator; nonpositive means no additional limit.</param>
+		/// <remarks>
+		/// <para>The limit counts serialized units for fixed-width encodings and managed UTF-16 characters for UTF-8, not bytes.</para>
+		/// <para>Fixed fields retain their full, zero-padded extent. Prefix writes use the descriptor's format; custom prefix bit widths are not supported.</para>
+		/// </remarks>
 		public void Write(string value, Memory.Strings.StringStorage storage,
 			int maxLength = TypeExtensions.kNone/*, int prefixBitLength = TypeExtensions.kNone*/)
 		{
@@ -321,9 +320,10 @@ namespace KSoft.IO
 				prefixBitLength: TypeExtensions.kNone);
 		}
 		/// <summary>Writes a string using a <see cref="Text.StringStorageEncoding"/></summary>
-		/// <param name="value">String value to writee. Null defaults to an empty string</param>
+		/// <param name="value">String value to write; null is written as an empty string.</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
-		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
+		/// <param name="maxLength">Positive payload limit, excluding any CString terminator; nonpositive means no additional limit.</param>
+		/// <inheritdoc cref="Write(string, Memory.Strings.StringStorage, int)" path="/remarks"/>
 		public void Write(string value, Text.StringStorageEncoding encoding,
 			int maxLength = TypeExtensions.kNone/*, int prefixBitLength = TypeExtensions.kNone*/)
 		{
@@ -338,6 +338,8 @@ namespace KSoft.IO
 		/// <param name="storage">Definition for how we're streaming the string</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		/// <returns></returns>
+		/// <seealso cref="ReadString(Memory.Strings.StringStorage, int, int, int)"/>
+		/// <seealso cref="Write(string, Memory.Strings.StringStorage, int)"/>
 		public BitStream Stream(ref string value, Memory.Strings.StringStorage storage,
 			int maxLength = TypeExtensions.kNone)
 		{
@@ -351,6 +353,8 @@ namespace KSoft.IO
 		/// <param name="encoding">Encoding to use for character streaming</param>
 		/// <param name="maxLength">CString only: Optional maximum length of this specific string (exclusive of terminator)</param>
 		/// <returns></returns>
+		/// <seealso cref="ReadString(Text.StringStorageEncoding, int, int, int)"/>
+		/// <seealso cref="Write(string, Text.StringStorageEncoding, int)"/>
 		public BitStream Stream(ref string value, Text.StringStorageEncoding encoding,
 			int maxLength = TypeExtensions.kNone)
 		{

@@ -12,21 +12,16 @@ namespace KSoft.Text
 //			/// <remarks>Options will thus default to "false"</remarks>
 //			None = 0,
 
-			/// <summary>Encoding uses a byte order marker</summary>
+			/// <summary>Expose the base encoding's byte-order preamble.</summary>
 			/// <seealso cref="System.Text.Encoding.GetPreamble()"/>
-			/// <remarks>This may conflict with strings which store prefix data (eg, <see cref="Memory.Strings.StringStorageWidthType.Pascal"/>)</remarks>
+			/// <remarks>String-storage conversions do not insert the preamble into records.</remarks>
 			UseByteOrderMark = 1 << 0,
-			/// <summary>Throw an exception when invalid bytes are handled</summary>
-			/// <remarks>
-			/// Ignored in <see cref="Memory.Strings.StringStorageWidthType.Ascii"/> cases.
-			///
-			/// For <see cref="Memory.Strings.StringStorageWidthType.UTF7"/> this disables optional characters.
-			/// </remarks>
+			/// <summary>Use exception fallbacks for invalid Unicode input instead of replacement fallbacks.</summary>
+			/// <remarks>Ignored for <see cref="Memory.Strings.StringStorageWidthType.Ascii"/>, which retains replacement fallback.</remarks>
 			ThrowOnInvalidBytes = 1 << 1,
-			/// <summary>
-			/// By default, we always flush the encoding's encoder\decoder. Use this to listen
-			/// to the "flush" parameter instead
-			/// </summary>
+			/// <summary>Honor the caller's flush argument instead of always flushing the underlying encoder/decoder.</summary>
+			/// <seealso cref="StringStorageEncoding.GetEncoder()"/>
+			/// <seealso cref="StringStorageEncoding.GetDecoder()"/>
 			DontAlwaysFlush = 1 << 2,
 
 			/// <summary>All options are enabled</summary>

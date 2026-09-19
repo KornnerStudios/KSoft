@@ -187,6 +187,7 @@ namespace KSoft.IO
 		/// <summary>Writes a bounded character sequence based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
+		/// <remarks>Writes a complete storage record; fixed fields truncate to serialized-unit capacity and are zero-padded.</remarks>
 		public void Write(ReadOnlySpan<char> value, Memory.Strings.StringStorage storage)
 		{
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
@@ -196,6 +197,7 @@ namespace KSoft.IO
 		/// <summary>Writes a bounded character sequence using a <see cref="Text.StringStorageEncoding"/></summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
+		/// <inheritdoc cref="Write(ReadOnlySpan{char}, Memory.Strings.StringStorage)" path="/remarks"/>
 		public void Write(ReadOnlySpan<char> value, Text.StringStorageEncoding encoding)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);

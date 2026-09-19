@@ -506,6 +506,7 @@ namespace KSoft.IO
 		#endregion
 
 		#region Stream strings
+		/// <summary>Streams a CLR byte-count-prefixed string; use a storage overload for other framing.</summary>
 		public EndianStream Stream(ref string value)
 		{
 				 if (IsReading) value = Reader.ReadString();
@@ -514,6 +515,9 @@ namespace KSoft.IO
 			return this;
 		}
 
+		/// <summary>Streams a string using explicit storage framing.</summary>
+		/// <seealso cref="EndianReader.ReadString(Memory.Strings.StringStorage)"/>
+		/// <seealso cref="EndianWriter.Write(ReadOnlySpan{char}, Memory.Strings.StringStorage)"/>
 		public EndianStream Stream(ref string value, Memory.Strings.StringStorage storage)
 		{
 				 if (IsReading) value = Reader.ReadString(storage);
@@ -521,6 +525,13 @@ namespace KSoft.IO
 
 			return this;
 		}
+		/// <summary>Streams a string using explicit storage framing and a read-side length.</summary>
+		/// <param name="value">Value to read or write; null is written as an empty string.</param>
+		/// <param name="storage">The string's storage definition.</param>
+		/// <param name="length">Read-side payload length in serialized storage units.</param>
+		/// <remarks>The length argument affects reads only; it never limits writes. Read requirements and fixed-field write behavior are defined by the reader/writer overloads.</remarks>
+		/// <seealso cref="EndianReader.ReadString(Memory.Strings.StringStorage, int)"/>
+		/// <seealso cref="EndianWriter.Write(ReadOnlySpan{char}, Memory.Strings.StringStorage)"/>
 		public EndianStream Stream(ref string value, Memory.Strings.StringStorage storage, int length)
 		{
 				 if (IsReading) value = Reader.ReadString(storage, length);
@@ -529,6 +540,9 @@ namespace KSoft.IO
 			return this;
 		}
 
+		/// <summary>Streams a string using a storage encoding.</summary>
+		/// <seealso cref="EndianReader.ReadString(Text.StringStorageEncoding)"/>
+		/// <seealso cref="EndianWriter.Write(ReadOnlySpan{char}, Text.StringStorageEncoding)"/>
 		public EndianStream Stream(ref string value, Text.StringStorageEncoding encoding)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);
@@ -538,6 +552,13 @@ namespace KSoft.IO
 
 			return this;
 		}
+		/// <summary>Streams a string using a storage encoding and a read-side length.</summary>
+		/// <param name="value">Value to read or write; null is written as an empty string.</param>
+		/// <param name="encoding">The storage encoding to use.</param>
+		/// <param name="length">Read-side payload length in serialized storage units.</param>
+		/// <inheritdoc cref="Stream(ref string, Memory.Strings.StringStorage, int)" path="/remarks"/>
+		/// <seealso cref="EndianReader.ReadString(Text.StringStorageEncoding, int)"/>
+		/// <seealso cref="EndianWriter.Write(ReadOnlySpan{char}, Text.StringStorageEncoding)"/>
 		public EndianStream Stream(ref string value, Text.StringStorageEncoding encoding, int length)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);

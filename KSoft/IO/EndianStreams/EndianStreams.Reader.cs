@@ -222,15 +222,15 @@ namespace KSoft.IO
 		#endregion
 
 		#region Read string
-		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> definition and a provided character length</summary>
+		/// <summary>Reads a string using explicit storage framing.</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
-		/// <param name="length">Length, in characters, of the string.</param>
-		/// <returns></returns>
+		/// <param name="length">Optional payload length in serialized storage units.</param>
+		/// <returns>The decoded payload.</returns>
 		/// <remarks>
-		/// Length can be non-positive if <paramref name="storage"/> defines or
-		/// doesn't require an explicit character length. If you do provide the
-		/// length, this operation will perform faster in some cases.
+		/// <para>Unfixed CharArray reads require a positive length; an unfixed CString is scanned when the length is nonpositive. Pascal and fixed fields ignore the length argument.</para>
+		/// <para>Consumes framing and the entire fixed field, including padding. Unlike direct buffer decoding, CString scanning stops at the first null and CharArray reads remove trailing null padding.</para>
 		/// </remarks>
+		/// <exception cref="NotSupportedException">A positive length uses a variable-width encoding.</exception>
 		public string ReadString(Memory.Strings.StringStorage storage, int length)
 		{
 			Verify.StringStorage.ForStreaming(storage, length);
@@ -239,26 +239,19 @@ namespace KSoft.IO
 
 			return sse.ReadString(this, length);
 		}
-		/// <summary>
-		/// Read a string using a <see cref="Memory.Strings.StringStorage"/> definition.
-		/// String length defaults to <see cref="Memory.Strings.StringStorage.FixedLegnth"/>
-		/// </summary>
+		/// <summary>Reads a string using <see cref="Memory.Strings.StringStorage.FixedLength"/> as the length.</summary>
 		/// <param name="storage">Definition for the string's characteristics</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="ReadString(Memory.Strings.StringStorage, int)" path="/returns|/remarks"/>
+		/// <seealso cref="ReadString(Memory.Strings.StringStorage, int)"/>
 		public string ReadString(Memory.Strings.StringStorage storage)
 		{
 			return ReadString(storage, storage.FixedLength);
 		}
 
-		/// <summary>Read a string using a <see cref="Memory.Strings.StringStorage"/> encoding and a provided character length</summary>
+		/// <summary>Reads a string using a storage encoding and an optional payload length.</summary>
 		/// <param name="encoding">The encoding to use for character streaming</param>
-		/// <param name="length">Length, in characters, of the string.</param>
-		/// <returns></returns>
-		/// <remarks>
-		/// Length can be non-positive if <paramref name="encoding"/>'s storage defines
-		/// or doesn't require an explicit character length. If you do provide the
-		/// length, this operation will perform faster in some cases.
-		/// </remarks>
+		/// <param name="length">Optional payload length in serialized storage units.</param>
+		/// <inheritdoc cref="ReadString(Memory.Strings.StringStorage, int)" path="/returns|/remarks|/exception"/>
 		public string ReadString(Text.StringStorageEncoding encoding, int length)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);
@@ -266,12 +259,10 @@ namespace KSoft.IO
 
 			return encoding.ReadString(this, length);
 		}
-		/// <summary>
-		/// Read a string using a <see cref="Memory.Strings.StringStorage"/> encoding.
-		/// String length defaults to <see cref="Memory.Strings.StringStorage.FixedLegnth"/>
-		/// </summary>
+		/// <summary>Reads a string using the encoding's <see cref="Memory.Strings.StringStorage.FixedLength"/> as the length.</summary>
 		/// <param name="encoding">The encoding to use for character streaming</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="ReadString(Memory.Strings.StringStorage, int)" path="/returns|/remarks"/>
+		/// <seealso cref="ReadString(Text.StringStorageEncoding, int)"/>
 		public string ReadString(Text.StringStorageEncoding encoding)
 		{
 			ArgumentNullException.ThrowIfNull(encoding);

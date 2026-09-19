@@ -7,11 +7,11 @@ namespace KSoft.Text
 {
 	using Memory.Strings;
 
-	/// <summary>Encapsulates an <see cref="Encoding"/> from a <see cref="StringStorage"/> definition</summary>
+	/// <summary>Encodes and decodes binary string records described by <see cref="StringStorage"/>.</summary>
 	/// <remarks>
-	/// Conversions operate on complete framed records, including the encoder and decoder wrappers.
-	/// Prefixes and fixed fields count serialized storage units. A UTF-32 scalar can require two managed input characters.
-	/// CString inputs must not contain embedded nulls; writers do not escape or reject them.
+	/// <para>Use KSoft stream string overloads accepting an explicit storage descriptor or encoding; ordinary BinaryReader/BinaryWriter string methods use CLR byte-counted framing.</para>
+	/// <para>Prefixes and fixed fields count serialized storage units. A UTF-32 scalar can require two managed input characters.</para>
+	/// <para>CString inputs must not contain embedded nulls; writers do not escape or reject them.</para>
 	/// </remarks>
 	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public sealed partial class StringStorageEncoding
@@ -104,6 +104,8 @@ namespace KSoft.Text
 		/// <param name="bytes">The byte array to contain the resulting sequence of bytes</param>
 		/// <param name="byteIndex">The index at which to start writing the resulting sequence of bytes</param>
 		/// <returns>The actual number of bytes written into bytes</returns>
+		/// <remarks>Includes framing and truncates to fixed-field capacity, but does not initialize unused caller-owned padding. Stream writes serialize and pad the complete field instead.</remarks>
+		/// <seealso cref="IO.EndianWriter.Write(ReadOnlySpan{char}, StringStorage)"/>
 		public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
 		{
 			Verify.Buffers.OffsetAndLengthWithinLength(chars, charIndex, charCount);
@@ -134,6 +136,7 @@ namespace KSoft.Text
 		/// <param name="index">The index of the first byte to decode</param>
 		/// <param name="count">The number of bytes to decode</param>
 		/// <returns>The number of characters produced by decoding the specified sequence of bytes.</returns>
+		/// <inheritdoc cref="GetChars(byte[], int, int, char[], int)" path="/remarks"/>
 		public override int GetCharCount(byte[] bytes, int index, int count)
 		{
 			count = CalculateCharByteCount(bytes, ref index, count); // Remove our String Storage calculations
@@ -149,6 +152,7 @@ namespace KSoft.Text
 		/// <param name="chars">The character array to contain the resulting set of characters.</param>
 		/// <param name="charIndex">The index at which to start writing the resulting set of characters</param>
 		/// <returns>The actual number of characters written into chars</returns>
+		/// <remarks>Decodes the supplied record extent, not an unbounded stream. CString decoding validates and removes the final encoded null; it does not scan for the first null or trim fixed-field padding.</remarks>
 		public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex)
 		{
 			byteCount = CalculateCharByteCount(bytes, ref byteIndex, byteCount); // Remove our String Storage calculations
@@ -160,6 +164,7 @@ namespace KSoft.Text
 		/// <summary>Calculates the maximum number of bytes produced by encoding the specified number of characters</summary>
 		/// <param name="charCount">The number of characters to encode</param>
 		/// <returns>The maximum number of bytes produced by encoding the specified number of characters</returns>
+		/// <remarks>A capacity estimate, not validation of a particular string or its Pascal prefix range. Use <see cref="GetByteCount(char[], int, int)"/> for actual input.</remarks>
 		public override int GetMaxByteCount(int charCount)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(charCount);
@@ -188,6 +193,7 @@ namespace KSoft.Text
 		/// <summary>Calculates the maximum number of characters produced by decoding the specified number of bytes</summary>
 		/// <param name="byteCount">The number of bytes to decode</param>
 		/// <returns>The maximum number of characters produced by decoding the specified number of bytes</returns>
+		/// <remarks>Does not inspect or validate a record's contents. Use <see cref="GetCharCount(byte[], int, int)"/> for actual input.</remarks>
 		public override int GetMaxCharCount(int byteCount)
 		{
 			// For Pascal type strings, this will give a larger count
@@ -231,7 +237,13 @@ namespace KSoft.Text
 
 			return false;
 		}
+		/// <summary>Returns a decoder for complete string-storage records.</summary>
+		/// <inheritdoc cref="GetEncoder()" path="/remarks"/>
+		/// <seealso cref="GetChars(byte[], int, int, char[], int)"/>
 		public override System.Text.Decoder GetDecoder() => new Decoder(this);
+		/// <summary>Returns an encoder for complete string-storage records.</summary>
+		/// <remarks>Framing is processed on every conversion call; this is not incremental framing across arbitrary record fragments. <see cref="Options.DontAlwaysFlush"/> controls only the underlying character-conversion state.</remarks>
+		/// <seealso cref="GetBytes(char[], int, int, byte[], int)"/>
 		public override System.Text.Encoder GetEncoder() => new Encoder(this);
 		public override int GetHashCode() => mBaseEncoding.GetHashCode();
 		public override byte[] GetPreamble() => mBaseEncoding.GetPreamble();
