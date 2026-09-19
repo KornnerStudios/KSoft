@@ -6,40 +6,34 @@ namespace KSoft.Text
 
 	partial class StringStorageEncoding
 	{
-		#region CalculateByteCount
-		/// <summary>Calculate how many additional bytes are needed to encode a raw <see cref="StringStorageType.CString"/> string</summary>
-		/// <param name="byteCount">Base characters byte count</param>
-		/// <returns>Total byte count needed for encoding a <see cref="StringStorageType.CString"/> string</returns>
-		int CalcByteCountCString(int byteCount)
+
+		// A fixed-width payload unit has the same byte width as an encoded null.
+		int GetSerializedCharacterCount(int byteCount) => byteCount / mNullCharacterSize;
+
+		void ValidateEncodedPayload(int byteCount)
 		{
-			return byteCount + mNullCharacterSize;
-		}
-		/// <summary>Calculate how many additional bytes are needed to encode a raw <see cref="StringStorageType.Pascal"/> string</summary>
-		/// <param name="byteCount">Base characters byte count</param>
-		/// <returns>Total byte count needed for encoding a <see cref="StringStorageType.Pascal"/> string</returns>
-		int CalcByteCountPascal(int byteCount)
-		{
-			return mStorage.LengthPrefix switch
+			if (mStorage.HasLengthPrefix)
 			{
-				StringStorageLengthPrefix.Int7 => byteCount + Bitwise.Encoded7BitInt.CalculateSize(byteCount),
-				StringStorageLengthPrefix.Int8 => byteCount + sizeof(byte),
-				StringStorageLengthPrefix.Int16 => byteCount + sizeof(short),
-				StringStorageLengthPrefix.Int32 => byteCount + sizeof(int),
-				_ => throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString()),
-			};
+				GetPascalPrefixByteCount(GetSerializedCharacterCount(byteCount));
+			}
+			if (mStorage.IsFixedLength &&
+				byteCount > mFixedLengthByteLength - (mStorage.Type == StringStorageType.CString ? mNullCharacterSize : 0))
+			{
+				throw new ArgumentException("The encoded payload exceeds the fixed string field.", "chars");
+			}
 		}
-		/// <summary>Calculate how many additional bytes are needed to encode a raw <see cref="StringStorageType.CharArray"/> string</summary>
-		/// <param name="byteCount">Base characters byte count</param>
-		/// <returns>Total byte count needed for encoding a <see cref="StringStorageType.CharArray"/> string</returns>
-		static int CalcByteCountCharArray(int byteCount)
-		{
-			return byteCount;
-		}
+
+		#region CalculateByteCount
 		/// <summary>Calculate how many additional bytes are needed for encoding a raw string</summary>
 		/// <param name="byteCount">Base characters byte count</param>
+		/// <param name="validateLength">Whether the payload is exact rather than an upper bound.</param>
 		/// <returns>Total byte count needed for encoding a string</returns>
-		int CalculateByteCount(int byteCount)
+		int CalculateByteCount(int byteCount, bool validateLength = true)
 		{
+			if (validateLength)
+			{
+				ValidateEncodedPayload(byteCount);
+			}
 			if (mStorage.IsFixedLength)
 			{
 				return mFixedLengthByteLength;
@@ -48,7 +42,7 @@ namespace KSoft.Text
 			switch (mStorage.Type)
 			{
 				case StringStorageType.CString:		byteCount = CalcByteCountCString(byteCount); break;
-				case StringStorageType.Pascal:		byteCount = CalcByteCountPascal(byteCount); break;
+				case StringStorageType.Pascal:		byteCount = CalcByteCountPascal(byteCount, validateLength); break;
 				// CharArray doesn't do anything anyway
 				case StringStorageType.CharArray:	/*byteCount = CalcByteCountCharArray(byteCount);*/ break;
 				default:
@@ -59,57 +53,35 @@ namespace KSoft.Text
 		}
 		#endregion
 
-		/// <summary>If the storage requires a fixed length, this will clamp the count to be within that length</summary>
-		/// <param name="charCount"></param>
-		void ClampCharCount(ref int charCount)
+		/// <summary>Return the input character count fitting the serialized field or caller's limit.</summary>
+		/// <param name="chars">Managed input characters.</param>
+		/// <param name="maxLength">Optional maximum payload length in storage units for fixed-width encodings.</param>
+		int ClampCharCount(ReadOnlySpan<char> chars, int maxLength = -1)
 		{
-			if (!mStorage.IsFixedLength)
+			int limit = maxLength > 0 ? maxLength : int.MaxValue;
+			if (mStorage.IsFixedLength)
 			{
-				return;
+				int capacity = mStorage.FixedLength - (mStorage.Type == StringStorageType.CString ? 1 : 0);
+				limit = Math.Min(limit, capacity);
+			}
+			if (chars.Length <= limit || mStorage.WidthType != StringStorageWidthType.UTF32)
+			{
+				return Math.Min(chars.Length, limit);
 			}
 
-			switch (mStorage.Type)
+			int charCount = 0;
+			for (int units = 0; units < limit && charCount < chars.Length; units++)
 			{
-				case StringStorageType.CString:
-					int fixed_length = mStorage.FixedLength - 1; // don't include null char
-
-					if (charCount > fixed_length) { charCount = fixed_length; }
-					break;
-				case StringStorageType.CharArray:
-					if (charCount > mStorage.FixedLength) { charCount = mStorage.FixedLength; }
-					break;
-				default:
-					throw new Debug.UnreachableException(mStorage.Type.ToString());
+				// A complete surrogate pair occupies one UTF-32 storage unit.
+				charCount += charCount + 1 < chars.Length && char.IsSurrogatePair(chars[charCount], chars[charCount + 1])
+					? 2 : 1;
 			}
+			return charCount;
 		}
 
 		#region Encode StringStorageType Data Prefix
-		int EncStringStorageTypePrefixPascalData(int charCount, Span<byte> bytes)
-		{
-			int prefix_bytes;
-			switch (mStorage.LengthPrefix)
-			{
-				case StringStorageLengthPrefix.Int7:	prefix_bytes = Bitwise.Encoded7BitInt.Write(bytes, charCount); break;
-				case StringStorageLengthPrefix.Int8:	bytes[0] = (byte)charCount;
-					prefix_bytes = sizeof(byte); break;
-				case StringStorageLengthPrefix.Int16:	BitConverter.TryWriteBytes(
-															bytes[..sizeof(short)], (short)charCount);
-														if (!mStorage.ByteOrder.IsSameAsRuntime())
-															bytes[..sizeof(short)].Reverse();
-					prefix_bytes = sizeof(short); break;
-				case StringStorageLengthPrefix.Int32:	BitConverter.TryWriteBytes(
-															bytes[..sizeof(int)], charCount);
-														if (!mStorage.ByteOrder.IsSameAsRuntime())
-															bytes[..sizeof(int)].Reverse();
-					prefix_bytes = sizeof(int); break;
-				default:
-					throw new Debug.UnreachableException(mStorage.LengthPrefix.ToString());
-			}
-
-			return prefix_bytes;
-		}
 		/// <summary>Encode any prefix related data for the <see cref="StringStorageType"/> into a byte span</summary>
-		/// <param name="charCount">The number of characters to encode</param>
+		/// <param name="charCount">The number of characters in the serialized representation.</param>
 		/// <param name="bytes">The destination for the resulting sequence of bytes</param>
 		/// <returns>Number of prefix bytes written into <paramref name="bytes"/></returns>
 		int EncodeStringStorageTypePrefixData(int charCount, Span<byte> bytes)
@@ -118,7 +90,7 @@ namespace KSoft.Text
 			{
 				// No prefix for CString
 				StringStorageType.CString => 0,
-				StringStorageType.Pascal => EncStringStorageTypePrefixPascalData(charCount, bytes),
+				StringStorageType.Pascal => EncodePascalPrefix(charCount, bytes),
 				// CharArray doesn't do anything anyway
 				StringStorageType.CharArray => 0,
 				_ => throw new Debug.UnreachableException(mStorage.Type.ToString()),
@@ -127,12 +99,6 @@ namespace KSoft.Text
 		#endregion
 
 		#region Encode StringStorageType Data Postfix
-		int EncStringStoragePostfixCStringData(Span<byte> bytes)
-		{
-			bytes[..mNullCharacterSize].Clear();
-
-			return mNullCharacterSize; // number of bytes written into [bytes]
-		}
 		/// <summary>Encode any additional <see cref="StringStorageType"/> related data into a byte span</summary>
 		/// <param name="bytes">The destination for the resulting sequence of postfix bytes</param>
 		/// <returns>The actual number of bytes written into <paramref name="bytes"/></returns>
@@ -140,7 +106,7 @@ namespace KSoft.Text
 		{
 			return mStorage.Type switch
 			{
-				StringStorageType.CString => EncStringStoragePostfixCStringData(bytes),
+				StringStorageType.CString => EncodeCStringTerminator(bytes),
 				// No postfix for Pascal
 				StringStorageType.Pascal => 0,
 				// CharArray doesn't do anything anyway
@@ -169,6 +135,8 @@ namespace KSoft.Text
 			/// <seealso cref="System.Text.Encoder.GetByteCount(Char[], Int32, Int32, Boolean) "/>
 			public override int GetByteCount(char[] chars, int index, int count, bool flush)
 			{
+				Verify.Buffers.OffsetAndLengthWithinLength(chars, index, count);
+				count = mEncoding.ClampCharCount(chars.AsSpan(index, count));
 				int byte_count = mEnc.GetByteCount(chars, index, count, mEncoding.DontAlwaysFlush ? flush : true);
 
 				byte_count = mEncoding.CalculateByteCount(byte_count); // Add our String Storage calculations
@@ -190,9 +158,19 @@ namespace KSoft.Text
 			/// <seealso cref="System.Text.Encoder.GetBytes(Char[], Int32, Int32, Byte[], Int32, Boolean) "/>
 			public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex, bool flush)
 			{
+				Verify.Buffers.OffsetAndLengthWithinLength(chars, charIndex, charCount);
+				Verify.Buffers.StartIndexWithinLength(bytes, byteIndex);
+				charCount = mEncoding.ClampCharCount(chars.AsSpan(charIndex, charCount));
+				int serializedCount = 0;
+				if (mEncoding.HasCountedPayload)
+				{
+					int byteCount = mEnc.GetByteCount(chars, charIndex, charCount, mEncoding.DontAlwaysFlush ? flush : true);
+					mEncoding.ValidateEncodedPayload(byteCount);
+					serializedCount = mEncoding.GetSerializedCharacterCount(byteCount);
+				}
 				// Add our String Storage calculations
 				int bytes_written = mEncoding.EncodeStringStorageTypePrefixData(
-					charCount, bytes.AsSpan(byteIndex));
+					serializedCount, bytes.AsSpan(byteIndex));
 
 				bytes_written += mEnc.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written, mEncoding.DontAlwaysFlush ? flush : true);
 
@@ -210,13 +188,12 @@ namespace KSoft.Text
 		#region WriteString
 		internal byte[] EncodeString(ReadOnlySpan<char> chars)
 		{
-			int char_count = chars.Length;
-			ClampCharCount(ref char_count);
-			chars = chars[..char_count];
+			chars = chars[..ClampCharCount(chars)];
 
 			int base_byte_count = mBaseEncoding.GetByteCount(chars);
 			byte[] bytes = new byte[CalculateByteCount(base_byte_count)];
-			int bytes_written = EncodeStringStorageTypePrefixData(chars.Length, bytes.AsSpan());
+			int serializedCount = mStorage.HasLengthPrefix ? GetSerializedCharacterCount(base_byte_count) : 0;
+			int bytes_written = EncodeStringStorageTypePrefixData(serializedCount, bytes.AsSpan());
 
 			bytes_written += mBaseEncoding.GetBytes(chars, bytes.AsSpan(bytes_written));
 			EncodeStringStorageTypePostfixData(bytes.AsSpan(bytes_written));
@@ -230,12 +207,7 @@ namespace KSoft.Text
 				throw new NotSupportedException("Currently don't support unnatural bit lengths for prefixes on writes");
 			}
 
-			int length = value.Length;
-			if (maxLength > 0)
-			{
-				length = System.Math.Min(maxLength, length);
-			}
-
+			int length = ClampCharCount(value.AsSpan(), maxLength);
 			byte[] bytes = EncodeString(value.AsSpan(0, length));
 			s.Write(bytes.AsSpan());
 		}

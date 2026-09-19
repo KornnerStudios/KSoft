@@ -35,8 +35,8 @@ namespace KSoft.Memory.Strings
 	{
 		/// <summary>Zero-terminated character string</summary>
 		CString,
-		/// <summary>Character string with a length pre-fix header</summary>
-		/// <remarks>This type will never acknowledge fixed length status</remarks>
+		/// <summary>Fixed-width character string prefixed by its character count, not its byte count.</summary>
+		/// <remarks>This type does not use fixed-field padding or a null terminator.</remarks>
 		Pascal,
 		/// <summary>Standard array of characters, nothing more</summary>
 		CharArray,

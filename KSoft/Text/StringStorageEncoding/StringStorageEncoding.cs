@@ -9,9 +9,9 @@ namespace KSoft.Text
 
 	/// <summary>Encapsulates an <see cref="Encoding"/> from a <see cref="StringStorage"/> definition</summary>
 	/// <remarks>
-	/// For <see cref="StringStorageType.CString"/> cases, the encoding does not check if there
-	/// is an existing '\0' character in the user supplied strings. If you pass such strings to
-	/// the encoding for streaming the results will be undefined. Oh and bad.
+	/// Conversions operate on complete framed records, including the encoder and decoder wrappers.
+	/// Prefixes and fixed fields count serialized storage units. A UTF-32 scalar can require two managed input characters.
+	/// CString inputs must not contain embedded nulls; writers do not escape or reject them.
 	/// </remarks>
 	[SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes")]
 	public sealed partial class StringStorageEncoding
@@ -25,6 +25,7 @@ namespace KSoft.Text
 		/// <summary>The string storage definition for this encoding</summary>
 		public StringStorage Storage { get => mStorage; }
 		#endregion
+		bool HasCountedPayload => mStorage.HasLengthPrefix || mStorage.IsFixedLength;
 		readonly Options mOptions;
 		bool DontAlwaysFlush { get => (mOptions & Options.DontAlwaysFlush) != 0; }
 		/// <summary>Number of bytes a null character consumes</summary>
@@ -86,8 +87,9 @@ namespace KSoft.Text
 		/// <returns>The number of bytes produced by encoding the specified characters</returns>
 		public override int GetByteCount(char[] chars, int index, int count)
 		{
+			Verify.Buffers.OffsetAndLengthWithinLength(chars, index, count);
 			// In case someone is trying to encode a string outside of the storage's bounds
-			ClampCharCount(ref count);
+			count = ClampCharCount(chars.AsSpan(index, count));
 
 			int byte_count = mBaseEncoding.GetByteCount(chars, index, count);
 
@@ -104,11 +106,20 @@ namespace KSoft.Text
 		/// <returns>The actual number of bytes written into bytes</returns>
 		public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
 		{
+			Verify.Buffers.OffsetAndLengthWithinLength(chars, charIndex, charCount);
+			Verify.Buffers.StartIndexWithinLength(bytes, byteIndex);
 			// In case someone is trying to encode a string outside of the storage's bounds
-			ClampCharCount(ref charCount);
+			charCount = ClampCharCount(chars.AsSpan(charIndex, charCount));
+			int serializedCount = 0;
+			if (HasCountedPayload)
+			{
+				int byteCount = mBaseEncoding.GetByteCount(chars, charIndex, charCount);
+				ValidateEncodedPayload(byteCount);
+				serializedCount = GetSerializedCharacterCount(byteCount);
+			}
 
 			// Add our String Storage calculations
-			int bytes_written = EncodeStringStorageTypePrefixData(charCount, bytes.AsSpan(byteIndex));
+			int bytes_written = EncodeStringStorageTypePrefixData(serializedCount, bytes.AsSpan(byteIndex));
 
 			bytes_written += mBaseEncoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex + bytes_written);
 
@@ -151,27 +162,25 @@ namespace KSoft.Text
 		/// <returns>The maximum number of bytes produced by encoding the specified number of characters</returns>
 		public override int GetMaxByteCount(int charCount)
 		{
+			ArgumentOutOfRangeException.ThrowIfNegative(charCount);
+			if (mStorage.IsFixedLength)
+			{
+				return mFixedLengthByteLength;
+			}
 			int max_count = mBaseEncoding.GetMaxByteCount(charCount);
 
-			max_count = CalculateByteCount(max_count); // Add our String Storage calculations
+			max_count = CalculateByteCount(max_count, validateLength: false); // Add our String Storage calculations
 
 			return max_count;
 		}
-		/// <summary>
-		/// Calculates the maximum number of bytes produced by encoding the specified number of characters WITHOUT
-		/// THE EXTRA SURROGATE JIZZ
-		/// </summary>
-		/// <param name="charCount">The number of characters to encode</param>
-		/// <returns></returns>
+		/// <summary>Returns the base encoding's maximum byte count minus one encoded null unit.</summary>
+		/// <param name="charCount">Storage-unit count for fixed-width encodings; input character count for a variable-width estimate.</param>
+		/// <returns>Payload byte count without string framing.</returns>
+		/// <remarks>The result is exact for fixed-width storage, but is only an upper bound for variable-width encodings.</remarks>
 		public int GetMaxCleanByteCount(int charCount)
 		{
 			int max_count = mBaseEncoding.GetMaxByteCount(charCount);
 
-			// NOTE: that GetMaxByteCount considers potential leftover surrogates from a previous decoder operation.
-			// Because of the decoder, passing a value of 1 to the method retrieves 2 for a single-byte encoding,
-			// such as ASCII. Your application should use the IsSingleByte property if this information is necessary.
-			// ...That being said, it looks like they internally use a null character. So for streaming related cases,
-			// we have to circumcise the fucking count.
 			max_count -= mNullCharacterSize;
 
 			return max_count;

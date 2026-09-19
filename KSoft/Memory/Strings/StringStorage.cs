@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace KSoft.Memory.Strings
 {
-	/// <summary>String storage definition</summary>
+	/// <summary>Describes binary-string framing, payload encoding, and counted storage units.</summary>
+	/// <remarks>Pascal prefixes count characters in the serialized representation selected by WidthType, not payload bytes.</remarks>
 	public readonly struct StringStorage : //IO.IEndianStreamable,
 		IEquatable<StringStorage>, IEqualityComparer<StringStorage>,
 		IComparer<StringStorage>, IComparable<StringStorage>,
@@ -30,7 +31,7 @@ namespace KSoft.Memory.Strings
 
 		#region LengthPrefix
 		readonly StringStorageLengthPrefix mLengthPrefix;
-		/// <summary>Length prefix size</summary>
+		/// <summary>Representation of a Pascal character-count prefix, not a payload byte count.</summary>
 		public StringStorageLengthPrefix LengthPrefix => mLengthPrefix;
 
 		public bool HasLengthPrefix => mType.UsesLengthPrefix();
@@ -38,17 +39,14 @@ namespace KSoft.Memory.Strings
 
 		#region FixedLength
 		readonly short mFixedLength;
-		/// <summary>Fixed string serialization length</summary>
+		/// <summary>Fixed-field capacity in storage units, including any CString terminator.</summary>
 		/// <remarks>Set to '0' when no specified fixed length</remarks>
 		public short FixedLength => mFixedLength;
 
 		/// <summary>Does the storage use a fixed length character array</summary>
 		/// <remarks>
-		/// Ignored in <see cref="StringStorageType.Clr"/> cases
-		///
-		/// For <see cref="StringStorageType.CharArray"/> cases, the full fixed length
-		/// buffer can be used, but for <see cref="StringStorageType.CString"/> cases
-		/// the <see cref="FixedLength"/> will be 1 less due to null termination
+		/// Pascal storage never uses fixed fields. A CharArray can fill the whole field;
+		/// a CString reserves one of the <see cref="FixedLength"/> units for its terminator.
 		/// </remarks>
 		public bool IsFixedLength => mFixedLength != 0 && !HasLengthPrefix;
 		#endregion
@@ -94,13 +92,20 @@ namespace KSoft.Memory.Strings
 			this(widthType, type, Shell.EndianFormat.Little, fixedLength)
 		{
 		}
-		/// <summary>Construct a new Pascal string storage definition</summary>
+		/// <summary>Construct a character-counted Pascal string storage definition.</summary>
 		/// <param name="widthType">Width size of a single character of this string definition</param>
 		/// <param name="prefix">Length prefix size</param>
 		/// <param name="byteOrder"></param>
+		/// <exception cref="ArgumentException"><paramref name="widthType"/> is variable-width.</exception>
 		public StringStorage(StringStorageWidthType widthType, StringStorageLengthPrefix prefix,
 			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little)
 		{
+			if (widthType.IsVariableWidth())
+			{
+				throw new ArgumentException(
+					"Pascal prefixes count characters, not bytes, and require fixed-width storage.", nameof(widthType));
+			}
+
 			mWidthType = widthType;
 			mType = StringStorageType.Pascal;
 			mByteOrder = byteOrder;
@@ -264,7 +269,7 @@ namespace KSoft.Memory.Strings
 		public static StringStorage CStringAscii { get { return kCStringAscii; } }
 
 		static readonly StringStorage kCStringUTF8 = new(StringStorageWidthType.UTF8, StringStorageType.CString);
-		/// <summary>Get a storage definition for a regular CString format ASCII string</summary>
+		/// <summary>Get an unfixed, null-terminated UTF-8 storage definition.</summary>
 		public static StringStorage CStringUtf8 { get { return kCStringUTF8; } }
 
 		static readonly StringStorage kCStringUnicode = new(StringStorageWidthType.Unicode, StringStorageType.CString);
@@ -283,7 +288,7 @@ namespace KSoft.Memory.Strings
 		public static StringStorage AsciiString { get { return kStringAscii; } }
 
 		static readonly StringStorage kStringUTF8 = new(StringStorageWidthType.UTF8, StringStorageType.CharArray);
-		/// <summary>Get a storage definition for a string of ASCII characters</summary>
+		/// <summary>Get an unframed UTF-8 storage definition for caller-bounded byte buffers.</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage Utf8String { get { return kStringUTF8; } }
 
@@ -311,7 +316,6 @@ namespace KSoft.Memory.Strings
 
 			// UTF8
 			kCStringUTF8,
-			/* Clr */ new(StringStorageWidthType.UTF8, StringStorageLengthPrefix.Int7),
 			kStringUTF8,
 
 			// Unicode-BE

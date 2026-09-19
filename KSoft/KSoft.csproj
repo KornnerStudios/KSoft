@@ -107,9 +107,12 @@
     <Compile Include="Text\Numbers.cs" />
     <Compile Include="Text\RadixEncoding.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.cs" />
+    <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.CharArray.cs" />
+    <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.CString.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Decoder.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Encoder.cs" />
     <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Options.cs" />
+    <Compile Include="Text\StringStorageEncoding\StringStorageEncoding.Pascal.cs" />
     <Compile Include="Text\TextLineInfo.cs" />
     <Compile Include="Text\TextLineInfoException.cs" />
     <Compile Include="Text\Utilities.Bytes.cs" />

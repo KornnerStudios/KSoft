@@ -14,6 +14,7 @@ public static class StringStorage
 	/// <paramref name="storage"/> is an unfixed character-array storage definition and <paramref name="length"/> is not
 	/// positive.
 	/// </exception>
+	/// <exception cref="NotSupportedException">A character-counted read uses a variable-width encoding.</exception>
 	public static void ForStreaming(Memory.Strings.StringStorage storage, int length)
 	{
 		if (storage.Type == Memory.Strings.StringStorageType.CharArray && !storage.IsFixedLength && length <= 0)
@@ -21,6 +22,12 @@ public static class StringStorage
 			throw new InvalidDataException(string.Format(Util.InvariantCultureInfo,
 				"Provided string storage and length is invalid for Endian streaming: {0}, {1}",
 				storage.ToString(), length.ToString(Util.InvariantCultureInfo)));
+		}
+
+		if (length > 0 && storage.WidthType.IsVariableWidth())
+		{
+			throw new NotSupportedException(
+				"Character-counted stream reads require fixed-width storage. Read UTF-8 CStrings without a length hint, or decode a bounded byte buffer.");
 		}
 	}
 }

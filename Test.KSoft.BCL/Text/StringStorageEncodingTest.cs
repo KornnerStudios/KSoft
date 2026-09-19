@@ -173,24 +173,6 @@ namespace KSoft.Text.Test
 				"A",
 				MS.StringStorage.CStringUnicodeBigEndian);
 
-			const string pascalText = "A\u00E9";
-			AssertBitStreamWriteBytes(
-				[0x02, 0x41, 0xC3, 0xA9],
-				pascalText,
-				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int7));
-			AssertBitStreamWriteBytes(
-				[0x02, 0x41, 0xC3, 0xA9],
-				pascalText,
-				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int8));
-			AssertBitStreamWriteBytes(
-				[0x02, 0x00, 0x41, 0xC3, 0xA9],
-				pascalText,
-				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int16));
-			AssertBitStreamWriteBytes(
-				[0x02, 0x00, 0x00, 0x00, 0x41, 0xC3, 0xA9],
-				pascalText,
-				new MS.StringStorage(MS.StringStorageWidthType.UTF8, MS.StringStorageLengthPrefix.Int32));
-
 			var fixedCString = new MS.StringStorage(MS.StringStorageWidthType.Ascii,
 				MS.StringStorageType.CString, fixedLength: 5);
 			AssertBitStreamWriteBytes([0x41, 0x00, 0x00, 0x00, 0x00], "A", fixedCString);
