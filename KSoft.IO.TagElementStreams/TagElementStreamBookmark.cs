@@ -3,8 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace KSoft.IO
 {
 	/// <summary>
-	/// Helper type for exposing the <see cref="TagElementStream.StreamElementBegin(string)">StreamElementBegin</see> and
-	/// <see cref="TagElementStream.StreamElementEnd()">StreamElementEnd</see> in a way which works with the C# "using" statements
+	/// Helper type for exposing <see cref="TagElementStream{TDoc, TCursor, TName}.StreamElementBegin(TName, out TCursor)"/> and
+	/// <see cref="TagElementStream{TDoc, TCursor, TName}.StreamElementEnd(ref TCursor)"/> in a way which works with the C# "using" statements
 	/// </summary>
 	/// <remarks>If a null element name is given, skips the bookmarking process entirely</remarks>
 	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
@@ -68,8 +68,8 @@ namespace KSoft.IO
 	};
 
 	/// <summary>
-	/// Helper type for exposing the <see cref="TagElementStream.SaveCursor()">SaveCursor</see> and
-	/// <see cref="TagElementStream.RestoreCursor()">RestoreCursor</see> in a way which works with the C# "using" statements
+	/// Helper type for exposing <see cref="TagElementStream{TDoc, TCursor, TName}.SaveCursor(TCursor, out TCursor)"/> and
+	/// <see cref="TagElementStream{TDoc, TCursor, TName}.RestoreCursor(ref TCursor)"/> in a way which works with the C# "using" statements
 	/// </summary>
 	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct TagElementStreamReadBookmark<TDoc, TCursor, TName> : IDisposable

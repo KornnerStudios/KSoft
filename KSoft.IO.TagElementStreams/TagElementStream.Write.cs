@@ -12,8 +12,8 @@ namespace KSoft.IO
 		#region WriteElement impl
 		/// <summary></summary>
 		/// <param name="n">Node element to write</param>
-		/// <param name="value">Data to set the element's <see cref="TCursor.InnerText"/> to</param>
-		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
+		/// <param name="value">Data to set as the element's inner text</param>
+		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		protected abstract void WriteElementEnum<TEnum>(TCursor n, TEnum value, bool isFlags)
 			where TEnum : struct, Enum;
 
@@ -23,7 +23,7 @@ namespace KSoft.IO
 		#region WriteCursor
 		/// <summary>Set <see cref="Cursor"/>'s value to <paramref name="value"/></summary>
 		/// <param name="value">Data to set the <see cref="Cursor"/> to</param>
-		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
+		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		public void WriteCursorEnum<TEnum>(TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -43,8 +43,8 @@ namespace KSoft.IO
 
 		protected abstract TCursor WriteElementNest(TName name, out TCursor oldCursor);
 
-		/// <summary>Create a new element under <see cref="Cursor"/> or the root element in the underlying <see cref="XmlDocument"/></summary>
-		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <summary>Create a new element under <see cref="Cursor"/> or as the document root</summary>
+		/// <param name="name">Element name</param>
 		/// <param name="oldCursor">On return, contains the previous <see cref="Cursor"/> value</param>
 		public void WriteElementBegin(TName name, out TCursor oldCursor)
 		{
@@ -52,15 +52,15 @@ namespace KSoft.IO
 
 			WriteElementNest(name, out oldCursor);
 		}
-		/// <summary>Restore the cursor to what it was before the corresponding call to a <see cref="WriteElementBegin(string, XmlElement&amp;)"/></summary>
+		/// <summary>Restore the cursor to what it was before the corresponding call to <see cref="WriteElementBegin(TName, out TCursor)"/></summary>
 		public void WriteElementEnd(ref TCursor oldCursor)
 		{
 
 			RestoreCursor(ref oldCursor);
 		}
 
-		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
-		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
+		/// <summary>Create a new element relative to <see cref="Cursor"/></summary>
+		/// <param name="name">Element name</param>
 		/// <remarks>Does not change <see cref="Cursor"/></remarks>
 		public void WriteElement(TName name)
 		{
@@ -69,10 +69,10 @@ namespace KSoft.IO
 			WriteElementAppend(name);
 		}
 
-		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
-		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
-		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
-		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
+		/// <summary>Create a new element relative to <see cref="Cursor"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Data to set as the element's inner text</param>
+		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <remarks>Does not change <see cref="Cursor"/></remarks>
 		public void WriteElementEnum<TEnum>(TName name, TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
@@ -92,9 +92,9 @@ namespace KSoft.IO
 
 		#region WriteAttribute
 		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
-		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="name">Attribute name</param>
 		/// <param name="value">Data to set the attribute text to</param>
-		/// <param name="isFlags">Is <paramref name="enum_value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
+		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		public abstract void WriteAttributeEnum<TEnum>(TName name, TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum;
 
@@ -102,9 +102,9 @@ namespace KSoft.IO
 		#endregion
 
 		#region WriteElementOpt
-		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
-		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
-		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <summary>Create a new element relative to <see cref="Cursor"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Data to set as the element's inner text</param>
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
@@ -125,9 +125,9 @@ namespace KSoft.IO
 			return result;
 		}
 
-		/// <summary>Create a new element in the underlying <see cref="XmlDocument"/>, relative to <see cref="Cursor"/></summary>
-		/// <param name="name">The <see cref="XmlElement"/>'s name</param>
-		/// <param name="value">Data to set the element's <see cref="XmlElement.InnerText"/> to</param>
+		/// <summary>Create a new element relative to <see cref="Cursor"/></summary>
+		/// <param name="name">Element name</param>
+		/// <param name="value">Data to set as the element's inner text</param>
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
@@ -168,7 +168,7 @@ namespace KSoft.IO
 		#region WriteAttributeOpt
 		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
-		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="name">Attribute name</param>
 		/// <param name="value">Data to set the attribute text to</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
@@ -191,7 +191,7 @@ namespace KSoft.IO
 
 		/// <summary>Create a new attribute for <see cref="Cursor"/></summary>
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>isn't</b> written</param>
-		/// <param name="name">Name of the <see cref="XmlAttribute"/></param>
+		/// <param name="name">Attribute name</param>
 		/// <param name="value">Data to set the attribute text to</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
 		/// <returns>True if <paramref name="value"/> was written</returns>
@@ -372,8 +372,8 @@ namespace KSoft.IO
 		#endregion
 	};
 	/// <summary>
-	/// Helper type for exposing the <see cref="XmlElementStream.WriteElementBegin(string)">WriteElementBegin</see> and
-	/// <see cref="XmlElementStream.WriteElementEnd()">WriteElementEnd</see> in a way which works with the C# "using" statements
+	/// Helper type for exposing <see cref="TagElementStream{TDoc, TCursor, TName}.WriteElementBegin(TName, out TCursor)"/> and
+	/// <see cref="TagElementStream{TDoc, TCursor, TName}.WriteElementEnd(ref TCursor)"/> in a way which works with the C# "using" statements
 	/// </summary>
 	[SuppressMessage("Microsoft.Design", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
 	public struct TagElementStreamWriteBookmark<TDoc, TCursor, TName> : IDisposable

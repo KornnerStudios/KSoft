@@ -18,8 +18,8 @@ namespace KSoft.IO
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="value">Source or destination value</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
-		/// <seealso cref="ReadCursor{TEnum}(TName, ref TEnum)"/>
-		/// <seealso cref="WriteCursor(TName, Enum, bool)"/>
+		/// <seealso cref="ReadCursorEnum{TEnum}(ref TEnum)"/>
+		/// <seealso cref="WriteCursorEnum{TEnum}(TEnum, bool)"/>
 		public void StreamCursorEnum<TEnum>(ref TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -33,7 +33,7 @@ namespace KSoft.IO
 			else if (IsWriting) WriteCursor(value);
 		}
 
-		/// <summary>Stream the Value of attribute <paramref name="Cursor"/> and process it from a string to an id</summary>
+		/// <summary>Stream the value of <see cref="Cursor"/> and process it from a string to an id</summary>
 		/// <typeparam name="TContext">Resolving context</typeparam>
 		/// <typeparam name="TIdentifer">Type representing an id</typeparam>
 		/// <param name="id">Source or destination of the postprocessed value</param>
@@ -100,8 +100,8 @@ namespace KSoft.IO
 		/// <param name="name">Element name</param>
 		/// <param name="value">Source or destination value</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
-		/// <seealso cref="ReadElement{TEnum}(TName, ref TEnum)"/>
-		/// <seealso cref="WriteElement(TName, Enum, bool)"/>
+		/// <seealso cref="ReadElementEnum{TEnum}(TName, ref TEnum)"/>
+		/// <seealso cref="WriteElementEnum{TEnum}(TName, TEnum, bool)"/>
 		public void StreamElementEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -187,9 +187,9 @@ namespace KSoft.IO
 		/// <param name="value">Source or destination value</param>
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
 		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
-		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsElement"/> based Enum?</param>
-		/// <seealso cref="ReadElementOpt{TEnum}(TName, ref TEnum)"/>
-		/// <seealso cref="WriteElementOptOnTrue{TEnum}(TName, Enum, Predicate{TEnum}, bool)"/>
+		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
+		/// <seealso cref="ReadElementEnumOpt{TEnum}(TName, ref TEnum)"/>
+		/// <seealso cref="WriteElementEnumOptOnTrue{TEnum}(TName, TEnum, Predicate{TEnum}, bool)"/>
 		public bool StreamElementEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -247,8 +247,8 @@ namespace KSoft.IO
 		/// <param name="ctxt">Resolving context</param>
 		/// <param name="idResolver">string to id resolver</param>
 		/// <param name="stringResolver">id to string resolver</param>
-		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
-		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <param name="predicate">Predicate that defines when the resolved string is written</param>
+		/// <returns>True if the resolved string was read from or written to the stream</returns>
 		public bool StreamElementOptIdAsString<TContext, TIdentifer>(TName name, ref TIdentifer id,
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,
@@ -308,8 +308,8 @@ namespace KSoft.IO
 		/// <param name="name">Attribute name</param>
 		/// <param name="value">Source or destination value</param>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
-		/// <seealso cref="ReadElement{TEnum}(string, ref TEnum)"/>
-		/// <seealso cref="WriteAttribute(string, Enum, bool)"/>
+		/// <seealso cref="ReadAttributeEnum{TEnum}(TName, ref TEnum)"/>
+		/// <seealso cref="WriteAttributeEnum{TEnum}(TName, TEnum, bool)"/>
 		public void StreamAttributeEnum<TEnum>(TName name, ref TEnum value, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -368,8 +368,8 @@ namespace KSoft.IO
 		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
 		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
 		/// <param name="isFlags">Is <paramref name="value"/> a <see cref="FlagsAttribute"/> based Enum?</param>
-		/// <seealso cref="ReadAttributeOpt{TEnum}(string, ref TEnum)"/>
-		/// <seealso cref="WriteAttributeOptOnTrue{TEnum}(string, Enum, Predicate{TEnum}, bool)"/>
+		/// <seealso cref="ReadAttributeEnumOpt{TEnum}(TName, ref TEnum)"/>
+		/// <seealso cref="WriteAttributeEnumOptOnTrue{TEnum}(TName, TEnum, Predicate{TEnum}, bool)"/>
 		public bool StreamAttributeEnumOpt<TEnum>(TName name, ref TEnum value, Predicate<TEnum>? predicate = null, bool isFlags = false)
 			where TEnum : struct, Enum
 		{
@@ -517,8 +517,8 @@ namespace KSoft.IO
 		/// <param name="ctxt">Resolving context</param>
 		/// <param name="idResolver">integer to id resolver</param>
 		/// <param name="integerResolver">id to integer resolver</param>
-		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
-		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <param name="predicate">Predicate that defines when the resolved integer is written</param>
+		/// <returns>True if the resolved integer was read from or written to the stream</returns>
 		public bool StreamAttributeOptIdAsInt32<TContext, TIdentifer>(TName name, ref TIdentifer id,
 			TContext ctxt,
 			Func<TContext, int, TIdentifer> idResolver,
@@ -550,8 +550,8 @@ namespace KSoft.IO
 		/// <param name="ctxt">Resolving context</param>
 		/// <param name="idResolver">string to id resolver</param>
 		/// <param name="stringResolver">id to string resolver</param>
-		/// <param name="predicate">Predicate that defines the conditions for when <paramref name="value"/> <b>is</b> written</param>
-		/// <returns>True if <paramref name="value"/> was read/written from/to stream</returns>
+		/// <param name="predicate">Predicate that defines when the resolved string is written</param>
+		/// <returns>True if the resolved string was read from or written to the stream</returns>
 		public bool StreamAttributeOptIdAsString<TContext, TIdentifer>(TName name, ref TIdentifer id,
 			TContext ctxt,
 			Func<TContext, string, TIdentifer> idResolver,

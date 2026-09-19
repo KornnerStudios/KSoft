@@ -202,7 +202,7 @@ namespace KSoft.IO
 			value = Values.KGuid.ParseExact(GetInnerText(n)!, mGuidFormatString);
 		#endregion
 
-		/// <summary>Interpret the Name of <see cref="Cursor"/> as a member of <typeparamref name="TEnum"/></summary>
+		/// <summary>Interpret the inherited <c>Cursor</c> name as a member of <typeparamref name="TEnum"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="enumValue">value to receive the data</param>
 		public override void ReadCursorName<TEnum>(ref TEnum enumValue) =>

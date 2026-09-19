@@ -155,7 +155,7 @@ namespace KSoft.IO
 
 		/// <summary>
 		/// Initializes the <see cref="Cursor"/> to the underlying document's root
-		/// (eg, <see cref="XmlDocument.DocumentElement"/>)
+		/// (eg, <see cref="System.Xml.XmlDocument.DocumentElement"/>)
 		/// </summary>
 		public abstract void InitializeAtRootElement();
 
@@ -226,7 +226,7 @@ namespace KSoft.IO
 		/// <returns></returns>
 		/// <remarks>
 		/// When reading, implicitly checks if <see cref="ElementsExists"/> with <paramref name="elementName"/> for entering a bookmark.
-		/// When writing, works entirely on <see cref="writeShouldEnterBookmark"/> for entering a bookmark.
+		/// When writing, works entirely on <paramref name="writeShouldEnterBookmark"/> for entering a bookmark.
 		/// </remarks>
 		public /*IDisposable*/TagElementStreamBookmark<TDoc, TCursor, TName> EnterCursorBookmarkOpt<T>(TName elementName,
 			T theObj, Predicate<T> writeShouldEnterBookmark)

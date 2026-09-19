@@ -98,13 +98,13 @@ namespace KSoft.IO
 		// #TODO: document that 'ref value' will equal the streamed value or 'null' after returning, depending on success
 
 		#region ReadElement impl
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="n"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="n">Node element to read</param>
 		/// <param name="enumValue">value to receive the data</param>
 		protected abstract void ReadElementEnum<TEnum>(TCursor n, ref TEnum enumValue)
 			where TEnum : struct, Enum;
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="n"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="n">Node element to read</param>
 		/// <param name="enumValue">value to receive the data</param>
@@ -149,12 +149,12 @@ namespace KSoft.IO
 
 		#region ReadElement
 		public abstract void ReadElementBegin(TName name, out TCursor oldCursor);
-		/// <summary>Restore the cursor to what it was before the corresponding call to a <see cref="ReadElementBegin(string, TCursor&amp;)"/></summary>
+		/// <summary>Restore the cursor to what it was before the corresponding call to <see cref="ReadElementBegin(TName, out TCursor)"/></summary>
 		public abstract void ReadElementEnd(ref TCursor oldCursor);
 
 		protected abstract TCursor GetElement(TName name);
 
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="name"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">value to receive the data</param>
@@ -165,7 +165,7 @@ namespace KSoft.IO
 
 			ReadElementEnum(GetElement(name), ref enumValue);
 		}
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into the enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="name"/> into the enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">value to receive the data</param>
@@ -186,13 +186,13 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadAttribute
-		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
 		public abstract void ReadAttributeEnum<TEnum>(TName name, ref TEnum enumValue)
 			where TEnum : struct, Enum;
-		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
@@ -203,7 +203,7 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadElementOpt
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
@@ -211,7 +211,7 @@ namespace KSoft.IO
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadElementEnumOpt<TEnum>(TName name, ref TEnum enumValue)
 			where TEnum : struct, Enum;
-		/// <summary>Stream out the InnerText of element <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the inner text of element <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Element name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
@@ -224,14 +224,14 @@ namespace KSoft.IO
 		#endregion
 
 		#region ReadAttributeOpt
-		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>
 		/// <returns>true if the value exists</returns>
 		public abstract bool ReadAttributeEnumOpt<TEnum>(TName name, ref TEnum enumValue)
 			where TEnum : struct, Enum;
-		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="value"/></summary>
+		/// <summary>Stream out the attribute data of <paramref name="name"/> into enum <paramref name="enumValue"/></summary>
 		/// <typeparam name="TEnum">Enumeration type</typeparam>
 		/// <param name="name">Attribute name</param>
 		/// <param name="enumValue">enum value to receive the data</param>

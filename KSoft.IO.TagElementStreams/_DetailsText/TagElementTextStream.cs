@@ -6,7 +6,7 @@ namespace KSoft.IO
 		where TDoc : class
 		where TCursor : class
 	{
-		/// <summary>Element's qualified name, or null if <see cref="Cursor"/> is null</summary>
+		/// <summary>Element's qualified name, or null if the inherited <c>Cursor</c> is null</summary>
 		public abstract string? CursorName { get; }
 
 		#region GuidFormatString

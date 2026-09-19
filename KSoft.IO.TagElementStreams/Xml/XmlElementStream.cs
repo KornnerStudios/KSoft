@@ -131,7 +131,7 @@ namespace KSoft.IO
 			return element.Name;
 		}
 
-		/// <see cref="XmlElement.ChildNodes.Count"/>
+		/// <see cref="XmlNodeList.Count"/>
 		protected override int PredictElementCount(XmlElement cursor)
 		{
 			ArgumentNullException.ThrowIfNull(cursor);
@@ -146,10 +146,11 @@ namespace KSoft.IO
 			CommentsEnabled = true;
 		}
 
-		/// <summary>Initialize an element stream from a stream with <see cref="owner"/> as the initial owner object</summary>
+		/// <summary>Initialize an element stream from a stream with <paramref name="owner"/> as the initial owner object</summary>
 		/// <param name="sourceStream">Stream we're to load the XML from</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
+		/// <param name="streamNameOverride">Optional name to use instead of the source stream's name</param>
 		[SuppressMessage("Microsoft.Design", "CA3075:InsecureDTDProcessing")]
 		public XmlElementStream(System.IO.Stream sourceStream,
 			System.IO.FileAccess permissions = System.IO.FileAccess.ReadWrite, object? owner = null, string? streamNameOverride = null)
@@ -191,7 +192,7 @@ namespace KSoft.IO
 			this.Owner = owner!;
 		}
 
-		/// <summary>Initialize an element stream from the XML file <paramref name="filename"/> with <see cref="owner"/> as the initial owner object</summary>
+		/// <summary>Initialize an element stream from the XML file <paramref name="filename"/> with <paramref name="owner"/> as the initial owner object</summary>
 		/// <param name="filename">Name of the XML file we're to load</param>
 		/// <param name="permissions">Supported access permissions for this stream</param>
 		/// <param name="owner">Initial owner object</param>
