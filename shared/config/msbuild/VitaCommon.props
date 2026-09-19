@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project>
+<Project InitialTargets="VitaValidateOutputPathInputs">
 
   <!--<Import Project="$(SolutionDir)LocalSolution.props" />-->
 
@@ -23,6 +23,22 @@
 
   <Import           Project="$(VitaRootDir)user\config\msbuild\VitaUserConfig.props"
           Condition="Exists('$(VitaRootDir)user\config\msbuild\VitaUserConfig.props')" />
+
+  <PropertyGroup>
+    <!-- Later SDK defaults cannot repair paths already derived from missing inputs. -->
+    <_VitaConfigurationAtPathInitialization>$(Configuration)</_VitaConfigurationAtPathInitialization>
+    <_VitaPlatformAtPathInitialization>$(Platform)</_VitaPlatformAtPathInitialization>
+  </PropertyGroup>
+
+  <Target Name="VitaValidateOutputPathInputs">
+    <Error Code="VITA0001"
+           Condition="$([System.String]::IsNullOrWhiteSpace('$(_VitaConfigurationAtPathInitialization)'))"
+           Text="Configuration must be set before Vita derives output paths. Define it in an earlier property file or pass -p:Configuration=Debug (or another configuration); later SDK defaults are too late." />
+    <Error Code="VITA0002"
+           Condition="$([System.String]::IsNullOrWhiteSpace('$(_VitaPlatformAtPathInitialization)'))"
+           Text="Platform must be set before Vita derives output paths. Define it in an earlier property file or pass -p:Platform=AnyCPU (or another platform); later SDK defaults are too late." />
+  </Target>
+
   <Import           Project="VitaCommonConfig.props" />
   <Import           Project="VitaUserConfigDefaults.props" />
 

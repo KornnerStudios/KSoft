@@ -18,7 +18,7 @@ if ([string]::IsNullOrWhiteSpace($Artifacts))
 Push-Location $projectDir
 try
 {
-	dotnet build .\Bench.KSoft.BCL.csproj --configuration Release
+	dotnet build .\Bench.KSoft.BCL.csproj --configuration Release "-p:Platform=AnyCPU"
 	if ($LASTEXITCODE -ne 0)
 	{
 		exit $LASTEXITCODE
@@ -28,6 +28,7 @@ try
 		"run",
 		"--project", ".\Bench.KSoft.BCL.csproj",
 		"--configuration", "Release",
+		"-p:Platform=AnyCPU",
 		"--no-build",
 		"--",
 		"--filter", $Filter,

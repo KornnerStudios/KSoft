@@ -10,6 +10,7 @@ Environment.SetEnvironmentVariable("VitaRootDir", vitaRootDir);
 Environment.SetEnvironmentVariable("VitaSolutionFamily", "KSoft.BCL");
 Environment.SetEnvironmentVariable("VitaUseSolutionFamilyDirs", "true");
 Environment.SetEnvironmentVariable("Configuration", "Release");
+Environment.SetEnvironmentVariable("Platform", "AnyCPU");
 
 BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
 
