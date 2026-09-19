@@ -28,7 +28,24 @@
 
   <PropertyGroup>
     <OutputPath>$(OutDir)</OutputPath>
-    <!--<DocumentationFile Condition=" '$(Configuration)' == 'Release' ">$(VitaRootDir)_lib\$(Configuration)\$(Platform)\$(AssemblyName)\$(AssemblyName).XML</DocumentationFile>-->
+    <!-- GenerateDocumentationFile makes the compiler validate authored XML comments during every normal build. -->
+    <!-- Leave DocumentationFile unset so the SDK writes $(AssemblyName).xml to IntermediateOutputPath. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Documentation XML is an intermediate validation artifact, not a build or publish output. -->
+    <CopyDocumentationFileToOutputDirectory>false</CopyDocumentationFileToOutputDirectory>
+    <PublishDocumentationFiles>false</PublishDocumentationFiles>
+    <!-- Package documentation is not a runtime dependency and should not expand application/test outputs. -->
+    <CopyDocumentationFilesFromPackages>false</CopyDocumentationFilesFromPackages>
+    <!-- CS1591: validate authored documentation without requiring documentation coverage for every public API. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Exclude XML sidecars from direct assembly references while preserving symbols, PRI files, and configs. -->
+    <AllowedReferenceRelatedFileExtensions>
+      .pdb;
+      .pri;
+      .dll.config;
+      .exe.config
+    </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
   <PropertyGroup>
