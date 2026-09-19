@@ -28,7 +28,7 @@ internal static partial class TagElementStreamsSourceBuilder
 		string keyword = typeSpec.Keyword;
 
 		writer.WriteXmlDocSummary(
-			"Stream out the InnerText of element <paramref name=\"name\"/> into " +
+			"Stream out the inner text of element <paramref name=\"n\"/> into " +
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("n", "Node element to read");
 		writer.WriteXmlDocParam("value", "value to receive the data");
@@ -78,7 +78,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary(
 			"Stream out the Value of <see cref=\"Cursor\"/>",
-			"using numerical base of <paramref name=\"base\"/> into <paramref name=\"value\"/>");
+			"using numerical base of <paramref name=\"fromBase\"/> into <paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("fromBase", "numerical base to use");
 		writer.WriteXmlDocParam("value", "value to receive the data");
 		writer.WriteLine($"public void ReadCursor(ref {typeSpec.Keyword} value, NumeralBase fromBase = NumeralBase.Decimal)");
@@ -170,7 +170,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary(
 			"Stream out the attribute data of <paramref name=\"name\"/>",
-			"using numerical base of <paramref name=\"base\"/> into",
+			"using numerical base of <paramref name=\"fromBase\"/> into",
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("name", "Attribute name");
 		writer.WriteXmlDocParam("fromBase", "numerical base to use");
@@ -261,7 +261,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary(
 			"Stream out the attribute data of <paramref name=\"name\"/>",
-			"using numerical base of <paramref name=\"base\"/> into",
+			"using numerical base of <paramref name=\"fromBase\"/> into",
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("name", "Attribute name");
 		writer.WriteXmlDocParam("fromBase", "numerical base to use");
@@ -477,8 +477,8 @@ internal static partial class TagElementStreamsSourceBuilder
 	private static void WriteReadNumeralXmlDocs(SourceWriter writer, string nodeParamName)
 	{
 		writer.WriteXmlDocSummary(
-			"Stream out the InnerText of element <paramref name=\"name\"/>",
-			"using numerical base of <paramref name=\"base\"/> into",
+			$"Stream out the inner text of element <paramref name=\"{nodeParamName}\"/>",
+			"using numerical base of <paramref name=\"fromBase\"/> into",
 			"<paramref name=\"value\"/>");
 		writer.WriteXmlDocParam(nodeParamName, nodeParamName == "n" ? "Node element to read" : "Element name");
 		writer.WriteXmlDocParam("fromBase", "numerical base to use");

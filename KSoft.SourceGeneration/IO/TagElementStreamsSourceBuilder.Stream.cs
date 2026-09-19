@@ -32,8 +32,8 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary("Stream the Value of <see cref=\"Cursor\"/> to or from <paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("value", "Source or destination value");
-		writer.WriteLine($"/// <seealso cref=\"ReadCursor(string, ref {typeSpec.Keyword})\"/>");
-		writer.WriteLine($"/// <seealso cref=\"WriteCursor(string, {typeSpec.Keyword})\"/>");
+		writer.WriteLine($"/// <seealso cref=\"ReadCursor(ref {typeSpec.Keyword})\"/>");
+		writer.WriteLine($"/// <seealso cref=\"WriteCursor({typeSpec.Keyword})\"/>");
 		writer.WriteLine($"public void StreamCursor(ref {typeSpec.Keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
@@ -46,8 +46,8 @@ internal static partial class TagElementStreamsSourceBuilder
 		writer.WriteXmlDocSummary("Stream the Value of <see cref=\"Cursor\"/> to or from <paramref name=\"value\"/>");
 		writer.WriteXmlDocParam("value", "Source or destination value");
 		writer.WriteXmlDocParam("numBase", "numerical base to use");
-		writer.WriteLine($"/// <seealso cref=\"ReadCursor(string, ref {typeSpec.Keyword}, NumeralBase)\"/>");
-		writer.WriteLine($"/// <seealso cref=\"WriteCursor(string, {typeSpec.Keyword}, NumeralBase)\"/>");
+		writer.WriteLine($"/// <seealso cref=\"ReadCursor(ref {typeSpec.Keyword}, NumeralBase)\"/>");
+		writer.WriteLine($"/// <seealso cref=\"WriteCursor({typeSpec.Keyword}, NumeralBase)\"/>");
 		writer.WriteLine($"public void StreamCursor(ref {typeSpec.Keyword} value, NumeralBase numBase = kDefaultRadix)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{

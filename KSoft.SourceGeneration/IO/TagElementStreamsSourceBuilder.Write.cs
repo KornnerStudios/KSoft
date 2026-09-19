@@ -26,7 +26,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary("");
 		writer.WriteXmlDocParam("n", "Node element to write");
-		writer.WriteXmlDocParam("value", "Data to set the element's <see cref=\"TCursor.InnerText\"/> to");
+		writer.WriteXmlDocParam("value", "Data to set as the element's inner text");
 		writer.WriteLine($"protected abstract void WriteElement(TCursor n, {typeSpec.Keyword} value);");
 	}
 
@@ -34,7 +34,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	{
 		writer.WriteXmlDocSummary("");
 		writer.WriteXmlDocParam("n", "Node element to write");
-		writer.WriteXmlDocParam("value", "Data to set the element's <see cref=\"TCursor.InnerText\"/> to");
+		writer.WriteXmlDocParam("value", "Data to set as the element's inner text");
 		writer.WriteXmlDocParam("toBase", "");
 		writer.WriteLine($"protected abstract void WriteElement(TCursor n, {typeSpec.Keyword} value, NumeralBase toBase);");
 	}
@@ -106,10 +106,10 @@ internal static partial class TagElementStreamsSourceBuilder
 	private static void WriteWriteElement(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
 		writer.WriteXmlDocSummary(
-			"Create a new element in the underlying <see cref=\"XmlDocument\"/>, " +
+			"Create a new element in the underlying <see cref=\"System.Xml.XmlDocument\"/>, " +
 			"relative to <see cref=\"Cursor\"/>");
-		writer.WriteXmlDocParam("name", "The <see cref=\"XmlElement\"/>'s name");
-		writer.WriteXmlDocParam("value", "Data to set the element's <see cref=\"XmlElement.InnerText\"/> to");
+		writer.WriteXmlDocParam("name", "The <see cref=\"System.Xml.XmlElement\"/>'s name");
+		writer.WriteXmlDocParam("value", "Data to set as the element's inner text");
 		writer.WriteLine("/// <remarks>Does not change <see cref=\"Cursor\"/></remarks>");
 		writer.WriteLine($"public void WriteElement(TName name, {typeSpec.Keyword} value)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
@@ -128,11 +128,11 @@ internal static partial class TagElementStreamsSourceBuilder
 	private static void WriteWriteElement(SourceWriter writer, NumberSpec typeSpec)
 	{
 		writer.WriteXmlDocSummary(
-			"Create a new element in the underlying <see cref=\"XmlDocument\"/>, " +
+			"Create a new element in the underlying <see cref=\"System.Xml.XmlDocument\"/>, " +
 			"relative to <see cref=\"Cursor\"/>");
-		writer.WriteXmlDocParam("name", "The <see cref=\"XmlElement\"/>'s name");
+		writer.WriteXmlDocParam("name", "The <see cref=\"System.Xml.XmlElement\"/>'s name");
 		writer.WriteXmlDocParam("toBase", "Numerical base to use");
-		writer.WriteXmlDocParam("value", "Data to set the element's <see cref=\"XmlElement.InnerText\"/> to");
+		writer.WriteXmlDocParam("value", "Data to set as the element's inner text");
 		writer.WriteLine("/// <remarks>Does not change <see cref=\"Cursor\"/></remarks>");
 		writer.WriteLine(
 			$"public void WriteElement(TName name, {typeSpec.Keyword} value, " +
@@ -165,7 +165,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	private static void WriteWriteAttribute(SourceWriter writer, PrimitiveSpec typeSpec)
 	{
 		writer.WriteXmlDocSummary("Create a new attribute for <see cref=\"Cursor\"/>");
-		writer.WriteXmlDocParam("name", "Name of the <see cref=\"XmlAttribute\"/>");
+		writer.WriteXmlDocParam("name", "Name of the <see cref=\"System.Xml.XmlAttribute\"/>");
 		writer.WriteXmlDocParam("value", "Data to set the attribute text to");
 		writer.WriteLine($"public abstract void WriteAttribute(TName name, {typeSpec.Keyword} value);");
 	}
@@ -173,7 +173,7 @@ internal static partial class TagElementStreamsSourceBuilder
 	private static void WriteWriteAttribute(SourceWriter writer, NumberSpec typeSpec)
 	{
 		writer.WriteXmlDocSummary("Create a new attribute for <see cref=\"Cursor\"/>");
-		writer.WriteXmlDocParam("name", "Name of the <see cref=\"XmlAttribute\"/>");
+		writer.WriteXmlDocParam("name", "Name of the <see cref=\"System.Xml.XmlAttribute\"/>");
 		writer.WriteXmlDocParam("toBase", "Numerical base to use");
 		writer.WriteXmlDocParam("value", "Data to set the attribute text to");
 		writer.WriteLine(
@@ -268,13 +268,13 @@ internal static partial class TagElementStreamsSourceBuilder
 			: "";
 
 		writer.WriteXmlDocSummary(subject == "Element"
-			? "Create a new element in the underlying <see cref=\"XmlDocument\"/>, relative to <see cref=\"Cursor\"/>"
+			? "Create a new element in the underlying <see cref=\"System.Xml.XmlDocument\"/>, relative to <see cref=\"Cursor\"/>"
 			: "Create a new attribute for <see cref=\"Cursor\"/>");
 		writer.WriteXmlDocParam("name", subject == "Element"
-			? "The <see cref=\"XmlElement\"/>'s name"
-			: "Name of the <see cref=\"XmlAttribute\"/>");
+			? "The <see cref=\"System.Xml.XmlElement\"/>'s name"
+			: "Name of the <see cref=\"System.Xml.XmlAttribute\"/>");
 		writer.WriteXmlDocParam("value", subject == "Element"
-			? "Data to set the element's <see cref=\"XmlElement.InnerText\"/> to"
+			? "Data to set as the element's inner text"
 			: "Data to set the attribute text to");
 		writer.WriteXmlDocParam("predicate", predicateDoc);
 		if (includeBase)
