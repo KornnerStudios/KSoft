@@ -25,27 +25,11 @@ internal static partial class BitsEncodingSourceBuilder
 
 	private static void WriteNoneableEncodingTraitsMethod(SourceWriter writer, NumberSpec wordSpec)
 	{
-		writer.WriteXmlDocSummary(
-			"Calculate the traits needed for representing a bit-encoded value which can also equal NONE (-1)");
-		writer.WriteXmlDocParam("maxValue", "An enumeration's <b>kMax</b> value");
-		writer.WriteXmlDocParam(
-			"bitCount",
-			"Receives the positive bit count needed to represent NONE to (<paramref name=\"maxValue\"/> - 1)");
-		writer.WriteXmlDocParam(
-			"traceVerboseChecks",
-			"Should verbose checks be performed and traced? No side effects outside of DEBUG");
 		writer.WriteLine("#if DEBUG");
-		writer.WriteXmlDocParam(
-			"sourceFile",
-			"Source file path of this method's caller. DEBUG only, don't manually specify");
-		writer.WriteXmlDocParam(
-			"sourceLineNum",
-			"Source file line of this method's caller. DEBUG only, don't manually specify");
+		WriteNoneableEncodingTraitsXmlDocs(writer, includeDebugParameters: true);
+		writer.WriteLine("#else");
+		WriteNoneableEncodingTraitsXmlDocs(writer, includeDebugParameters: false);
 		writer.WriteLine("#endif");
-		writer.WriteLine(
-			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
-			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");
-		writer.WriteXmlDocReturns("A positive bitmask for the encoded value range");
 		writer.WritePurityAnnotation();
 		writer.WriteLine($"public static {wordSpec.Keyword} GetNoneableEncodingTraits({wordSpec.SignedKeyword} maxValue");
 		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
@@ -108,5 +92,31 @@ internal static partial class BitsEncodingSourceBuilder
 			writer.WriteLine();
 			writer.WriteLine("return bitmask;");
 		}
+	}
+
+	private static void WriteNoneableEncodingTraitsXmlDocs(SourceWriter writer, bool includeDebugParameters)
+	{
+		writer.WriteXmlDocSummary(
+			"Calculate the traits needed for representing a bit-encoded value which can also equal NONE (-1)");
+		writer.WriteXmlDocParam("maxValue", "An enumeration's <b>kMax</b> value");
+		writer.WriteXmlDocParam(
+			"bitCount",
+			"Receives the positive bit count needed to represent NONE to (<paramref name=\"maxValue\"/> - 1)");
+		writer.WriteXmlDocParam(
+			"traceVerboseChecks",
+			"Should verbose checks be performed and traced? No side effects outside of DEBUG");
+		if (includeDebugParameters)
+		{
+			writer.WriteXmlDocParam(
+				"sourceFile",
+				"Source file path of this method's caller. DEBUG only, don't manually specify");
+			writer.WriteXmlDocParam(
+				"sourceLineNum",
+				"Source file line of this method's caller. DEBUG only, don't manually specify");
+		}
+		writer.WriteLine(
+			"/// <remarks>A <b>kMax</b> value should be unused and the last entry of an Enumeration. " +
+			"This is why 1 is subtracted from <paramref name=\"maxValue\"/>.</remarks>");
+		writer.WriteXmlDocReturns("A positive bitmask for the encoded value range");
 	}
 }

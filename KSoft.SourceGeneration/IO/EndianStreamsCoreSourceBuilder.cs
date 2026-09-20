@@ -110,7 +110,7 @@ internal static class EndianStreamsCoreSourceBuilder
 		writer.WriteXmlDocSummary("Do we own the base stream?");
 		writer.WriteLine(
 			"/// <remarks>If we don't own the stream, when this object is disposed, " +
-			"the <see cref=\"BaseStream\"/> won't be closed\\disposed</remarks>");
+			"the inherited <c>BaseStream</c> won't be closed\\disposed</remarks>");
 		writer.WriteLine("public bool BaseStreamOwner { get; set; }");
 		writer.WriteLine();
 		writer.WriteXmlDocSummary("Name of the underlying stream this object is interfacing with");
@@ -119,7 +119,7 @@ internal static class EndianStreamsCoreSourceBuilder
 		writer.WriteLine("public string? StreamName { get; private set; }");
 		writer.WriteLine();
 		writer.WriteXmlDocSummary("Base address used for simulating pointers in the stream");
-		writer.WriteLine("/// <remarks>Default value is <see cref=\"Data.PtrHandle.Null32\"/></remarks>");
+		writer.WriteLine("/// <remarks>Default value is <see cref=\"Values.PtrHandle.Null32\"/></remarks>");
 		writer.WriteLine("public Values.PtrHandle BaseAddress { get; set; }");
 		writer.WriteLine();
 	}
@@ -224,7 +224,7 @@ internal static class EndianStreamsCoreSourceBuilder
 			"/// <returns>Object which when Disposed will return this stream to its original " +
 			"<see cref=\"Shell.EndianFormat\"/> state</returns>");
 		writer.WriteLine("/// <remarks>");
-		writer.WriteLine("/// If <paramref name=\"switchTo\"/> is the same as <see cref=\"EndianStream.State\"/>");
+		writer.WriteLine("/// If <paramref name=\"switchTo\"/> is the same as <see cref=\"ByteOrder\"/>");
 		writer.WriteLine("/// then no actual object state changes will happen. However, this construct");
 		writer.WriteLine("/// will continue to be usable and will Dispose of properly with no error");
 		writer.WriteLine("/// </remarks>");
@@ -320,13 +320,13 @@ internal static class EndianStreamsCoreSourceBuilder
 	{
 		using (writer.EnterRegion("PositionPtr"))
 		{
-			writer.WriteXmlDocSummary("Get the current position as a <see cref=\"Data.PtrHandle\"/>");
+			writer.WriteXmlDocSummary("Get the current position as a <see cref=\"Values.PtrHandle\"/>");
 			writer.WriteXmlDocParam("ptrSize", "Pointer size to use for the result handle");
 			writer.WriteXmlDocReturns();
 			writer.WriteLine("public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>");
 			writer.WriteLine("\tnew(ptrSize, (ulong)BaseStream.Position);");
 			writer.WriteLine();
-			writer.WriteXmlDocSummary("Current position as a <see cref=\"Data.PtrHandle\"/>");
+			writer.WriteXmlDocSummary("Current position as a <see cref=\"Values.PtrHandle\"/>");
 			writer.WriteLine("/// <remarks>Pointer traits\\info is inherited from <see cref=\"BaseAddress\"/></remarks>");
 			writer.WriteLine("public Values.PtrHandle PositionPtr =>");
 			writer.WriteLine("\tnew(BaseAddress, (ulong)BaseStream.Position);");

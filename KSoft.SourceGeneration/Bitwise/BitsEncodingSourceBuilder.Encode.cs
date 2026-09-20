@@ -232,6 +232,14 @@ internal static partial class BitsEncodingSourceBuilder
 			"Bit encode a value into an unsigned integer, removing the original data in the value's range");
 		WriteBitEncodeCommonParams(writer, "Value to encode", includeBitMask);
 		writer.WriteXmlDocReturns("<paramref name=\"bits\"/> with <paramref name=\"value\"/> encoded into it");
+		if (!includeBitMask)
+		{
+			writer.WriteLine(
+				"/// <remarks>Clears the bit range described by <paramref name=\"traits\"/> " +
+				"so any existing value is lost before <paramref name=\"value\"/> is added.</remarks>");
+			return;
+		}
+
 		if (!includeRefRemarks)
 		{
 			WriteBitEncodeClearingRemarks(writer, null, "so any existing values will be lost after");

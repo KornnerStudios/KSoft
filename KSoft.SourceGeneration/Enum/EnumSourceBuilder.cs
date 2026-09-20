@@ -130,10 +130,10 @@ internal static class EnumSourceBuilder
 	private static void WriteTraitFields(SourceWriter writer, NumberSpec spec)
 	{
 		writer.WriteLine(
-			"/// <remarks>Only made public for <see cref=\"Collections.EnumBitSet\"/>.</remarks>");
+			"/// <remarks>Only made public for <see cref=\"Collections.EnumBitSet{TEnum}\"/>.</remarks>");
 		writer.WriteLine("public static readonly bool kHasNone;");
 		writer.WriteXmlDocSummary(
-			"The <see cref=\"kEnumMaxMemberName\"/>\\<see cref=\"kFlagsMaxMemberName\"/>",
+			"The <see cref=\"EnumBitEncoderBase.kEnumMaxMemberName\"/>\\<see cref=\"EnumBitEncoderBase.kFlagsMaxMemberName\"/>",
 			"value or the member value whom this class assumed would be the max");
 		writer.WriteLine($"static readonly {spec.Keyword} kMaxValue;");
 		writer.WriteXmlDocSummary("Masking value that can be used to single out this enumeration's value(s)");

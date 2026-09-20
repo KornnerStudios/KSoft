@@ -73,7 +73,7 @@ internal static partial class BitsCoreSourceBuilder
 		writer.WriteXmlDocSummary($"Generate an {typeSpec.SizeOfInBits}-bit bit count to bitmask table");
 		writer.WriteXmlDocParam("wordBitSize", "Number of bits to generate a table for");
 		writer.WriteXmlDocReturns("A non-null bitmask lookup table");
-		writer.WriteLine("/// <remarks>Treat <paramref name=\"lut\"/> as <b>read-only</b></remarks>");
+		writer.WriteLine("/// <remarks>Treat the returned table as <b>read-only</b></remarks>");
 		writer.WriteLine($"public static {typeSpec.Keyword}[] {BitmaskLookupGenerateMethodName(typeSpec)}(int wordBitSize)");
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{

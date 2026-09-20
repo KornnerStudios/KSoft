@@ -154,7 +154,7 @@ internal static class IntegerMathSourceBuilder
 	{
 		writer.WriteXmlDocSummary(
 			"Takes <paramref name=\"value\"/> and returns what it would be if it were aligned to",
-			"<paramref name=\"align_size\"/> bytes");
+			"the byte boundary represented by <paramref name=\"alignmentBit\"/>");
 		writer.WriteXmlDocParam("alignmentBit", "Alignment size in log2 form");
 		writer.WriteXmlDocParam("value", "Value to align");
 		writer.WriteXmlDocReturns(
