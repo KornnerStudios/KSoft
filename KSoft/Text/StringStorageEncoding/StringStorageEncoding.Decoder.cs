@@ -196,9 +196,10 @@ namespace KSoft.Text
 				StringStorageType.CharArray	=> ReadStrCharArray(s, length, out actual_count),
 				_ => throw new Debug.UnreachableException(),
 			};
-			return new string(actual_count != -1
-				? mBaseEncoding.GetChars(bytes, 0, actual_count)// for padded string cases
-				: mBaseEncoding.GetChars(bytes));				// for complete string cases
+			int byteCount = actual_count != TypeExtensions.kNone
+				? actual_count	// for padded or capacity-backed string cases
+				: bytes.Length;	// for complete string cases
+			return mBaseEncoding.GetString(bytes.AsSpan(0, byteCount));
 		}
 		/// <summary>Read a string from an bitstream using <see cref="Storage"/>'s specifications</summary>
 		/// <param name="s">Endian stream to read from</param>
@@ -229,9 +230,10 @@ namespace KSoft.Text
 				StringStorageType.CharArray	=> ReadStrCharArray(s, length, out actual_count),
 				_ => throw new Debug.UnreachableException(),
 			};
-			return new string(actual_count != -1
-				? mBaseEncoding.GetChars(bytes, 0, actual_count)// for padded string cases
-				: mBaseEncoding.GetChars(bytes));				// for complete string cases
+			int byteCount = actual_count != TypeExtensions.kNone
+				? actual_count	// for padded or capacity-backed string cases
+				: bytes.Length;	// for complete string cases
+			return mBaseEncoding.GetString(bytes.AsSpan(0, byteCount));
 		}
 		#endregion
 	};

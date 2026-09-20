@@ -61,40 +61,26 @@ partial class StringStorageEncoding
 		throw new InvalidDataException("The fixed CString field has no null terminator.");
 	}
 
-	void CopyFixedCStringPayload(ReadOnlySpan<byte> bytes, MemoryStream destination, int maxLength = -1)
-	{
-		int payloadByteCount = GetCStringPayloadByteCount(bytes, maxLength);
-		destination.Write(bytes[..payloadByteCount]);
-	}
-
-	/// <summary>Read a single-byte CString from an binary stream</summary>
+	/// <summary>Read an unfixed single-byte CString from a binary stream</summary>
 	/// <param name="s">Endian stream to read from</param>
 	/// <param name="ms">Stream to write the character's bytes to</param>
 	void ReadCStringSingleByte(/*System.IO.BinaryReader*/IO.EndianReader s, System.IO.MemoryStream ms)
 	{
 		byte character;
-		if (!mStorage.IsFixedLength)
+		while ((character = s.ReadByte()) != 0)
 		{
-			while ((character = s.ReadByte()) != 0)
-			{
-				ms.WriteByte(character);
-			}
-		}
-		else
-		{
-			byte[] characters = ReadPayloadBytes(s, mFixedLengthByteLength);
-			CopyFixedCStringPayload(characters, ms);
+			ms.WriteByte(character);
 		}
 	}
 
-	/// <summary>Read a single-byte CString from a bitstream</summary>
+	/// <summary>Read an unfixed single-byte CString from a bitstream</summary>
 	/// <param name="s">Endian stream to read from</param>
 	/// <param name="ms">Stream to write the character's bytes to</param>
 	/// <param name="maxLength">Optional maximum length of this specific string</param>
 	void ReadCStringSingleByte(IO.BitStream s, System.IO.MemoryStream ms, int maxLength)
 	{
 		byte character;
-		if (maxLength > 0 && !mStorage.IsFixedLength)
+		if (maxLength > 0)
 		{
 			int x = 0;
 			while ((character = s.ReadByte()) != 0 && ++x <= maxLength)
@@ -106,56 +92,41 @@ partial class StringStorageEncoding
 				throw new InvalidDataException("The CString exceeds its maximum character count.");
 			}
 		}
-		else if (!mStorage.IsFixedLength)
+		else
 		{
 			while ((character = s.ReadByte()) != 0)
 			{
 				ms.WriteByte(character);
 			}
 		}
-		else
-		{
-			byte[] characters = s.ReadBytes(mFixedLengthByteLength);
-			CopyFixedCStringPayload(characters, ms, maxLength);
-		}
 	}
 
-	/// <summary>Read a multi-byte CString from an endian stream</summary>
+	/// <summary>Read an unfixed multi-byte CString from an endian stream</summary>
 	/// <param name="s">Endian stream to read from</param>
 	/// <param name="ms">Stream to write the character's bytes to</param>
 	void ReadCStringMultiByte(IO.EndianReader s, System.IO.MemoryStream ms)
 	{
-		if (!mStorage.IsFixedLength)
+		Span<byte> characters = stackalloc byte[mNullCharacterSize];
+		while (true)
 		{
-			Span<byte> characters = stackalloc byte[mNullCharacterSize];
-			characters.Clear();
-			while (true)
-			{
-				s.BaseStream.ReadExactly(characters);
-				if (IsNullStorageUnit(characters))
-					break;
+			s.BaseStream.ReadExactly(characters);
+			if (IsNullStorageUnit(characters))
+				break;
 
-				ms.Write(characters);
-			}
-		}
-		else
-		{
-			byte[] characters = ReadPayloadBytes(s, mFixedLengthByteLength);
-			CopyFixedCStringPayload(characters, ms);
+			ms.Write(characters);
 		}
 	}
 
-	/// <summary>Read a multi-byte CString from an endian stream</summary>
+	/// <summary>Read an unfixed multi-byte CString from a bitstream</summary>
 	/// <param name="s">Bitstream to read from</param>
 	/// <param name="ms">Stream to write the character's bytes to</param>
 	/// <param name="maxLength">Optional maximum length of this specific string</param>
 	void ReadCStringMultiByte(IO.BitStream s, System.IO.MemoryStream ms, int maxLength)
 	{
-		if (maxLength > 0 && !mStorage.IsFixedLength)
+		if (maxLength > 0)
 		{
 			int x = 0;
 			Span<byte> characters = stackalloc byte[mNullCharacterSize];
-			characters.Clear();
 			while (true)
 			{
 				s.Read(characters);
@@ -171,10 +142,9 @@ partial class StringStorageEncoding
 				ms.Write(characters);
 			}
 		}
-		else if (!mStorage.IsFixedLength)
+		else
 		{
 			Span<byte> characters = stackalloc byte[mNullCharacterSize];
-			characters.Clear();
 			while (true)
 			{
 				s.Read(characters);
@@ -186,23 +156,16 @@ partial class StringStorageEncoding
 				ms.Write(characters);
 			}
 		}
-		else
-		{
-			byte[] characters = s.ReadBytes(mFixedLengthByteLength);
-			CopyFixedCStringPayload(characters, ms, maxLength);
-		}
 	}
 
 	/// <summary>Read a CString from an endian stream</summary>
 	/// <param name="s">Endian stream to read from</param>
 	/// <param name="length">Optional length specification</param>
-	/// <param name="actualCount">On return, the actual character byte count, or -1 if all bytes are valid</param>
+	/// <param name="actualCount">On return, the payload byte count to decode.</param>
 	/// <returns>The character's bytes for the string we're reading</returns>
 	byte[] ReadStrCString(IO.EndianReader s, int length, out int actualCount)
 	{
 		byte[] bytes;
-
-		actualCount = TypeExtensions.kNone; // complete string case
 
 		// the user was nice and saved us some CPU trying to feel around for the null
 		// because we don't have a fixed length to speed things up
@@ -212,20 +175,25 @@ partial class StringStorageEncoding
 			Span<byte> terminator = stackalloc byte[mNullCharacterSize];
 			s.BaseStream.ReadExactly(terminator);
 			ValidateCStringTerminator(terminator);
+			actualCount = bytes.Length;
 		}
-		// NOT NICE: figure out the length ourselves. Or maybe we're a fixed length CString...
-		// in which case we'll ignore anything the user tried to tell us about the length
+		else if (mStorage.IsFixedLength)
+		{
+			bytes = ReadPayloadBytes(s, mFixedLengthByteLength);
+			actualCount = GetCStringPayloadByteCount(bytes);
+		}
+		// Scan an unfixed CString when the caller does not know its length.
 		else
 		{
-			using (var ms = new System.IO.MemoryStream(!mStorage.IsFixedLength ? 512 : mStorage.FixedLength))
+			using (var ms = new System.IO.MemoryStream(512))
 			{
 				// The N-byte methods take care of reading past the
 				// null character, no need to do it in this case.
 				if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms); }
 				else							{ ReadCStringMultiByte(s, ms); }
 
-				// We use ToArray instead of GetArray so all of [ms] can theoretically be disposed of
-				bytes = ms.ToArray();
+				bytes = ms.GetBuffer();
+				actualCount = checked((int)ms.Length);
 			}
 		}
 
@@ -235,14 +203,12 @@ partial class StringStorageEncoding
 	/// <summary>Read a CString from a bitstream</summary>
 	/// <param name="s">Bitstream to read from</param>
 	/// <param name="length">Optional length specification</param>
-	/// <param name="actualCount">On return, the actual character byte count, or -1 if all bytes are valid</param>
+	/// <param name="actualCount">On return, the payload byte count to decode.</param>
 	/// <param name="maxLength">Optional maximum length of this specific string</param>
 	/// <returns>The character's bytes for the string we're reading</returns>
 	byte[] ReadStrCString(IO.BitStream s, int length, out int actualCount, int maxLength)
 	{
 		byte[] bytes;
-
-		actualCount = TypeExtensions.kNone; // complete string case
 
 		// the user was nice and saved us some CPU trying to feel around for the null
 		// because we don't have a fixed length to speed things up
@@ -252,20 +218,25 @@ partial class StringStorageEncoding
 			Span<byte> terminator = stackalloc byte[mNullCharacterSize];
 			s.Read(terminator);
 			ValidateCStringTerminator(terminator);
+			actualCount = bytes.Length;
 		}
-		// NOT NICE: figure out the length ourselves. Or maybe we're a fixed length CString...
-		// in which case we'll ignore anything the user tried to tell us about the length
+		else if (mStorage.IsFixedLength)
+		{
+			bytes = s.ReadBytes(mFixedLengthByteLength);
+			actualCount = GetCStringPayloadByteCount(bytes, maxLength);
+		}
+		// Scan an unfixed CString when the caller does not know its length.
 		else
 		{
-			using (var ms = new System.IO.MemoryStream(!mStorage.IsFixedLength ? 512 : mStorage.FixedLength))
+			using (var ms = new System.IO.MemoryStream(512))
 			{
 				// The N-byte methods take care of reading past the
 				// null character, no need to do it in this case.
 				if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms, maxLength); }
 				else							{ ReadCStringMultiByte(s, ms, maxLength); }
 
-				// We use ToArray instead of GetArray so all of [ms] can theoretically be disposed of
-				bytes = ms.ToArray();
+				bytes = ms.GetBuffer();
+				actualCount = checked((int)ms.Length);
 			}
 		}
 

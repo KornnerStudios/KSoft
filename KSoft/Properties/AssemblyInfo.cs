@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("KSoft.IO.TagElementStreams")]
 [assembly: InternalsVisibleTo("KSoft.Security")]
+[assembly: InternalsVisibleTo("Bench.KSoft.BCL")]
 [assembly: InternalsVisibleTo("Test.KSoft.BCL")]
 
 [assembly: SuppressMessage("Microsoft.Design",

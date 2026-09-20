@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace KSoft.Text
 {
@@ -186,20 +187,84 @@ namespace KSoft.Text
 		};
 
 		#region WriteString
-		internal byte[] EncodeString(ReadOnlySpan<char> chars)
+		const int kStackBufferThreshold = 256;
+
+		internal readonly record struct StringEncodingPlan(
+			int CharacterCount, int PayloadByteCount, int SerializedByteCount);
+
+		internal StringEncodingPlan GetEncodingPlan(ReadOnlySpan<char> chars, int maxLength = -1)
 		{
-			chars = chars[..ClampCharCount(chars)];
-
-			int base_byte_count = mBaseEncoding.GetByteCount(chars);
-			byte[] bytes = new byte[CalculateByteCount(base_byte_count)];
-			int serializedCount = mStorage.HasLengthPrefix ? GetSerializedCharacterCount(base_byte_count) : 0;
-			int bytes_written = EncodeStringStorageTypePrefixData(serializedCount, bytes.AsSpan());
-
-			bytes_written += mBaseEncoding.GetBytes(chars, bytes.AsSpan(bytes_written));
-			EncodeStringStorageTypePostfixData(bytes.AsSpan(bytes_written));
-
-			return bytes;
+			int characterCount = ClampCharCount(chars, maxLength);
+			int payloadByteCount = mBaseEncoding.GetByteCount(chars[..characterCount]);
+			int serializedByteCount = CalculateByteCount(payloadByteCount);
+			return new StringEncodingPlan(characterCount, payloadByteCount, serializedByteCount);
 		}
+
+		void EncodeStringCore(ReadOnlySpan<char> chars, Span<byte> bytes,
+			StringEncodingPlan plan, out int encodedPayloadByteCount)
+		{
+			chars = chars[..plan.CharacterCount];
+			Span<byte> record = bytes[..plan.SerializedByteCount];
+			if (mStorage.IsFixedLength)
+			{
+				record.Clear();
+			}
+
+			int serializedCount = mStorage.HasLengthPrefix
+				? GetSerializedCharacterCount(plan.PayloadByteCount)
+				: 0;
+			int bytesWritten = EncodeStringStorageTypePrefixData(serializedCount, record);
+
+			encodedPayloadByteCount = mBaseEncoding.GetBytes(chars, record[bytesWritten..]);
+			bytesWritten += encodedPayloadByteCount;
+			_ = EncodeStringStorageTypePostfixData(record[bytesWritten..]);
+		}
+
+		internal int EncodeString(ReadOnlySpan<char> chars, Span<byte> bytes, out int payloadByteCount)
+		{
+			var plan = GetEncodingPlan(chars);
+			return EncodeString(chars, bytes, plan, out payloadByteCount);
+		}
+
+		internal int EncodeString(ReadOnlySpan<char> chars, Span<byte> bytes,
+			StringEncodingPlan plan, out int payloadByteCount)
+		{
+			if (bytes.Length < plan.SerializedByteCount)
+			{
+				throw new ArgumentException("The destination is too small for the serialized string.", nameof(bytes));
+			}
+
+			EncodeStringCore(chars, bytes, plan, out payloadByteCount);
+			return plan.SerializedByteCount;
+		}
+
+		void WriteString(System.IO.Stream stream, ReadOnlySpan<char> chars,
+			StringEncodingPlan plan)
+		{
+			byte[]? rented = null;
+			Span<byte> bytes = plan.SerializedByteCount <= kStackBufferThreshold
+				? stackalloc byte[plan.SerializedByteCount]
+				: (rented = ArrayPool<byte>.Shared.Rent(plan.SerializedByteCount));
+			try
+			{
+				int extent = EncodeString(chars, bytes, plan, out _);
+				stream.Write(bytes[..extent]);
+			}
+			finally
+			{
+				if (rented != null)
+				{
+					ArrayPool<byte>.Shared.Return(rented, clearArray: true);
+				}
+			}
+		}
+
+		internal void WriteString(System.IO.Stream stream, ReadOnlySpan<char> chars)
+		{
+			ArgumentNullException.ThrowIfNull(stream);
+			WriteString(stream, chars, GetEncodingPlan(chars));
+		}
+
 		internal void WriteString(IO.BitStream s, string value, int maxLength = -1, int prefixBitLength = -1)
 		{
 			if (prefixBitLength > 0)
@@ -207,9 +272,23 @@ namespace KSoft.Text
 				throw new NotSupportedException("Currently don't support unnatural bit lengths for prefixes on writes");
 			}
 
-			int length = ClampCharCount(value.AsSpan(), maxLength);
-			byte[] bytes = EncodeString(value.AsSpan(0, length));
-			s.Write(bytes.AsSpan());
+			var plan = GetEncodingPlan(value.AsSpan(), maxLength);
+			byte[]? rented = null;
+			Span<byte> bytes = plan.SerializedByteCount <= kStackBufferThreshold
+				? stackalloc byte[plan.SerializedByteCount]
+				: (rented = ArrayPool<byte>.Shared.Rent(plan.SerializedByteCount));
+			try
+			{
+				int extent = EncodeString(value, bytes, plan, out _);
+				s.Write(bytes[..extent]);
+			}
+			finally
+			{
+				if (rented != null)
+				{
+					ArrayPool<byte>.Shared.Return(rented, clearArray: true);
+				}
+			}
 		}
 		#endregion
 	};

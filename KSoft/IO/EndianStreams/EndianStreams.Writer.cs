@@ -191,7 +191,7 @@ namespace KSoft.IO
 		public void Write(ReadOnlySpan<char> value, Memory.Strings.StringStorage storage)
 		{
 			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage, ByteOrder);
-			base.Write(sse.EncodeString(value));
+			sse.WriteString(BaseStream, value);
 		}
 
 		/// <summary>Writes a bounded character sequence using a <see cref="Text.StringStorageEncoding"/></summary>
@@ -203,7 +203,7 @@ namespace KSoft.IO
 		{
 			ArgumentNullException.ThrowIfNull(encoding);
 
-			base.Write(encoding.EncodeString(value));
+			encoding.WriteString(BaseStream, value);
 		}
 		#endregion
 

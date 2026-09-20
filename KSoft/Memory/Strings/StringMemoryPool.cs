@@ -53,7 +53,7 @@ namespace KSoft.Memory.Strings
 		/// <returns>Number of bytes <paramref name="value"/> will consume</returns>
 		int CalculateStringByteLength(string value)
 		{
-			return mEncoding.GetByteCount(value);
+			return mEncoding.GetByteCount(value.AsSpan());
 		}
 		#endregion
 

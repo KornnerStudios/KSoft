@@ -97,6 +97,14 @@ namespace KSoft.Text
 			return encoding.GetByteCount(chars);
 		}
 
+		/// <summary>Calculates the complete serialized byte count for a character span.</summary>
+		/// <param name="chars">Characters to size.</param>
+		/// <returns>The payload and framing byte count.</returns>
+		public override int GetByteCount(ReadOnlySpan<char> chars)
+		{
+			return GetEncodingPlan(chars).SerializedByteCount;
+		}
+
 		/// <summary>Calculates the number of bytes produced by encoding a set of characters from the specified character array</summary>
 		/// <param name="chars">The character array containing the set of characters to encode</param>
 		/// <param name="index">The index of the first character to encode</param>

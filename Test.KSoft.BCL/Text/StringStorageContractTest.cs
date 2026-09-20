@@ -253,6 +253,49 @@ public sealed class StringStorageContractTest : BaseTestClass
 	}
 
 	[TestMethod]
+	public void EncodeStringSpan_ClearsFixedFieldTailAndReportsPayloadAndExtent()
+	{
+		var storage = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString, 4);
+		var encoding = new StringStorageEncoding(storage, Shell.EndianFormat.Big);
+		var destination = new byte[10];
+		Array.Fill(destination, (byte)0xCC);
+
+		int extent = encoding.EncodeString("A", destination.AsSpan(1, 8), out int payloadByteCount);
+
+		Assert.AreEqual(2, payloadByteCount);
+		Assert.AreEqual(8, extent);
+		CollectionAssert.AreEqual(
+			Convert.FromHexString("CC0041000000000000CC"),
+			destination);
+	}
+
+	[TestMethod]
+	[DataRow((short)4)]
+	[DataRow((short)129)]
+	public void StreamWrites_ClearCompleteFixedFieldAcrossBufferStrategies(short capacity)
+	{
+		var storage = new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString, capacity);
+		var expected = new byte[capacity * sizeof(char)];
+		expected[1] = 0x41;
+
+		using var endianOutput = new MemoryStream();
+		using (var writer = new IO.EndianWriter(endianOutput, Shell.EndianFormat.Big)
+			{ BaseStreamOwner = false })
+		{
+			writer.Write("A".AsSpan(), storage);
+		}
+		CollectionAssert.AreEqual(expected, endianOutput.ToArray());
+
+		using var bitOutput = new MemoryStream();
+		using (var bits = new IO.BitStream(bitOutput, FileAccess.Write) { StreamMode = FileAccess.Write })
+		{
+			bits.Write("A", storage, Shell.EndianFormat.Big);
+			bits.Flush();
+		}
+		CollectionAssert.AreEqual(expected, bitOutput.ToArray());
+	}
+
+	[TestMethod]
 	[DataRow(StringStorageLengthPrefix.Int8, "02", 1)]
 	[DataRow(StringStorageLengthPrefix.Int16, "0002", 2)]
 	[DataRow(StringStorageLengthPrefix.Int32, "00000002", 4)]
