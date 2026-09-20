@@ -36,8 +36,42 @@ public sealed class StringStorageContractTest : BaseTestClass
 			StringStorageLengthPrefix.Int16, StringStorageLengthPrefix.Int32 })
 		{
 			var storage = new StringStorage(width, prefix);
-			Assert.AreEqual(storage, StringStorageEncoding.TryAndGetStaticEncoding(storage).Storage);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
+			Assert.AreEqual(storage, encoding.Storage);
+			Assert.AreEqual(Shell.EndianFormat.Little, encoding.ByteOrder);
 		}
+	}
+
+	[TestMethod]
+	public void StringStorageEncoding_IdentityIncludesByteOrder()
+	{
+		var storage = StringStorage.CStringUnicode;
+		var little = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
+		var sameLittle = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
+		var big = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Big);
+
+		Assert.AreSame(little, sameLittle);
+		Assert.AreNotSame(little, big);
+		Assert.AreNotEqual(little, big);
+		Assert.AreNotEqual(little.GetHashCode(), big.GetHashCode());
+		Assert.AreNotEqual(0, little.CompareTo(big));
+		Assert.AreEqual(storage, little.Storage);
+		Assert.AreEqual(storage, big.Storage);
+		Assert.AreEqual(Shell.EndianFormat.Little, little.ByteOrder);
+		Assert.AreEqual(Shell.EndianFormat.Big, big.ByteOrder);
+	}
+
+	[TestMethod]
+	public void StringStorageEncoding_StaticByteCount_IsIndependentOfByteOrder()
+	{
+		var storage = new StringStorage(
+			StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int32);
+		const string text = "A\u00E9";
+
+		Assert.AreEqual(8, StringStorageEncoding.GetByteCount(storage, text));
+		Assert.AreEqual(
+			new StringStorageEncoding(storage, Shell.EndianFormat.Little).GetByteCount(text),
+			new StringStorageEncoding(storage, Shell.EndianFormat.Big).GetByteCount(text));
 	}
 
 	[TestMethod]
@@ -59,11 +93,11 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageWidthType.UTF32, StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big, "A\U0001F642", "00000002000000410001F642")]
 	[DataRow(StringStorageWidthType.UTF32, StringStorageLengthPrefix.Int32, Shell.EndianFormat.Little, "", "00000000")]
 	[DataRow(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big, "", "00000000")]
-	public void Pascal_FixedWidthRecords_UseCharacterCountsAndStorageOrder(
+	public void Pascal_FixedWidthRecords_UseCharacterCountsAndEncodingOrder(
 		StringStorageWidthType width, StringStorageLengthPrefix prefix, Shell.EndianFormat order,
 		string text, string expectedHex)
 	{
-		AssertPascalRecord(new StringStorage(width, prefix, order), text, Convert.FromHexString(expectedHex));
+		AssertPascalRecord(new StringStorage(width, prefix), order, text, Convert.FromHexString(expectedHex));
 	}
 
 	[TestMethod]
@@ -85,7 +119,7 @@ public sealed class StringStorageContractTest : BaseTestClass
 			expected[index] = 0x41;
 
 		AssertPascalRecord(new StringStorage(StringStorageWidthType.Unicode,
-			StringStorageLengthPrefix.Int7, Shell.EndianFormat.Big), new string('A', count), expected);
+			StringStorageLengthPrefix.Int7), Shell.EndianFormat.Big, new string('A', count), expected);
 	}
 
 	[TestMethod]
@@ -107,13 +141,14 @@ public sealed class StringStorageContractTest : BaseTestClass
 			scalarBytes.CopyTo(expected.AsSpan(prefix.Length + index * scalarBytes.Length));
 		}
 
-		AssertPascalRecord(new StringStorage(StringStorageWidthType.UTF32, prefixType, Shell.EndianFormat.Big),
-			new string(chars), expected);
+		AssertPascalRecord(new StringStorage(StringStorageWidthType.UTF32, prefixType),
+			Shell.EndianFormat.Big, new string(chars), expected);
 	}
 
-	static void AssertPascalRecord(StringStorage storage, string text, byte[] expected)
+	static void AssertPascalRecord(
+		StringStorage storage, Shell.EndianFormat byteOrder, string text, byte[] expected)
 	{
-		var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+		var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, byteOrder);
 		char[] chars = text.ToCharArray();
 		Assert.AreEqual(expected.Length, encoding.GetByteCount(chars, 0, chars.Length));
 		Assert.IsGreaterThanOrEqualTo(expected.Length, encoding.GetMaxByteCount(chars.Length));
@@ -148,7 +183,7 @@ public sealed class StringStorageContractTest : BaseTestClass
 
 		using var stream = new MemoryStream();
 		using var writer = new IO.EndianWriter(stream,
-			storage.ByteOrder == Shell.EndianFormat.Big ? Shell.EndianFormat.Little : Shell.EndianFormat.Big)
+			byteOrder == Shell.EndianFormat.Big ? Shell.EndianFormat.Little : Shell.EndianFormat.Big)
 		{ BaseStreamOwner = false };
 		writer.Write(text.AsSpan(), encoding);
 		CollectionAssert.AreEqual(expected, stream.ToArray());
@@ -162,7 +197,7 @@ public sealed class StringStorageContractTest : BaseTestClass
 		using var bitOutput = new MemoryStream();
 		using (var bits = new IO.BitStream(bitOutput, FileAccess.Write) { StreamMode = FileAccess.Write })
 		{
-			bits.Write(text, storage);
+			bits.Write(text, encoding);
 		}
 		CollectionAssert.AreEqual(expected, bitOutput.ToArray());
 	}
@@ -172,7 +207,8 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageLengthPrefix.Int16, 32767)]
 	public void PascalWrite_PrefixOverflow_RejectsBeforeWriting(StringStorageLengthPrefix prefix, int maxCount)
 	{
-		var encoding = new StringStorageEncoding(new StringStorage(StringStorageWidthType.Ascii, prefix));
+		var encoding = new StringStorageEncoding(
+			new StringStorage(StringStorageWidthType.Ascii, prefix), Shell.EndianFormat.Little);
 		char[] chars = new string('A', maxCount + 1).ToCharArray();
 		var destination = new byte[chars.Length + 8];
 		Array.Fill(destination, (byte)0xCC);
@@ -204,7 +240,8 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageType.CharArray, "41424344")]
 	public void Encoder_FixedFields_ClampsToPayloadCapacity(StringStorageType type, string expectedHex)
 	{
-		var encoding = new StringStorageEncoding(new StringStorage(StringStorageWidthType.Ascii, type, 4));
+		var encoding = new StringStorageEncoding(
+			new StringStorage(StringStorageWidthType.Ascii, type, 4), Shell.EndianFormat.Little);
 		char[] chars = "ABCDE".ToCharArray();
 		var encoder = encoding.GetEncoder();
 		Assert.AreEqual(4, encoder.GetByteCount(chars, 0, chars.Length, flush: true));
@@ -223,7 +260,8 @@ public sealed class StringStorageContractTest : BaseTestClass
 		StringStorageLengthPrefix prefix, string prefixHex, int prefixBytes)
 	{
 		byte[] bytes = [.. Convert.FromHexString(prefixHex), 0x41, 0x42];
-		var encoding = new StringStorageEncoding(new StringStorage(StringStorageWidthType.Ascii, prefix, Shell.EndianFormat.Big));
+		var encoding = new StringStorageEncoding(
+			new StringStorage(StringStorageWidthType.Ascii, prefix), Shell.EndianFormat.Big);
 
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => encoding.GetString(bytes, 0, prefixBytes + 1));
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
@@ -241,7 +279,7 @@ public sealed class StringStorageContractTest : BaseTestClass
 		StringStorageLengthPrefix prefix, StringStorageWidthType width, string hex)
 	{
 		byte[] bytes = Convert.FromHexString(hex);
-		var encoding = new StringStorageEncoding(new StringStorage(width, prefix, Shell.EndianFormat.Big));
+		var encoding = new StringStorageEncoding(new StringStorage(width, prefix), Shell.EndianFormat.Big);
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => encoding.GetString(bytes));
 		using var stream = new MemoryStream(bytes);
 		using var reader = new IO.EndianReader(stream);
@@ -276,8 +314,8 @@ public sealed class StringStorageContractTest : BaseTestClass
 	public void Utf32_FixedFieldCapacity_CountsSerializedScalars(
 		StringStorageType type, short capacity, string input, string expectedText, string expectedHex)
 	{
-		var storage = new StringStorage(StringStorageWidthType.UTF32, type, Shell.EndianFormat.Big, capacity);
-		var encoding = new StringStorageEncoding(storage);
+		var storage = new StringStorage(StringStorageWidthType.UTF32, type, capacity);
+		var encoding = new StringStorageEncoding(storage, Shell.EndianFormat.Big);
 		byte[] expected = Convert.FromHexString(expectedHex);
 		Assert.AreEqual(expected.Length, encoding.GetByteCount(input));
 		CollectionAssert.AreEqual(expected, encoding.GetBytes(input));
@@ -293,7 +331,7 @@ public sealed class StringStorageContractTest : BaseTestClass
 		CollectionAssert.AreEqual(expected, destination);
 
 		using var output = new MemoryStream();
-		using var writer = new IO.EndianWriter(output) { BaseStreamOwner = false };
+		using var writer = new IO.EndianWriter(output, Shell.EndianFormat.Big) { BaseStreamOwner = false };
 		writer.Write(input.AsSpan(), storage);
 		CollectionAssert.AreEqual(expected, output.ToArray());
 		using var reader = new IO.EndianReader(new MemoryStream([.. expected, 0xCC]), Shell.EndianFormat.Big);
@@ -302,10 +340,10 @@ public sealed class StringStorageContractTest : BaseTestClass
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		using var bitOutput = new MemoryStream();
 		using (var bits = new IO.BitStream(bitOutput, FileAccess.Write) { StreamMode = FileAccess.Write })
-			bits.Write(input, storage);
+			bits.Write(input, storage, Shell.EndianFormat.Big);
 		CollectionAssert.AreEqual(expected, bitOutput.ToArray());
 		using var bitReader = CreateBitReader([.. expected, 0xCC]);
-		Assert.AreEqual(expectedText, bitReader.ReadString(storage));
+		Assert.AreEqual(expectedText, bitReader.ReadString(storage, Shell.EndianFormat.Big));
 		Assert.AreEqual((byte)0xCC, bitReader.ReadByte());
 	}
 
@@ -315,27 +353,28 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageWidthType.UTF32, "0000004100000000")]
 	public void CharArray_Padding_PreservesTheFirstPayloadUnit(StringStorageWidthType width, string hex)
 	{
-		var storage = new StringStorage(width, StringStorageType.CharArray, Shell.EndianFormat.Big, 2);
+		var storage = new StringStorage(width, StringStorageType.CharArray, 2);
 		byte[] bytes = [.. Convert.FromHexString(hex), 0xCC];
 		using var reader = new IO.EndianReader(new MemoryStream(bytes), Shell.EndianFormat.Big);
 		Assert.AreEqual("A", reader.ReadString(storage));
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		using var bits = CreateBitReader(bytes);
-		Assert.AreEqual("A", bits.ReadString(storage));
+		Assert.AreEqual("A", bits.ReadString(storage, Shell.EndianFormat.Big));
 		Assert.AreEqual((byte)0xCC, bits.ReadByte());
 	}
 
 	[TestMethod]
 	public void Utf32_CStringBitLimit_CountsSerializedScalars()
 	{
-		var storage = new StringStorage(StringStorageWidthType.UTF32, StringStorageType.CString, Shell.EndianFormat.Big);
+		var storage = new StringStorage(StringStorageWidthType.UTF32, StringStorageType.CString);
 		byte[] expected = [0x00, 0x01, 0xF6, 0x42, 0x00, 0x00, 0x00, 0x00];
 		using var output = new MemoryStream();
 		using (var bits = new IO.BitStream(output, FileAccess.Write) { StreamMode = FileAccess.Write })
-			bits.Write("\U0001F642A", storage, maxLength: 1);
+			bits.Write("\U0001F642A", storage, Shell.EndianFormat.Big, maxLength: 1);
 		CollectionAssert.AreEqual(expected, output.ToArray());
 		using var reader = CreateBitReader([.. expected, 0xCC]);
-		Assert.AreEqual("\U0001F642", reader.ReadString(storage, maxLength: 1));
+		Assert.AreEqual("\U0001F642",
+			reader.ReadString(storage, Shell.EndianFormat.Big, maxLength: 1));
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 	}
 
@@ -346,23 +385,24 @@ public sealed class StringStorageContractTest : BaseTestClass
 	public void BitStream_FixedCStringLimit_PreservesFieldExtent(
 		StringStorageWidthType width, string input, string expectedText, string expectedHex)
 	{
-		var storage = new StringStorage(width, StringStorageType.CString, Shell.EndianFormat.Big, 4);
+		var storage = new StringStorage(width, StringStorageType.CString, 4);
 		byte[] expected = Convert.FromHexString(expectedHex);
 		using var output = new MemoryStream();
 		using (var writer = new IO.BitStream(output, FileAccess.Write) { StreamMode = FileAccess.Write })
-			writer.Write(input, storage, maxLength: 1);
+			writer.Write(input, storage, Shell.EndianFormat.Big, maxLength: 1);
 		CollectionAssert.AreEqual(expected, output.ToArray());
 
 		using var reader = CreateBitReader([.. expected, 0xCC]);
-		Assert.AreEqual(expectedText, reader.ReadString(storage, maxLength: 1));
+		Assert.AreEqual(expectedText,
+			reader.ReadString(storage, Shell.EndianFormat.Big, maxLength: 1));
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 	}
 
 	[TestMethod]
 	public void Utf32_UnfixedCString_SupplementaryScalarRemainsSupported()
 	{
-		var storage = new StringStorage(StringStorageWidthType.UTF32, StringStorageType.CString, Shell.EndianFormat.Big);
-		var encoding = new StringStorageEncoding(storage);
+		var storage = new StringStorage(StringStorageWidthType.UTF32, StringStorageType.CString);
+		var encoding = new StringStorageEncoding(storage, Shell.EndianFormat.Big);
 		byte[] expected = [0x00, 0x01, 0xF6, 0x42, 0x00, 0x00, 0x00, 0x00];
 		CollectionAssert.AreEqual(expected, encoding.GetBytes("\U0001F642"));
 		using var reader = new IO.EndianReader(new MemoryStream(expected), Shell.EndianFormat.Big);
@@ -380,12 +420,14 @@ public sealed class StringStorageContractTest : BaseTestClass
 			Assert.ThrowsExactly<NotSupportedException>(() => reader.ReadString(storage, 1));
 			Assert.AreEqual(0L, stream.Position);
 			using var bits = new IO.BitStream(stream, FileAccess.Read) { StreamMode = FileAccess.Read };
-			Assert.ThrowsExactly<NotSupportedException>(() => bits.ReadString(storage, length: 1));
+			Assert.ThrowsExactly<NotSupportedException>(() =>
+				bits.ReadString(storage, Shell.EndianFormat.Little, length: 1));
 			Assert.AreEqual((byte)0xC3, bits.ReadByte());
 		}
 		using var scanReader = new IO.EndianReader(new MemoryStream(bytes));
 		Assert.AreEqual("\u00E9", scanReader.ReadString(StringStorage.CStringUtf8));
-		Assert.AreEqual("\u00E9", new StringStorageEncoding(StringStorage.Utf8String).GetString(bytes, 0, 2));
+		Assert.AreEqual("\u00E9",
+			new StringStorageEncoding(StringStorage.Utf8String, Shell.EndianFormat.Little).GetString(bytes, 0, 2));
 	}
 
 	[TestMethod]
@@ -399,12 +441,34 @@ public sealed class StringStorageContractTest : BaseTestClass
 		foreach (var storage in storages)
 		{
 			using var bits = CreateBitReader([0xCC, 0x00, 0x00, 0x00]);
-			Assert.ThrowsExactly<NotSupportedException>(() => bits.ReadString(storage));
+			Assert.ThrowsExactly<NotSupportedException>(() =>
+				bits.ReadString(storage, Shell.EndianFormat.Little));
 			Assert.AreEqual((byte)0xCC, bits.ReadByte());
 		}
 		using var utf8 = CreateBitReader([0xC3, 0xA9, 0x00]);
-		Assert.ThrowsExactly<NotSupportedException>(() => utf8.ReadString(StringStorage.CStringUtf8, maxLength: 1));
+		Assert.ThrowsExactly<NotSupportedException>(() =>
+			utf8.ReadString(StringStorage.CStringUtf8, Shell.EndianFormat.Little, maxLength: 1));
 		Assert.AreEqual((byte)0xC3, utf8.ReadByte());
+	}
+
+	[TestMethod]
+	[DataRow(StringStorageWidthType.Unicode, StringStorageType.CString)]
+	[DataRow(StringStorageWidthType.UTF32, StringStorageType.CharArray)]
+	public void BitStream_ByteOrderSensitivePayloads_RequireExplicitOrder(
+		StringStorageWidthType width, StringStorageType type)
+	{
+		var storage = new StringStorage(width, type, type == StringStorageType.CharArray ? (short)1 : (short)0);
+		using var stream = new MemoryStream(new byte[8]);
+		using var bits = new IO.BitStream(stream, FileAccess.Read) { StreamMode = FileAccess.Read };
+		long streamPosition = stream.Position;
+
+		Assert.ThrowsExactly<NotSupportedException>(() => bits.ReadString(storage));
+		Assert.AreEqual(streamPosition, stream.Position);
+
+		using var output = new MemoryStream();
+		using var writer = new IO.BitStream(output, FileAccess.Write) { StreamMode = FileAccess.Write };
+		Assert.ThrowsExactly<NotSupportedException>(() => writer.Write("A", storage));
+		Assert.AreEqual(0L, output.Length);
 	}
 
 	[TestMethod]
@@ -413,9 +477,9 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageLengthPrefix.Int32, "000000024142")]
 	public void BitStream_SupportedPascalPrefixes_PreserveNextField(StringStorageLengthPrefix prefix, string hex)
 	{
-		var storage = new StringStorage(StringStorageWidthType.Ascii, prefix, Shell.EndianFormat.Big);
+		var storage = new StringStorage(StringStorageWidthType.Ascii, prefix);
 		using var bits = CreateBitReader([.. Convert.FromHexString(hex), 0xCC]);
-		Assert.AreEqual("AB", bits.ReadString(storage));
+		Assert.AreEqual("AB", bits.ReadString(storage, Shell.EndianFormat.Big));
 		Assert.AreEqual((byte)0xCC, bits.ReadByte());
 	}
 
@@ -424,9 +488,10 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(17)]
 	public void BitStream_InvalidPrefixBitCount_RejectsBeforeConsumingInput(int bitCount)
 	{
-		var storage = new StringStorage(StringStorageWidthType.Ascii, StringStorageLengthPrefix.Int16, Shell.EndianFormat.Big);
+		var storage = new StringStorage(StringStorageWidthType.Ascii, StringStorageLengthPrefix.Int16);
 		using var bits = CreateBitReader([0xCC, 0x00, 0x00, 0x00]);
-		AssertThrowsArgumentOutOfRange("prefixBitLength", () => bits.ReadString(storage, prefixBitLength: bitCount));
+		AssertThrowsArgumentOutOfRange("prefixBitLength", () =>
+			bits.ReadString(storage, Shell.EndianFormat.Big, prefixBitLength: bitCount));
 		Assert.AreEqual((byte)0xCC, bits.ReadByte());
 	}
 
@@ -437,21 +502,22 @@ public sealed class StringStorageContractTest : BaseTestClass
 	{
 		var storage = new StringStorage(StringStorageWidthType.Ascii, StringStorageLengthPrefix.Int16);
 		using var bits = CreateBitReader(Convert.FromHexString(hex));
-		Assert.AreEqual("AB", bits.ReadString(storage, prefixBitLength: bitCount));
+		Assert.AreEqual("AB",
+			bits.ReadString(storage, Shell.EndianFormat.Little, prefixBitLength: bitCount));
 		Assert.AreEqual((byte)0xCC, bits.ReadByte());
 	}
 
 	[TestMethod]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "41004200", false)]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "41004200", true)]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "00410042", false)]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "00410042", true)]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "4100000042000000", false)]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "4100000042000000", true)]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "0000004100000042", false)]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "0000004100000042", true)]
-	public void CString_MismatchedOrders_PreservesReaderToStorageConversion(
-		StringStorageWidthType width, Shell.EndianFormat storageOrder, Shell.EndianFormat readerOrder,
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "41004200", false)]
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "41004200", true)]
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "00410042", false)]
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "00410042", true)]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "4100000042000000", false)]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "4100000042000000", true)]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "0000004100000042", false)]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "0000004100000042", true)]
+	public void CString_ExplicitEncodingOrder_OverridesReaderOrder(
+		StringStorageWidthType width, Shell.EndianFormat encodingOrder, Shell.EndianFormat readerOrder,
 		string payloadHex, bool fixedField)
 	{
 		byte[] payload = Convert.FromHexString(payloadHex);
@@ -461,31 +527,32 @@ public sealed class StringStorageContractTest : BaseTestClass
 		payload.CopyTo(bytes, 0);
 		bytes[^1] = 0xCC;
 		byte[] original = (byte[])bytes.Clone();
-		var storage = new StringStorage(width, StringStorageType.CString, storageOrder, (short)(fixedField ? 4 : 0));
+		var storage = new StringStorage(width, StringStorageType.CString, (short)(fixedField ? 4 : 0));
+		var encoding = new StringStorageEncoding(storage, encodingOrder);
 		using var reader = new IO.EndianReader(new MemoryStream(bytes), readerOrder);
 
-		Assert.AreEqual("AB", reader.ReadString(storage));
+		Assert.AreEqual("AB", reader.ReadString(encoding));
 		Assert.AreEqual((long)recordSize, reader.BaseStream.Position);
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		CollectionAssert.AreEqual(original, bytes);
 	}
 
 	[TestMethod]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "004142000000")]
-	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "410000420000")]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "000000414200000000000000")]
-	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "410000000000004200000000")]
-	public void CharArray_MismatchedOrders_PreservesLegacySuffixConversion(
-		StringStorageWidthType width, Shell.EndianFormat storageOrder, Shell.EndianFormat readerOrder, string fieldHex)
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "410042000000")]
+	[DataRow(StringStorageWidthType.Unicode, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "004100420000")]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Little, Shell.EndianFormat.Big, "410000004200000000000000")]
+	[DataRow(StringStorageWidthType.UTF32, Shell.EndianFormat.Big, Shell.EndianFormat.Little, "000000410000004200000000")]
+	public void CharArray_ExplicitEncodingOrder_DecodesEveryPayloadUnitConsistently(
+		StringStorageWidthType width, Shell.EndianFormat encodingOrder, Shell.EndianFormat readerOrder, string fieldHex)
 	{
-		// The legacy padding scan converts only the visited suffix, not the preceding payload units.
 		byte[] field = Convert.FromHexString(fieldHex);
 		byte[] bytes = [.. field, 0xCC];
 		byte[] original = (byte[])bytes.Clone();
-		var storage = new StringStorage(width, StringStorageType.CharArray, storageOrder, 3);
+		var storage = new StringStorage(width, StringStorageType.CharArray, 3);
+		var encoding = new StringStorageEncoding(storage, encodingOrder);
 		using var reader = new IO.EndianReader(new MemoryStream(bytes), readerOrder);
 
-		Assert.AreEqual("AB", reader.ReadString(storage));
+		Assert.AreEqual("AB", reader.ReadString(encoding));
 		Assert.AreEqual((long)field.Length, reader.BaseStream.Position);
 		Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		CollectionAssert.AreEqual(original, bytes);
@@ -494,22 +561,24 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[TestMethod]
 	public void EndianReader_ShortReads_FillPayloadAndRejectIncompleteRecords()
 	{
-		var pascal = new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int16, Shell.EndianFormat.Big);
-		using (var reader = new IO.EndianReader(new ShortReadStream([0x00, 0x02, 0x00, 0x41, 0x00, 0x42, 0xCC])))
+		var pascal = new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int16);
+		using (var reader = new IO.EndianReader(
+			new ShortReadStream([0x00, 0x02, 0x00, 0x41, 0x00, 0x42, 0xCC]), Shell.EndianFormat.Big))
 		{
 			Assert.AreEqual("AB", reader.ReadString(pascal));
 			Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		}
-		using (var reader = new IO.EndianReader(new ShortReadStream([0x00, 0x02, 0x00, 0x41, 0x00])))
+		using (var reader = new IO.EndianReader(
+			new ShortReadStream([0x00, 0x02, 0x00, 0x41, 0x00]), Shell.EndianFormat.Big))
 			Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadString(pascal));
 
 		using (var reader = new IO.EndianReader(new ShortReadStream([0x00, 0x41, 0x00, 0x00, 0xCC]), Shell.EndianFormat.Big))
 		{
-			Assert.AreEqual("A", reader.ReadString(StringStorage.CStringUnicodeBigEndian));
+			Assert.AreEqual("A", reader.ReadString(StringStorage.CStringUnicode));
 			Assert.AreEqual((byte)0xCC, reader.ReadByte());
 		}
 		using (var reader = new IO.EndianReader(new ShortReadStream([0x00, 0x41, 0x00]), Shell.EndianFormat.Big))
-			Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadString(StringStorage.CStringUnicodeBigEndian));
+			Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadString(StringStorage.CStringUnicode));
 
 		var fixedStorage = new StringStorage(StringStorageWidthType.Ascii, StringStorageType.CString, 4);
 		using (var reader = new IO.EndianReader(new ShortReadStream([0x41, 0x00])))
@@ -524,7 +593,8 @@ public sealed class StringStorageContractTest : BaseTestClass
 		using (var reader = new IO.EndianReader(new MemoryStream([0x41, 0x42])))
 			Assert.ThrowsExactly<InvalidDataException>(() => reader.ReadString(StringStorage.CStringAscii, 1));
 		using var bits = CreateBitReader([0x41, 0x42]);
-		Assert.ThrowsExactly<InvalidDataException>(() => bits.ReadString(StringStorage.CStringAscii, length: 1));
+		Assert.ThrowsExactly<InvalidDataException>(() =>
+			bits.ReadString(StringStorage.CStringAscii, Shell.EndianFormat.Little, length: 1));
 	}
 
 	[TestMethod]
@@ -533,14 +603,15 @@ public sealed class StringStorageContractTest : BaseTestClass
 	[DataRow(StringStorageWidthType.UTF32, "0000004100000042")]
 	public void CString_FixedField_RejectsMissingTerminator(StringStorageWidthType width, string hex)
 	{
-		var storage = new StringStorage(width, StringStorageType.CString, Shell.EndianFormat.Big, 2);
+		var storage = new StringStorage(width, StringStorageType.CString, 2);
 		byte[] bytes = Convert.FromHexString(hex);
-		var encoding = new StringStorageEncoding(storage);
+		var encoding = new StringStorageEncoding(storage, Shell.EndianFormat.Big);
 		Assert.ThrowsExactly<InvalidDataException>(() => encoding.GetString(bytes));
 		using var reader = new IO.EndianReader(new MemoryStream(bytes), Shell.EndianFormat.Big);
 		Assert.ThrowsExactly<InvalidDataException>(() => reader.ReadString(storage));
 		using var bits = CreateBitReader(bytes);
-		Assert.ThrowsExactly<InvalidDataException>(() => bits.ReadString(storage));
+		Assert.ThrowsExactly<InvalidDataException>(() =>
+			bits.ReadString(storage, Shell.EndianFormat.Big));
 	}
 
 	[TestMethod]
@@ -549,11 +620,13 @@ public sealed class StringStorageContractTest : BaseTestClass
 	public void BitStream_CStringMaximum_RequiresTerminationWithinLimit(
 		StringStorageWidthType width, string oversizedHex, string validHex)
 	{
-		var storage = new StringStorage(width, StringStorageType.CString, Shell.EndianFormat.Big);
+		var storage = new StringStorage(width, StringStorageType.CString);
 		using (var bits = CreateBitReader(Convert.FromHexString(oversizedHex)))
-			Assert.ThrowsExactly<InvalidDataException>(() => bits.ReadString(storage, maxLength: 1));
+			Assert.ThrowsExactly<InvalidDataException>(() =>
+				bits.ReadString(storage, Shell.EndianFormat.Big, maxLength: 1));
 		using var validBits = CreateBitReader([.. Convert.FromHexString(validHex), 0xCC]);
-		Assert.AreEqual("A", validBits.ReadString(storage, maxLength: 1));
+		Assert.AreEqual("A",
+			validBits.ReadString(storage, Shell.EndianFormat.Big, maxLength: 1));
 		Assert.AreEqual((byte)0xCC, validBits.ReadByte());
 	}
 

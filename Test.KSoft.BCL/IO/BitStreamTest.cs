@@ -276,7 +276,8 @@ namespace KSoft.IO.Test
 				"encoding",
 				() => bitStream.Stream(ref text, (Text.StringStorageEncoding)null!));
 			Assert.ThrowsExactly<InvalidDataException>(() =>
-				bitStream.ReadString(Memory.Strings.StringStorage.AsciiString, TypeExtensions.kNone));
+				bitStream.ReadString(Memory.Strings.StringStorage.AsciiString,
+					Shell.EndianFormat.Little, TypeExtensions.kNone));
 		}
 
 		[TestMethod]

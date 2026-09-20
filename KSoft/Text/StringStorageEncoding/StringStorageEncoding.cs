@@ -10,6 +10,7 @@ namespace KSoft.Text
 	/// <summary>Encodes and decodes binary string records described by <see cref="StringStorage"/>.</summary>
 	/// <remarks>
 	/// <para>Use KSoft stream string overloads accepting an explicit storage descriptor or encoding; ordinary BinaryReader/BinaryWriter string methods use CLR byte-counted framing.</para>
+	/// <para>The encoding owns byte order. Endian-stream overloads accepting only <see cref="StringStorage"/> construct an encoding from the stream's current order; overloads accepting this type use its explicit order.</para>
 	/// <para>Prefixes and fixed fields count serialized storage units. A UTF-32 scalar can require two managed input characters.</para>
 	/// <para>CString inputs must not contain embedded nulls; writers do not escape or reject them.</para>
 	/// </remarks>
@@ -20,6 +21,9 @@ namespace KSoft.Text
 		, IComparer<StringStorageEncoding>, IComparable<StringStorageEncoding>
 	{
 		readonly Encoding mBaseEncoding;
+		readonly Shell.EndianFormat mByteOrder;
+		/// <summary>Byte order used for multi-byte payload units and Pascal prefixes.</summary>
+		public Shell.EndianFormat ByteOrder => mByteOrder;
 		#region Storage
 		readonly StringStorage mStorage;
 		/// <summary>The string storage definition for this encoding</summary>
@@ -39,11 +43,12 @@ namespace KSoft.Text
 		#region Ctor
 		/// <summary>Initialize an encoding for this library's methods of String Storages</summary>
 		/// <param name="storage">Storage definition</param>
+		/// <param name="byteOrder">Byte order for multi-byte payload units and Pascal prefixes.</param>
 		/// <param name="options"><see cref="System.Text.Encoding"/> options</param>
-		public StringStorageEncoding(StringStorage storage, Options options = 0)
+		public StringStorageEncoding(StringStorage storage, Shell.EndianFormat byteOrder, Options options = 0)
 		{
 			bool use_bom = (options & Options.UseByteOrderMark) != 0;
-			bool big_endian = storage.ByteOrder == Shell.EndianFormat.Big;
+			bool big_endian = byteOrder == Shell.EndianFormat.Big;
 			bool throw_on_invalid = (options & Options.ThrowOnInvalidBytes) != 0;
 
 			mNullCharacterSize = sizeof(byte); // The majority of encodings only require 1 byte for the null character
@@ -70,16 +75,28 @@ namespace KSoft.Text
 				: GetMaxCleanByteCount(storage.FixedLength);
 
 			mStorage = storage;
+			mByteOrder = byteOrder;
 			mOptions = options;
 		}
 
 		public override object Clone()
 		{
-			return new StringStorageEncoding(mStorage, mOptions);
+			return new StringStorageEncoding(mStorage, mByteOrder, mOptions);
 		}
 		#endregion
 
 		#region Implementation
+		/// <summary>Calculates the complete serialized byte count for a value and storage definition.</summary>
+		/// <param name="storage">Storage definition.</param>
+		/// <param name="chars">Characters to size.</param>
+		/// <returns>The payload and framing byte count.</returns>
+		/// <remarks>Byte order is omitted because it changes byte arrangement, not encoded length.</remarks>
+		public static int GetByteCount(StringStorage storage, ReadOnlySpan<char> chars)
+		{
+			var encoding = TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
+			return encoding.GetByteCount(chars);
+		}
+
 		/// <summary>Calculates the number of bytes produced by encoding a set of characters from the specified character array</summary>
 		/// <param name="chars">The character array containing the set of characters to encode</param>
 		/// <param name="index">The index of the first character to encode</param>
@@ -245,7 +262,7 @@ namespace KSoft.Text
 		/// <remarks>Framing is processed on every conversion call; this is not incremental framing across arbitrary record fragments. <see cref="Options.DontAlwaysFlush"/> controls only the underlying character-conversion state.</remarks>
 		/// <seealso cref="GetBytes(char[], int, int, byte[], int)"/>
 		public override System.Text.Encoder GetEncoder() => new Encoder(this);
-		public override int GetHashCode() => mBaseEncoding.GetHashCode();
+		public override int GetHashCode() => HashCode.Combine(mStorage, mByteOrder, mOptions);
 		public override byte[] GetPreamble() => mBaseEncoding.GetPreamble();
 		public override bool IsAlwaysNormalized(NormalizationForm form) => mBaseEncoding.IsAlwaysNormalized(form);
 		#endregion
@@ -260,6 +277,7 @@ namespace KSoft.Text
 		public bool Equals(StringStorageEncoding? other)
 		{
 			return mOptions == other!.mOptions &&
+				mByteOrder == other.mByteOrder &&
 				mStorage.Equals(other.mStorage);
 		}
 
@@ -283,7 +301,11 @@ namespace KSoft.Text
 
 			if (cmp == 0)
 			{
-				return ((int)mOptions) - ((int)other.mOptions);
+				cmp = ((int)mByteOrder) - ((int)other.mByteOrder);
+			}
+			if (cmp == 0)
+			{
+				cmp = ((int)mOptions) - ((int)other.mOptions);
 			}
 
 			return cmp;
@@ -295,10 +317,11 @@ namespace KSoft.Text
 		internal static readonly StringStorageEncoding[] kStorageEncodingList = EncodingArrayFromStorageArray(StringStorage.kStorageTypesList);
 		static StringStorageEncoding[] EncodingArrayFromStorageArray(StringStorage[] storageArray)
 		{
-			var encodings = new StringStorageEncoding[storageArray.Length];
-			for (int x = 0; x < encodings.Length; x++)
+			var encodings = new StringStorageEncoding[storageArray.Length * 2];
+			for (int x = 0; x < storageArray.Length; x++)
 			{
-				encodings[x] = new StringStorageEncoding(storageArray[x]);
+				encodings[x * 2] = new StringStorageEncoding(storageArray[x], Shell.EndianFormat.Little);
+				encodings[x * 2 + 1] = new StringStorageEncoding(storageArray[x], Shell.EndianFormat.Big);
 			}
 
 			return encodings;
@@ -309,17 +332,18 @@ namespace KSoft.Text
 		/// based on a provided definition
 		/// </summary>
 		/// <param name="storageDesc">Storage to base the result on</param>
+		/// <param name="byteOrder">Byte order for multi-byte payload units and Pascal prefixes.</param>
 		/// <returns>
 		/// If an instance is found with <paramref name="storageDesc"/>, a static based
 		/// object will be returned. Otherwise, a new <see cref="StringStorageEncoding"/>
 		/// object will be created using the definition.
 		/// </returns>
-		public static StringStorageEncoding TryAndGetStaticEncoding(StringStorage storageDesc)
+		public static StringStorageEncoding TryAndGetStaticEncoding(StringStorage storageDesc, Shell.EndianFormat byteOrder)
 		{
 			StringStorageEncoding? sse = Array.Find(kStorageEncodingList,
-				x => x.mStorage.Equals(storageDesc));
+				x => x.mStorage.Equals(storageDesc) && x.mByteOrder == byteOrder);
 
-			return sse ?? new StringStorageEncoding(storageDesc);
+			return sse ?? new StringStorageEncoding(storageDesc, byteOrder);
 		}
 		#endregion
 	};

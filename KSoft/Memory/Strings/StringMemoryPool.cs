@@ -74,7 +74,7 @@ namespace KSoft.Memory.Strings
 		{
 			Settings = definition;
 			InitializeCollections(kEntryStartCount);
-			mEncoding = new Text.StringStorageEncoding(definition.Storage);
+			mEncoding = new Text.StringStorageEncoding(definition.Storage, definition.ByteOrder);
 		}
 
 		#region Add

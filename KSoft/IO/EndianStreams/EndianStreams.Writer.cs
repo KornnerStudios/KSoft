@@ -187,16 +187,17 @@ namespace KSoft.IO
 		/// <summary>Writes a bounded character sequence based on a <see cref="Memory.Strings.StringStorage"/> definition</summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="storage">Definition for how we're streaming the string</param>
-		/// <remarks>Writes a complete storage record; fixed fields truncate to serialized-unit capacity and are zero-padded.</remarks>
+		/// <remarks>Writes a complete storage record using this writer's current <see cref="ByteOrder"/>; fixed fields truncate to serialized-unit capacity and are zero-padded.</remarks>
 		public void Write(ReadOnlySpan<char> value, Memory.Strings.StringStorage storage)
 		{
-			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage, ByteOrder);
 			base.Write(sse.EncodeString(value));
 		}
 
 		/// <summary>Writes a bounded character sequence using a <see cref="Text.StringStorageEncoding"/></summary>
 		/// <param name="value">Character sequence to write</param>
 		/// <param name="encoding">Encoding to use for character streaming</param>
+		/// <remarks>The encoding's explicit byte order overrides this writer's current <see cref="ByteOrder"/> for the string record.</remarks>
 		/// <inheritdoc cref="Write(ReadOnlySpan{char}, Memory.Strings.StringStorage)" path="/remarks"/>
 		public void Write(ReadOnlySpan<char> value, Text.StringStorageEncoding encoding)
 		{

@@ -10,20 +10,22 @@ namespace KSoft.Text.Test
 	public class StringStorageEncodingTest : BaseTestClass
 	{
 
-		static byte[] WriteWithBitStream(string value, MS.StringStorage storage, int maxLength = -1)
+		static byte[] WriteWithBitStream(string value, MS.StringStorage storage,
+			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, int maxLength = -1)
 		{
 			using var stream = new System.IO.MemoryStream();
 			using (var bitStream = new IO.BitStream(stream, System.IO.FileAccess.Write))
 			{
 				bitStream.StreamMode = System.IO.FileAccess.Write;
-				bitStream.Write(value, storage, maxLength);
+				bitStream.Write(value, storage, byteOrder, maxLength);
 			}
 
 			return stream.ToArray();
 		}
-		static void AssertBitStreamWriteBytes(byte[] expected, string value, MS.StringStorage storage, int maxLength = -1)
+		static void AssertBitStreamWriteBytes(byte[] expected, string value, MS.StringStorage storage,
+			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, int maxLength = -1)
 		{
-			CollectionAssert.AreEqual(expected, WriteWithBitStream(value, storage, maxLength));
+			CollectionAssert.AreEqual(expected, WriteWithBitStream(value, storage, byteOrder, maxLength));
 		}
 
 		[TestMethod]
@@ -43,7 +45,8 @@ namespace KSoft.Text.Test
 		[TestMethod]
 		public void StringStorageEncoding_NullReadStreams_ThrowArgumentNullException()
 		{
-			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(MS.StringStorage.CStringAscii);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(
+				MS.StringStorage.CStringAscii, Shell.EndianFormat.Little);
 
 			AssertThrowsArgumentNull("s", () => _ = encoding.ReadString((IO.EndianReader)null!, 0));
 			AssertThrowsArgumentNull("s", () => _ = encoding.ReadString((IO.BitStream)null!, 0));
@@ -53,17 +56,17 @@ namespace KSoft.Text.Test
 		public void StringStorageEncoding_CStringNonzeroDestinationOffset_WritesTerminatorAtPayloadEnd()
 		{
 			var cases = new[] {
-				(MS.StringStorage.CStringAscii, "AB", new byte[] { 0x41, 0x42, 0x00 }),
-				(MS.StringStorage.CStringUtf8, "A\u00E9", new byte[] { 0x41, 0xC3, 0xA9, 0x00 }),
-				(MS.StringStorage.CStringUnicode, "AB",
+				(MS.StringStorage.CStringAscii, Shell.EndianFormat.Little, "AB", new byte[] { 0x41, 0x42, 0x00 }),
+				(MS.StringStorage.CStringUtf8, Shell.EndianFormat.Little, "A\u00E9", new byte[] { 0x41, 0xC3, 0xA9, 0x00 }),
+				(MS.StringStorage.CStringUnicode, Shell.EndianFormat.Little, "AB",
 					new byte[] { 0x41, 0x00, 0x42, 0x00, 0x00, 0x00 }),
-				(MS.StringStorage.CStringUnicodeBigEndian, "AB",
+				(MS.StringStorage.CStringUnicode, Shell.EndianFormat.Big, "AB",
 					new byte[] { 0x00, 0x41, 0x00, 0x42, 0x00, 0x00 }),
 			};
 
-			foreach (var (storage, text, expectedBytes) in cases)
+			foreach (var (storage, byteOrder, text, expectedBytes) in cases)
 			{
-				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, byteOrder);
 				char[] chars = text.ToCharArray();
 
 				foreach (bool useEncoder in new[] { false, true })
@@ -88,7 +91,7 @@ namespace KSoft.Text.Test
 		public void StringStorageEncoding_Int7PascalAsciiRoundTripsAtBufferStartAndOffset()
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
-			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
 			const string text = "hello";
 
 			byte[] bytes = encoding.GetBytes(text);
@@ -114,7 +117,7 @@ namespace KSoft.Text.Test
 		public void StringStorageEncoding_Int7FiveBytePrefix_MatchesEndianReaderAndPreservesFollowingField()
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
-			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
 			// BinaryReader accepts this five-byte representation of one; the payload is one ASCII character.
 			byte[] bytes = [0x81, 0x80, 0x80, 0x80, 0x00, 0x41, 0xCC];
 
@@ -131,7 +134,7 @@ namespace KSoft.Text.Test
 		public void StringStorageEncoding_Int7Sizing_AcceptsFourAndFiveBytePrefixes(int charCount, int prefixBytes)
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
-			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
 
 			// Exercise the size calculations without allocating strings or payload buffers.
 			Assert.AreEqual(charCount, encoding.GetMaxCharCount(charCount + prefixBytes));
@@ -142,7 +145,7 @@ namespace KSoft.Text.Test
 		public void StringStorageEncoding_Int7PascalMalformedInput_ThrowsArgumentOutOfRangeException()
 		{
 			var storage = new MS.StringStorage(MS.StringStorageWidthType.Ascii, MS.StringStorageLengthPrefix.Int7);
-			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
 
 			Assert.Throws<ArgumentOutOfRangeException>(() => encoding.GetString([0x80]));
 			Assert.Throws<ArgumentOutOfRangeException>(() => encoding.GetString([0x02, 0x41]));
@@ -171,13 +174,15 @@ namespace KSoft.Text.Test
 			AssertBitStreamWriteBytes(
 				[0x00, 0x41, 0x00, 0x00],
 				"A",
-				MS.StringStorage.CStringUnicodeBigEndian);
+				MS.StringStorage.CStringUnicode,
+				Shell.EndianFormat.Big);
 
 			var fixedCString = new MS.StringStorage(MS.StringStorageWidthType.Ascii,
 				MS.StringStorageType.CString, fixedLength: 5);
 			AssertBitStreamWriteBytes([0x41, 0x00, 0x00, 0x00, 0x00], "A", fixedCString);
 			AssertBitStreamWriteBytes([0x41, 0x42, 0x43, 0x44, 0x00], "ABCDE", fixedCString);
-			AssertBitStreamWriteBytes([0x41, 0x42, 0x00, 0x00, 0x00], "ABCDE", fixedCString, maxLength: 2);
+			AssertBitStreamWriteBytes([0x41, 0x42, 0x00, 0x00, 0x00], "ABCDE", fixedCString,
+				maxLength: 2);
 			AssertBitStreamWriteBytes(
 				[0x41, 0x42, 0x00, 0x00],
 				"AB",
@@ -214,7 +219,7 @@ namespace KSoft.Text.Test
 		}
 
 		[TestMethod]
-		public void ReadWrite_CStringUnicodeBigEndianNonFixedLength_RoundTripsThroughEndianStreamAndReader()
+		public void ReadWrite_CStringUnicodeNonFixedLength_UsesBigEndianStreamOrder()
 		{
 			const string text = "Hi";
 			byte[] expectedBytes = System.Text.Encoding.BigEndianUnicode.GetBytes(text + '\0');
@@ -224,7 +229,7 @@ namespace KSoft.Text.Test
 			using (var writeEndianStream = IO.EndianStream.UsingWriter(writer))
 			{
 				string writeValue = text;
-				writeEndianStream.Stream(ref writeValue, MS.StringStorage.CStringUnicodeBigEndian);
+				writeEndianStream.Stream(ref writeValue, MS.StringStorage.CStringUnicode);
 			}
 
 			byte[] bytes = writeStream.ToArray();
@@ -234,7 +239,7 @@ namespace KSoft.Text.Test
 			using var readEndianStream = IO.EndianStream.UsingReader(reader);
 			string readValue = null!;
 
-			readEndianStream.Stream(ref readValue, MS.StringStorage.CStringUnicodeBigEndian);
+			readEndianStream.Stream(ref readValue, MS.StringStorage.CStringUnicode);
 
 			Assert.AreEqual(text, readValue);
 			Assert.AreEqual(bytes.Length, reader.BaseStream.Position);
@@ -251,7 +256,7 @@ namespace KSoft.Text.Test
 				MS.StringStorage storage =
 					//Strings.StringStorage.kCStringUnicode;
 					new(MS.StringStorageWidthType.Ascii, MS.StringStorageType.CString, 256);
-				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage);
+				var encoding = StringStorageEncoding.TryAndGetStaticEncoding(storage, Shell.EndianFormat.Little);
 
 				const string test1 = "This is a test",
 					test2 = "Test this is",

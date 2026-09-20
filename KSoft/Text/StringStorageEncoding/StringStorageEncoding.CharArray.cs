@@ -39,18 +39,15 @@ partial class StringStorageEncoding
 		}
 	}
 
-	int ConvertCharArraySuffixAndGetByteCount(Shell.EndianFormat byteOrder, Span<byte> bytes)
+	int GetCharArraySuffixByteCount(ReadOnlySpan<byte> bytes)
 	{
-		// Preserve the legacy conversion of only the units visited by the trailing-padding scan.
-		Span<byte> unit = bytes[^mNullCharacterSize..];
-		ConvertReadStorageUnitByteOrder(byteOrder, unit);
+		ReadOnlySpan<byte> unit = bytes[^mNullCharacterSize..];
 		if (IsNullStorageUnit(unit)) // padded string case
 		{
 			// find the first last index which isn't null
 			for (int x = bytes.Length - (mNullCharacterSize * 2); x >= 0; x -= mNullCharacterSize)
 			{
 				unit = bytes.Slice(x, mNullCharacterSize);
-				ConvertReadStorageUnitByteOrder(byteOrder, unit);
 				if (!IsNullStorageUnit(unit))
 				{
 					return x+mNullCharacterSize;
@@ -73,7 +70,7 @@ partial class StringStorageEncoding
 
 		actualCount = mNullCharacterSize == sizeof(byte)
 			? ReadStrCharArrayGetRealCountSingleByte(bytes)
-			: ConvertCharArraySuffixAndGetByteCount(s.ByteOrder, bytes);
+			: GetCharArraySuffixByteCount(bytes);
 
 		return bytes;
 	}
@@ -86,7 +83,7 @@ partial class StringStorageEncoding
 
 		actualCount = mNullCharacterSize == sizeof(byte)
 			? ReadStrCharArrayGetRealCountSingleByte(bytes)
-			: ConvertCharArraySuffixAndGetByteCount(mStorage.ByteOrder, bytes);
+			: GetCharArraySuffixByteCount(bytes);
 
 		return bytes;
 	}

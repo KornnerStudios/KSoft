@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace KSoft.Memory.Strings
 {
-	/// <summary>Describes binary-string framing, payload encoding, and counted storage units.</summary>
+	/// <summary>Describes binary-string framing, serialized character width, and counted storage units.</summary>
 	/// <remarks>Pascal prefixes count characters in the serialized representation selected by WidthType, not payload bytes.</remarks>
-	public readonly struct StringStorage : //IO.IEndianStreamable,
+	public readonly struct StringStorage :
 		IEquatable<StringStorage>, IEqualityComparer<StringStorage>,
 		IComparer<StringStorage>, IComparable<StringStorage>,
 		System.Collections.IComparer, IComparable
@@ -20,13 +20,6 @@ namespace KSoft.Memory.Strings
 		readonly StringStorageType mType;
 		/// <summary>Character serialization format method</summary>
 		public StringStorageType Type => mType;
-		#endregion
-
-		#region ByteOrder
-		readonly Shell.EndianFormat mByteOrder;
-		/// <summary>Endian byte order of the character storage</summary>
-		/// <remarks>Affects both the wide-characters and any length prefixes written</remarks>
-		public Shell.EndianFormat ByteOrder => mByteOrder;
 		#endregion
 
 		#region LengthPrefix
@@ -69,36 +62,24 @@ namespace KSoft.Memory.Strings
 		/// <summary>Construct a new string storage definition</summary>
 		/// <param name="widthType">Width size of a single character of this string definition</param>
 		/// <param name="type">Storage method for this string definition</param>
-		/// <param name="byteOrder"></param>
 		/// <param name="fixedLength">The storage fixed length (in characters) of this string definition</param>
 		public StringStorage(StringStorageWidthType widthType, StringStorageType type,
-			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little, short fixedLength = 0)
+			short fixedLength = 0)
 		{
 			ValidateFixedLengthStorage(widthType, type, fixedLength);
 
 			mWidthType = widthType;
 			mType = type;
-			mByteOrder = byteOrder;
 			mLengthPrefix = StringStorageLengthPrefix.None;
 			mFixedLength = fixedLength;
 
-			kHashCode = CalculateHashCode(mWidthType, mType, mByteOrder, mLengthPrefix, mFixedLength);
-		}
-		/// <summary>Construct a new string storage definition (in <see cref="Shell.EndianFormat.Little"/> byte order)</summary>
-		/// <param name="widthType">Width size of a single character of this string definition</param>
-		/// <param name="type">Storage method for this string definition</param>
-		/// <param name="fixedLength">The storage fixed length (in characters) of this string definition</param>
-		public StringStorage(StringStorageWidthType widthType, StringStorageType type, short fixedLength) :
-			this(widthType, type, Shell.EndianFormat.Little, fixedLength)
-		{
+			kHashCode = CalculateHashCode(mWidthType, mType, mLengthPrefix, mFixedLength);
 		}
 		/// <summary>Construct a character-counted Pascal string storage definition.</summary>
 		/// <param name="widthType">Width size of a single character of this string definition</param>
 		/// <param name="prefix">Length prefix size</param>
-		/// <param name="byteOrder"></param>
 		/// <exception cref="ArgumentException"><paramref name="widthType"/> is variable-width.</exception>
-		public StringStorage(StringStorageWidthType widthType, StringStorageLengthPrefix prefix,
-			Shell.EndianFormat byteOrder = Shell.EndianFormat.Little)
+		public StringStorage(StringStorageWidthType widthType, StringStorageLengthPrefix prefix)
 		{
 			if (widthType.IsVariableWidth())
 			{
@@ -108,47 +89,21 @@ namespace KSoft.Memory.Strings
 
 			mWidthType = widthType;
 			mType = StringStorageType.Pascal;
-			mByteOrder = byteOrder;
 			mLengthPrefix = prefix;
 			mFixedLength = 0;
 
-			kHashCode = CalculateHashCode(mWidthType, mType, mByteOrder, mLengthPrefix, mFixedLength);
+			kHashCode = CalculateHashCode(mWidthType, mType, mLengthPrefix, mFixedLength);
 		}
-		#endregion
-
-		#region IEndianStreamable Members
-#if false // #TODO
-		public void Read(IO.EndianReader s)
-		{
-			mWidthType = (StringStorageWidthType)s.ReadByte();
-			mType = (StringStorageType)s.ReadByte();
-			mByteOrder = (Shell.EndianFormat)s.ReadByte();
-			s.Seek(sizeof(byte));
-			mFixedLength = s.ReadInt16();
-			s.Seek(sizeof(ushort));
-		}
-
-		public void Write(IO.EndianWriter s)
-		{
-			s.Write((byte)mWidthType);
-			s.Write((byte)mType);
-			s.Write((byte)mByteOrder);
-			s.Write(byte.MinValue);
-			s.Write(mFixedLength);
-			s.Write(ushort.MinValue);
-		}
-#endif
 		#endregion
 
 		#region GetHashCode
-		static int CalculateHashCode(StringStorageWidthType widthType, StringStorageType type, Shell.EndianFormat byteOrder,
+		static int CalculateHashCode(StringStorageWidthType widthType, StringStorageType type,
 			StringStorageLengthPrefix prefix,
 			short fixedLength)
 		{
 			var encoder = new Bitwise.HandleBitEncoder();
 			encoder.Encode32(widthType, TypeExtensions.BitEncoders.StringStorageWidthType);
 			encoder.Encode32(type, TypeExtensions.BitEncoders.StringStorageType);
-			encoder.Encode32(byteOrder, TypeExtensions.BitEncoders.EndianFormat);
 
 			if (type.UsesLengthPrefix())
 			{
@@ -207,7 +162,6 @@ namespace KSoft.Memory.Strings
 		/// Compares the object fields in the following order:
 		/// <see cref="StringStorage.Type"/>,
 		/// <see cref="StringStorage.WidthType"/>,
-		/// <see cref="StringStorage.ByteOrder"/>,
 		/// <see cref="StringStorage.LengthPrefix"/>,
 		/// <see cref="StringStorage.FixedLength"/>
 		/// </remarks>
@@ -217,20 +171,13 @@ namespace KSoft.Memory.Strings
 			{
 				if (mWidthType == other.mWidthType)
 				{
-					if (mByteOrder == other.mByteOrder)
+					if (mLengthPrefix == other.mLengthPrefix)
 					{
-						if (mLengthPrefix == other.mLengthPrefix)
-						{
-							return mFixedLength - other.mFixedLength;
-						}
-						else
-						{
-							return ((int)mLengthPrefix) - ((int)other.mLengthPrefix);
-						}
+						return mFixedLength - other.mFixedLength;
 					}
 					else
 					{
-						return ((int)mByteOrder) - ((int)other.mByteOrder);
+						return ((int)mLengthPrefix) - ((int)other.mLengthPrefix);
 					}
 				}
 				else
@@ -275,10 +222,6 @@ namespace KSoft.Memory.Strings
 		static readonly StringStorage kCStringUnicode = new(StringStorageWidthType.Unicode, StringStorageType.CString);
 		/// <summary>Get a storage definition for a CString format Unicode string</summary>
 		public static StringStorage CStringUnicode { get { return kCStringUnicode; } }
-
-		static readonly StringStorage kCStringUnicodeBE = new(StringStorageWidthType.Unicode, StringStorageType.CString, Shell.EndianFormat.Big);
-		/// <summary>Get a storage definition for a CString format Unicode string (big endian)</summary>
-		public static StringStorage CStringUnicodeBigEndian { get { return kCStringUnicodeBE; } }
 		#endregion
 
 		#region String
@@ -296,11 +239,6 @@ namespace KSoft.Memory.Strings
 		/// <summary>Get a storage definition for a string of Unicode characters</summary>
 		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
 		public static StringStorage UnicodeString { get { return kStringUnicode; } }
-
-		static readonly StringStorage kStringUnicodeBE = new(StringStorageWidthType.Unicode, StringStorageType.CharArray, Shell.EndianFormat.Big);
-		/// <summary>Get a storage definition for a string of Unicode characters (big endian)</summary>
-		/// <remarks>This is a <see cref="StringStorageType.CharArray"/> which doesn't specify a fixed length.</remarks>
-		public static StringStorage UnicodeStringBigEndian { get { return kStringUnicodeBE; } }
 		#endregion
 
 		internal static readonly StringStorage[] kStorageTypesList = [
@@ -317,11 +255,6 @@ namespace KSoft.Memory.Strings
 			// UTF8
 			kCStringUTF8,
 			kStringUTF8,
-
-			// Unicode-BE
-			kCStringUnicodeBE,
-			/* Clr */ new(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int7, Shell.EndianFormat.Big),
-			kStringUnicodeBE,
 		];
 	};
 }

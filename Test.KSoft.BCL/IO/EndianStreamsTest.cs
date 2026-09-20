@@ -190,7 +190,7 @@ public class EndianStreamsTest : BaseTestClass
 	}
 
 	[TestMethod]
-	public void ReaderWriterPascalPrefixes_HonorStorageByteOrder()
+	public void ReaderWriterPascalPrefixes_HonorStreamByteOrder()
 	{
 		var cases = new[] {
 			(Memory.Strings.StringStorageLengthPrefix.Int16, Shell.EndianFormat.Little,
@@ -206,19 +206,18 @@ public class EndianStreamsTest : BaseTestClass
 		foreach (var (prefix, byteOrder, expectedBytes) in cases)
 		{
 			var storage = new Memory.Strings.StringStorage(
-				Memory.Strings.StringStorageWidthType.Ascii, prefix, byteOrder);
-			var encoding = new Text.StringStorageEncoding(storage);
+				Memory.Strings.StringStorageWidthType.Ascii, prefix);
 			using var stream = new MemoryStream();
-			using (var writer = new EndianWriter(stream) { BaseStreamOwner = false })
+			using (var writer = new EndianWriter(stream, byteOrder) { BaseStreamOwner = false })
 			{
-				writer.Write("AB".AsSpan(), encoding);
+				writer.Write("AB".AsSpan(), storage);
 			}
 
 			CollectionAssert.AreEqual(expectedBytes, stream.ToArray(), $"{prefix} {byteOrder}");
 
 			stream.Position = 0;
-			using var reader = new EndianReader(stream) { BaseStreamOwner = false };
-			Assert.AreEqual("AB", reader.ReadString(encoding), $"{prefix} {byteOrder}");
+			using var reader = new EndianReader(stream, byteOrder) { BaseStreamOwner = false };
+			Assert.AreEqual("AB", reader.ReadString(storage), $"{prefix} {byteOrder}");
 			Assert.AreEqual(stream.Length, stream.Position, $"{prefix} {byteOrder}");
 		}
 	}
@@ -231,7 +230,8 @@ public class EndianStreamsTest : BaseTestClass
 		using var endianStream = EndianStream.UsingWriter(writer);
 		string value = null!;
 		var storage = Memory.Strings.StringStorage.CStringAscii;
-		var encoding = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
+		var encoding = Text.StringStorageEncoding.TryAndGetStaticEncoding(
+			storage, Shell.EndianFormat.Little);
 
 		endianStream.Stream(ref value, storage);
 		endianStream.Stream(ref value, storage, length: 32);

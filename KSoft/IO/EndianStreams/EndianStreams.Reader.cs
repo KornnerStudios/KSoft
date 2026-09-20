@@ -229,13 +229,14 @@ namespace KSoft.IO
 		/// <remarks>
 		/// <para>Unfixed CharArray reads require a positive length; an unfixed CString is scanned when the length is nonpositive. Pascal and fixed fields ignore the length argument.</para>
 		/// <para>Consumes framing and the entire fixed field, including padding. Unlike direct buffer decoding, CString scanning stops at the first null and CharArray reads remove trailing null padding.</para>
+		/// <para>Multi-byte payload units and Pascal prefixes use this reader's current <see cref="ByteOrder"/>.</para>
 		/// </remarks>
 		/// <exception cref="NotSupportedException">A positive length uses a variable-width encoding.</exception>
 		public string ReadString(Memory.Strings.StringStorage storage, int length)
 		{
 			Verify.StringStorage.ForStreaming(storage, length);
 
-			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage);
+			var sse = Text.StringStorageEncoding.TryAndGetStaticEncoding(storage, ByteOrder);
 
 			return sse.ReadString(this, length);
 		}
@@ -251,6 +252,7 @@ namespace KSoft.IO
 		/// <summary>Reads a string using a storage encoding and an optional payload length.</summary>
 		/// <param name="encoding">The encoding to use for character streaming</param>
 		/// <param name="length">Optional payload length in serialized storage units.</param>
+		/// <remarks>The encoding's explicit byte order overrides this reader's current <see cref="ByteOrder"/> for the string record.</remarks>
 		/// <inheritdoc cref="ReadString(Memory.Strings.StringStorage, int)" path="/returns|/remarks|/exception"/>
 		public string ReadString(Text.StringStorageEncoding encoding, int length)
 		{

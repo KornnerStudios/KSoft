@@ -61,18 +61,10 @@ partial class StringStorageEncoding
 		throw new InvalidDataException("The fixed CString field has no null terminator.");
 	}
 
-	void ConvertAndCopyFixedCStringPayload(Span<byte> bytes, Shell.EndianFormat byteOrder, MemoryStream destination, int maxLength = -1)
+	void CopyFixedCStringPayload(ReadOnlySpan<byte> bytes, MemoryStream destination, int maxLength = -1)
 	{
 		int payloadByteCount = GetCStringPayloadByteCount(bytes, maxLength);
-		Span<byte> payload = bytes[..payloadByteCount];
-		if (mNullCharacterSize > 1 && byteOrder != mStorage.ByteOrder)
-		{
-			for (int offset = 0; offset < payload.Length; offset += mNullCharacterSize)
-			{
-				ConvertReadStorageUnitByteOrder(byteOrder, payload.Slice(offset, mNullCharacterSize));
-			}
-		}
-		destination.Write(payload);
+		destination.Write(bytes[..payloadByteCount]);
 	}
 
 	/// <summary>Read a single-byte CString from an binary stream</summary>
@@ -91,7 +83,7 @@ partial class StringStorageEncoding
 		else
 		{
 			byte[] characters = ReadPayloadBytes(s, mFixedLengthByteLength);
-			ConvertAndCopyFixedCStringPayload(characters, s.ByteOrder, ms);
+			CopyFixedCStringPayload(characters, ms);
 		}
 	}
 
@@ -124,7 +116,7 @@ partial class StringStorageEncoding
 		else
 		{
 			byte[] characters = s.ReadBytes(mFixedLengthByteLength);
-			ConvertAndCopyFixedCStringPayload(characters, mStorage.ByteOrder, ms, maxLength);
+			CopyFixedCStringPayload(characters, ms, maxLength);
 		}
 	}
 
@@ -140,7 +132,6 @@ partial class StringStorageEncoding
 			while (true)
 			{
 				s.BaseStream.ReadExactly(characters);
-				ConvertReadStorageUnitByteOrder(s.ByteOrder, characters);
 				if (IsNullStorageUnit(characters))
 					break;
 
@@ -150,7 +141,7 @@ partial class StringStorageEncoding
 		else
 		{
 			byte[] characters = ReadPayloadBytes(s, mFixedLengthByteLength);
-			ConvertAndCopyFixedCStringPayload(characters, s.ByteOrder, ms);
+			CopyFixedCStringPayload(characters, ms);
 		}
 	}
 
@@ -198,7 +189,7 @@ partial class StringStorageEncoding
 		else
 		{
 			byte[] characters = s.ReadBytes(mFixedLengthByteLength);
-			ConvertAndCopyFixedCStringPayload(characters, mStorage.ByteOrder, ms, maxLength);
+			CopyFixedCStringPayload(characters, ms, maxLength);
 		}
 	}
 

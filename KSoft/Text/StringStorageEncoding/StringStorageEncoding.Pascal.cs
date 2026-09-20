@@ -50,9 +50,9 @@ partial class StringStorageEncoding
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(prefixBitLength, prefixWidth);
 			prefixWidth = prefixBitLength;
 		}
-		if (prefixWidth > Bits.kByteBitCount && mStorage.ByteOrder == Shell.EndianFormat.Little)
+		if (prefixWidth > Bits.kByteBitCount && mByteOrder == Shell.EndianFormat.Little)
 		{
-			throw new NotSupportedException("BitStream Pascal prefix reads wider than eight bits require big-endian storage.");
+			throw new NotSupportedException("BitStream Pascal prefix reads wider than eight bits require big-endian encoding.");
 		}
 	}
 
@@ -114,12 +114,12 @@ partial class StringStorageEncoding
 				prefix_bytes = sizeof(byte); break;
 			case StringStorageLengthPrefix.Int16:	BitConverter.TryWriteBytes(
 														bytes[..sizeof(short)], (short)charCount);
-													if (!mStorage.ByteOrder.IsSameAsRuntime())
+													if (!mByteOrder.IsSameAsRuntime())
 														bytes[..sizeof(short)].Reverse();
 				prefix_bytes = sizeof(short); break;
 			case StringStorageLengthPrefix.Int32:	BitConverter.TryWriteBytes(
 														bytes[..sizeof(int)], charCount);
-													if (!mStorage.ByteOrder.IsSameAsRuntime())
+													if (!mByteOrder.IsSameAsRuntime())
 														bytes[..sizeof(int)].Reverse();
 				prefix_bytes = sizeof(int); break;
 			default:
@@ -174,12 +174,12 @@ partial class StringStorageEncoding
 			case StringStorageLengthPrefix.Int7: result = CalcCharByteCountPascalInt7(buffer, ref byteIndex, byteCount); break;
 			case StringStorageLengthPrefix.Int8: result = buffer[byteIndex]; byteIndex += sizeof(byte); break;
 			case StringStorageLengthPrefix.Int16:
-				result = mStorage.ByteOrder == Shell.EndianFormat.Big
+				result = mByteOrder == Shell.EndianFormat.Big
 					? BinaryPrimitives.ReadInt16BigEndian(bytes)
 					: BinaryPrimitives.ReadInt16LittleEndian(bytes);
 				byteIndex += sizeof(short); break;
 			case StringStorageLengthPrefix.Int32:
-				result = mStorage.ByteOrder == Shell.EndianFormat.Big
+				result = mByteOrder == Shell.EndianFormat.Big
 					? BinaryPrimitives.ReadInt32BigEndian(bytes)
 					: BinaryPrimitives.ReadInt32LittleEndian(bytes);
 				byteIndex += sizeof(int); break;
@@ -201,7 +201,7 @@ partial class StringStorageEncoding
 
 		int length;
 		// One would think that the length prefix would be of the same endian as the stream, but just in case...
-		using (s.BeginEndianSwitch(mStorage.ByteOrder))
+		using (s.BeginEndianSwitch(mByteOrder))
 		{
 			length = mStorage.LengthPrefix switch
 			{

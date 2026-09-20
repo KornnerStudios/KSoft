@@ -414,30 +414,27 @@ namespace KSoft.Test
 		[SuppressMessage("Microsoft.Design", "CA1806:DoNotIgnoreMethodResults",
 			Justification ="Pretty sure this is a CA bug",
 			Scope = "method", Target = "BitEncode")]
-		public void StringStorageHashCode_EncodedFields_DecodesOriginalValues()
+		public void StringStorageHashCode_EncodedFramingFields_DecodesOriginalValues()
 		{
 			var ss = new Memory.Strings.StringStorage(
 				Memory.Strings.StringStorageWidthType.UTF32,
 				Memory.Strings.StringStorageType.CharArray,
-				Shell.EndianFormat.Big, 16);
+				16);
 			uint bits = 0;
 			int bit_index = 0;
 
 			TypeExtensions.BitEncoders.StringStorageWidthType.BitEncode(ss.WidthType, ref bits, ref bit_index);
 			TypeExtensions.BitEncoders.StringStorageType.BitEncode(ss.Type, ref bits, ref bit_index);
-			TypeExtensions.BitEncoders.EndianFormat.BitEncode(ss.ByteOrder, ref bits, ref bit_index);
 			Bits.BitEncodeEnum((uint)ss.FixedLength, ref bits, ref bit_index, 0x7FFF);
 
 			bits = (uint)ss.GetHashCode();
 			bit_index = 0;
 			var widthType = TypeExtensions.BitEncoders.StringStorageWidthType.BitDecode(bits, ref bit_index);
 			var type = TypeExtensions.BitEncoders.StringStorageType.BitDecode(bits, ref bit_index);
-			var byteOrder = TypeExtensions.BitEncoders.EndianFormat.BitDecode(bits, ref bit_index);
 			var fixedLength = (short)Bits.BitDecode(bits, ref bit_index, 0x7FFF);
 
 			Assert.AreEqual(ss.WidthType, widthType);
 			Assert.AreEqual(ss.Type, type);
-			Assert.AreEqual(ss.ByteOrder, byteOrder);
 			Assert.AreEqual(ss.FixedLength, fixedLength);
 		}
 
@@ -447,23 +444,20 @@ namespace KSoft.Test
 			var ss = new Memory.Strings.StringStorage(
 				Memory.Strings.StringStorageWidthType.UTF32,
 				Memory.Strings.StringStorageType.CharArray,
-				Shell.EndianFormat.Big, 16);
+				16);
 			var encoder = new Bitwise.HandleBitEncoder();
 
 			encoder.Encode32(ss.WidthType, TypeExtensions.BitEncoders.StringStorageWidthType);
 			encoder.Encode32(ss.Type, TypeExtensions.BitEncoders.StringStorageType);
-			encoder.Encode32(ss.ByteOrder, TypeExtensions.BitEncoders.EndianFormat);
 			encoder.Encode32((uint)ss.FixedLength, 0x7FFF);
 
 			var decoder = new Bitwise.HandleBitEncoder(encoder.GetHandle32());
 			decoder.Decode32(out Memory.Strings.StringStorageWidthType widthType, TypeExtensions.BitEncoders.StringStorageWidthType);
 			decoder.Decode32(out Memory.Strings.StringStorageType type, TypeExtensions.BitEncoders.StringStorageType);
-			decoder.Decode32(out Shell.EndianFormat byteOrder, TypeExtensions.BitEncoders.EndianFormat);
 			decoder.Decode32(out uint fixedLength, 0x7FFF);
 
 			Assert.AreEqual(ss.WidthType, widthType);
 			Assert.AreEqual(ss.Type, type);
-			Assert.AreEqual(ss.ByteOrder, byteOrder);
 			Assert.AreEqual(ss.FixedLength, (short)fixedLength);
 		}
 

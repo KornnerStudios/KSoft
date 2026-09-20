@@ -170,18 +170,6 @@ namespace KSoft.Text
 		#region ReadString
 		static bool IsNullStorageUnit(ReadOnlySpan<byte> bytes) => !bytes.ContainsAnyExcept((byte)0);
 
-		void ConvertReadStorageUnitByteOrder(Shell.EndianFormat byteOrder, Span<byte> characters)
-		{
-			if (mNullCharacterSize is not (sizeof(ushort) or sizeof(uint)))
-			{
-				throw new Debug.UnreachableException(mNullCharacterSize.ToString(KSoft.Util.InvariantCultureInfo));
-			}
-			if (byteOrder != mStorage.ByteOrder)
-			{
-				characters[..mNullCharacterSize].Reverse();
-			}
-		}
-
 		/// <summary>Read a string from an endian stream using <see cref="Storage"/>'s specifications</summary>
 		/// <param name="s">Endian stream to read from</param>
 		/// <param name="length">Optional length specification</param>

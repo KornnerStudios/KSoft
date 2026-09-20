@@ -11,7 +11,8 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 {
 	static StringMemoryPool CreatePool()
 	{
-		var settings = new StringMemoryPoolSettings(StringStorage.CStringAscii, false, Shell.ProcessorSize.x32);
+		var settings = new StringMemoryPoolSettings(
+			StringStorage.CStringAscii, Shell.EndianFormat.Little, false, Shell.ProcessorSize.x32);
 
 		return new StringMemoryPool(settings);
 	}
@@ -38,7 +39,8 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 	public void GetAddress_ReturnsStoredReferenceAndInvalidForMissingValues()
 	{
 		var settings = new StringMemoryPoolSettings(
-			StringStorage.CStringAscii, false, new KSoft.Values.PtrHandle(0x1000U));
+			StringStorage.CStringAscii, Shell.EndianFormat.Little,
+			false, new KSoft.Values.PtrHandle(0x1000U));
 		var pool = new StringMemoryPool(settings);
 
 		var address = pool.Add("value");
@@ -64,7 +66,8 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 	public void WriteAndRead_RoundTripsAsciiStringsAndReferences()
 	{
 		var settings = new StringMemoryPoolSettings(
-			StringStorage.CStringAscii, false, new KSoft.Values.PtrHandle(0x4000U));
+			StringStorage.CStringAscii, Shell.EndianFormat.Little,
+			false, new KSoft.Values.PtrHandle(0x4000U));
 		var pool = new StringMemoryPool(settings);
 		var firstAddress = pool.Add("first");
 		var secondAddress = pool.Add("second");
@@ -96,7 +99,8 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 	public void WriteAndRead_RestoresExplicitNullReference()
 	{
 		var settings = new StringMemoryPoolSettings(
-			StringStorage.CStringAscii, false, new KSoft.Values.PtrHandle(0x4000U));
+			StringStorage.CStringAscii, Shell.EndianFormat.Little,
+			false, new KSoft.Values.PtrHandle(0x4000U));
 		var pool = new StringMemoryPool(settings);
 		var nullAddress = pool.Add("");
 		_ = pool.Add("value");
@@ -118,5 +122,36 @@ public sealed class StringMemoryPoolTest : BaseTestClass
 		Assert.AreEqual(nullAddress, roundTripped.GetAddress(""));
 		Assert.AreEqual(nullAddress, roundTripped.Add(""));
 		Assert.AreEqual(2, roundTripped.Count);
+	}
+
+	[TestMethod]
+	public void StringRecordByteOrder_ComesFromSettings()
+	{
+		var settings = new StringMemoryPoolSettings(
+			StringStorage.CStringUnicode, Shell.EndianFormat.Big,
+			false, new KSoft.Values.PtrHandle(0x4000U));
+		var pool = new StringMemoryPool(settings);
+		_ = pool.Add("A");
+
+		using var stream = new MemoryStream();
+		using (var writer = new KSoft.IO.EndianWriter(stream, Shell.EndianFormat.Little)
+			{ BaseStreamOwner = false })
+		{
+			pool.Write(writer);
+		}
+
+		CollectionAssert.AreEqual(
+			new byte[] { 0x00, 0x41, 0x00, 0x00 },
+			stream.ToArray()[^4..]);
+
+		stream.Position = 0;
+		var roundTripped = new StringMemoryPool(settings);
+		using (var reader = new KSoft.IO.EndianReader(stream, Shell.EndianFormat.Little)
+			{ BaseStreamOwner = false })
+		{
+			roundTripped.Read(reader);
+		}
+
+		CollectionAssert.AreEqual(new[] { "A" }, new List<string>(roundTripped));
 	}
 }
