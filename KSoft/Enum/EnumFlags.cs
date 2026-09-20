@@ -80,7 +80,7 @@ namespace KSoft
 
 	/// <summary>Utility for mutating flags enum values without spelling out bitwise operations at call sites</summary>
 	/// <remarks>
-	/// Generic enum constraints do not make bitwise operators available on <typeparamref name="TEnum"/>. This helper keeps
+	/// Generic enum constraints do not make bitwise operators available on <c>TEnum</c>. This helper keeps
 	/// readable one-line flag mutation call sites while reusing <see cref="Reflection.EnumValue{TEnum}"/> conversion
 	/// delegates instead of maintaining a separate expression-compiled delegate family.
 	/// </remarks>

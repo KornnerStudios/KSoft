@@ -161,10 +161,7 @@ namespace KSoft
 		/// <param name="bits">Bit data as an unsigned integer</param>
 		/// <param name="traits"></param>
 		/// <returns><paramref name="bits"/> with <paramref name="value"/> encoded into it</returns>
-		/// <remarks>
-		/// Clears the bit-space between <paramref name="bitIndex"/> + <paramref name="bitMask"/>
-		/// so any existing values will be lost after <paramref name="value"/> is added
-		/// </remarks>
+		/// <remarks>Clears the bit range described by <paramref name="traits"/> so any existing value is lost before <paramref name="value"/> is added.</remarks>
 		public static ushort BitEncode(ushort value, ushort bits, Bitwise.BitFieldTraits traits)
 		{
 			ValidateUInt16BitFieldTraits(traits);

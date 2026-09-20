@@ -673,6 +673,8 @@ namespace MiniJSON {
         /// Converts a IDictionary / IList object or a simple type (string, int, etc.) into a JSON string
         /// </summary>
         /// <param name="theObj">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
+        /// <param name="prettyPrint">Whether to format the JSON with indentation</param>
+        /// <param name="numPrettyPrintLevels">Initial indentation depth</param>
         /// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
         public static string Serialize(object? theObj, bool prettyPrint = false, int numPrettyPrintLevels = 0) {
             return Serializer.Serialize(theObj, prettyPrint, numPrettyPrintLevels);

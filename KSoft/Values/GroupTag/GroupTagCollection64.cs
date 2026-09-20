@@ -62,7 +62,7 @@ namespace KSoft.Values
 		#region Searching
 		/// <summary>Finds the index of a <see cref="GroupTagData64"/></summary>
 		/// <param name="groupTag">The id of a group tag to search for</param>
-		/// <returns>Index of <paramref name="group"/> or <b>-1</b> if not found</returns>
+		/// <returns>Index of <paramref name="groupTag"/> or <b>-1</b> if not found</returns>
 		public int FindGroupIndexByTag(TagWord groupTag)
 		{
 			return GroupTags.FindIndex(gt => gt.ID == groupTag);

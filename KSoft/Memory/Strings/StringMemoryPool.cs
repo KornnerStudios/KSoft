@@ -82,7 +82,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="str">value to add</param>
 		/// <returns>address reference of the string</returns>
 		/// <remarks>
-		/// If <see cref="Configuration.AllowDuplicates"/> is NOT true, this will return an address
+		/// If <see cref="StringMemoryPoolSettings.AllowDuplicates"/> is NOT true, this will return an address
 		/// of a string which is equal to <paramref name="str"/>
 		/// </remarks>
 		public Values.PtrHandle Add(string str)
@@ -146,7 +146,7 @@ namespace KSoft.Memory.Strings
 		#region Get
 		/// <summary>
 		/// Takes a string and gets the address it would have if the pool was located at
-		/// <see cref="Configuration.BaseAddress"/> in memory
+		/// <see cref="StringMemoryPoolSettings.BaseAddress"/> in memory
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns>
@@ -154,7 +154,7 @@ namespace KSoft.Memory.Strings
 		/// if there is no matching string
 		/// </returns>
 		/// <remarks>
-		/// This method is not written to support configurations whose <see cref="Config.AllowDuplicates"/>
+		/// This method is not written to support configurations whose <see cref="StringMemoryPoolSettings.AllowDuplicates"/>
 		/// is set to true. The first instance will ALWAYS be returned.
 		/// </remarks>
 		public Values.PtrHandle GetAddress(string value)
@@ -258,7 +258,7 @@ namespace KSoft.Memory.Strings
 		/// <summary>Read the character count for the string values from a stream</summary>
 		/// <param name="s"></param>
 		/// <remarks>
-		/// Obviously, this needs to be called before <see cref="ReadStrings(IO.EndianReader s)"/>
+		/// Obviously, this needs to be called before <see cref="ReadStrings(IO.EndianReader)"/>
 		/// if you're going to even use this (due to performance reasons or due to the storage definition)
 		/// </remarks>
 		public void ReadStringCharacterLengths(IO.EndianReader s)

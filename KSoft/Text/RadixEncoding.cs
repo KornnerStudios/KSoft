@@ -198,7 +198,7 @@ namespace KSoft.Text
 		/// <remarks>
 		/// If <paramref name="radixChars"/> is an empty string, returns a zero length array
 		///
-		/// Using <paramref name="IncludeProceedingZeros"/> has the potential to return a buffer with an
+		/// Using <see cref="IncludeProceedingZeros"/> has the potential to return a buffer with an
 		/// additional zero byte that wasn't in the input. So a 4 byte buffer was encoded, this could end up
 		/// returning a 5 byte buffer, with the extra byte being null.
 		/// </remarks>

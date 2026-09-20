@@ -209,12 +209,10 @@ namespace KSoft.Values
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		/// <see cref=""/>
 		readonly int System.Collections.IComparer.Compare(object? x, object? y)	{ return Compare((PtrHandle)x!, (PtrHandle)y!); }
 		/// <summary></summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		/// <see cref=""/>
 		readonly int IComparable.CompareTo(object? obj)							{ return Compare(this, (PtrHandle)obj!); }
 		#endregion
 
@@ -287,9 +285,8 @@ namespace KSoft.Values
 
 		#region Operators
 		#region Conversions
-		/// <summary>Explicit cast to a <see cref="Boolean"/>, returning whether <paramref name="value"/> is null or not</summary>
-		/// <param name="value">Address being casted</param>
-		/// <returns>Whether <paramref name="value"/> is null or not</returns>
+		/// <summary>Returns whether this address is null.</summary>
+		/// <returns>True if this address is null; otherwise, false.</returns>
 		public readonly bool ToBoolean() => u64 == 0;
 		public static explicit operator bool(PtrHandle value)	=> value.ToBoolean();
 
@@ -311,9 +308,8 @@ namespace KSoft.Values
 		/// <returns>The address as a 64-bit integer</returns>
 		public static explicit operator ulong(PtrHandle value)	=> value.ToUInt64();
 
-		/// <summary>Explicit cast to a <see cref="Shell.ProcessorSize"/></summary>
-		/// <param name="value">Address being casted</param>
-		/// <returns>The address size of <paramref name="value"/></returns>
+		/// <summary>Returns this address's processor size.</summary>
+		/// <returns>The address size.</returns>
 		public readonly Shell.ProcessorSize ToProcessorSize() => Size;
 		public static explicit operator Shell.ProcessorSize(PtrHandle value)	=> value.ToProcessorSize();
 

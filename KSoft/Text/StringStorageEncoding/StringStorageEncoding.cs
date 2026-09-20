@@ -32,7 +32,7 @@ namespace KSoft.Text
 		readonly int mNullCharacterSize;
 		/// <summary>
 		/// Number of bytes used to store a fixed length character array using
-		/// the <see cref="StringStorageType"/> defined in <see cref="storage"/>
+		/// the <see cref="StringStorageType"/> defined by <see cref="Storage"/>
 		/// </summary>
 		readonly int mFixedLengthByteLength;
 
@@ -223,10 +223,10 @@ namespace KSoft.Text
 		public override int WindowsCodePage		=> mBaseEncoding.WindowsCodePage;
 
 		/// <summary>Compares this to another object testing for equality</summary>
-		/// <param name="obj"></param>
+		/// <param name="value">Object to compare</param>
 		/// <returns>
-		/// True if both this object and <paramref name="obj"/> are equal.
-		/// False if <paramref name="obj"/> is not a <see cref="StringStorageEncoding"/></returns>
+		/// True if both this object and <paramref name="value"/> are equal.
+		/// False if <paramref name="value"/> is not a <see cref="StringStorageEncoding"/></returns>
 		public override bool Equals(object? value)
 		{
 			//return mBaseEncoding.Equals(value);
@@ -255,8 +255,8 @@ namespace KSoft.Text
 		/// Compares this to another <see cref="StringStorageEncoding"/> object testing
 		/// their underlying fields for equality
 		/// </summary>
-		/// <param name="obj">other <see cref="StringStorageEncoding"/> object</param>
-		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
+		/// <param name="other">Other <see cref="StringStorageEncoding"/> object</param>
+		/// <returns>true if both this object and <paramref name="other"/> are equal</returns>
 		public bool Equals(StringStorageEncoding? other)
 		{
 			return mOptions == other!.mOptions &&

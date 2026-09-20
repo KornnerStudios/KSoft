@@ -94,9 +94,7 @@ namespace KSoft.Shell
 		#endregion
 
 		#region Overrides
-		/// <summary>See <see cref="Object.Equals"/></summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public override bool Equals(object? obj)
 		{
 			if (obj is Processor processor)

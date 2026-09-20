@@ -360,6 +360,10 @@ namespace KSoft.IO
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		/// <param name="valueName">JSON property name</param>
+		/// <param name="value">Flags to write</param>
+		/// <param name="maxValue">Exclusive maximum enumeration value</param>
+		/// <param name="valueSeperator">Separator used when writing a single string</param>
 		/// <param name="useArray">A JSON array is used instead of a single seperated string</param>
 		public bool SetFlagsValue<TEnum>(string valueName, BitVector32 value
 			, TEnum maxValue
@@ -384,6 +388,10 @@ namespace KSoft.IO
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		/// <param name="valueName">JSON property name</param>
+		/// <param name="value">Flags to write</param>
+		/// <param name="maxValue">Exclusive maximum enumeration value</param>
+		/// <param name="valueSeperator">Separator used when writing a single string</param>
 		/// <param name="useArray">A JSON array is used instead of a single seperated string</param>
 		public bool SetFlagsValue<TEnum>(string valueName, BitVector64 value
 			, TEnum maxValue
@@ -407,6 +415,10 @@ namespace KSoft.IO
 			}
 		}
 
+		/// <param name="valueName">JSON property name</param>
+		/// <param name="list">Values to write</param>
+		/// <param name="sort">Whether to sort the values before writing</param>
+		/// <param name="valueSeperator">Separator used when writing a single string</param>
 		/// <param name="useArray">A JSON array is used instead of a single seperated string</param>
 		public bool SetValue(string valueName, List<string> list
 			, bool sort = false, string valueSeperator = ",", bool useArray = true)
@@ -785,7 +797,10 @@ namespace KSoft.IO
 		}
 
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		/// <param name="valueName">JSON property name</param>
+		/// <param name="retVal">Receives the parsed flags</param>
 		/// <param name="valueSeperator">regex pattern used to seperate values</param>
+		/// <param name="logFailures">Whether parsing failures are written to the diagnostic trace</param>
 		public readonly bool? GetFlagsValue<TEnum>(string valueName, ref BitVector32 retVal
 			, string valueSeperator = ",", bool logFailures = true)
 			where TEnum : struct, Enum
@@ -830,7 +845,10 @@ namespace KSoft.IO
 			return result;
 		}
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
+		/// <param name="valueName">JSON property name</param>
+		/// <param name="retVal">Receives the parsed flags</param>
 		/// <param name="valueSeperator">regex pattern used to seperate values</param>
+		/// <param name="logFailures">Whether parsing failures are written to the diagnostic trace</param>
 		public readonly bool? GetFlagsValue<TEnum>(string valueName, ref BitVector64 retVal
 			, string valueSeperator = ",", bool logFailures = true)
 			where TEnum : struct, Enum

@@ -96,11 +96,11 @@ namespace KSoft
 
 		public bool IsFlags { get => x64.IsFlags; }
 		public bool HasNone { get => x64.HasNone; }
-		/// <see cref="kBitmask"/>
+		/// <see cref="EnumBitEncoder64{TEnum}.MaxValueTrait"/>
 		public ulong MaxValueTrait { get => x64.MaxValueTrait; }
-		/// <see cref="kBitmask"/>
+		/// <see cref="EnumBitEncoder64{TEnum}.BitmaskTrait"/>
 		public ulong BitmaskTrait { get => x64.BitmaskTrait; }
-		/// <see cref="kBitCount"/>
+		/// <see cref="EnumBitEncoder64{TEnum}.BitCountTrait"/>
 		public int BitCountTrait { get => x64.BitCountTrait; }
 	};
 }

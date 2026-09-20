@@ -49,7 +49,7 @@ namespace KSoft.Memory.Strings
 	public enum StringStorageLengthPrefix : byte
 	{
 		/// <remarks>This is what the CLR uses</remarks>
-		/// <see cref="Encoded7BitInt"/>
+		/// <see cref="Bitwise.Encoded7BitInt"/>
 		Int7,
 
 		/// <summary>1-byte length prefix</summary>

@@ -98,7 +98,6 @@ namespace KSoft.Values
 
 		#region Operators
 		/// <summary>Returns the group tag in integer form</summary>
-		/// <param name="value"></param>
 		/// <returns></returns>
 		public TagWord ToUInt64() => mID;
 		public static explicit operator TagWord(GroupTagData64 value)
@@ -124,7 +123,7 @@ namespace KSoft.Values
 
 		#region IEquatable & IEqualityComparer Members
 		/// <summary>Compares this to another <see cref="GroupTagData64"/> object testing their <see cref="ID"/> fields for equality</summary>
-		/// <param name="other">other <see cref="GroupTagData64"/> object</param>
+		/// <param name="obj">other <see cref="GroupTagData64"/> object</param>
 		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
 		public override bool Equals(GroupTagData? obj)
 		{

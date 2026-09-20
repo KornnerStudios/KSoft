@@ -135,12 +135,12 @@ namespace KSoft.IO
 		#endregion
 
 		#region PositionPtr
-		/// <summary>Get the current position as a <see cref="Data.PtrHandle"/></summary>
+		/// <summary>Get the current position as a <see cref="Values.PtrHandle"/></summary>
 		/// <param name="ptrSize">Pointer size to use for the result handle</param>
 		/// <returns></returns>
 		public Values.PtrHandle GetPositionPtrWithExplicitWidth(Shell.ProcessorSize ptrSize) =>
 			new(ptrSize, (ulong)BaseStream.Position);
-		/// <summary>Current position as a <see cref="Data.PtrHandle"/></summary>
+		/// <summary>Current position as a <see cref="Values.PtrHandle"/></summary>
 		/// <remarks>Pointer traits\info is inherited from <see cref="BaseAddress"/></remarks>
 		public Values.PtrHandle PositionPtr =>
 			new(BaseAddress, (ulong)BaseStream.Position);

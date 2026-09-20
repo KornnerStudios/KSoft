@@ -8,6 +8,7 @@ namespace KSoft.LowLevel.Util
 	{
 		/// <summary>Convert a handle to object</summary>
 		/// <param name="nativePtr">Handle</param>
+		/// <param name="t">Managed structure type</param>
 		/// <returns>Managed object</returns>
 		public static object? IntPtrToStructure(IntPtr nativePtr, Type t)
 		{

@@ -115,6 +115,7 @@ namespace KSoft
 			return new IO.IKSoftStreamUserDataBookmark(stream, newUserData);
 		}
 		/// <summary>Temporarily enter a new data streaming state</summary>
+		/// <param name="stream">Stream whose mode is changed</param>
 		/// <param name="newMode"></param>
 		/// <returns></returns>
 		public static IO.IKSoftStreamModeBookmark EnterStreamModeBookmark(IO.IKSoftStreamModeable stream,
@@ -135,6 +136,7 @@ namespace KSoft
 
 		#region IKSoftStreamWithVirtualBuffer
 		/// <summary>Begin the concept of a virtual buffer</summary>
+		/// <param name="stream">Stream that owns the virtual buffer</param>
 		/// <param name="bufferLength">Virtual buffer's byte length</param>
 		/// <returns></returns>
 		public static IO.IKSoftStreamWithVirtualBufferCleanup EnterVirtualBuffer(this IO.IKSoftStreamWithVirtualBuffer stream,
@@ -298,7 +300,7 @@ namespace KSoft
 		}
 
 		/// <summary>
-		/// Get the <see cref="StringStorageWidthType"/> from a <see cref="System.Text.Encoding"/>
+		/// Get the <see cref="MS.StringStorageWidthType"/> from a <see cref="System.Text.Encoding"/>
 		/// implementation
 		/// </summary>
 		/// <param name="enc">Instance of an encoding whose type we'll use to determine the storage type</param>

@@ -770,7 +770,7 @@ namespace KSoft
 		#region Type
 		/// <summary>Test whether the subject type implements the specified interface type</summary>
 		/// <param name="subject">The type in question</param>
-		/// <param name="genericType">The interface type which the subject may or may not implement</param>
+		/// <param name="interfaceType">The interface type which the subject may or may not implement</param>
 		/// <returns></returns>
 		public static bool ImplementsInterface(this Type subject, Type interfaceType)
 		{

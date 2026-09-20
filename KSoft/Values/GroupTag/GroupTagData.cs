@@ -20,11 +20,11 @@ namespace KSoft.Values
 		public string Name { get => mName; }
 
 		/// <summary>Formats <see cref="Name"/> to a properly (left) aligned string (using blank-white-space)</summary>
-		/// <returns><see cref="string.PadLeft"/> on <see cref="Name"/></returns>
+		/// <returns><see cref="string.PadLeft(int)"/> on <see cref="Name"/></returns>
 		/// <remarks>Pad width is determined by <see cref="kGroupNamePadLength"/></remarks>
 		public string NameToLeftPaddedString()	=> mName.PadLeft(kGroupNamePadLength);
 		/// <summary> Formats <see cref="Name"/> to a properly (right) aligned string (using blank-white-space)</summary>
-		/// <returns><see cref="string.PadRight"/> on <see cref="Name"/></returns>
+		/// <returns><see cref="string.PadRight(int)"/> on <see cref="Name"/></returns>
 		/// <remarks>Pad width is determined by <see cref="kGroupNamePadLength"/></remarks>
 		public string NameToRightPaddedString()	=> mName.PadRight(kGroupNamePadLength);
 		#endregion
@@ -221,7 +221,7 @@ namespace KSoft.Values
 		#region IEquatable & IEqualityComparer Members
 		/// <summary>Compares this to another <see cref="GroupTagData"/> object testing their "ID" fields for equality</summary>
 		/// <param name="other"></param>
-		/// <returns>true if both this object and <paramref name="obj"/> are equal</returns>
+		/// <returns>true if both this object and <paramref name="other"/> are equal</returns>
 		public abstract bool Equals(GroupTagData? other);
 		/// <summary>Compares two <see cref="GroupTagData"/> objects testing their "ID" fields for equality</summary>
 		/// <param name="x">left-hand value for comparison expression</param>

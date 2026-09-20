@@ -90,7 +90,7 @@ namespace KSoft.Memory
 		/// <param name="s">Stream to read from</param>
 		/// <returns>VA + <see cref="CurrentAddress"/></returns>
 		/// <remarks>
-		/// If the VA read is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is returned without fix-up.
+		/// If the VA read is a <see cref="Values.PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is returned without fix-up.
 		/// </remarks>
 		public Values.PtrHandle ReadVirtualAsPhysicalAddress(IO.EndianReader s)
 		{
@@ -108,7 +108,7 @@ namespace KSoft.Memory
 		/// <param name="s">Stream to write to</param>
 		/// <param name="pa">PA to translate to a VA (ie, PA - <see cref="CurrentAddress"/>)</param>
 		/// <remarks>
-		/// If <paramref name="pa"/> is a <see cref="PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is streamed
+		/// If <paramref name="pa"/> is a <see cref="Values.PtrHandle.IsInvalidHandle">InvalidHandle</see>, it is streamed
 		/// without fix-up.
 		/// </remarks>
 		public void WritePhysicalAsVirtualAddress(IO.EndianWriter s, Values.PtrHandle pa)

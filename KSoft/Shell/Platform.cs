@@ -85,9 +85,7 @@ namespace KSoft.Shell
 		#endregion
 
 		#region Overrides
-		/// <summary>See <see cref="Object.Equals"/></summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
+		/// <inheritdoc/>
 		public override bool Equals(object? obj)
 		{
 			if (obj is Platform p)
@@ -102,7 +100,7 @@ namespace KSoft.Shell
 		/// <see cref="Object.GetHashCode"/>
 		public override int GetHashCode() => (int)mHandle;
 		/// <summary>Returns a string representation of this object</summary>
-		/// <returns>"[<see cref="Type"/>\t<see cref="ProcessorType.ToString()"/>]"</returns>
+		/// <returns>"[<see cref="Type"/>\t<see cref="ProcessorType"/>]"</returns>
 		public override string ToString()
 		{
 			return string.Format(Util.InvariantCultureInfo,

@@ -45,7 +45,7 @@ namespace KSoft.Memory.Strings
 		/// <param name="method">Text storage definition</param>
 		/// <param name="implicitNull">Is a null string entry atomically added?</param>
 		/// <param name="baseAddress">Base address for string references</param>
-		/// <remarks><see cref="AddressSize"/> is determined from <see cref="baseAddress"/></remarks>
+		/// <remarks><see cref="AddressSize"/> is determined from <paramref name="baseAddress"/></remarks>
 		public StringMemoryPoolSettings(StringStorage method, bool implicitNull, Values.PtrHandle baseAddress)
 		{
 			{ Storage = method; AllowDuplicates = false; }

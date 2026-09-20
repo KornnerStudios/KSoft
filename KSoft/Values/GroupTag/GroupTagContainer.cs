@@ -10,7 +10,6 @@ namespace KSoft.Values
 	/// Allows for ease-of-use in other attributes where we'd need to index a <see cref="GroupTagCollection"/>
 	/// collection for a specific <see cref="GroupTagData"/> member
 	/// </remarks>
-	/// <seealso cref="Shell.PlatformGroups"/>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple=false)]
 	public abstract class GroupTagContainerAttribute : Attribute
 	{

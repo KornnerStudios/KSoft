@@ -176,6 +176,7 @@ namespace KSoft.Text
 		}
 		/// <summary>Converts an array of bytes to a hex string and outputs it to the stream</summary>
 		/// <param name="data">Buffer of bytes to convert</param>
+		/// <param name="stream">Writer that receives the hexadecimal text</param>
 		/// <param name="startIndex">Index in <paramref name="data"/> to start the conversion</param>
 		/// <example>"1337BEEF"</example>
 		/// <returns></returns>

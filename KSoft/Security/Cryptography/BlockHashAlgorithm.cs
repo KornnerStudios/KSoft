@@ -18,6 +18,7 @@ namespace KSoft.Security.Cryptography
 
 		/// <summary>Initializes a new instance of the BlockHashAlgorithm class.</summary>
 		/// <param name="blockSize">The size in bytes of an individual block.</param>
+		/// <param name="hashSize">The size in bits of the computed hash.</param>
 		protected BlockHashAlgorithm(int blockSize, int hashSize) : base()
 		{
 			base.HashSizeValue = hashSize;
