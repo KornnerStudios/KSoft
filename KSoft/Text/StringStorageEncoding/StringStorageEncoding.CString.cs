@@ -161,85 +161,66 @@ partial class StringStorageEncoding
 	/// <summary>Read a CString from an endian stream</summary>
 	/// <param name="s">Endian stream to read from</param>
 	/// <param name="length">Optional length specification</param>
-	/// <param name="actualCount">On return, the payload byte count to decode.</param>
-	/// <returns>The character's bytes for the string we're reading</returns>
-	byte[] ReadStrCString(IO.EndianReader s, int length, out int actualCount)
+	/// <returns>The decoded string.</returns>
+	string ReadStrCString(IO.EndianReader s, int length)
 	{
-		byte[] bytes;
-
 		// the user was nice and saved us some CPU trying to feel around for the null
 		// because we don't have a fixed length to speed things up
 		if (!mStorage.IsFixedLength && length > 0)
 		{
-			bytes = ReadPayloadBytes(s, GetMaxCleanByteCount(length));
-			Span<byte> terminator = stackalloc byte[mNullCharacterSize];
-			s.BaseStream.ReadExactly(terminator);
-			ValidateCStringTerminator(terminator);
-			actualCount = bytes.Length;
+			int recordByteCount = checked(GetMaxCleanByteCount(length) + mNullCharacterSize);
+			return ReadKnownPayload(s, recordByteCount, KnownPayloadKind.ExplicitCString);
 		}
-		else if (mStorage.IsFixedLength)
+		if (mStorage.IsFixedLength)
 		{
-			bytes = ReadPayloadBytes(s, mFixedLengthByteLength);
-			actualCount = GetCStringPayloadByteCount(bytes);
-		}
-		// Scan an unfixed CString when the caller does not know its length.
-		else
-		{
-			using (var ms = new System.IO.MemoryStream(512))
-			{
-				// The N-byte methods take care of reading past the
-				// null character, no need to do it in this case.
-				if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms); }
-				else							{ ReadCStringMultiByte(s, ms); }
-
-				bytes = ms.GetBuffer();
-				actualCount = checked((int)ms.Length);
-			}
+			return ReadKnownPayload(s, mFixedLengthByteLength, KnownPayloadKind.FixedCString);
 		}
 
-		return bytes;
+		// An unfixed scan has no extent with which to size a stack or pooled buffer,
+		// so it intentionally retains a growable MemoryStream.
+		using (var ms = new System.IO.MemoryStream(512))
+		{
+			// The N-byte methods take care of reading past the
+			// null character, no need to do it in this case.
+			if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms); }
+			else							{ ReadCStringMultiByte(s, ms); }
+
+			return mBaseEncoding.GetString(
+				ms.GetBuffer().AsSpan(0, checked((int)ms.Length)));
+		}
 	}
 
 	/// <summary>Read a CString from a bitstream</summary>
 	/// <param name="s">Bitstream to read from</param>
 	/// <param name="length">Optional length specification</param>
-	/// <param name="actualCount">On return, the payload byte count to decode.</param>
 	/// <param name="maxLength">Optional maximum length of this specific string</param>
-	/// <returns>The character's bytes for the string we're reading</returns>
-	byte[] ReadStrCString(IO.BitStream s, int length, out int actualCount, int maxLength)
+	/// <returns>The decoded string.</returns>
+	string ReadStrCString(IO.BitStream s, int length, int maxLength)
 	{
-		byte[] bytes;
-
 		// the user was nice and saved us some CPU trying to feel around for the null
 		// because we don't have a fixed length to speed things up
 		if (!mStorage.IsFixedLength && length > 0)
 		{
-			bytes = s.ReadBytes(GetMaxCleanByteCount(length));
-			Span<byte> terminator = stackalloc byte[mNullCharacterSize];
-			s.Read(terminator);
-			ValidateCStringTerminator(terminator);
-			actualCount = bytes.Length;
+			int recordByteCount = checked(GetMaxCleanByteCount(length) + mNullCharacterSize);
+			return ReadKnownPayload(s, recordByteCount, KnownPayloadKind.ExplicitCString);
 		}
-		else if (mStorage.IsFixedLength)
+		if (mStorage.IsFixedLength)
 		{
-			bytes = s.ReadBytes(mFixedLengthByteLength);
-			actualCount = GetCStringPayloadByteCount(bytes, maxLength);
-		}
-		// Scan an unfixed CString when the caller does not know its length.
-		else
-		{
-			using (var ms = new System.IO.MemoryStream(512))
-			{
-				// The N-byte methods take care of reading past the
-				// null character, no need to do it in this case.
-				if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms, maxLength); }
-				else							{ ReadCStringMultiByte(s, ms, maxLength); }
-
-				bytes = ms.GetBuffer();
-				actualCount = checked((int)ms.Length);
-			}
+			return ReadKnownPayload(
+				s, mFixedLengthByteLength, KnownPayloadKind.FixedCString, maxLength);
 		}
 
-		return bytes;
+		// An unfixed scan has no extent with which to size a stack or pooled buffer,
+		// so it intentionally retains a growable MemoryStream.
+		using (var ms = new System.IO.MemoryStream(512))
+		{
+			// The N-byte methods take care of reading past the
+			// null character, no need to do it in this case.
+			if (mNullCharacterSize == 1)	{ ReadCStringSingleByte(s, ms, maxLength); }
+			else							{ ReadCStringMultiByte(s, ms, maxLength); }
+
+			return mBaseEncoding.GetString(
+				ms.GetBuffer().AsSpan(0, checked((int)ms.Length)));
+		}
 	}
 }

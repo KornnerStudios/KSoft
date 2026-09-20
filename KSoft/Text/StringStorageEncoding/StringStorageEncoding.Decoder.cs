@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 
 namespace KSoft.Text
@@ -7,18 +8,123 @@ namespace KSoft.Text
 
 	partial class StringStorageEncoding
 	{
-		static byte[] ReadPayloadBytes(IO.EndianReader s, int byteCount)
+		internal enum KnownPayloadKind
+		{
+			Complete,
+			FixedCString,
+			ExplicitCString,
+			CharArray,
+		}
+
+		static void VerifyPayloadAvailable(IO.EndianReader s, int byteCount)
 		{
 			if (s.BaseStream.CanSeek && byteCount > s.BaseStream.Length - s.BaseStream.Position)
 			{
 				throw new EndOfStreamException("The string payload is incomplete.");
 			}
-			byte[] bytes = s.ReadBytes(byteCount);
-			if (bytes.Length != byteCount)
+		}
+
+		static void ReadPayloadBytes(IO.EndianReader s, Span<byte> bytes)
+		{
+			try
+			{
+				s.BaseStream.ReadExactly(bytes);
+			}
+			catch (EndOfStreamException)
 			{
 				throw new EndOfStreamException("The string payload is incomplete.");
 			}
-			return bytes;
+		}
+
+		int GetKnownPayloadByteCount(
+			ReadOnlySpan<byte> bytes, KnownPayloadKind kind, int maxLength)
+		{
+			// Complete string cases decode the entire exact buffer. Padded or capacity-backed
+			// string cases select only the populated payload bytes.
+			return kind switch
+			{
+				KnownPayloadKind.Complete => bytes.Length,
+				KnownPayloadKind.FixedCString => GetCStringPayloadByteCount(bytes, maxLength),
+				KnownPayloadKind.ExplicitCString => CalcCharByteCountCString(bytes),
+				KnownPayloadKind.CharArray => mNullCharacterSize == sizeof(byte)
+					? ReadStrCharArrayGetRealCountSingleByte(bytes)
+					: GetCharArraySuffixByteCount(bytes),
+				_ => throw new Debug.UnreachableException(kind.ToString()),
+			};
+		}
+
+		internal string DecodeKnownPayload(
+			ReadOnlySpan<byte> bytes, KnownPayloadKind kind, int maxLength = -1)
+		{
+			int payloadByteCount = GetKnownPayloadByteCount(bytes, kind, maxLength);
+			// Only CharArray reports kNone, meaning its field is fully populated.
+			if (payloadByteCount.IsNone())
+			{
+				payloadByteCount = bytes.Length;
+			}
+			return mBaseEncoding.GetString(bytes[..payloadByteCount]);
+		}
+
+		internal string ReadKnownPayload(IO.EndianReader s, int byteCount,
+			KnownPayloadKind kind, int maxLength = -1)
+		{
+			int initiallyRequiredByteCount = kind == KnownPayloadKind.ExplicitCString
+				? byteCount - mNullCharacterSize
+				: byteCount;
+			VerifyPayloadAvailable(s, initiallyRequiredByteCount);
+
+			byte[]? rented = null;
+			Span<byte> bytes = byteCount <= kStackBufferThreshold
+				? stackalloc byte[byteCount]
+				: (rented = ArrayPool<byte>.Shared.Rent(byteCount));
+			// ArrayPool may return a larger array, but decode extents are defined by record length.
+			bytes = bytes[..byteCount];
+			try
+			{
+				if (kind == KnownPayloadKind.ExplicitCString)
+				{
+					int payloadByteCount = byteCount - mNullCharacterSize;
+					ReadPayloadBytes(s, bytes[..payloadByteCount]);
+					// Keep the terminator read separate: a missing terminator must fail after
+					// consuming the complete payload, matching the established stream position.
+					s.BaseStream.ReadExactly(bytes[payloadByteCount..byteCount]);
+				}
+				else
+				{
+					ReadPayloadBytes(s, bytes);
+				}
+				return DecodeKnownPayload(bytes, kind, maxLength);
+			}
+			finally
+			{
+				if (rented != null)
+				{
+					ArrayPool<byte>.Shared.Return(rented, clearArray: true);
+				}
+			}
+		}
+
+		internal string ReadKnownPayload(IO.BitStream s, int byteCount,
+			KnownPayloadKind kind, int maxLength = -1)
+		{
+			byte[]? rented = null;
+			Span<byte> bytes = byteCount <= kStackBufferThreshold
+				? stackalloc byte[byteCount]
+				: (rented = ArrayPool<byte>.Shared.Rent(byteCount));
+			// ArrayPool may return a larger array, but decode extents are defined by record length.
+			bytes = bytes[..byteCount];
+			try
+			{
+				s.Read(bytes);
+				return DecodeKnownPayload(bytes, kind, maxLength);
+			}
+			finally
+			{
+				if (rented != null)
+				{
+					ArrayPool<byte>.Shared.Return(rented, clearArray: true);
+				}
+			}
 		}
 
 		void ValidateBitStreamRead(int maxLength, int prefixBitLength)
@@ -184,22 +290,13 @@ namespace KSoft.Text
 				length = mStorage.FixedLength;
 			}
 
-			int actual_count;
-			byte[] bytes = mStorage.Type switch
+			return mStorage.Type switch
 			{
-				// Type streamers should set actual_count to -1 if we're to assume all the bytes are characters.
-				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to
-				// include null characters in the result string)
-
-				StringStorageType.CString	=> ReadStrCString(s, length, out actual_count),
-				StringStorageType.Pascal	=> ReadStrPascal(s, out actual_count),
-				StringStorageType.CharArray	=> ReadStrCharArray(s, length, out actual_count),
+				StringStorageType.CString	=> ReadStrCString(s, length),
+				StringStorageType.Pascal	=> ReadStrPascal(s),
+				StringStorageType.CharArray	=> ReadStrCharArray(s, length),
 				_ => throw new Debug.UnreachableException(),
 			};
-			int byteCount = actual_count != TypeExtensions.kNone
-				? actual_count	// for padded or capacity-backed string cases
-				: bytes.Length;	// for complete string cases
-			return mBaseEncoding.GetString(bytes.AsSpan(0, byteCount));
 		}
 		/// <summary>Read a string from an bitstream using <see cref="Storage"/>'s specifications</summary>
 		/// <param name="s">Endian stream to read from</param>
@@ -218,22 +315,13 @@ namespace KSoft.Text
 				length = mStorage.FixedLength;
 			}
 
-			int actual_count;
-			byte[] bytes = mStorage.Type switch
+			return mStorage.Type switch
 			{
-				// Type streamers should set actual_count to -1 if we're to assume all the bytes are characters.
-				// Otherwise, set actual_count to a byte count for padded string cases (where we don't want to
-				// include null characters in the result string)
-
-				StringStorageType.CString	=> ReadStrCString(s, length, out actual_count, maxLength),
-				StringStorageType.Pascal	=> ReadStrPascal(s, out actual_count, prefixBitLength),
-				StringStorageType.CharArray	=> ReadStrCharArray(s, length, out actual_count),
+				StringStorageType.CString	=> ReadStrCString(s, length, maxLength),
+				StringStorageType.Pascal	=> ReadStrPascal(s, prefixBitLength),
+				StringStorageType.CharArray	=> ReadStrCharArray(s, length),
 				_ => throw new Debug.UnreachableException(),
 			};
-			int byteCount = actual_count != TypeExtensions.kNone
-				? actual_count	// for padded or capacity-backed string cases
-				: bytes.Length;	// for complete string cases
-			return mBaseEncoding.GetString(bytes.AsSpan(0, byteCount));
 		}
 		#endregion
 	};

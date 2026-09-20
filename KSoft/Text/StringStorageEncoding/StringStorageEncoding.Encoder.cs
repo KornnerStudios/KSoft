@@ -187,8 +187,6 @@ namespace KSoft.Text
 		};
 
 		#region WriteString
-		const int kStackBufferThreshold = 256;
-
 		internal readonly record struct StringEncodingPlan(
 			int CharacterCount, int PayloadByteCount, int SerializedByteCount);
 

@@ -296,6 +296,50 @@ public sealed class StringStorageContractTest : BaseTestClass
 	}
 
 	[TestMethod]
+	[DataRow((short)16)]
+	[DataRow((short)128)]
+	[DataRow((short)129)]
+	public void KnownLengthReads_PreserveRecordsAcrossBufferStrategies(short capacity)
+	{
+		string fullText = new('A', capacity);
+		string paddedText = new('A', capacity / 2);
+		var cases = new[] {
+			(Storage: new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CString,
+				checked((short)(capacity + 1))), Text: paddedText, ExplicitLength: TypeExtensions.kNone),
+			(Storage: StringStorage.CStringUnicode, Text: fullText, ExplicitLength: fullText.Length),
+			(Storage: new StringStorage(StringStorageWidthType.Unicode, StringStorageLengthPrefix.Int32),
+				Text: fullText, ExplicitLength: TypeExtensions.kNone),
+			(Storage: new StringStorage(StringStorageWidthType.Unicode, StringStorageType.CharArray, capacity),
+				Text: paddedText, ExplicitLength: TypeExtensions.kNone),
+		};
+
+		foreach (var testCase in cases)
+		{
+			var encoding = new StringStorageEncoding(testCase.Storage, Shell.EndianFormat.Big);
+			byte[] record = encoding.GetBytes(testCase.Text);
+			byte[] input = [.. record, 0xCC];
+
+			using (var reader = new IO.EndianReader(
+				new MemoryStream(input), Shell.EndianFormat.Big))
+			{
+				string actual = testCase.ExplicitLength.IsNone()
+					? reader.ReadString(encoding)
+					: reader.ReadString(encoding, testCase.ExplicitLength);
+				Assert.AreEqual(testCase.Text, actual);
+				Assert.AreEqual((long)record.Length, reader.BaseStream.Position);
+				Assert.AreEqual((byte)0xCC, reader.ReadByte());
+			}
+
+			using var bits = CreateBitReader(input);
+			string bitActual = testCase.ExplicitLength.IsNone()
+				? bits.ReadString(encoding)
+				: bits.ReadString(encoding, testCase.ExplicitLength);
+			Assert.AreEqual(testCase.Text, bitActual);
+			Assert.AreEqual((byte)0xCC, bits.ReadByte());
+		}
+	}
+
+	[TestMethod]
 	[DataRow(StringStorageLengthPrefix.Int8, "02", 1)]
 	[DataRow(StringStorageLengthPrefix.Int16, "0002", 2)]
 	[DataRow(StringStorageLengthPrefix.Int32, "00000002", 4)]
@@ -632,12 +676,19 @@ public sealed class StringStorageContractTest : BaseTestClass
 	public void CString_ExplicitLength_RequiresTheTerminator()
 	{
 		using (var reader = new IO.EndianReader(new MemoryStream([0x41])))
+		{
 			Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadString(StringStorage.CStringAscii, 1));
+			Assert.AreEqual(1L, reader.BaseStream.Position);
+		}
 		using (var reader = new IO.EndianReader(new MemoryStream([0x41, 0x42])))
+		{
 			Assert.ThrowsExactly<InvalidDataException>(() => reader.ReadString(StringStorage.CStringAscii, 1));
+			Assert.AreEqual(2L, reader.BaseStream.Position);
+		}
 		using var bits = CreateBitReader([0x41, 0x42]);
 		Assert.ThrowsExactly<InvalidDataException>(() =>
 			bits.ReadString(StringStorage.CStringAscii, Shell.EndianFormat.Little, length: 1));
+		Assert.AreEqual(16L, bits.BitPosition);
 	}
 
 	[TestMethod]

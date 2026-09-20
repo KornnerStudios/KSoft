@@ -20,6 +20,10 @@ namespace KSoft.Text
 		, IEquatable<StringStorageEncoding>, IEqualityComparer<StringStorageEncoding>
 		, IComparer<StringStorageEncoding>, IComparable<StringStorageEncoding>
 	{
+		#region Constants
+		const int kStackBufferThreshold = 256;
+		#endregion
+
 		readonly Encoding mBaseEncoding;
 		readonly Shell.EndianFormat mByteOrder;
 		/// <summary>Byte order used for multi-byte payload units and Pascal prefixes.</summary>

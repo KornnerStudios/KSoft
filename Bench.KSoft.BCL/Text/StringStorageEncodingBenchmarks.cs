@@ -7,6 +7,7 @@ namespace Bench.KSoft.BCL.Text;
 
 public enum StringStorageStreamKind
 {
+	EndianReader,
 	EndianWriter,
 	BitStream,
 }

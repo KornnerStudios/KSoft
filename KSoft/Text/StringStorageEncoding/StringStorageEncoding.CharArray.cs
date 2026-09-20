@@ -62,29 +62,19 @@ partial class StringStorageEncoding
 		}
 	}
 
-	byte[] ReadStrCharArray(IO.EndianReader s, int length, out int actualCount)
+	string ReadStrCharArray(IO.EndianReader s, int length)
 	{
-		byte[] bytes = ReadPayloadBytes(s, mStorage.IsFixedLength
+		int byteCount = mStorage.IsFixedLength
 			? mFixedLengthByteLength
-			: GetMaxCleanByteCount(length));
-
-		actualCount = mNullCharacterSize == sizeof(byte)
-			? ReadStrCharArrayGetRealCountSingleByte(bytes)
-			: GetCharArraySuffixByteCount(bytes);
-
-		return bytes;
+			: GetMaxCleanByteCount(length);
+		return ReadKnownPayload(s, byteCount, KnownPayloadKind.CharArray);
 	}
 
-	byte[] ReadStrCharArray(IO.BitStream s, int length, out int actualCount)
+	string ReadStrCharArray(IO.BitStream s, int length)
 	{
-		byte[] bytes = s.ReadBytes(mStorage.IsFixedLength ?
-			mFixedLengthByteLength :
-			GetMaxCleanByteCount(length));
-
-		actualCount = mNullCharacterSize == sizeof(byte)
-			? ReadStrCharArrayGetRealCountSingleByte(bytes)
-			: GetCharArraySuffixByteCount(bytes);
-
-		return bytes;
+		int byteCount = mStorage.IsFixedLength
+			? mFixedLengthByteLength
+			: GetMaxCleanByteCount(length);
+		return ReadKnownPayload(s, byteCount, KnownPayloadKind.CharArray);
 	}
 }

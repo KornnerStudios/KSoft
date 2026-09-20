@@ -195,10 +195,8 @@ partial class StringStorageEncoding
 		return payloadBytes;
 	}
 
-	byte[] ReadStrPascal(IO.EndianReader s, out int actualCount)
+	string ReadStrPascal(IO.EndianReader s)
 	{
-		actualCount = TypeExtensions.kNone;
-
 		int length;
 		// One would think that the length prefix would be of the same endian as the stream, but just in case...
 		using (s.BeginEndianSwitch(mByteOrder))
@@ -213,13 +211,12 @@ partial class StringStorageEncoding
 			};
 		}
 
-		return ReadPayloadBytes(s, GetPascalPayloadByteCount(length));
+		return ReadKnownPayload(
+			s, GetPascalPayloadByteCount(length), KnownPayloadKind.Complete);
 	}
 
-	byte[] ReadStrPascal(IO.BitStream s, out int actualCount, int prefixBitLength)
+	string ReadStrPascal(IO.BitStream s, int prefixBitLength)
 	{
-		actualCount = TypeExtensions.kNone;
-
 		if (prefixBitLength.IsNone())
 		{
 			switch (mStorage.LengthPrefix)
@@ -238,6 +235,7 @@ partial class StringStorageEncoding
 			StringStorageLengthPrefix.Int32 => s.ReadInt32(prefixBitLength),
 			_ => throw new Debug.UnreachableException(),
 		};
-		return s.ReadBytes(GetPascalPayloadByteCount(length));
+		return ReadKnownPayload(
+			s, GetPascalPayloadByteCount(length), KnownPayloadKind.Complete);
 	}
 }
