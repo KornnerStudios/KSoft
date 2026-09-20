@@ -2,8 +2,17 @@
 <Project>
 
   <PropertyGroup>
-    <!--Using MSBuildProjectName here instead of AssemblyName, because AssemblyName won't have a value when executing Microsoft.PackageDependencyResolution.targets under Directory.Build.props setups-->
-    <IntDir>$(VitaObjDir)$(VitaVisualStudioVersion)\$(MSBuildProjectName)\$(Configuration)\$(Platform)\</IntDir>
+    <!-- MSBuildProjectName is available during early package resolution when AssemblyName may still be empty. -->
+    <_VitaIntermediateProjectName>$(MSBuildProjectName)</_VitaIntermediateProjectName>
+    <!-- WPF creates a randomized project name for its temporary target assembly. Keep that output stable and grouped with its parent project. -->
+    <_VitaIsWpfTemporaryProject
+      Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('_wpftmp'))"
+      >true</_VitaIsWpfTemporaryProject>
+    <_VitaIntermediateProjectName Condition=" '$(_VitaIsWpfTemporaryProject)' == 'true' "
+      >$([System.Text.RegularExpressions.Regex]::Replace('$(MSBuildProjectName)', '_[^_]+_wpftmp$', ''))</_VitaIntermediateProjectName>
+    <_VitaIntermediateProjectSubdirectory Condition=" '$(_VitaIsWpfTemporaryProject)' == 'true' "
+      >wpftmp\</_VitaIntermediateProjectSubdirectory>
+    <IntDir>$(VitaObjDir)$(VitaVisualStudioVersion)\$(_VitaIntermediateProjectName)\$(Configuration)\$(Platform)\$(_VitaIntermediateProjectSubdirectory)</IntDir>
     <BaseIntermediateOutputPath>$(IntDir)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(IntDir)</IntermediateOutputPath>
     <!-- <MSBuildProjectExtensionsPath>$(IntDir)</MSBuildProjectExtensionsPath> -->
@@ -18,6 +27,12 @@
     <!--FIXME: Need to figure out what we want to do here, as this format is not compatible with determinis-->
     <!-- <AssemblyVersion>0.0.%2a</AssemblyVersion> -->
   </PropertyGroup>
+
+  <Target Name="VitaCleanWpfTemporaryIntermediates"
+          AfterTargets="Clean"
+          Condition=" '$(UseWPF)' == 'true' ">
+    <RemoveDir Directories="$(IntDir)wpftmp" />
+  </Target>
 
   <PropertyGroup Condition=" '$(VitaUseSolutionFamilyDirs)' == 'false' ">
     <OutDir>$(VitaBinPath)</OutDir>
