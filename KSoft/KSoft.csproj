@@ -21,4 +21,7 @@
         ReferenceOutputAssembly="False"
         PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
+  </ItemGroup>
 </Project>
