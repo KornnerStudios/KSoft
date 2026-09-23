@@ -48,5 +48,11 @@ Use `Enum.HasFlag` for all-bits flag tests and .NET's `EqualityComparer<TEnum>.D
 
 `EnumFlags.Add`, `Remove`, and `Modify` remain readability helpers for `[Flags]` enums, with value-returning and `ref` forms. They support generic enum mutation by operating on the backing type through shared `EnumValue<TEnum>` conversions, rather than a separate expression-compiled flags implementation. See `KSoft\Enum\EnumFlags.cs` for the contract.
 
+## Enum-indexed bit collections
+
+Bit collection enum arguments are numeric bit indices, not flags masks. Access validates the full enum value before narrowing to an index; even an oversized value whose low 32 bits resemble a valid index is rejected. The untyped vectors and `BitSet` still accept any in-range enum index.
+
+`EnumBitSet<TEnum>.Length` is the enum's exclusive `kNumberOf`/`kMax` bound, or its highest value plus one, not the bits needed to encode one enum value. Correcting this extent also corrects the number of words written by `SerializeWords`; old undersized word-only streams are not self-describing and are not automatically migrated. Existing constructor restrictions on flags and NONE-bearing enums remain unchanged.
+
 ## Building
 Before you try building any of the projects, first [read the requirements](https://bitbucket.org/KornnerStudios/ksoft/wiki/Requirements) you may need.

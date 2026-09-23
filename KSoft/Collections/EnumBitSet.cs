@@ -14,15 +14,14 @@ namespace KSoft.Collections
 		where TEnum : struct, Enum
 	{
 		static readonly Func<int, TEnum> FromInt32 = Reflection.EnumValue<TEnum>.FromInt32;
-		static readonly Func<TEnum, int> ToInt32 = Reflection.EnumValue<TEnum>.ToInt32;
-
-		static readonly int kBitSetLength = EnumBitEncoder32<TEnum>.kBitCount;
+		// Enum-value encoders reject singleton domains; a bit set still needs their one bit.
+		static readonly Lazy<int> kBitSetLength = new(GetBitSetLength);
 
 		readonly BitSet mBits;
 		readonly TEnum mInvalidSentinelValue;
 
 		/// <summary>Returns the "logical size" of the BitSet</summary>
-		public int Length			{ get => kBitSetLength; }
+		public int Length			{ get => mBits.Length; }
 		/// <summary>Number of bits set to true</summary>
 		public int Cardinality		{ get => mBits.Cardinality; }
 		/// <summary>Number of bits set to false</summary>
@@ -49,13 +48,59 @@ namespace KSoft.Collections
 			{
 				throw new ArgumentException(CtorExceptionMsgTEnumIsFlags);
 			}
-			if (EnumBitEncoder32<TEnum>.kHasNone)
+			mBits = new BitSet(kBitSetLength.Value);
+			mInvalidSentinelValue = invalidSentinelValue;
+		}
+
+		static int GetBitSetLength()
+		{
+			var enumType = typeof(TEnum);
+			if (enumType.IsDefined(typeof(EnumBitEncoderDisableAttribute), false))
 			{
-				throw new ArgumentException(CtorExceptionMsgTEnumHasNone);
+				throw new ArgumentException("The enum disables bit encoding.");
 			}
 
-			mBits = new BitSet(kBitSetLength);
-			mInvalidSentinelValue = invalidSentinelValue;
+			bool isSigned = Reflection.EnumUtil<TEnum>.UnderlyingTypeCode is
+				TypeCode.SByte or TypeCode.Int16 or TypeCode.Int32 or TypeCode.Int64;
+			var names = Reflection.EnumUtil<TEnum>.Names;
+			var values = Reflection.EnumUtil<TEnum>.Values;
+			ulong extent = 0;
+			ulong? explicitBound = null;
+			for (int i = 0; i < values.Length; i++)
+			{
+				if (isSigned && Reflection.EnumValue<TEnum>.ToInt64(values[i]) < 0)
+				{
+					throw new ArgumentException(CtorExceptionMsgTEnumHasNone);
+				}
+				ulong value = Reflection.EnumValue<TEnum>.ToUInt64(values[i]);
+				if (value > int.MaxValue)
+				{
+					throw new ArgumentException("The enum's bit-index extent exceeds the maximum BitSet length.");
+				}
+				if (names[i] is EnumBitEncoderBase.kEnumNumberOfMemberName or EnumBitEncoderBase.kEnumMaxMemberName)
+				{
+					if (explicitBound.HasValue && explicitBound.Value != value)
+					{
+						throw new ArgumentException("The enum has conflicting bit-index bounds.");
+					}
+					explicitBound = value;
+				}
+				else
+				{
+					extent = System.Math.Max(extent, value + 1);
+				}
+			}
+
+			if (explicitBound.HasValue && extent > explicitBound.Value)
+			{
+				throw new ArgumentException("The enum's exclusive bound does not cover all of its bit indices.");
+			}
+			extent = explicitBound ?? extent;
+			if (extent > int.MaxValue)
+			{
+				throw new ArgumentException("The enum's bit-index extent exceeds the maximum BitSet length.");
+			}
+			return (int)extent;
 		}
 		#endregion
 
@@ -63,11 +108,11 @@ namespace KSoft.Collections
 		public bool this[TEnum bitIndex]
 		{
 			get {
-				int actual_index = ToInt32(bitIndex);
+				int actual_index = EnumBitIndex.ToIndex(bitIndex, Length, nameof(bitIndex));
 				return mBits[actual_index];
 			}
 			set {
-				int actual_index = ToInt32(bitIndex);
+				int actual_index = EnumBitIndex.ToIndex(bitIndex, Length, nameof(bitIndex));
 				mBits[actual_index] = value;
 			}
 		}
@@ -77,7 +122,7 @@ namespace KSoft.Collections
 		/// <returns><paramref name="bitIndex"/>'s value in the bit array</returns>
 		public bool Get(TEnum bitIndex)
 		{
-			int actual_index = ToInt32(bitIndex);
+			int actual_index = EnumBitIndex.ToIndex(bitIndex, Length, nameof(bitIndex));
 			return mBits[actual_index];
 		}
 		/// <summary>Set the value of a specific bit</summary>
@@ -85,7 +130,7 @@ namespace KSoft.Collections
 		/// <param name="value">New value of the bit</param>
 		public void Set(TEnum bitIndex, bool value)
 		{
-			int actual_index = ToInt32(bitIndex);
+			int actual_index = EnumBitIndex.ToIndex(bitIndex, Length, nameof(bitIndex));
 			mBits[actual_index] = value;
 		}
 
@@ -93,7 +138,7 @@ namespace KSoft.Collections
 		/// <param name="bitIndex">Position of the bit</param>
 		public void Toggle(TEnum bitIndex)
 		{
-			int actual_index = ToInt32(bitIndex);
+			int actual_index = EnumBitIndex.ToIndex(bitIndex, Length, nameof(bitIndex));
 			mBits.Toggle(actual_index);
 		}
 
@@ -104,7 +149,7 @@ namespace KSoft.Collections
 		/// <returns>The next clear bit index, or -1 if one isn't found</returns>
 		public int NextClearBitIndex(TEnum startBitIndex)
 		{
-			int actual_index = ToInt32(startBitIndex);
+			int actual_index = EnumBitIndex.ToIndex(startBitIndex, Length, nameof(startBitIndex));
 			return mBits.NextClearBitIndex(actual_index);
 		}
 		/// <summary>Get the bit index of the next bit which is 1 (set)</summary>
@@ -112,7 +157,7 @@ namespace KSoft.Collections
 		/// <returns>The next set bit index, or -1 if one isn't found</returns>
 		public int NextSetBitIndex(TEnum startBitIndex)
 		{
-			int actual_index = ToInt32(startBitIndex);
+			int actual_index = EnumBitIndex.ToIndex(startBitIndex, Length, nameof(startBitIndex));
 			return mBits.NextSetBitIndex(actual_index);
 		}
 

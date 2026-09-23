@@ -129,8 +129,7 @@ internal static class EnumSourceBuilder
 
 	private static void WriteTraitFields(SourceWriter writer, NumberSpec spec)
 	{
-		writer.WriteLine(
-			"/// <remarks>Only made public for <see cref=\"Collections.EnumBitSet{TEnum}\"/>.</remarks>");
+		writer.WriteXmlDocSummary("Whether the enumeration includes a NONE sentinel");
 		writer.WriteLine("public static readonly bool kHasNone;");
 		writer.WriteXmlDocSummary(
 			"The <see cref=\"EnumBitEncoderBase.kEnumMaxMemberName\"/>\\<see cref=\"EnumBitEncoderBase.kFlagsMaxMemberName\"/>",

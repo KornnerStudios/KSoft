@@ -87,6 +87,9 @@ namespace KSoft.WPF.Controls
 		}
 		#endregion
 
+		bool mSynchronizingBitItems;
+		bool mBitItemsNeedSynchronization;
+
 		public BitVectorControl()
 		{
 			InitializeComponent();
@@ -109,6 +112,11 @@ namespace KSoft.WPF.Controls
 
 		private void OnBitChanged(BitItemModel bitModel, bool newValue)
 		{
+			if (mSynchronizingBitItems || !BitItems.Contains(bitModel))
+			{
+				return;
+			}
+
 			var bit_vector = BitVector;
 			if (bit_vector is Collections.BitVector32 vector32)
 			{
@@ -188,94 +196,74 @@ namespace KSoft.WPF.Controls
 			}
 
 			ctrl.BitItems = newBitItems;
+			ctrl.SynchronizeBitItems();
 		}
 
 		#region OnVectorPropertyChanged
 		private static void OnVectorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var ctrl = (BitVectorControl)d;
-
-			Type vector_type;
-			if (e.OldValue != null)
-			{
-				vector_type = e.OldValue.GetType();
-			}
-			else if (e.NewValue != null)
-			{
-				vector_type = e.NewValue.GetType();
-			}
-			else
-			{
-				return;
-			}
-
-			if (vector_type == typeof(Collections.BitVector32))
-			{
-				OnVector32PropertyChanged(ctrl, e);
-			}
-			else if (vector_type == typeof(Collections.BitVector32))
-			{
-				OnVector64PropertyChanged(ctrl, e);
-			}
+			ctrl.SynchronizeBitItems();
 		}
-		private static void OnVector32PropertyChanged(BitVectorControl d, DependencyPropertyChangedEventArgs e)
+
+		private void SynchronizeBitItems()
 		{
-			var vold = (Collections.BitVector32)e.OldValue;
-			var vnew = (Collections.BitVector32)e.NewValue;
-			if (vold == vnew)
+			if (mSynchronizingBitItems)
 			{
+				mBitItemsNeedSynchronization = true;
 				return;
 			}
 
-			// optimize for the case were only one bit was changed
-			var vdiff = vold.Xor(vnew);
-			if (vdiff.Cardinality == 1)
+			mSynchronizingBitItems = true;
+			try
 			{
-				int changed_bit_index = vdiff.NextSetBitIndex();
-
-				bool bit_value = vnew[changed_bit_index];
-				var model = d.BitItems[changed_bit_index];
-				model.IsSet = bit_value;
-			}
-			else
-			{
-				foreach (var changed_bit_index in vdiff.SetBitIndices)
+				do
 				{
-					bool bit_value = vnew[changed_bit_index];
-					var model = d.BitItems[changed_bit_index];
-					model.IsSet = bit_value;
-				}
+					mBitItemsNeedSynchronization = false;
+					var vector = BitVector;
+					int length = GetVectorLength(vector);
+					// Metadata can arrive before a value chooses a vector width, or after ClearValue.
+					bool has_value = DependencyPropertyHelper.GetValueSource(this, BitVectorProperty).BaseValueSource
+						!= BaseValueSource.Default;
+
+					foreach (var model in BitItems)
+					{
+						bool is_set = false;
+						if (has_value && (model.IsVisible || (uint)model.BitIndex < (uint)length))
+						{
+							is_set = ReadBit(vector, model.BitIndex);
+						}
+						if (model.IsSet != is_set)
+						{
+							model.IsSet = is_set;
+						}
+						// An observer may replace the vector or metadata while an item is changing.
+						if (mBitItemsNeedSynchronization)
+						{
+							break;
+						}
+					}
+				} while (mBitItemsNeedSynchronization);
+			}
+			finally
+			{
+				mSynchronizingBitItems = false;
 			}
 		}
-		private static void OnVector64PropertyChanged(BitVectorControl d, DependencyPropertyChangedEventArgs e)
+
+		private static int GetVectorLength(object vector) => vector switch
 		{
-			var vold = (Collections.BitVector64)e.OldValue;
-			var vnew = (Collections.BitVector64)e.NewValue;
-			if (vold == vnew)
-			{
-				return;
-			}
+			Collections.BitVector32 value => value.Length,
+			Collections.BitVector64 value => value.Length,
+			_ => throw new ArgumentException("Unsupported bit vector type.", nameof(vector)),
+		};
 
-			// optimize for the case were only one bit was changed
-			var vdiff = vold.Xor(vnew);
-			if (vdiff.Cardinality == 1)
-			{
-				int changed_bit_index = vdiff.NextSetBitIndex();
-
-				bool bit_value = vnew[changed_bit_index];
-				var model = d.BitItems[changed_bit_index];
-				model.IsSet = bit_value;
-			}
-			else
-			{
-				foreach (var changed_bit_index in vdiff.SetBitIndices)
-				{
-					bool bit_value = vnew[changed_bit_index];
-					var model = d.BitItems[changed_bit_index];
-					model.IsSet = bit_value;
-				}
-			}
-		}
+		private static bool ReadBit(object vector, int bitIndex) => vector switch
+		{
+			Collections.BitVector32 value => value[bitIndex],
+			Collections.BitVector64 value => value[bitIndex],
+			_ => throw new ArgumentException("Unsupported bit vector type.", nameof(vector)),
+		};
 		#endregion
 
 		public sealed class BitItemModel : DependencyObject

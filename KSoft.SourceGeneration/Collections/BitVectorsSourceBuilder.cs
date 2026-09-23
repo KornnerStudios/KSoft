@@ -695,8 +695,6 @@ internal static class BitVectorsSourceBuilder
 	{
 		using (writer.EnterRegion("Enum interfaces"))
 		{
-			WriteValidateBitMethod(writer);
-			writer.WriteLine();
 			WriteEnumTestMethod(writer, spec);
 			writer.WriteLine();
 			WriteEnumSetMethod(writer, spec);
@@ -713,27 +711,6 @@ internal static class BitVectorsSourceBuilder
 		}
 	}
 
-	private static void WriteValidateBitMethod(SourceWriter writer)
-	{
-		writer.WriteLine("private readonly void ValidateBit<TEnum>(TEnum bit, int bitIndex)");
-		using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-		{
-			writer.WriteLine($"where TEnum : {SourceGenerationConstants.EnumConstraint}");
-		}
-		using (writer.EnterBlock(SourceWriterBlockType.Braces))
-		{
-			writer.WriteLine("if (bitIndex < 0 || bitIndex >= this.Length)");
-			using (writer.EnterBlock(SourceWriterBlockType.Braces))
-			{
-				writer.WriteLine("throw new ArgumentOutOfRangeException(nameof(bit), bit,");
-				using (writer.EnterBlock(SourceWriterBlockType.NoBraces))
-				{
-					writer.WriteLine("\"Enum member is out of range for indexing\");");
-				}
-			}
-		}
-	}
-
 	private static void WriteEnumTestMethod(SourceWriter writer, BitVectorSpec spec)
 	{
 		WriteEnumBitIndexTypeParamDoc(writer);
@@ -744,8 +721,7 @@ internal static class BitVectorsSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);");
-			writer.WriteLine("ValidateBit(bit, bitIndex);");
+			writer.WriteLine("int bitIndex = EnumBitIndex.ToIndex(bit, Length, nameof(bit));");
 			writer.WriteLine();
 			writer.WriteLine($"var flag = (({spec.WordKeyword})1) << bitIndex;");
 			writer.WriteLine();
@@ -763,8 +739,7 @@ internal static class BitVectorsSourceBuilder
 		}
 		using (writer.EnterBlock(SourceWriterBlockType.Braces))
 		{
-			writer.WriteLine("int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);");
-			writer.WriteLine("ValidateBit(bit, bitIndex);");
+			writer.WriteLine("int bitIndex = EnumBitIndex.ToIndex(bit, Length, nameof(bit));");
 			writer.WriteLine();
 			writer.WriteLine($"var flag = (({spec.WordKeyword})1) << bitIndex;");
 			writer.WriteLine();

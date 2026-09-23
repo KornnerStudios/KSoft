@@ -1100,22 +1100,11 @@ namespace KSoft.Collections
 		}
 
 		#region Enum interfaces
-		private void ValidateBit<TEnum>(TEnum bit, int bitIndex)
-			where TEnum : struct, Enum
-		{
-			if (bitIndex < 0 || bitIndex >= this.Length)
-			{
-				throw new ArgumentOutOfRangeException(nameof(bit), bit,
-					"Enum member is out of range for indexing");
-			}
-		}
-
 		/// <typeparam name="TEnum">Members should be bit indices, not literal flag values</typeparam>
 		public bool Test<TEnum>(TEnum bit)
 			where TEnum : struct, Enum
 		{
-			int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);
-			ValidateBit(bit, bitIndex);
+			int bitIndex = EnumBitIndex.ToIndex(bit, Length, nameof(bit));
 
 			return this[bitIndex];
 		}
@@ -1124,8 +1113,7 @@ namespace KSoft.Collections
 		public BitSet Set<TEnum>(TEnum bit, bool value = true)
 			where TEnum : struct, Enum
 		{
-			int bitIndex = Reflection.EnumValue<TEnum>.ToInt32(bit);
-			ValidateBit(bit, bitIndex);
+			int bitIndex = EnumBitIndex.ToIndex(bit, Length, nameof(bit));
 
 			this.Set(bitIndex, value);
 			return this;
