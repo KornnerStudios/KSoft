@@ -48,6 +48,13 @@ public sealed class EnumBitIndexTest
 		Assert.IsTrue(bits.Test(last64));
 		Assert.AreEqual(2, bits.Cardinality);
 
+		var typed = new BitVector64<TEnum>();
+		typed.Set(first);
+		typed.Set(last64);
+		Assert.IsTrue(typed.Test(first));
+		Assert.IsTrue(typed.Test(last64));
+		Assert.AreEqual(vector64, typed.ToRaw());
+
 		vector32.Set(last32, false);
 		vector64.Set(last64, false);
 		bits.Set(last64, false);

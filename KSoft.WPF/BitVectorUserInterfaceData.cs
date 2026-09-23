@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace KSoft.WPF
 {
+	/// <summary>Presentation labels, descriptions, and visibility indexed by bit position.</summary>
+	/// <remarks>For enum-derived metadata, no <see cref="System.ComponentModel.DataAnnotations.DisplayAttribute"/> means the C# member-name fallback. <see cref="System.ComponentModel.DescriptionAttribute"/> overrides the description in DisplayAttribute; an absent description gives empty text. <see cref="System.ComponentModel.BrowsableAttribute"/> with Browsable=false hides presentation without invalidating a bit. An otherwise visible member with an explicitly blank display name is not renderable. Its absent slot can be trimmed, or retain an index-label fallback; no visible blank checkbox is promised.</remarks>
 	public sealed class BitVectorUserInterfaceData : IBitVectorUserInterfaceData
 	{
 		[SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -35,6 +37,7 @@ namespace KSoft.WPF
 
 		private BitUserInterfaceData?[]? mBitInfo;
 
+		/// <inheritdoc/>
 		public int NumberOfBits { get { return mBitInfo != null ? mBitInfo.Length : 0; } }
 
 		private void ValidateBitIndex(int bitIndex)
@@ -43,6 +46,10 @@ namespace KSoft.WPF
 			ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(bitIndex, NumberOfBits, nameof(bitIndex));
 		}
 
+		/// <summary>Gets the stored label, or the invariant decimal index for an absent label in a retained slot.</summary>
+		/// <param name="bitIndex">An index inside <see cref="NumberOfBits"/>.</param>
+		/// <returns>The presentation label.</returns>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="bitIndex"/> is outside the metadata bound.</exception>
 		public string GetDisplayName(int bitIndex)
 		{
 			ValidateBitIndex(bitIndex);
@@ -52,6 +59,7 @@ namespace KSoft.WPF
 			return info?.DisplayName ?? bitIndex.ToString(KSoft.Util.InvariantCultureInfo);
 		}
 
+		/// <inheritdoc/>
 		public string GetDescription(int bitIndex)
 		{
 			ValidateBitIndex(bitIndex);
@@ -61,6 +69,7 @@ namespace KSoft.WPF
 			return info?.Description ?? string.Empty;
 		}
 
+		/// <inheritdoc/>
 		public bool IsVisible(int bitIndex)
 		{
 			ValidateBitIndex(bitIndex);
@@ -133,33 +142,70 @@ namespace KSoft.WPF
 				}
 			}
 
-			var attr_browsable = bitFieldInfo.GetCustomAttribute<System.ComponentModel.BrowsableAttribute>();
-			if (attr_browsable != null)
-			{
-				bitInfo.Visible = attr_browsable.Browsable;
-			}
-			else
-			{
-				bitInfo.Visible = true;
-			}
+			bitInfo.Visible = IsEnumMemberVisible(bitFieldInfo);
 		}
 
+		// Presentation policy is separate from display text and whether a member is a usable bit.
+		private static bool IsEnumMemberVisible(System.Reflection.FieldInfo field) =>
+			field.GetCustomAttribute<System.ComponentModel.BrowsableAttribute>()?.Browsable ?? true;
+
+		/// <summary>Builds typed-vector presentation from its traits-backed member indices and canonical names.</summary>
+		/// <param name="vector">The typed adapter supplying membership and canonical names.</param>
+		/// <returns>Attribute-derived presentation metadata; visibility does not change membership.</returns>
+		/// <remarks>Only the canonical alias supplies attributes. A later, more displayable alias is not substituted when the canonical member lacks a renderable label.</remarks>
+		internal static BitVectorUserInterfaceData ForVector(Collections.IEnumBitVector vector)
+		{
+			var enumType = vector.BitsEnumType;
+			var bitInfos = new List<BitUserInterfaceData?>(vector.Length);
+			for (int index = 0; index < vector.Length; index++)
+			{
+				BitUserInterfaceData? info = null;
+				if (vector.IsDefinedIndex(index))
+				{
+					var name = vector.GetBitName(index);
+					var field = enumType.GetField(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+						?? throw new InvalidOperationException($"The bit member '{name}' was not found in {enumType}.");
+					info = new BitUserInterfaceData();
+					SetBitInfoFromFieldInfo(info, field);
+					if (info.CanNotBeRendered)
+					{
+						info = null;
+					}
+				}
+				bitInfos.Add(info);
+			}
+			var source = new BitVectorUserInterfaceData();
+			source.SetInfoFromFactoryData(bitInfos);
+			return source;
+		}
+
+		/// <summary>Builds legacy index-based UI metadata directly from enum declarations.</summary>
+		/// <param name="enumType">The enum containing numeric bit positions.</param>
+		/// <param name="explicitNumberOfBits">An optional exclusive metadata bound, or -1 to derive it from declarations.</param>
+		/// <returns>Presentation metadata, possibly with trailing absent slots trimmed.</returns>
+		/// <remarks>This legacy factory is not an EnumBitTraits domain validator and may choose a later renderable alias. Inferred typed-vector metadata instead uses the traits' canonical member.</remarks>
+		/// <exception cref="ArgumentNullException"><paramref name="enumType"/> is null.</exception>
+		/// <exception cref="ArgumentException"><paramref name="enumType"/> is not an enum.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="explicitNumberOfBits"/> is less than -1.</exception>
+		/// <exception cref="OverflowException">A nonnegative member value cannot be represented as an int index.</exception>
 		public static BitVectorUserInterfaceData ForEnum(Type enumType, int explicitNumberOfBits = TypeExtensions.kNone)
 		{
 			ValidateEnumFactoryArguments(enumType, explicitNumberOfBits);
 
 			var bit_field_infos = Reflection.Util.GetEnumFields(enumType);
+			bit_field_infos.Sort(static (a, b) => a.MetadataToken.CompareTo(b.MetadataToken));
 			var bit_ui_infos = new List<BitUserInterfaceData?>(Bits.kInt64BitCount);
 
 			bool find_highest_index = explicitNumberOfBits.IsNone();
 			int highest_index = explicitNumberOfBits - 1;
 			foreach (var bit_field_info in bit_field_infos)
 			{
-				int bit_index = Convert.ToInt32(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
-				if (bit_index < 0)
+				decimal numeric_index = Convert.ToDecimal(bit_field_info.GetRawConstantValue(), Util.InvariantCultureInfo);
+				if (numeric_index < 0)
 				{
 					continue;
 				}
+				int bit_index = checked((int)numeric_index);
 
 				if (find_highest_index)
 				{

@@ -89,7 +89,8 @@ internal static class GeneratorRegistry
 			new(
 				GeneratorTargetAssembly.KSoft,
 				GeneratorFeature.BitVectors,
-				new GeneratedSourceRegistration(BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build)),
+				new GeneratedSourceRegistration(BitVectorsSourceBuilder.HintName, BitVectorsSourceBuilder.Build),
+				new GeneratedSourceRegistration(TypedBitVectorsSourceBuilder.HintName, TypedBitVectorsSourceBuilder.Build)),
 
 			// Enum domains.
 			new(

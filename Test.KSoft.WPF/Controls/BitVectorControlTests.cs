@@ -30,8 +30,209 @@ public sealed class BitVectorControlTests
 
 	enum WideBits { Highest = 63, kNumberOf }
 	enum HiddenBits { [Browsable(false)] Hidden, kNumberOf }
+	enum OverflowBits : ulong { TooLarge = 0x80000000UL }
+	enum AliasUiBits : long
+	{
+		None = long.MinValue,
+		kNumberOf = 4,
+		[Display(Name = "")]
+		Canonical = 0,
+		[Display(Name = "Alias should not override canonical metadata")]
+		Alias = Canonical,
+		[Display(Name = "Last bit", Description = "Declared after the bound")]
+		Last = 3,
+	}
 
 	public TestContext TestContext { get; set; }
+
+	[STATestMethod]
+	public void TypedBinding_InferredMetadataAndCopyUpdates_PreservesTypedSnapshot()
+	{
+		var initial = new BitVector32<UiBits>();
+		var model = new FrameworkElement { Tag = initial };
+		var control = new BitVectorControl();
+		BindingOperations.SetBinding(control, BitVectorControl.BitVectorProperty, new Binding(nameof(FrameworkElement.Tag))
+		{
+			Source = model,
+			Mode = BindingMode.TwoWay,
+		});
+		using var host = new ControlHost(control);
+		DrainDispatcher(control);
+		var before = Assert.IsInstanceOfType<IEnumBitVector>(control.BitVector);
+		Assert.IsNull(control.BitsUserInterfaceSource);
+		Assert.HasCount(3, control.BitItems);
+		Assert.AreEqual("First bit", control.BitItems[0].DisplayName);
+		Assert.AreEqual("Second", control.BitItems[1].DisplayName);
+		Assert.IsFalse(control.BitItems[2].IsVisible);
+
+		GetCheckBox(control, 0).IsChecked = true;
+		DrainDispatcher(control);
+
+		Assert.IsTrue(Assert.IsInstanceOfType<BitVector32<UiBits>>(model.Tag).Test(UiBits.First));
+		Assert.IsFalse(before.GetBit(0));
+		Assert.IsFalse(initial.Test(UiBits.First));
+		Assert.IsTrue(BindingOperations.IsDataBound(control, BitVectorControl.BitVectorProperty));
+		model.Tag = initial.With(UiBits.Second);
+		DrainDispatcher(control);
+		Assert.IsFalse(GetCheckBox(control, 0).IsChecked);
+		Assert.IsTrue(GetCheckBox(control, 1).IsChecked);
+	}
+
+	[STATestMethod]
+	public void TypedBinding_64BitSparseMetadata_EditsNamedHighestBit()
+	{
+		var model = new FrameworkElement { Tag = new BitVector64<WideBits>() };
+		var control = new BitVectorControl();
+		BindingOperations.SetBinding(control, BitVectorControl.BitVectorProperty, new Binding(nameof(FrameworkElement.Tag))
+		{
+			Source = model,
+			Mode = BindingMode.TwoWay,
+		});
+		using var host = new ControlHost(control);
+		DrainDispatcher(control);
+		Assert.HasCount(1, control.BitItems);
+		GetCheckBox(control, 63).IsChecked = true;
+		DrainDispatcher(control);
+		Assert.IsTrue(Assert.IsInstanceOfType<BitVector64<WideBits>>(model.Tag).Test(WideBits.Highest));
+	}
+
+	[STATestMethod]
+	public void TypedMetadata_ExplicitOverrideAndMismatch_HaveDefinedPrecedence()
+	{
+		var control = new BitVectorControl { BitVector = new BitVector32<UiBits>().With(UiBits.Second) };
+		var source = BitVectorUserInterfaceData.ForStrings(new[] { "Override first", "Override second" });
+		control.BitsUserInterfaceSource = source;
+		Assert.AreSame(source, control.BitsUserInterfaceSource);
+		Assert.AreEqual("Override first", control.BitItems[0].DisplayName);
+		Assert.IsTrue(control.BitItems[1].IsSet);
+		control.BitsUserInterfaceSource = null;
+		Assert.AreEqual("First bit", control.BitItems[0].DisplayName);
+		Assert.ThrowsExactly<ArgumentException>(() => control.BitsEnumType = typeof(WideBits));
+	}
+
+	[STATestMethod]
+	public void Metadata_FactoryFailure_PreservesTypeItemsAndFutureUpdates()
+	{
+		var control = new BitVectorControl
+		{
+			BitsEnumType = typeof(UiBits),
+			BitVector = new BitVector32(1),
+		};
+		var items = control.BitItems;
+
+		for (int attempt = 0; attempt < 2; attempt++)
+		{
+			Assert.ThrowsExactly<OverflowException>(() => control.SetValue(
+				BitVectorControl.BitsEnumTypeProperty, typeof(OverflowBits)));
+			Assert.AreEqual(typeof(UiBits), control.BitsEnumType);
+			Assert.AreSame(items, control.BitItems);
+			control.BitVector = new BitVector32(2);
+			Assert.IsFalse(control.BitItems[0].IsSet);
+			Assert.IsTrue(control.BitItems[1].IsSet);
+			Assert.AreEqual("First bit", control.BitItems[0].DisplayName);
+		}
+		control.BitsEnumType = typeof(HiddenBits);
+		Assert.HasCount(1, control.BitItems);
+		Assert.IsFalse(control.BitItems[0].IsVisible);
+	}
+
+	[STATestMethod]
+	[DataRow(false)]
+	[DataRow(true)]
+	public void TypedMetadata_RejectedMismatch_DoesNotInstallInvalidPropertyValue(bool flagsMetadata)
+	{
+		var control = new BitVectorControl
+		{
+			BitsEnumType = typeof(UiBits),
+			BitVector = new BitVector32<UiBits>(),
+		};
+		var items = control.BitItems;
+		var property = flagsMetadata ? BitVectorControl.FlagsEnumTypeProperty : BitVectorControl.BitsEnumTypeProperty;
+
+		for (int attempt = 0; attempt < 2; attempt++)
+		{
+			Assert.ThrowsExactly<ArgumentException>(() => control.SetValue(property, typeof(WideBits)));
+			Assert.AreEqual(typeof(UiBits), control.BitsEnumType);
+			Assert.IsNull(control.FlagsEnumType);
+			Assert.AreSame(items, control.BitItems);
+			control.BitVector = new BitVector32<UiBits>().With(UiBits.Second);
+			Assert.IsTrue(control.BitItems[1].IsSet);
+		}
+	}
+
+	[STATestMethod]
+	public void TypedVector_RejectedMetadataMismatch_PreservesPreviousVector()
+	{
+		var control = new BitVectorControl { BitsEnumType = typeof(UiBits), BitVector = new BitVector32(1) };
+		var previous = control.BitVector;
+
+		Assert.ThrowsExactly<ArgumentException>(() =>
+			control.SetValue(BitVectorControl.BitVectorProperty, new BitVector64<WideBits>()));
+
+		Assert.AreSame(previous, control.BitVector);
+		Assert.IsTrue(control.BitItems[0].IsSet);
+		control.BitVector = new BitVector32<UiBits>().With(UiBits.Second);
+		Assert.IsFalse(control.BitItems[0].IsSet);
+		Assert.IsTrue(control.BitItems[1].IsSet);
+	}
+
+	[STATestMethod]
+	public void TypedBinding_RejectedMetadata_KeepsCheckboxAndSourceUpdatesWorking()
+	{
+		var model = new FrameworkElement { Tag = new BitVector32<UiBits>() };
+		var control = new BitVectorControl { BitsEnumType = typeof(UiBits) };
+		BindingOperations.SetBinding(control, BitVectorControl.BitVectorProperty, new Binding(nameof(FrameworkElement.Tag))
+		{
+			Source = model,
+			Mode = BindingMode.TwoWay,
+		});
+		using var host = new ControlHost(control);
+		DrainDispatcher(control);
+		var expression = BindingOperations.GetBindingExpression(control, BitVectorControl.BitVectorProperty);
+		var first = GetCheckBox(control, 0);
+
+		Assert.ThrowsExactly<ArgumentException>(() => control.BitsEnumType = typeof(WideBits));
+		Assert.AreEqual(typeof(UiBits), control.BitsEnumType);
+		Assert.AreSame(expression, BindingOperations.GetBindingExpression(control, BitVectorControl.BitVectorProperty));
+		Assert.ThrowsExactly<ArgumentException>(() =>
+			control.SetCurrentValue(BitVectorControl.BitVectorProperty, new BitVector64<WideBits>()));
+		Assert.AreSame(expression, BindingOperations.GetBindingExpression(control, BitVectorControl.BitVectorProperty));
+		Assert.IsInstanceOfType<BitVector32<UiBits>>(control.BitVector);
+
+		first.IsChecked = true;
+		DrainDispatcher(control);
+		Assert.IsTrue(Assert.IsInstanceOfType<BitVector32<UiBits>>(model.Tag).Test(UiBits.First));
+		model.Tag = new BitVector32<UiBits>().With(UiBits.Second);
+		DrainDispatcher(control);
+		Assert.IsFalse(first.IsChecked);
+		Assert.IsTrue(GetCheckBox(control, 1).IsChecked);
+	}
+
+	[STATestMethod]
+	public void TypedMetadata_CanonicalAlias_ComesFromTraitsWhileLegacyFactoryKeepsItsBehavior()
+	{
+		var typed = new BitVector32<AliasUiBits>().With(AliasUiBits.Alias).With(AliasUiBits.Last);
+		Assert.AreEqual("Canonical,Last", typed.ToFlagsString());
+		var control = new BitVectorControl { BitsEnumType = typeof(AliasUiBits), BitVector = typed };
+
+		Assert.HasCount(2, control.BitItems);
+		Assert.AreEqual(0, control.BitItems[0].BitIndex);
+		Assert.IsFalse(control.BitItems[0].IsVisible);
+		Assert.IsTrue(control.BitItems[0].IsSet);
+		Assert.AreEqual(3, control.BitItems[1].BitIndex);
+		Assert.AreEqual("Last bit", control.BitItems[1].DisplayName);
+		Assert.AreEqual("Declared after the bound", control.BitItems[1].ToolTip);
+		Assert.IsTrue(control.BitItems[1].IsSet);
+
+		var legacy = BitVectorUserInterfaceData.ForEnum(typeof(AliasUiBits));
+		Assert.IsTrue(legacy.IsVisible(0));
+		Assert.AreEqual("Alias should not override canonical metadata", legacy.GetDisplayName(0));
+		control.BitVector = typed.ToRaw();
+		Assert.IsTrue(control.BitItems[0].IsVisible);
+		Assert.AreEqual(legacy.GetDisplayName(0), control.BitItems[0].DisplayName);
+		control.BitVector = typed;
+		Assert.IsFalse(control.BitItems[0].IsVisible);
+	}
 
 	[STATestMethod]
 	public void BitVector_First64BitAssignmentAndLaterChanges_SynchronizeHighestBit()
@@ -155,9 +356,50 @@ public sealed class BitVectorControlTests
 	{
 		var control = CreateControl();
 		control.BitVector = new BitVector32(1);
+		var source = control.BitsUserInterfaceSource;
+		var items = control.BitItems;
 
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			control.BitsUserInterfaceSource = BitVectorUserInterfaceData.ForEnum(typeof(WideBits)));
+		Assert.AreSame(source, control.BitsUserInterfaceSource);
+		Assert.AreSame(items, control.BitItems);
+		control.BitVector = new BitVector32(2);
+		Assert.IsTrue(control.BitItems[1].IsSet);
+	}
+
+	[STATestMethod]
+	public void ExplicitMetadata_UnusedEnumHintDoesNotOverrideSourceOrPoisonFailureRecovery()
+	{
+		var source = BitVectorUserInterfaceData.ForStrings(new[] { "Explicit label" });
+		var control = new BitVectorControl
+		{
+			BitsUserInterfaceSource = source,
+			BitVector = new BitVector32(1),
+			BitsEnumType = typeof(OverflowBits),
+		};
+		Assert.AreEqual("Explicit label", control.BitItems[0].DisplayName);
+
+		Assert.ThrowsExactly<OverflowException>(() => control.BitsUserInterfaceSource = null);
+		Assert.AreSame(source, control.BitsUserInterfaceSource);
+		control.BitVector = new BitVector32();
+		Assert.IsFalse(control.BitItems[0].IsSet);
+		control.BitsEnumType = typeof(UiBits);
+		control.BitsUserInterfaceSource = null;
+		Assert.AreEqual("First bit", control.BitItems[0].DisplayName);
+	}
+
+	[STATestMethod]
+	public void Vector_VisibleMetadataBeyondCandidateWidth_RejectsWithoutChangingCurrentValue()
+	{
+		var vector = new BitVector64(1UL << 63);
+		var control = new BitVectorControl
+		{
+			BitsUserInterfaceSource = BitVectorUserInterfaceData.ForEnum(typeof(WideBits)),
+			BitVector = vector,
+		};
+		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => control.BitVector = new BitVector32());
+		Assert.AreEqual(vector, Assert.IsInstanceOfType<BitVector64>(control.BitVector));
+		Assert.IsTrue(control.BitItems[63].IsSet);
 	}
 
 	[STATestMethod]

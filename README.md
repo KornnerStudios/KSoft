@@ -50,9 +50,37 @@ Use `Enum.HasFlag` for all-bits flag tests and .NET's `EqualityComparer<TEnum>.D
 
 ## Enum-indexed bit collections
 
-Bit collection enum arguments are numeric bit indices, not flags masks. Access validates the full enum value before narrowing to an index; even an oversized value whose low 32 bits resemble a valid index is rejected. The untyped vectors and `BitSet` still accept any in-range enum index.
+`BitVector32<TBits>` and `BitVector64<TBits>` associate a bit-index enum with one 4/8-byte mutable value. Enum values are positions, not flags masks. Operations accept the associated enum; different enum types and different closed vector types are not implicitly interchangeable. KSoft emits the two generic facades with its existing generator; consuming them requires no consumer-side generator.
 
-`EnumBitSet<TEnum>.Length` is the enum's exclusive `kNumberOf`/`kMax` bound, or its highest value plus one, not the bits needed to encode one enum value. Correcting this extent also corrects the number of words written by `SerializeWords`; old undersized word-only streams are not self-describing and are not automatically migrated. Existing constructor restrictions on flags and NONE-bearing enums remain unchanged.
+Use `Set`, `Toggle`, or the indexer on a local/field. For an ordinary value-returning property, assign a replacement with `Options = Options.With(bit)`: calling a mutator on the returned struct changes a copy. For `Clear`/`SetAll`, which return no replacement, modify a local copy and assign it back. `Set` and `Toggle` also return copies after changing their receiver, so chaining them without assigning the final result does not keep every change in the original variable. Do not combine bit-index enum values with `|`; set members individually or combine same-type vectors.
+
+```csharp
+using KSoft.Collections;
+
+enum ToolBits { None = -1, Verbose, Trace, kNumberOf }
+
+sealed class ToolOptions
+{
+	public BitVector32<ToolBits> Bits { get; set; }
+
+	public void EnableVerbose()
+	{
+		Bits = Bits.With(ToolBits.Verbose);
+	}
+}
+```
+
+Usable members are declared nonnegative indices excluding `kNumberOf`/`kMax` exclusive bounds. Negative sentinel members may be present but cannot be passed as bits; `[Flags]` enum types, invalid bounds, and undefined bit arguments are rejected. Ordinary `[Obsolete]`, `[Browsable(false)]`, or `[XmlIgnore]` members are still usable by code. `EnumBitEncoderDisableAttribute` governs enum-value encoding and is not consulted by these typed index collections. Aliases share a bit; canonical names use the first ordinary declaration for that index.
+
+`FromRaw` validates the enum domain and required width, then preserves every raw bit; `ToRaw` exports the stored word unchanged. Whole-word mutations/combinations affect physical storage but still validate the enum domain and required width. Raw state queries and equality read the stored word without those checks. Named enumeration and `ToFlagsString` include only declared members in ascending index order, once per index, without applying UI visibility filters. The default value is an all-clear word; creating `default` or using the implicit parameterless construction does not itself validate the enum.
+
+`EnumBitSet<TBits>` supplies a mutable reference-backed set, including for domains larger than 64 bits; copying the reference shares mutations. Its logical extent is an exclusive bound or highest usable index plus one, not the bits required to encode one enum value. Enum-returning searches start inclusively and skip gaps; the `...BitIndex` searches return physical indices and can report gaps. Both require a usable declared starting member. Supply a distinct `invalidSentinelValue` for enum-returning searches when the default zero denotes a real member. Named collection count follows named enumeration; `Cardinality` counts stored set bits.
+
+Corrected `EnumBitSet` extents can change `SerializeWords` word counts. Those methods stream the existing word layout without a logical-length prefix or enum definition, so both endpoints must agree on the extent/layout; historical undersized streams are not detected or migrated automatically. General `Serialize(EndianStream)` is still unimplemented.
+
+`BitVectorControl` infers typed metadata unless an explicit presentation source is supplied; explicit enum hints must still match a typed value. Visibility and labels do not change bit validity: see `IEnumBitVector` for the adapter boundary and `BitVectorUserInterfaceData` for the display/visibility and canonical-alias rules.
+
+Fixed vectors contain only their raw word. Metadata is cached per closed enum type, and metadata discovery and the existing enum-conversion setup have first-use costs. Converting a fixed vector to `IEnumBitVector` boxes a snapshot; its update method returns a replacement rather than mutating that snapshot. Ordinary typed access does not require that interface; formatting, setup, and interface use can allocate.
 
 ## Building
 Before you try building any of the projects, first [read the requirements](https://bitbucket.org/KornnerStudios/ksoft/wiki/Requirements) you may need.

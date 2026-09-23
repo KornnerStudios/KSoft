@@ -135,7 +135,8 @@ namespace KSoft.Collections.Test
 		public void EnumBitSet_InvalidArguments_ThrowExpectedExceptions()
 		{
 			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleFlagsBit>());
-			Assert.ThrowsExactly<ArgumentException>(() => new EnumBitSet<SampleNoneEnumBit>());
+			var noneBits = new EnumBitSet<SampleNoneEnumBit>(SampleNoneEnumBit.None);
+			Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => noneBits.Get(SampleNoneEnumBit.None));
 
 			var bs = new EnumBitSet<SampleEnumBit>();
 
