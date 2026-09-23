@@ -12,6 +12,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(VitaRootDir)KSoft\Test.KSoft.TraceConfigHost\Test.KSoft.TraceConfigHost.csproj"
+                      ReferenceOutputAssembly="False" />
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
       <Project>{18f32228-8351-4f99-992f-78e9d1ce83d9}</Project>
       <Name>KSoft.IO.TagElementStreams</Name>

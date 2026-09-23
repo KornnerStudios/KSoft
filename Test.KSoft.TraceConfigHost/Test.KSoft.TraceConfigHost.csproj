@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Test.KSoft.TraceConfigHost</RootNamespace>
+    <AssemblyName>Test.KSoft.TraceConfigHost</AssemblyName>
+    <Nullable>enable</Nullable>
+    <OutDir>$(VitaBinRootPath)Tests\KSoft.BCL\TraceConfigHost\</OutDir>
+    <OutputPath>$(OutDir)</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj" />
+  </ItemGroup>
+</Project>

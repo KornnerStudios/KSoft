@@ -12,7 +12,6 @@ using System.Security;
 using System.Text;
 //using System.Windows.Forms;
 using Microsoft.VisualBasic.Logging;
-using static System.Net.Mime.MediaTypeNames;
 
 // Duplicated types from Microsoft.VisualBasic.Logging to compile for .NET Core
 namespace Microsoft.VisualBasic.Logging
@@ -215,7 +214,7 @@ namespace KSoft.Debug
 			Location,
 			LogFileCreationSchedule,
 			MaxFileSize,
-			ReservedDiskSpace,
+			ReserveDiskSpace,
 
 			DoNotIncludeSourceName,
 			DoNotIncludeEventType,
@@ -226,10 +225,12 @@ namespace KSoft.Debug
 		};
 		static readonly string[] mSupportedAttributes = Enum.GetNames<Property>()
 			.Where(name => name != nameof(Property.kNumberOf))
+			.Append("ReservedDiskSpace")
+			.Select(name => name.ToLowerInvariant())
 			.ToArray();
 		private Collections.BitVector32 mPropertiesSet;
 
-		private bool GetPropertyIfNotSet(Property property, out string? value)
+		private bool GetPropertyIfNotSet(Property property, out string? value, params string[] aliases)
 		{
 			value = null;
 			if (mPropertiesSet.Test(property))
@@ -238,14 +239,22 @@ namespace KSoft.Debug
 			}
 
 			string property_name = property.ToString();
-			if (!Attributes.ContainsKey(property_name))
+			if (Attributes.ContainsKey(property_name))
 			{
-				return false;
+				value = Attributes[property_name];
+				return true;
 			}
 
-			value = Attributes[property_name];
+			foreach (string alias in aliases)
+			{
+				if (!Attributes.ContainsKey(alias))
+					continue;
 
-			return true;
+				value = Attributes[alias];
+				return true;
+			}
+
+			return false;
 		}
 
 		private bool mDoNotIncludeSourceName;
@@ -575,7 +584,7 @@ namespace KSoft.Debug
 		{
 			get
 			{
-				if (GetPropertyIfNotSet(Property.ReservedDiskSpace, out string? property))
+				if (GetPropertyIfNotSet(Property.ReserveDiskSpace, out string? property, "ReservedDiskSpace"))
 				{
 					this.ReserveDiskSpace = Convert.ToInt64(property!, CultureInfo.InvariantCulture);
 				}
@@ -588,7 +597,7 @@ namespace KSoft.Debug
 
 				this.DemandWritePermission();
 				this.mReserveDiskSpace = value;
-				this.mPropertiesSet.Set(Property.ReservedDiskSpace);
+				this.mPropertiesSet.Set(Property.ReserveDiskSpace);
 			}
 		}
 		#endregion
@@ -610,16 +619,18 @@ namespace KSoft.Debug
 		private DateTime mFirstDayOfWeek;
 
 		// HACK: dotnet workarounds for System.Windows.Forms.Application properties
-		static string Application_ExecutablePath =>
-			System.Reflection.Assembly.GetExecutingAssembly().Location;
+		static string Application_Name =>
+			System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name
+			?? Path.GetFileNameWithoutExtension(Environment.ProcessPath)
+			?? nameof(KSoft);
 		static string Application_UserAppDataPath =>
 			Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name!);
+				Application_Name);
 		static string Application_CommonAppDataPath =>
 			Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-				System.Reflection.Assembly.GetExecutingAssembly().GetName().Name!);
+				Application_Name);
 
 		//		[HostProtection(SecurityAction.LinkDemand, Resources = HostProtectionResource.ExternalProcessMgmt)]
 		public KSoftFileLogTraceListener(string name) : base(name)
@@ -629,7 +640,7 @@ namespace KSoft.Debug
 			this.mAppend = true;
 			this.mIncludeHostName = false;
 			this.mDiskSpaceExhaustedBehavior = DiskSpaceExhaustedOption.DiscardMessages;
-			this.mBaseFileName = Path.GetFileNameWithoutExtension(Application_ExecutablePath);
+			this.mBaseFileName = Application_Name;
 			this.mLogFileDateStamp = LogFileCreationScheduleOption.None;
 			this.mMaxFileSize = 5000000L;
 			this.mReserveDiskSpace = 10000000L;
@@ -687,7 +698,7 @@ namespace KSoft.Debug
 				path = Application_CommonAppDataPath;
 				break;
 			case LogFileLocation.ExecutableDirectory:
-				path = Path.GetDirectoryName(Application_ExecutablePath)!;
+				path = AppContext.BaseDirectory;
 				break;
 			case LogFileLocation.Custom:
 				if (this.CustomLocation.IsNullOrEmpty())
@@ -775,7 +786,8 @@ namespace KSoft.Debug
 			try
 			{
 				this.HandleDateChange();
-				long newEntrySize = this.Encoding.GetByteCount(message!);
+				message ??= string.Empty;
+				long newEntrySize = this.Encoding.GetByteCount(message);
 				if (this.ResourcesAvailable(newEntrySize))
 				{
 					this.ListenerStream.Write(message);
