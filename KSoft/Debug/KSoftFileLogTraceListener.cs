@@ -881,7 +881,7 @@ namespace KSoft.Debug
 				{
 					if (!first)
 					{
-						Write(", ");
+						TemporaryWrite(", ");
 					}
 					else
 					{

@@ -104,6 +104,32 @@ public sealed class KSoftFileLogTraceListenerTest : BaseTestClass
 		}
 	}
 
+	[TestMethod]
+	public void TraceEvent_LogicalOperationStack_PreservesBufferedOrdering()
+	{
+		string testDirectory = CreateTestDirectory();
+		global::System.Diagnostics.Trace.CorrelationManager.StartLogicalOperation("outer");
+		global::System.Diagnostics.Trace.CorrelationManager.StartLogicalOperation("inner");
+
+		try
+		{
+			using (var listener = CreateListener(testDirectory, "logical-operations"))
+			{
+				listener.TraceOutputOptions = TraceOptions.LogicalOperationStack;
+				listener.TraceEvent(new TraceEventCache(), "TestSource", TraceEventType.Information, 23, "message");
+			}
+
+			string contents = File.ReadAllText(Path.Combine(testDirectory, "logical-operations.log"), Encoding.UTF8);
+			StringAssert.Contains(contents, "LogicalOperationStack=inner, outer");
+		}
+		finally
+		{
+			global::System.Diagnostics.Trace.CorrelationManager.StopLogicalOperation();
+			global::System.Diagnostics.Trace.CorrelationManager.StopLogicalOperation();
+			Directory.Delete(testDirectory, recursive: true);
+		}
+	}
+
 	private static KSoftFileLogTraceListener CreateListener(string directory, string baseFileName)
 	{
 		return new KSoftFileLogTraceListener
