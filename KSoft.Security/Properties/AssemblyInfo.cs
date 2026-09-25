@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -8,6 +9,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("579b04cd-a819-422a-bc8e-f78afae580f8")]
+[assembly: InternalsVisibleTo("KSoft.Phoenix")]
 
 [assembly: SuppressMessage("Microsoft.Design",
 	"CA1028:EnumStorageShouldBeInt32")]
