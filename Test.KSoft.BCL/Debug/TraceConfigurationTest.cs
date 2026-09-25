@@ -29,6 +29,24 @@ public sealed class TraceConfigurationTest
 	}
 
 	[TestMethod]
+	public void LoggerFactory_RejectsUseOutsideProgramLifetime()
+	{
+		string hostPath = GetHostPath();
+		var startInfo = CreateHostStartInfo(hostPath);
+		startInfo.ArgumentList.Add("--verify-logger-lifecycle");
+
+		using var process = Process.Start(startInfo);
+		Assert.IsNotNull(process);
+
+		string output = process.StandardOutput.ReadToEnd();
+		string error = process.StandardError.ReadToEnd();
+		process.WaitForExit();
+
+		Assert.AreEqual(0, process.ExitCode, error);
+		StringAssert.Contains(output, "Logger lifecycle rejects use outside initialization.");
+	}
+
+	[TestMethod]
 	public void AppConfig_RegistersRefreshesAndWritesConfiguredListeners()
 	{
 		string testDirectory = Path.Combine(Path.GetTempPath(), $"KSoftTraceConfiguration-{Guid.NewGuid():N}");
@@ -98,6 +116,10 @@ public sealed class TraceConfigurationTest
 			string log = string.Join(Environment.NewLine, logPaths.Select(File.ReadAllText));
 			StringAssert.Contains(log, "global-message", output);
 			StringAssert.Contains(log, "ConfiguredSource Information: source-message");
+			StringAssert.Contains(log, "ConfiguredSource Information: logger {message}");
+			StringAssert.Contains(log, "ConfiguredSource Error:");
+			StringAssert.Contains(log, "logger-exception");
+			StringAssert.Contains(log, "expected logger failure");
 		}
 		finally
 		{

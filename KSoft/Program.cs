@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace KSoft
 {
@@ -16,7 +19,9 @@ namespace KSoft
 		// we instead opt for explicit startup/shutdown
 
 		static readonly object gInitializationLock = new();
+		static readonly Debug.TraceSourceRegistry gTraceSources = new();
 		static bool gInitialized;
+		static Debug.TraceSourceLoggerProvider? gLoggerProvider;
 
 		public static void Initialize() => Initialize(System.Diagnostics.TraceConfiguration.Register);
 
@@ -30,6 +35,9 @@ namespace KSoft
 					return;
 
 				registerTraceConfiguration();
+				gTraceSources.Register(
+					Debug.AssemblyTraceSourcesCollector.FromClass(DebugTraceClass));
+				gLoggerProvider = new Debug.TraceSourceLoggerProvider(gTraceSources);
 				gInitialized = true;
 			}
 		}
@@ -41,10 +49,64 @@ namespace KSoft
 				if (!gInitialized)
 					return;
 
-				System.Diagnostics.Trace.Flush();
-				gInitialized = false;
+				try
+				{
+					gLoggerProvider!.Dispose();
+					System.Diagnostics.Trace.Flush();
+				}
+				finally
+				{
+					gLoggerProvider = null;
+					gInitialized = false;
+				}
 			}
 		}
+
+		/// <summary>Creates a logger whose category resolves to a registered canonical trace source when used.</summary>
+		/// <remarks>
+		/// Categories resolve by exact trace-source name and then by dot-delimited parent.
+		/// This intentionally lets source-less KSoft assemblies inherit the registered <c>KSoft</c> source.
+		/// </remarks>
+		public static ILogger CreateLogger(string categoryName)
+		{
+			lock (gInitializationLock)
+				return GetLoggerProvider().CreateLogger(categoryName);
+		}
+
+		/// <summary>Creates a logger using the full name of <typeparamref name="T"/> as its category.</summary>
+		public static ILogger<T> CreateLogger<T>()
+		{
+			lock (gInitializationLock)
+				return GetLoggerProvider().CreateLogger<T>();
+		}
+
+		/// <summary>Registers trace sources exposed by the public static properties of trace holder classes.</summary>
+		public static void RegisterTraceSources(params Type[] debugTraceClasses)
+		{
+			ArgumentNullException.ThrowIfNull(debugTraceClasses);
+			RegisterTraceSources(Debug.AssemblyTraceSourcesCollector.FromClasses(null, debugTraceClasses));
+		}
+
+		/// <summary>Registers canonical trace source instances.</summary>
+		public static void RegisterTraceSources(params TraceSource[] traceSources)
+			=> RegisterTraceSources((IEnumerable<TraceSource>)traceSources);
+
+		/// <summary>Registers canonical trace source instances.</summary>
+		public static void RegisterTraceSources(IEnumerable<TraceSource> traceSources)
+		{
+			ArgumentNullException.ThrowIfNull(traceSources);
+
+			lock (gInitializationLock)
+			{
+				if (!gInitialized)
+					throw new InvalidOperationException("KSoft.Program must be initialized before registering trace sources.");
+
+				gTraceSources.Register(traceSources);
+			}
+		}
+
+		private static Debug.TraceSourceLoggerProvider GetLoggerProvider()
+			=> gLoggerProvider ?? throw new InvalidOperationException("KSoft.Program is not initialized.");
 
 		public static Type DebugTraceClass { get { return typeof(Debug.Trace); } }
 	};

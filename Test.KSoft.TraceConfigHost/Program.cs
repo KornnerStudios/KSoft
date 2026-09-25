@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Test.KSoft.TraceConfigHost;
 
@@ -13,6 +14,8 @@ internal static class Program
 	{
 		if (args is ["--verify-initialize-lock"])
 			return VerifyInitializeLock();
+		if (args is ["--verify-logger-lifecycle"])
+			return VerifyLoggerLifecycle();
 
 		if (args.Length > 1)
 		{
@@ -31,6 +34,7 @@ internal static class Program
 		var source = new TraceSource("ConfiguredSource", SourceLevels.Off);
 		try
 		{
+			global::KSoft.Program.RegisterTraceSources(source);
 			var listener = source.Listeners.OfType<global::KSoft.Debug.KSoftFileLogTraceListener>().Single();
 
 			Console.WriteLine($"BeforeLevel={source.Switch.Level}");
@@ -52,6 +56,12 @@ internal static class Program
 			Console.WriteLine($"GlobalListenersAfter={string.Join(",", Trace.Listeners.Cast<TraceListener>().Select(x => x.Name))}");
 
 			source.TraceEvent(TraceEventType.Information, 7, "source-message");
+			ILogger logger = global::KSoft.Program.CreateLogger("ConfiguredSource.Child");
+			logger.Log(LogLevel.Information, new EventId(8), "logger {message}", null,
+				static (state, _) => state);
+			logger.Log(LogLevel.Error, new EventId(9), "logger-exception",
+				new InvalidOperationException("expected logger failure"),
+				static (state, _) => state);
 			source.Flush();
 			Trace.Flush();
 
@@ -108,5 +118,35 @@ internal static class Program
 
 		Console.WriteLine("Concurrent initialization waited for completed registration.");
 		return 0;
+	}
+
+	private static int VerifyLoggerLifecycle()
+	{
+		if (!ThrowsInvalidOperation(() => global::KSoft.Program.CreateLogger("KSoft")))
+			return 6;
+
+		global::KSoft.Program.Initialize();
+		_ = global::KSoft.Program.CreateLogger("KSoft");
+		global::KSoft.Program.Dispose();
+		global::KSoft.Program.Dispose();
+
+		if (!ThrowsInvalidOperation(() => global::KSoft.Program.CreateLogger("KSoft")))
+			return 7;
+
+		Console.WriteLine("Logger lifecycle rejects use outside initialization.");
+		return 0;
+	}
+
+	private static bool ThrowsInvalidOperation(Action action)
+	{
+		try
+		{
+			action();
+			return false;
+		}
+		catch (InvalidOperationException)
+		{
+			return true;
+		}
 	}
 }
