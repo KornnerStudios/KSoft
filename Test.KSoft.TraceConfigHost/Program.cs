@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Test.KSoft.TraceConfigHost;
 
@@ -9,6 +11,9 @@ internal static class Program
 {
 	private static int Main(string[] args)
 	{
+		if (args is ["--verify-initialize-lock"])
+			return VerifyInitializeLock();
+
 		if (args.Length > 1)
 		{
 			Console.Error.WriteLine("Expected zero arguments or a configuration file path.");
@@ -58,5 +63,50 @@ internal static class Program
 			source.Close();
 			global::KSoft.Program.Dispose();
 		}
+	}
+
+	private static int VerifyInitializeLock()
+	{
+		using var registrationEntered = new ManualResetEventSlim();
+		using var releaseRegistration = new ManualResetEventSlim();
+		int registrationCount = 0;
+
+		Task firstInitialize = Task.Run(() => global::KSoft.Program.Initialize(() =>
+		{
+			Interlocked.Increment(ref registrationCount);
+			registrationEntered.Set();
+			releaseRegistration.Wait();
+		}));
+
+		if (!registrationEntered.Wait(TimeSpan.FromSeconds(5)))
+			return 3;
+
+		Task secondInitialize = Task.Run(() => global::KSoft.Program.Initialize(
+			() => Interlocked.Increment(ref registrationCount)));
+
+		try
+		{
+			if (secondInitialize.Wait(TimeSpan.FromMilliseconds(250)))
+			{
+				Console.Error.WriteLine("Concurrent Initialize returned before registration completed.");
+				return 4;
+			}
+		}
+		finally
+		{
+			releaseRegistration.Set();
+		}
+
+		Task.WaitAll(firstInitialize, secondInitialize);
+		global::KSoft.Program.Dispose();
+
+		if (registrationCount != 1)
+		{
+			Console.Error.WriteLine($"Registration executed {registrationCount} times.");
+			return 5;
+		}
+
+		Console.WriteLine("Concurrent initialization waited for completed registration.");
+		return 0;
 	}
 }

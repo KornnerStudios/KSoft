@@ -11,6 +11,24 @@ namespace KSoft.Debug.Test;
 public sealed class TraceConfigurationTest
 {
 	[TestMethod]
+	public void Initialize_ConcurrentCallerWaitsForRegistration()
+	{
+		string hostPath = GetHostPath();
+		var startInfo = CreateHostStartInfo(hostPath);
+		startInfo.ArgumentList.Add("--verify-initialize-lock");
+
+		using var process = Process.Start(startInfo);
+		Assert.IsNotNull(process);
+
+		string output = process.StandardOutput.ReadToEnd();
+		string error = process.StandardError.ReadToEnd();
+		process.WaitForExit();
+
+		Assert.AreEqual(0, process.ExitCode, error);
+		StringAssert.Contains(output, "Concurrent initialization waited for completed registration.");
+	}
+
+	[TestMethod]
 	public void AppConfig_RegistersRefreshesAndWritesConfiguredListeners()
 	{
 		string testDirectory = Path.Combine(Path.GetTempPath(), $"KSoftTraceConfiguration-{Guid.NewGuid():N}");
@@ -57,19 +75,8 @@ public sealed class TraceConfigurationTest
 				</configuration>
 				""");
 
-			string hostPath = Path.Combine(
-				AppContext.BaseDirectory,
-				"TraceConfigHost",
-				"Test.KSoft.TraceConfigHost.dll");
-			Assert.IsTrue(File.Exists(hostPath), $"Trace configuration host was not built at '{hostPath}'.");
-
-			var startInfo = new ProcessStartInfo("dotnet")
-			{
-				RedirectStandardError = true,
-				RedirectStandardOutput = true,
-				UseShellExecute = false,
-			};
-			startInfo.ArgumentList.Add(hostPath);
+			string hostPath = GetHostPath();
+			var startInfo = CreateHostStartInfo(hostPath);
 			startInfo.ArgumentList.Add(configPath);
 
 			using var process = Process.Start(startInfo);
@@ -96,5 +103,27 @@ public sealed class TraceConfigurationTest
 		{
 			Directory.Delete(testDirectory, recursive: true);
 		}
+	}
+
+	private static ProcessStartInfo CreateHostStartInfo(string hostPath)
+	{
+		var startInfo = new ProcessStartInfo("dotnet")
+		{
+			RedirectStandardError = true,
+			RedirectStandardOutput = true,
+			UseShellExecute = false,
+		};
+		startInfo.ArgumentList.Add(hostPath);
+		return startInfo;
+	}
+
+	private static string GetHostPath()
+	{
+		string hostPath = Path.Combine(
+			AppContext.BaseDirectory,
+			"TraceConfigHost",
+			"Test.KSoft.TraceConfigHost.dll");
+		Assert.IsTrue(File.Exists(hostPath), $"Trace configuration host was not built at '{hostPath}'.");
+		return hostPath;
 	}
 }

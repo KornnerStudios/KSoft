@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("KSoft.Security")]
 [assembly: InternalsVisibleTo("Bench.KSoft.BCL")]
 [assembly: InternalsVisibleTo("Test.KSoft.BCL")]
+[assembly: InternalsVisibleTo("Test.KSoft.TraceConfigHost")]
 
 [assembly: SuppressMessage("Microsoft.Design",
 	"CA1000:DoNotDeclareStaticMembersOnGenericTypes")]

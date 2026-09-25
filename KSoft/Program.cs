@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace KSoft
 {
@@ -16,30 +15,35 @@ namespace KSoft
 		// Since static ctors in structs are pretty fucked (http://stackoverflow.com/a/3246817/444977)
 		// we instead opt for explicit startup/shutdown
 
-		private static int gInitialized;
+		static readonly object gInitializationLock = new();
+		static bool gInitialized;
 
-		public static void Initialize()
+		public static void Initialize() => Initialize(System.Diagnostics.TraceConfiguration.Register);
+
+		internal static void Initialize(Action registerTraceConfiguration)
 		{
-			if (Interlocked.CompareExchange(ref gInitialized, 1, 0) != 0)
-				return;
+			ArgumentNullException.ThrowIfNull(registerTraceConfiguration);
 
-			try
+			lock (gInitializationLock)
 			{
-				System.Diagnostics.TraceConfiguration.Register();
-			}
-			catch
-			{
-				Volatile.Write(ref gInitialized, 0);
-				throw;
+				if (gInitialized)
+					return;
+
+				registerTraceConfiguration();
+				gInitialized = true;
 			}
 		}
 
 		public static void Dispose()
 		{
-			if (Interlocked.Exchange(ref gInitialized, 0) == 0)
-				return;
+			lock (gInitializationLock)
+			{
+				if (!gInitialized)
+					return;
 
-			System.Diagnostics.Trace.Flush();
+				System.Diagnostics.Trace.Flush();
+				gInitialized = false;
+			}
 		}
 
 		public static Type DebugTraceClass { get { return typeof(Debug.Trace); } }
