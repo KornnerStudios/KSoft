@@ -11,7 +11,7 @@
 		<ProjectReference Include="..\KSoft.SourceGeneration\KSoft.SourceGeneration.csproj" />
 		<ProjectReference Include="..\KSoft.PropertyChanged.SourceGeneration\KSoft.PropertyChanged.SourceGeneration.csproj" />
 		<ProjectReference Include="..\KSoft\KSoft.csproj" />
-		<PackageReference Include="Caliburn.Micro.Core" Version="4.0.210" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
+		<PackageReference Include="Caliburn.Micro.Core" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
 	</ItemGroup>
 </Project>
